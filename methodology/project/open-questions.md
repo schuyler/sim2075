@@ -34,24 +34,7 @@ Type 3 (Contingent) events—Taiwan, climate agreements, great power negotiation
 
 ---
 
-### 3. Positive Discontinuity Coverage
-
-**Status:** Unresolved  
-**Added:** December 2025  
-**Source:** Methodology review
-
-The priority event list of 20 events includes no breakthrough energy deployment, no major de-escalation, no institutional innovation success. This creates asymmetric uncertainty: the model will explore negative tails well but may underweight scenarios where things go unexpectedly right.
-
-**Key issues:**
-- Does this reflect considered judgment (positive discontinuities are genuinely rare/unlikely) or selection bias?
-- The framework explicitly handles "positive" events through impact vectors—but the catalog doesn't include them
-- Which positive discontinuities are plausible enough to model?
-
-**Session goal:** Evaluate whether positive discontinuities belong in the catalog; if so, identify 3-5 candidates and specify at least one.
-
----
-
-### 4. Recovery Dynamics
+### 3. Recovery Dynamics
 
 **Status:** Unresolved  
 **Added:** December 2025  
@@ -132,6 +115,49 @@ The collapse-patterns document covers how things fall apart in detail, but recov
 - "Tail exploration" is interpretively useful but not rigorously defined
 - No formal confidence degradation model yet
 - Calibration anchors remain 5-15 year phenomena; extrapolation to 50 years is acknowledged weakness
+
+---
+
+### 3. Positive Discontinuity Coverage
+
+**Status:** Resolved  
+**Added:** December 2025  
+**Resolved:** December 2025  
+**Source:** Methodology review
+
+**Original question:** The priority event list includes no breakthrough energy, no major de-escalation, no institutional innovation. Does this create asymmetric uncertainty that underweights positive tails?
+
+**Resolution:** The framework is valence-neutral; no special treatment needed. The apparent gap dissolves into two tractable sub-problems.
+
+**Key insight:** "Positive discontinuity" in the integrated framework just means "event with net-beneficial expected impact vector." An event like fusion breakthrough isn't intrinsically positive—it's a shock with mixed-valence downstream effects (reduced emissions pressure, petrostate destabilization, energy abundance effects, great power dynamics shifts). The model handles this correctly.
+
+**What was actually missing:**
+
+1. **Type 3 resolution branches:** Existing contingent events (Taiwan, climate negotiations) already accommodate favorable resolutions. The gap is specification completeness, not missing events. Audit existing Type 3 events for explicit positive resolution branches.
+
+2. **Type 1 breakthroughs:** Genuine stochastic shocks outside baseline trajectory. These are not S-curve continuations—they're low-probability discrete discoveries that would materially change system dynamics.
+
+**Type 1 breakthroughs to specify:**
+- Fusion commercialization
+- Agricultural yield breakthrough (heat/drought-tolerant crops)
+- Novel antimicrobial platform (antibiotic alternative)
+- Major cancer treatment breakthrough (immunotherapy platform or equivalent)
+
+See [[events/planned-breakthrough-events]] for specification planning.
+
+**Explicitly excluded from event catalog:**
+- Continued solar/wind cost decline → baseline trajectory
+- EV adoption acceleration → baseline trajectory
+- General AI capability progress → baseline trajectory
+- mRNA platform expansion → baseline trajectory
+
+Technology S-curves belong in baseline assumptions, not the event catalog, unless modeling a specific discrete threshold crossing.
+
+**Action items:**
+- [ ] Audit Type 3 events for resolution branch completeness
+- [ ] Specify 3-4 Type 1 breakthrough events per standard workflow
+
+**Why this isn't a cop-out:** The original concern was that the model would systematically underweight positive tails. The resolution shows this concern was partially misframed (Type 3 events already include favorable branches) and partially valid (Type 1 breakthroughs were missing). Adding breakthroughs and auditing Type 3 completeness addresses the valid part without introducing artificial symmetry.
 
 ---
 

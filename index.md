@@ -133,6 +133,17 @@ Events organized by domain. Each specifies causal type, probability, factor load
 |-------|------|-------------|--------|
 | Severe Pandemic | Type 1 | TBD | Not started |
 
+### Breakthrough Events (Type 1)
+
+**Planning document**: [[events/planned-breakthrough-events]]
+
+| Event | Type | Annual Prob | Status |
+|-------|------|-------------|--------|
+| Fusion Commercialization | Type 1 | TBD | Not started |
+| Agricultural Yield Breakthrough | Type 1 | TBD | Not started |
+| Cancer Treatment Breakthrough | Type 1 | TBD | Not started |
+| Antimicrobial Platform | Type 1 | TBD | Not started |
+
 ---
 
 ## Research Documents
