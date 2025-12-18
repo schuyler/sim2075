@@ -167,20 +167,37 @@ The "Poisson-like arrival" we observe may be the visible signature of many indep
 
 ### Implication
 
-**The Type 1/Type 2 distinction is epistemic, not ontological.** 
+**The Type 1/Type 2 distinction is epistemic, not ontological — but this doesn't change how we model.**
 
-- Type 2: Pressure variables are observable; we can (in principle) estimate proximity to threshold
-- Type 1: Pressure variables are unobservable; we can only estimate base rates from historical frequency
+Pinatubo has Type 2 mechanics underneath, but for modeling purposes it's functionally random. We can't observe magma chamber pressure in real time across thousands of volcanoes. Historical base rates are the right tool.
 
-This doesn't change how we *model* Type 1 events — we still use historical base rates because that's the information we have. But it reframes the taxonomy:
+The epistemic framing leads to a three-way distinction:
 
-| Type | Ontology | Epistemology |
-|------|----------|--------------|
-| **Type 1** | May be Type 2 underneath | Pressure unobservable → model as stochastic |
-| **Type 2** | Pressure → threshold → transition | Pressure observable → model accumulation |
-| **Type 3** | Type 2 enabling + small-N resolution | Window observable, resolution intractable |
+| Category | Ontology | Epistemology | Modeling approach |
+|----------|----------|--------------|-------------------|
+| **Ontologically stochastic** | No pressure process exists (on Earth) | Irreducibly random | Historical base rate |
+| **Epistemically stochastic** | Pressure process exists but unobservable | Appears random | Historical base rate |
+| **Observable accumulation** | Pressure process exists and trackable | Predictable buildup | Pressure function |
 
-"Type 1" is not a claim about how the world works. It's a claim about the limits of our observation: *we cannot see the pressure building, so we treat arrival as random*.
+**Ontologically stochastic** (true Type 1):
+- Asteroid/meteor impacts — trajectory determined by orbital mechanics, not earthly pressure
+- Extraterrestrial contact — no accumulating process on Earth
+- Possibly novel pandemic emergence — though habitat encroachment creates some pressure signal
+
+**Epistemically stochastic** (Type 2 underneath, modeled as Type 1):
+- Volcanic eruptions — magma pressure real but unobservable at scale
+- Earthquakes — tectonic strain real but prediction remains intractable
+- Many technology breakthroughs — capability accumulation real but threshold unclear
+
+**Observable accumulation** (true Type 2):
+- State failure — debt, instability, water stress are measurable
+- Climate tipping points — temperature, ice extent, AMOC strength are tracked
+- Financial crises — leverage, credit spreads, imbalances are visible
+
+The practical consequence: for v1.0, both ontologically and epistemically stochastic events use the same modeling approach (historical base rates). The distinction matters for:
+- Whether proxy variables might exist that could upgrade an event to Type 2
+- How we interpret base rate stability over time (true randomness vs. changing unobserved pressure)
+- Whether improved observation technology could change classification
 
 ### Practical Consequence
 
