@@ -614,6 +614,8 @@ Different variables require different modeling approaches based on how they evol
 
 This section provides an overview of how variables interact. Detailed parameterization will be specified in a separate document.
 
+**Cross-reference:** For how the simulation's 12 latent factors map to these state variable categories and transmission channels, see [[methodology/reference/factor-loadings]] §Factor → State Variable Categories.
+
 ### 6.1 Global → Country Transmission
 
 Global variables affect countries differentially based on country characteristics.

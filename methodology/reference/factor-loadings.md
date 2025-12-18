@@ -163,6 +163,53 @@ loading_notes:
 
 ---
 
+## Factor → State Variable Categories
+
+Factor loadings connect events to abstract latent factors. But what do those factors *mean* in terms of the simulation's state variables? This section maps each factor to the state variable categories it primarily affects.
+
+**For v1.0:** This mapping helps specifiers reason about *why* an event loads on a factor—what underlying dynamics connect them. Factors currently drive event correlation, not state variables directly.
+
+**For v2.0:** This mapping becomes operational. Factor realizations will shock state variables, which then drive event probabilities through threshold and conditioning mechanisms. The categories below establish the conceptual architecture; detailed transmission coefficients are a calibration task.
+
+For full variable definitions and dynamics, see [[methodology/reference/state-specification]].
+
+### Global Systemic Factors
+
+| Factor | Primary State Categories | Transmission Notes |
+|--------|-------------------------|-------------------|
+| **F_CLIM** | Global: temperature anomaly, sea level, climate variability, tipping point indicators. Country: heat exposure, water stress, agricultural climate risk. Commodity: food prices, food stocks. | Physical climate changes propagate through local exposure differences to economic and humanitarian impacts. See state-specification §Climate and Planetary Variables, §Country Climate and Resource Variables. |
+| **F_FIN** | Global: interest rates, credit spreads, reserve currency shares. Country: debt levels, growth, inflation, reserves, current account. | Credit conditions and contagion affect borrowing costs, capital flows, fiscal space, and growth trajectories. See state-specification §Financial System Variables, §Country Economic Variables. |
+| **F_HLTH** | Global: pandemic status, antibiotic resistance. Country: life expectancy, infant mortality, state capacity (health system proxy). | Pathogen emergence and health system stress affect mortality, economic disruption, and institutional strain. See state-specification §Health and Pandemic Variables, §Country Demographic Flow Variables. |
+| **F_GPT** | Global: US-China tension, NATO cohesion, active conflicts, nuclear stability. Country: alliance positions, sanctions, external conflict involvement. | Great power dynamics alter security environment, economic access, and alliance reliability. See state-specification §Geopolitical Structure Variables, §Country Strategic Position Variables. |
+| **F_TECH** | Global: AI capability, semiconductor supply. Country: GDP growth (productivity channel), institutional quality (governance challenges). | Technology disruption affects productivity, supply chain resilience, and governance capacity. See state-specification §Technology Variables, §Trade and Economic Structure Variables. |
+| **F_FOOD** | Global: food commodity prices, grain stocks, fertilizer prices. Country: food import dependence, inflation, regime stability (via food security). | Food system stress transmits through prices to import-dependent countries, affecting inflation, fiscal burden, and political stability. See state-specification §Commodity Price Variables, §Country Climate and Resource Variables. |
+
+### Regional Factors
+
+| Factor | Primary State Categories | Transmission Notes |
+|--------|-------------------------|-------------------|
+| **F_EUR** | EU cohesion (global). Country (European): regime stability, GDP growth, debt levels, migration pressure, alliance positions. | European stress affects EU institutional function, fiscal solidarity, and political stability across member states. Spillovers to neighbors via trade and migration. |
+| **F_MENA** | Country (MENA region): regime stability, internal conflict, water stress, food import dependence. Global: oil/gas prices, refugee flows. | MENA instability affects energy supply, migration pressure on Europe, and regional conflict dynamics. |
+| **F_SAS** | Country (South Asia): regime stability, water stress, internal/external conflict, GDP growth. Global: nuclear stability. | South Asian stress involves India-Pakistan dynamics, climate-water interactions, and nuclear risk. |
+| **F_EAS** | US-China tension (global), semiconductor supply (global). Country (East Asia): external conflict involvement, alliance positions, trade openness. | East Asian tension centers on Taiwan and great power competition, with global supply chain implications. |
+| **F_SSA** | Country (Sub-Saharan Africa): regime stability, internal conflict, food import dependence, emigration rates. Global: commodity prices (for exporters). | Sub-Saharan crisis involves state fragility, climate stress, demographic pressure, and humanitarian outcomes. |
+| **F_LAM** | Country (Latin America): regime stability, GDP growth, inflation, debt levels. Global: Amazon forest cover. | Latin American stress involves economic volatility, political instability, and (for Brazil) global climate stakes via Amazon. |
+
+### Using This Mapping
+
+When assigning factor loadings to an event:
+
+1. **Identify which state variables the event directly affects** (its impact vector targets)
+2. **Check which factors have those variables in their primary categories**
+3. **Factors whose categories overlap with the event's impacts should have non-zero loadings**
+4. **The strength of loading reflects how central that factor is to the event's causal mechanism**
+
+If an event affects variables outside all factors' primary categories, either:
+- The event has high idiosyncratic variance (Ψ), or
+- A factor's category coverage should be reconsidered
+
+---
+
 ## Loading Estimation Process
 
 ### Step 1: Identify Causal Type
@@ -177,6 +224,8 @@ Ask: "If I could only load this event on one factor, which would it be?"
 - For Type 2: What factor most directly stresses the pressure variables?
 - For Type 3: What factor most strongly creates crisis windows?
 
+Consult the **Factor → State Variable Categories** table above. Which factor's primary categories best overlap with the event's impact targets and causal mechanisms?
+
 This forces clarity about what fundamentally drives the event.
 
 ### Step 3: Identify Secondary Linkages
@@ -189,6 +238,8 @@ For each factor, ask:
 For Type 2, also ask:
 - Does this factor shock any of the event's pressure variables?
 - How strong is the transmission from factor to pressure?
+
+Use the **Factor → State Variable Categories** mapping to check: do this factor's primary state categories include variables relevant to the event? If not, the loading should be low or zero.
 
 Assign secondary loadings only where genuine linkage exists. **Zero is a valid loading.**
 
