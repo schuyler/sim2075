@@ -47,8 +47,8 @@ Three foundational concept notes now frame the problem:
 4. Report results conditionally ("if conflict, then X; if accommodation, then Y")
 
 **Remaining work:**
-- Write Type 3 calibration guidance document synthesizing the above
-- Update causal-types reference to incorporate this framing
+- Complete [[methodology/reference/type-3-calibration]] (stub created)
+- Apply [[methodology/reference/causal-types-updates]] (plan documented)
 - Apply to first Type 3 event specification (Taiwan)
 
 **Session goal:** Develop guidance for Type 3 calibration that honestly reflects uncertainty about actor decisions while remaining operationally useful.

@@ -37,8 +37,8 @@ Tasks that must be completed before event specification can proceed correctly. T
 
 | Priority | Task | Status | Dependencies | Notes |
 |----------|------|--------|--------------|-------|
-| **1.1** | Write Type 3 calibration guidance | 🔲 | — | Synthesize tractability-boundaries, entropy-maximization, small-n-actor-problem into operational guidance. Key insight: uniform resolution probs, invest in aftermath specification. |
-| **1.2** | Update causal-types reference | 🔲 | 1.1 | Incorporate tractability framing into Type 3 section. Link to new epistemology notes. |
+| **1.1** | Write Type 3 calibration guidance | 🔲 | — | [[methodology/reference/type-3-calibration]] (stub). Synthesize tractability-boundaries, entropy-maximization, small-n-actor-problem into operational guidance. Key insight: uniform resolution probs, invest in aftermath specification. |
+| **1.2** | Update causal-types reference | 🔲 | 1.1 | [[methodology/reference/causal-types-updates]] (plan). Incorporate tractability framing into Type 3 section. Link to new epistemology notes. |
 | **1.3** | Update probability-estimation reference | 🔲 | — | Add Type-specific guidance (Type 1 base rates, Type 2 pressure functions, Type 3 window/resolution). |
 | **1.4** | Update calibration-anchors reference | 🔲 | — | Add causal type classification to historical anchors. |
 | **1.5** | Update factor-loadings reference | 🔲 | — | Clarify factor→state variable interpretation. |
