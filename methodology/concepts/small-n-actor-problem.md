@@ -147,6 +147,7 @@ Candidate approaches include maximum entropy defaults, scenario-based sensitivit
 
 ## Related Documents
 
+- [[methodology/concepts/entropy-maximization]] — General principle for uncalibrated parameters (this note is a special case)
 - [[methodology/reference/causal-types]] — Type 1/2/3/4 definitions
 - [[methodology/project/open-questions]] — Type 3 calibration as active question
 - [[methodology/concepts/epistemology]] — Intellectual honesty framing

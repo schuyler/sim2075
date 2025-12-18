@@ -22,16 +22,21 @@ Higher-level methodological and structural questions that warrant dedicated expl
 **Status:** Unresolved  
 **Added:** December 2025  
 **Source:** Methodology review  
-**See also:** [[methodology/concepts/small-n-actor-problem]]
+**See also:** [[methodology/concepts/small-n-actor-problem]], [[methodology/concepts/entropy-maximization]]
 
 Type 3 (Contingent) events—Taiwan, climate agreements, great power negotiations—depend on decisions by specific actors in ways that Type 1 base rates and Type 2 pressure accumulation don't capture well.
 
 **Key issues:**
 - The window-resolution structure is reasonable, but calibrating resolution probabilities ("35% military conflict, 25% negotiated accommodation") is essentially geopolitical forecasting
-- Geopolitical forecasting has poor track records
+- Geopolitical forecasting has poor track records (see small-n-actor-problem)
 - How should epistemic humility be reflected in Type 3 specifications?
 
-**Session goal:** Develop guidance for Type 3 calibration that honestly reflects uncertainty about actor decisions.
+**Candidate approaches:**
+- Maximum entropy default (uniform over resolutions) per entropy-maximization principle
+- Scenario-based sensitivity analysis for high-impact Type 3 events
+- Explicit epistemic categorization (well-characterized / partially-understood / unprecedented)
+
+**Session goal:** Develop guidance for Type 3 calibration that honestly reflects uncertainty about actor decisions while remaining operationally useful.
 
 ---
 
