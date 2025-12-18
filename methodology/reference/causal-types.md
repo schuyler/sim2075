@@ -22,6 +22,8 @@ Events are classified by their generative mechanism. **Causal type determines th
 
 **Definition**: Events with relatively stable base rates that occur without clear proximate cause. Timing is unpredictable, but the rate is estimable from history.
 
+**Epistemic note**: Many "Type 1" events may have Type 2 mechanics underneath — volcanic eruptions involve magma pressure accumulation, earthquakes involve tectonic strain. We model them as stochastic because the pressure variables are unobservable, not because no pressure exists. True ontological randomness (no earthly pressure process) may be limited to asteroid impacts and similar exogenous events. See [[methodology/concepts/causal-chain-decomposition]] for fuller treatment.
+
 **Characteristics**:
 - Approximately Poisson-distributed
 - Limited leading indicators
@@ -271,6 +273,7 @@ For hybrids, model the dominant mechanism and note the secondary.
 - [[methodology/concepts/tractability-boundaries]] — What is/isn't tractable to estimate
 - [[methodology/concepts/entropy-maximization]] — Default principle for uncalibrated parameters
 - [[methodology/concepts/small-n-actor-problem]] — Why Type 3 resolutions resist estimation
+- [[methodology/concepts/causal-chain-decomposition]] — Events as multi-stage causal chains; epistemic vs ontological stochasticity
 - [[methodology/concepts/epistemology]] — Intellectual honesty framing
 
 ### Worked Examples

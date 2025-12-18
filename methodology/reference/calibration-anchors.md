@@ -22,7 +22,7 @@ Reference events for calibrating new event specifications. When specifying a new
 
 **Key reference:** [[methodology/reference/causal-types]] for full Type 1/2/3 definitions and decision tree.
 
-**Note on hybrid types:** Many events resist single-type classification because they involve multi-stage causal chains — Type 2 enabling conditions may create windows for Type 3 actor decisions, triggered by Type 1 stochastic events. Where anchors are labeled "Type 1/2" or "Type 2/3", this reflects irreducible hybridity. See [[methodology/concepts/causal-chain-decomposition]] for fuller treatment.
+**Note on hybrid types:** Many events resist single-type classification because they involve multi-stage causal chains — Type 2 enabling conditions may create windows for Type 3 actor decisions, triggered by Type 1 stochastic events. Where anchors are labeled "Type 1/2" or "Type 2/3", this reflects irreducible hybridity. Additionally, many "Type 1" events (volcanoes, earthquakes) may be Type 2 processes with unobservable pressure variables — they're modeled as stochastic because we can't track the pressure, not because no pressure exists. See [[methodology/concepts/causal-chain-decomposition]] for fuller treatment.
 
 ---
 
