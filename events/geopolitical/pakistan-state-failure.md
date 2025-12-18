@@ -1,7 +1,7 @@
 ---
-title: pakistan-state-failure-v2
+title: pakistan-state-failure
 type: note
-permalink: events/geopolitical/pakistan-state-failure-v2
+permalink: events/geopolitical/pakistan-state-failure
 tags:
 - event
 - geopolitical

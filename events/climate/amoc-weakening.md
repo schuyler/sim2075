@@ -1,7 +1,7 @@
 ---
-title: amoc-weakening-v2
+title: amoc-weakening
 type: note
-permalink: events/climate/amoc-weakening-v2
+permalink: events/climate/amoc-weakening
 tags:
 - event
 - climate

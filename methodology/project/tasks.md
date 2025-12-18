@@ -39,7 +39,7 @@ Tasks that must be completed before event specification can proceed correctly. T
 |----------|------|--------|--------------|-------|
 | **1.1** | Write Type 3 calibration guidance | ✅ | — | [[methodology/reference/type-3-calibration]] complete. Worked example: [[events/geopolitical/taiwan-conflict]]. |
 | **1.2** | Update causal-types reference | ✅ | 1.1 | [[methodology/reference/causal-types]] updated. Tractability framing, epistemology links, common mistakes added. |
-| **1.3** | Update probability-estimation reference | 🔲 | — | Add Type-specific guidance (Type 1 base rates, Type 2 pressure functions, Type 3 window/resolution). |
+| **1.3** | Update probability-estimation reference | ✅ | — | Type-specific guidance added for Type 1, Type 2, Type 3. |
 | **1.4** | Update calibration-anchors reference | 🔲 | — | Add causal type classification to historical anchors. |
 | **1.5** | Update factor-loadings reference | 🔲 | — | Clarify factor→state variable interpretation. |
 | **1.6** | Establish research documentation standards | 🔲 | — | Define schemas for source documentation, synthesis structure, citation conventions. Events and entities become ongoing research projects; need norms for how research accumulates and traces to parameter choices. Includes templates for Level 1/2/3 deliverables. |
@@ -156,6 +156,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
+| Dec 2025 | Task 1.3: Update probability-estimation reference | Type-specific guidance for Type 1/2/3; archived v1 event specs |
 | Dec 2025 | Task 1.2: Update causal-types reference | [[methodology/reference/causal-types]] updated with tractability framing, epistemology links |
 | Dec 2025 | Task 1.1: Type 3 calibration guidance | [[methodology/reference/type-3-calibration]]; worked example [[events/geopolitical/taiwan-conflict]] |
 | Dec 2025 | Taiwan Conflict specification | Level 1 complete; [[events/geopolitical/taiwan-conflict]] |
