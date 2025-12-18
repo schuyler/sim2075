@@ -215,6 +215,8 @@ The goal is not to eliminate uncertainty—that's impossible. The goal is to avo
 - [[methodology/concepts/tractability-boundaries]] — When to apply this principle (diagnostic for low-tractability parameters)
 - [[methodology/concepts/small-n-actor-problem]] — Why Type 3 events are particularly resistant to justified deviation
 - [[methodology/concepts/epistemology]] — General intellectual honesty framing
+- [[methodology/reference/causal-types]] — Event type definitions (Type 3 section applies this principle)
+- [[methodology/reference/type-3-calibration]] — Operational guidance applying entropy maximization to Type 3 events
 - [[methodology/reference/factor-correlation-matrix]] — Factor correlations (implicit application of this principle)
 - [[methodology/project/open-questions]] — Type 3 calibration as active question
 

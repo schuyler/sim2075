@@ -36,7 +36,6 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 |----------|---------|
 | [[methodology/reference/causal-types]] | Type 1/2/3 definitions and decision tree |
 | [[methodology/reference/type-3-calibration]] | Type 3 specification guidance |
-| [[methodology/reference/causal-types-updates]] | **STUB** — Planned updates to causal-types |
 | [[methodology/reference/probability-estimation]] | How to estimate probabilities |
 | [[methodology/reference/impact-estimation]] | Impact vectors and durability |
 | [[methodology/reference/durability-types]] | The five durability models |

@@ -148,6 +148,27 @@ type_3_specification:
 
 **Key Insight**: The same window can produce very different outcomes. "Taiwan crisis" is a window; resolution could be war, peaceful accommodation, or status quo. These aren't three separate events—they're three resolutions of one contingent situation.
 
+**Calibration Insight**: Resolution probabilities are inherently difficult to estimate (see [[methodology/concepts/small-n-actor-problem]]). Default to uniform distribution across plausible resolutions; deviation requires explicit structural justification. The value of Type 3 modeling comes from specifying *what follows* each resolution, not from estimating *which* resolution occurs.
+
+### Tractability Note
+
+Type 3 events present a unique calibration challenge. See [[methodology/reference/type-3-calibration]] for full operational guidance.
+
+The core insight: **resolution probabilities are low-tractability** (Small-N Actor Problem); **aftermath consequences are moderate-to-high tractability**.
+
+| Component | Tractability | Default Treatment |
+|-----------|--------------|-------------------|
+| Window preconditions | Moderate | Structural reasoning |
+| Resolution probabilities | Low | Uniform / entropy maximization |
+| Aftermath per resolution | Moderate-High | Invest analytical effort here |
+
+This means: don't agonize over resolution probability estimates. Use uniform distributions unless you have strong structural reasons for asymmetry. Put your effort into specifying what happens *given* each resolution.
+
+For the underlying epistemological framework, see:
+- [[methodology/concepts/tractability-boundaries]] — Why resolution probabilities are low-tractability
+- [[methodology/concepts/entropy-maximization]] — The default principle for intractable parameters
+- [[methodology/concepts/small-n-actor-problem]] — Why small-N actor decisions resist estimation
+
 ---
 
 ## Type 4: S-Curve Dynamics — NOT EVENTS
@@ -235,7 +256,28 @@ For hybrids, model the dominant mechanism and note the secondary.
 | Type 3 without multiple resolutions | Define resolution options (conflict/negotiation/status quo) |
 | Type 1 when pressure clearly accumulates | Reclassify as Type 2 |
 | Treating all state failures as identical | Each has different pressure variables and thresholds |
+| Investing effort in Type 3 resolution probability estimation | Accept uniform default; invest in aftermath specification instead |
 
 ---
 
-*See [[methodology/00-start-here]] for navigation | [[methodology/level-1-workflow]] for production process*
+## Related Documents
+
+### Operational Guidance
+- [[methodology/reference/type-3-calibration]] — Full guidance for Type 3 event specification
+- [[methodology/01-level-1-workflow]] — Step-by-step event production process
+- [[methodology/02-event-template]] — Template for new events
+
+### Epistemological Framework
+- [[methodology/concepts/tractability-boundaries]] — What is/isn't tractable to estimate
+- [[methodology/concepts/entropy-maximization]] — Default principle for uncalibrated parameters
+- [[methodology/concepts/small-n-actor-problem]] — Why Type 3 resolutions resist estimation
+- [[methodology/concepts/epistemology]] — Intellectual honesty framing
+
+### Worked Examples
+- [[events/geopolitical/taiwan-conflict]] — Type 3 worked example
+- [[events/climate/amoc-weakening]] — Type 2 worked example
+- [[events/geopolitical/pakistan-state-failure]] — Type 2 worked example
+
+---
+
+*See [[methodology/00-start-here]] for navigation | [[methodology/01-level-1-workflow]] for production process*
