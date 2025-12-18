@@ -194,3 +194,43 @@ Run simulation with correlation at low/baseline/high to assess impact on tail ou
 
 *See [[methodology/concepts/factor-correlation-structure]] for design rationale*
 *See [[methodology/concepts/gaussian-copula]] for how Ω enters the sampling procedure*
+
+
+---
+
+## Known Limitations and Open Issues
+
+### Double-Counting Correlation
+
+Events can correlate with climate-sensitive outcomes through two channels:
+1. **Direct loading**: Event loads on F_CLIM
+2. **Factor correlation**: Event loads on F_SAS, which correlates with F_CLIM
+
+For an event like Pakistan state failure (loads on both F_SAS at 0.85 and F_CLIM at 0.38), both channels operate simultaneously. This may inflate the effective climate sensitivity beyond what either channel alone would produce.
+
+**Status**: Accepted for now. When more events are specified, compute implied event correlations and verify they remain sensible. If correlations appear inflated, consider reducing either cross-loadings or factor correlations.
+
+### Symmetric Correlation Misrepresents Causal Direction
+
+The matrix treats F_CLIM ↔ F_FOOD as symmetric (0.50 both directions), but the causal relationship is asymmetric: climate stress drives food stress, not the reverse. 
+
+In simulation, a high F_FOOD draw (e.g., from trade disruption) will also tend to produce high F_CLIM draws—implying elevated climate stress when none is warranted.
+
+**Status**: Accepted as inherent limitation of correlation-based approach. The alternative (causal modeling) would require a different architecture entirely. For interpretation, remember that factor correlations represent "tend to co-occur" not "cause each other."
+
+### Transitive Consistency Not Verified
+
+The matrix specifies:
+- F_CLIM ↔ F_FOOD: 0.50
+- F_FOOD ↔ F_MENA: 0.40  
+- F_CLIM ↔ F_MENA: 0.30
+
+These create transitive pathways. The direct F_CLIM ↔ F_MENA correlation (0.30) should be consistent with the indirect path through F_FOOD. The PSD check confirms mathematical validity, but doesn't confirm the correlations tell a coherent causal story.
+
+**Status**: The matrix passed PSD validation with comfortable margin (min eigenvalue 0.20), suggesting no gross inconsistency. Detailed review of transitive implications deferred until more events are specified.
+
+### No Empirical Calibration
+
+All correlations are judgment-based. No historical data on factor co-occurrence was used. This is unavoidable (latent factors aren't directly observable), but means the matrix is speculative.
+
+**Status**: Document reasoning for each correlation; flag high-uncertainty estimates for sensitivity analysis. Accept that this is structured judgment, not empirical estimation.

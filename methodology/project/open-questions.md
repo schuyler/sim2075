@@ -17,23 +17,6 @@ Higher-level methodological and structural questions that warrant dedicated expl
 
 ## Active Questions
 
-### 1. Factor Correlation Structure
-
-**Status:** Unresolved  
-**Added:** December 2025  
-**Source:** Methodology review
-
-The 12-factor model is well-designed conceptually, and the sum-of-squared-loadings constraint ensures valid correlation matrices for individual events. But the correlation structure *between factors themselves* is underspecified.
-
-**Key issues:**
-- If F_CLIM and F_FIN are correlated (climate stress → economic disruption), this should be captured
-- The documents mention a "Gaussian copula" approach but no actual inter-factor correlation matrix exists
-- How should regional factors correlate with global systemic factors?
-
-**Session goal:** Define the factor correlation matrix with explicit rationale for each correlation estimate.
-
----
-
 ### 2. Type 3 Event Calibration
 
 **Status:** Unresolved  
@@ -104,7 +87,36 @@ The collapse-patterns document covers how things fall apart in detail, but recov
 
 ## Resolved Questions
 
-*(Move items here when addressed, with date and resolution summary)*
+### 1. Factor Correlation Structure
+
+**Status:** Resolved  
+**Added:** December 2025  
+**Resolved:** December 2025  
+**Source:** Methodology review
+
+**Original question:** The correlation structure *between factors themselves* was underspecified. Should factors be independent, correlated via a matrix, or structured hierarchically via meta-factors?
+
+**Resolution:** Adopted inter-factor correlation matrix (Ω). 
+
+**Key decisions:**
+- Independent factors underestimate clustering when multiple systemic factors are elevated
+- Meta-factors don't fit our case—the correlations we need are pairwise with specific mechanisms, not manifestations of higher-order constructs
+- Direct correlation matrix is transparent, mechanism-specific, and revisable
+
+**Deliverables:**
+- [[methodology/concepts/gaussian-copula]] — Conceptual foundation for correlated sampling
+- [[methodology/concepts/factor-correlation-structure]] — Design rationale for choosing Ω over alternatives
+- [[methodology/reference/factor-correlation-matrix]] — The 12×12 matrix with 19 non-zero correlations
+
+**Remaining work:**
+- Compute implied event correlations once more events are specified
+- Verify double-counting doesn't inflate correlations unreasonably
+- Sensitivity analysis on key correlations (F_CLIM↔F_FOOD, F_GPT↔F_EAS)
+
+**Known limitations documented in factor-correlation-matrix:**
+- Double-counting through direct loadings + factor correlation
+- Symmetric correlation misrepresents causal direction
+- No empirical calibration (structured judgment only)
 
 ---
 
