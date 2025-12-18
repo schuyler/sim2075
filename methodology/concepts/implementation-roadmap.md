@@ -58,6 +58,12 @@ tags:
 
 6. **Document cascade pathways** without implementing dynamic state feedback within year
 
+7. **Implement aftermath branches (single-branch MVP)**:
+   - Every event with significant persistent effects gets a single-branch aftermath
+   - Structure supports future multi-branch refinement
+   - Simulation tracks active aftermaths and applies factor modifications
+   - See [[methodology/reference/aftermath-branches]] for full specification
+
 ### Limitations Accepted
 
 - State updates still annual (no within-year cascades)
@@ -109,6 +115,7 @@ tags:
 | Type 3 | Two-stage sampling | Same, refined | Low |
 | Type 4 | Removed to baseline | Same | Done in v1.0 |
 | Cascades | Documented only | Implemented | Significant |
+| Aftermath branches | Single-branch MVP | Multi-branch where warranted | Low-Moderate |
 | Time step | Annual | Sub-annual option | Moderate |
 
 ---
@@ -146,6 +153,13 @@ impact_vector:
 durability:
   type: permanent | decaying | maintenance_required | shock_vulnerable | regime_dependent
   parameters: [type-specific]
+
+# Aftermath branches (for events with persistent trajectory effects)
+aftermath_branches:
+  - id: [branch identifier]
+    probability: [0-1, must sum to 1 across branches]
+    factor_modifications: {factor: magnitude}
+    duration: {type, parameters}
 ```
 
 **Remove:**
@@ -184,8 +198,9 @@ Every event in the catalog must have:
    - Actor-specific differentiation
    - Time profile (immediate, delayed, duration)
    - Durability specification
-4. **Cascade documentation** (what state changes condition what other events)
-5. **Uncertainty characterization** (where confidence is low, say so)
+4. **Aftermath branches** (at minimum single-branch for events with persistent effects)
+5. **Cascade documentation** (what state changes condition what other events)
+6. **Uncertainty characterization** (where confidence is low, say so)
 
 ---
 

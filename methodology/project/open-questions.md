@@ -34,23 +34,6 @@ Type 3 (Contingent) events—Taiwan, climate agreements, great power negotiation
 
 ---
 
-### 3. Recovery Dynamics
-
-**Status:** Unresolved  
-**Added:** December 2025  
-**Source:** Methodology review
-
-The collapse-patterns document covers how things fall apart in detail, but recovery trajectories are thinner. If the simulation produces "Pakistan state failure in 2035," what happens next matters for cumulative outcomes.
-
-**Key issues:**
-- Does collapsed state remain collapsed, partially recover, or cascade further?
-- Recovery conditions are listed but not parameterized for simulation
-- Durability types handle impact persistence, but not state recovery trajectories
-
-**Session goal:** Specify recovery dynamics sufficiently for the simulation to model post-collapse trajectories.
-
----
-
 ## Resolved Questions
 
 ### 1. Factor Correlation Structure
@@ -86,7 +69,52 @@ The collapse-patterns document covers how things fall apart in detail, but recov
 
 ---
 
-### 4. Time Horizon Tractability
+### 2. Recovery Dynamics
+
+**Status:** Resolved  
+**Added:** December 2025  
+**Resolved:** December 2025  
+**Source:** Methodology review
+
+**Original question:** The collapse-patterns document covers how things fall apart in detail, but recovery trajectories are thinner. If the simulation produces "Pakistan state failure in 2035," what happens next matters for cumulative outcomes. Does collapsed state remain collapsed, partially recover, or cascade further? Durability types handle impact persistence, but not state recovery trajectories.
+
+**Resolution:** Recovery dynamics are modeled as **event aftermath branches**, not entity regime states or pure impact decay.
+
+**Key decisions:**
+- Aftermath branches are event-attached, not entity-attached—we don't pre-classify entities as "fragile" or "stable"
+- When an event fires, we sample which aftermath branch obtains
+- Each branch specifies ongoing factor modifications and duration/exit conditions
+- This preserves narrative interpretability ("Pakistan state failure, persistent_failure branch") without requiring full entity state machines
+- MVP uses single-branch aftermaths; multi-branch refinement follows sensitivity analysis
+
+**Why not entity regime states:**
+- Entity-attached states require pre-classifying which entities can fail—normatively problematic
+- Event-attached states are more general: any event can have branches if warranted
+- Complexity is local to events that need it, not spread across entity model
+
+**Why not pure impact decay:**
+- Decay captures magnitude attenuation but not qualitative trajectory differences
+- "Pakistan recovered slowly" vs "Pakistan became a persistent failed state" have different ongoing dynamics
+- These differences matter for cascade potential and tail outcomes
+
+**Deliverables:**
+- [[methodology/reference/aftermath-branches]] — Full specification of aftermath branch structure
+- Updates to [[methodology/concepts/state-event-coupling]] — Section on aftermath branches
+- Updates to [[methodology/concepts/implementation-roadmap]] — Aftermath branches in v1.0 scope
+
+**Implementation approach:**
+- v1.0: Single-branch aftermath for events with significant persistent effects
+- Refinement trigger: Sensitivity analysis shows tail outcomes depend on aftermath type
+- v2.0: Multi-branch specifications for high-impact events
+
+**Known limitations:**
+- Single-branch MVP doesn't capture trajectory diversity
+- Multi-branch research is Level 2/3 effort (4-20+ hours per event)
+- Branch probabilities are judgment-based, not empirically calibrated
+
+---
+
+### 3. Time Horizon Tractability
 
 **Status:** Resolved (partial)  
 **Added:** December 2025  
@@ -118,7 +146,7 @@ The collapse-patterns document covers how things fall apart in detail, but recov
 
 ---
 
-### 3. Positive Discontinuity Coverage
+### 4. Positive Discontinuity Coverage
 
 **Status:** Resolved  
 **Added:** December 2025  

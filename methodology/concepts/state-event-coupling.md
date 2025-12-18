@@ -257,6 +257,73 @@ These cascade impacts change state variables that condition other events:
 
 ---
 
+## Aftermath Branches
+
+Cascade effects describe how events change state variables that condition *other* events. But some events also require modeling *which post-event trajectory obtains*—not just what changed, but what kind of aftermath follows.
+
+### The Gap Cascade Effects Don't Fill
+
+Cascade effects handle: "Pakistan state failure → regional instability increases → P(India-Pakistan crisis) rises."
+
+They don't handle: "Did Pakistan gradually recover, persist as a failed state, or fragment entirely?" These represent qualitatively different trajectories with different ongoing dynamics.
+
+### Aftermath Branches as Extended Cascade
+
+Aftermath branches specify:
+- Which post-event trajectories are possible (branches)
+- Probability of each branch
+- Factor modifications for each branch (ongoing, not one-time)
+- Duration and exit conditions
+
+When an event fires, we sample a branch. The branch determines ongoing factor loading modifications that persist until exit conditions are met.
+
+```yaml
+# Simplified example
+aftermath_branches:
+  - id: gradual_recovery
+    probability: 0.35
+    factor_modifications:
+      F_SAS: +0.25
+    duration:
+      type: decaying
+      half_life: 8
+      
+  - id: persistent_failure
+    probability: 0.45
+    factor_modifications:
+      F_SAS: +0.50
+    duration:
+      type: persistent
+      exit_conditions:
+        - annual_probability: 0.03
+```
+
+### Relationship to Type 3 Resolutions
+
+Type 3 events already have resolution branches (what happens when the window resolves). Aftermath branches extend this:
+
+| Concept | When Sampled | What It Determines |
+|---------|--------------|-------------------|
+| Type 3 Resolution | Window resolution | Whether/how event occurs |
+| Aftermath Branch | Event occurrence | What trajectory follows |
+
+Type 3 events can have both: resolution determines the event outcome, aftermath determines what follows that outcome.
+
+### Integration with Simulation Loop
+
+The simulation maintains a list of active aftermaths. Each year:
+1. Evaluate exit conditions for active aftermaths
+2. Remove exited aftermaths
+3. Apply decay to decaying aftermaths
+4. Accumulate factor modifications from all active aftermaths
+5. Adjust factor means before sampling
+
+This creates persistent effects that influence event clustering beyond the initial shock year.
+
+**Full specification**: [[methodology/reference/aftermath-branches]]
+
+---
+
 ## Implementation Phases
 
 ### v1.0: State-Conditioned Multipliers (Current)
