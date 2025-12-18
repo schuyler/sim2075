@@ -84,12 +84,12 @@ This is a "pure Type 2" event — all stages follow threshold/pressure dynamics.
 | Outcome depends on tractable actor choices | Still Type 2 | Mass behavior, market dynamics |
 | Outcome depends on intractable small-N choices | Type 3 | Great power crises, coordinated agreements |
 
-**Pure Type 1 events are rarer than they appear.** Truly stochastic events (Poisson-like arrival, no pressure accumulation) may be limited to:
+**Pure Type 1 events may not exist.** Events that appear truly stochastic (Poisson-like arrival, no observable pressure accumulation) include:
 - Natural disasters (volcanic eruptions, earthquakes, asteroid impacts)
 - Novel pathogen emergence (zoonotic spillover timing)
 - Certain technological breakthroughs (eureka moments)
 
-Many events classified as Type 1 have Type 2 enabling conditions that were overlooked.
+But see "The Epistemic Nature of Type 1" below — these may be Type 2 processes with unobservable pressure variables. What we call "Type 1" may be an epistemic category (we can't see the pressure) rather than an ontological one (no pressure exists).
 
 ---
 
@@ -137,6 +137,64 @@ If Type 3 events share Type 2 enabling conditions, their correlations should ref
 - The factor model partially captures this (both load on F_GPT, F_EAS), but factor loadings were designed for the event-as-unit abstraction
 
 This is related to the double-counting concern in [[methodology/project/tasks]] (Task 3.2).
+
+---
+
+## The Epistemic Nature of Type 1
+
+A further refinement: many apparently Type 1 events may be Type 2 processes with **unobservable pressure variables**.
+
+### The Pinatubo Example
+
+Mount Pinatubo (1991) appears stochastic from the surface. But underground:
+- Magma accumulated in the chamber over centuries
+- Pressure built against the rock cap
+- A threshold was crossed when pressure exceeded containment strength
+- Eruption followed
+
+This is textbook Type 2 dynamics — pressure accumulation toward threshold, then rapid transition. It only *appears* Type 1 because the pressure variables (magma volume, chamber pressure, rock integrity) are invisible until days before eruption.
+
+### Generalization
+
+| Apparent Type 1 | Hidden Type 2 mechanism |
+|-----------------|-------------------------|
+| Volcanic eruption | Magma pressure accumulation |
+| Earthquake | Tectonic strain accumulation along fault |
+| Novel pandemic | Viral evolution toward human transmissibility; habitat encroachment increasing spillover probability |
+| Technology breakthrough | Capability accumulation across research frontier; threshold = sufficient pieces in place |
+
+The "Poisson-like arrival" we observe may be the visible signature of many independent Type 2 processes whose pressure variables we cannot track, crossing their thresholds at times that appear random to us.
+
+### Implication
+
+**The Type 1/Type 2 distinction is epistemic, not ontological.** 
+
+- Type 2: Pressure variables are observable; we can (in principle) estimate proximity to threshold
+- Type 1: Pressure variables are unobservable; we can only estimate base rates from historical frequency
+
+This doesn't change how we *model* Type 1 events — we still use historical base rates because that's the information we have. But it reframes the taxonomy:
+
+| Type | Ontology | Epistemology |
+|------|----------|--------------|
+| **Type 1** | May be Type 2 underneath | Pressure unobservable → model as stochastic |
+| **Type 2** | Pressure → threshold → transition | Pressure observable → model accumulation |
+| **Type 3** | Type 2 enabling + small-N resolution | Window observable, resolution intractable |
+
+"Type 1" is not a claim about how the world works. It's a claim about the limits of our observation: *we cannot see the pressure building, so we treat arrival as random*.
+
+### Practical Consequence
+
+When specifying a "Type 1" event, ask:
+1. Is there a plausible hidden pressure mechanism?
+2. Are *any* proxy variables observable that might indicate pressure?
+3. If proxies exist, should this be reclassified as Type 2?
+
+Example: Pandemic emergence looks Type 1, but:
+- Deforestation rates (habitat encroachment) are observable
+- Wet market activity is observable  
+- Lab biosafety incidents are partially observable
+
+A sophisticated model might treat pandemic risk as Type 2 with these pressure variables, rather than pure Type 1 with fixed base rate. For v1.0 we use Type 1, but this is a simplification, not a fact about the world.
 
 ---
 
