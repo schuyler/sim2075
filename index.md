@@ -35,7 +35,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | Document | Purpose |
 |----------|---------|
 | [[methodology/reference/causal-types]] | Type 1/2/3 definitions and decision tree |
-| [[methodology/reference/type-3-calibration]] | **STUB** — Type 3 specification guidance |
+| [[methodology/reference/type-3-calibration]] | Type 3 specification guidance |
 | [[methodology/reference/causal-types-updates]] | **STUB** — Planned updates to causal-types |
 | [[methodology/reference/probability-estimation]] | How to estimate probabilities |
 | [[methodology/reference/impact-estimation]] | Impact vectors and durability |
@@ -123,7 +123,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | Event | Type | Annual Prob | Status |
 |-------|------|-------------|--------|
 | [[events/geopolitical/pakistan-state-failure]] | Type 2 | ~1.5% | Level 1 complete |
-| Taiwan Conflict | Type 3 | TBD | Not started |
+| [[events/geopolitical/taiwan-conflict]] | Type 3 | ~3% window | Level 1 complete |
 | Egypt State Failure | Type 2 | TBD | Not started |
 | Sahel Catastrophe | Type 2 | TBD | Not started |
 

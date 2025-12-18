@@ -37,11 +37,12 @@ Tasks that must be completed before event specification can proceed correctly. T
 
 | Priority | Task | Status | Dependencies | Notes |
 |----------|------|--------|--------------|-------|
-| **1.1** | Write Type 3 calibration guidance | 🔲 | — | [[methodology/reference/type-3-calibration]] (stub). Synthesize tractability-boundaries, entropy-maximization, small-n-actor-problem into operational guidance. Key insight: uniform resolution probs, invest in aftermath specification. |
+| **1.1** | Write Type 3 calibration guidance | ✅ | — | [[methodology/reference/type-3-calibration]] complete. Worked example: [[events/geopolitical/taiwan-conflict]]. |
 | **1.2** | Update causal-types reference | 🔲 | 1.1 | [[methodology/reference/causal-types-updates]] (plan). Incorporate tractability framing into Type 3 section. Link to new epistemology notes. |
 | **1.3** | Update probability-estimation reference | 🔲 | — | Add Type-specific guidance (Type 1 base rates, Type 2 pressure functions, Type 3 window/resolution). |
 | **1.4** | Update calibration-anchors reference | 🔲 | — | Add causal type classification to historical anchors. |
 | **1.5** | Update factor-loadings reference | 🔲 | — | Clarify factor→state variable interpretation. |
+| **1.6** | Establish research documentation standards | 🔲 | — | Define schemas for source documentation, synthesis structure, citation conventions. Events and entities become ongoing research projects; need norms for how research accumulates and traces to parameter choices. Includes templates for Level 1/2/3 deliverables. |
 
 **Rationale for ordering:**
 - 1.1 blocks Type 3 event specification (Taiwan, climate agreements, etc.)
@@ -58,7 +59,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 
 | Priority | Event | Type | Status | Dependencies | Notes |
 |----------|-------|------|--------|--------------|-------|
-| **2.1.1** | Taiwan Conflict | Type 3 | 🔲 | 1.1, 1.2 | First Type 3 event; test calibration guidance |
+| **2.1.1** | Taiwan Conflict | Type 3 | ✅ | — | Level 1 complete; [[events/geopolitical/taiwan-conflict]] |
 | **2.1.2** | Severe Pandemic | Type 1 | 🔲 | 1.3 | First pure Type 1 event; historical base rate exists |
 | **2.1.3** | Global Financial Crisis | Type 1/2 | 🔲 | 1.3 | Hybrid type; historical frequency known |
 | **2.1.4** | Amazon Tipping Point | Type 2 | 🔲 | — | Scientific literature provides guidance |
@@ -155,6 +156,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
+| Dec 2025 | Task 1.1: Type 3 calibration guidance | [[methodology/reference/type-3-calibration]]; worked example [[events/geopolitical/taiwan-conflict]] |
 | Dec 2025 | AMOC Weakening specification | Level 1 complete |
 | Dec 2025 | Pakistan State Failure specification | Level 1 complete |
 | Dec 2025 | Factor correlation matrix (Ω) | 12×12 matrix specified |
