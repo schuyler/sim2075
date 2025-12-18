@@ -41,7 +41,20 @@ Tasks that must be completed before event specification can proceed correctly. T
 | **1.2** | Update causal-types reference | ✅ | 1.1 | [[methodology/reference/causal-types]] updated. Tractability framing, epistemology links, common mistakes added. |
 | **1.3** | Update probability-estimation reference | ✅ | — | Type-specific guidance added for Type 1, Type 2, Type 3. |
 | **1.4** | Update calibration-anchors reference | ✅ | — | Historical reference events typed; new anchors added (Oil Shock, Volcanic, Breakthrough). |
-| **1.5** | Update factor-loadings reference | ✅ | — | Factor→state variable categories mapping added with cross-references. |
+| **1.5** | Update factor-loadings reference | 🟡 | — | Initial mapping complete (commit 83a57b7). Revisions needed per self-critique below. |
+
+#### Task 1.5 Sub-tasks (Revisions)
+
+Self-critique identified that the initial implementation treats factors as if they "shock" state variables, but factors are latent constructs (dimensionality reduction for correlated event sampling), not causal agents. The relationship is: `Latent Factor → (unobserved mechanism) → Observable State Variables`. Revisions needed:
+
+| Sub-task | Status | Description |
+|----------|--------|-------------|
+| **1.5.1** | 🔲 | Add worked example tracing from event (e.g., Egypt state failure) through factor loadings to state variable impacts |
+| **1.5.2** | 🔲 | Use hybrid format: keep summary table, add paragraph per factor explaining causal pathway |
+| **1.5.3** | 🔲 | Separate "indicator variables" (what we observe to infer factor state) from "affected variables" (what changes when factor-correlated events occur) |
+| **1.5.4** | 🔲 | Verify cross-references against actual document headings in state-specification |
+| **1.5.5** | 🔲 | Include specific variable IDs (at least most important ones) rather than only categories |
+
 | **1.6** | Establish research documentation standards | 🔲 | — | Define schemas for source documentation, synthesis structure, citation conventions. Events and entities become ongoing research projects; need norms for how research accumulates and traces to parameter choices. Includes templates for Level 1/2/3 deliverables. |
 
 **Rationale for ordering:**
@@ -156,7 +169,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
-| Dec 2025 | Task 1.5: Update factor-loadings reference | Factor→state variable categories mapping; cross-references to state-specification |
+| Dec 2025 | Task 1.5: Update factor-loadings reference | Initial implementation complete; **reopened** for revisions per self-critique (see sub-tasks 1.5.1-1.5.5) |
 | Dec 2025 | Task 1.4: Update calibration-anchors reference | Historical events typed; Oil Shock, Volcanic, Breakthrough anchors added |
 | Dec 2025 | Task 1.3: Update probability-estimation reference | Type-specific guidance for Type 1/2/3; archived v1 event specs |
 | Dec 2025 | Task 1.2: Update causal-types reference | [[methodology/reference/causal-types]] updated with tractability framing, epistemology links |
