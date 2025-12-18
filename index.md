@@ -51,6 +51,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/concepts/state-event-coupling]] | Factor-state-event architecture |
 | [[methodology/concepts/implementation-roadmap]] | v1.0 vs v2.0 phases |
 | [[methodology/concepts/monte-carlo-framework]] | Simulation architecture |
+| [[methodology/concepts/gaussian-copula]] | How correlated event sampling works |
 | [[methodology/concepts/epistemology]] | Intellectual honesty framing |
 
 ### Project Management
