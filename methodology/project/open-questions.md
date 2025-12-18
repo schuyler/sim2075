@@ -51,24 +51,7 @@ The priority event list of 20 events includes no breakthrough energy deployment,
 
 ---
 
-### 4. Time Horizon Tractability
-
-**Status:** Unresolved  
-**Added:** December 2025  
-**Source:** Methodology review
-
-The 50-year horizon (to 2075) strains the methodology. Most calibration anchors (Venezuela, Syria, 2008 GFC) cover 5-15 year windows. Compounding uncertainty over 50 years produces extremely wide distributions.
-
-**Key issues:**
-- Are 50-year distributions decision-relevant, or just noise?
-- Should 2050 (25 years) be the primary horizon with 2075 as secondary?
-- How should confidence intervals widen with time, and does the model capture this correctly?
-
-**Session goal:** Evaluate whether the time horizon should be adjusted; if not, clarify how to interpret very-long-term distributions.
-
----
-
-### 5. Recovery Dynamics
+### 4. Recovery Dynamics
 
 **Status:** Unresolved  
 **Added:** December 2025  
@@ -117,6 +100,38 @@ The collapse-patterns document covers how things fall apart in detail, but recov
 - Double-counting through direct loadings + factor correlation
 - Symmetric correlation misrepresents causal direction
 - No empirical calibration (structured judgment only)
+
+---
+
+### 4. Time Horizon Tractability
+
+**Status:** Resolved (partial)  
+**Added:** December 2025  
+**Resolved:** December 2025  
+**Source:** Methodology review
+
+**Original question:** The 50-year horizon (to 2075) strains the methodology. Calibration anchors cover 5-15 year windows. Are 50-year distributions decision-relevant or just noise? Should 2050 be primary?
+
+**Resolution:** Adopted dual-horizon interpretation. Simulation runs through 2075; interpretation distinguishes decision-relevant from exploratory horizons.
+
+**Key decisions:**
+- Truncating at 2050 would systematically underweight slow-burn discontinuities (climate tipping points, demographic crunches, institutional decay, climate migration) in favor of acute shocks
+- 50-year distributions are not decision-relevant in the policy sense, but are useful for tail exploration—understanding which cascade patterns produce civilizational-scale disruption
+- Report distributions at multiple horizons (2035, 2050, 2075) with explicit confidence degradation at longer horizons
+
+**Interpretation framework:**
+- **2050 (25 years):** Primary horizon for decision-relevant claims. Outer bound of meaningful action-consequence linkage.
+- **2075 (50 years):** Horizon for tail exploration. "What fraction of trajectories lead to catastrophic outcomes?" Not forecasting—exploring possibility space.
+
+**Deferred to implementation (Phase 2):**
+- How confidence intervals widen mechanically with time horizon
+- Whether Monte Carlo variance growth naturally produces appropriate uncertainty, or whether epistemic uncertainty needs separate modeling
+- Validation that longer-horizon outputs aren't false precision
+
+**Known limitations:**
+- "Tail exploration" is interpretively useful but not rigorously defined
+- No formal confidence degradation model yet
+- Calibration anchors remain 5-15 year phenomena; extrapolation to 50 years is acknowledged weakness
 
 ---
 
