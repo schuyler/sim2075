@@ -19,10 +19,10 @@ Higher-level methodological and structural questions that warrant dedicated expl
 
 ### 2. Type 3 Event Calibration
 
-**Status:** Unresolved  
+**Status:** Unresolved → Near Resolution  
 **Added:** December 2025  
 **Source:** Methodology review  
-**See also:** [[methodology/concepts/small-n-actor-problem]], [[methodology/concepts/entropy-maximization]]
+**See also:** [[methodology/concepts/small-n-actor-problem]], [[methodology/concepts/entropy-maximization]], [[methodology/concepts/tractability-boundaries]]
 
 Type 3 (Contingent) events—Taiwan, climate agreements, great power negotiations—depend on decisions by specific actors in ways that Type 1 base rates and Type 2 pressure accumulation don't capture well.
 
@@ -31,10 +31,25 @@ Type 3 (Contingent) events—Taiwan, climate agreements, great power negotiation
 - Geopolitical forecasting has poor track records (see small-n-actor-problem)
 - How should epistemic humility be reflected in Type 3 specifications?
 
-**Candidate approaches:**
-- Maximum entropy default (uniform over resolutions) per entropy-maximization principle
-- Scenario-based sensitivity analysis for high-impact Type 3 events
-- Explicit epistemic categorization (well-characterized / partially-understood / unprecedented)
+**Progress (December 2025):**
+
+Three foundational concept notes now frame the problem:
+- **tractability-boundaries** — Resolution probabilities are low-tractability; aftermath consequences are moderate-to-high tractability
+- **entropy-maximization** — Default to uniform resolution probabilities; deviation requires explicit justification
+- **small-n-actor-problem** — Why resolution probabilities resist estimation (no base rates, context-dependence, strategic interaction, unobservable preferences)
+
+**Key insight:** The modeling effort should shift from estimating resolution probabilities (intractable) to specifying aftermath consequences (more tractable). "What happens if conflict occurs" is more answerable than "will conflict occur."
+
+**Candidate approach:**
+1. Maximum entropy default (uniform over resolutions)
+2. Invest analytical effort in aftermath branch specification
+3. Scenario-based sensitivity analysis for high-impact Type 3 events
+4. Report results conditionally ("if conflict, then X; if accommodation, then Y")
+
+**Remaining work:**
+- Write Type 3 calibration guidance document synthesizing the above
+- Update causal-types reference to incorporate this framing
+- Apply to first Type 3 event specification (Taiwan)
 
 **Session goal:** Develop guidance for Type 3 calibration that honestly reflects uncertainty about actor decisions while remaining operationally useful.
 

@@ -72,3 +72,15 @@ Before finalizing any specification, ask:
 - Could another analyst understand and critique this?
 
 If no to any of these, revise until yes.
+
+---
+
+## Related Documents
+
+- [[methodology/concepts/tractability-boundaries]] — Operationalizes these principles: what can vs. cannot be reasoned about
+- [[methodology/concepts/entropy-maximization]] — What to do when parameters cannot be calibrated
+- [[methodology/concepts/small-n-actor-problem]] — A specific class of intractability (Type 3 events)
+
+---
+
+*See [[methodology/00-start-here]] for navigation*
