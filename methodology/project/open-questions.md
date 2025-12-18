@@ -21,7 +21,8 @@ Higher-level methodological and structural questions that warrant dedicated expl
 
 **Status:** Unresolved  
 **Added:** December 2025  
-**Source:** Methodology review
+**Source:** Methodology review  
+**See also:** [[methodology/concepts/small-n-actor-problem]]
 
 Type 3 (Contingent) events—Taiwan, climate agreements, great power negotiations—depend on decisions by specific actors in ways that Type 1 base rates and Type 2 pressure accumulation don't capture well.
 

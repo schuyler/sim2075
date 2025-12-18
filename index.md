@@ -56,6 +56,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/concepts/gaussian-copula]] | How correlated event sampling works |
 | [[methodology/concepts/factor-correlation-structure]] | Why factors are correlated, not independent |
 | [[methodology/concepts/epistemology]] | Intellectual honesty framing |
+| [[methodology/concepts/small-n-actor-problem]] | Why Type 3 resolution probabilities are intractable |
 
 ### Project Management
 
