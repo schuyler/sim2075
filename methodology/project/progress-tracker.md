@@ -47,7 +47,10 @@ Tracks event specification progress and methodology documentation status.
 |----------|--------|-------|
 | [[methodology/reference/probability-estimation]] | ⚠️ Needs update | Add Type-specific guidance |
 | [[methodology/reference/factor-loadings]] | ⚠️ Needs update | Factor→state interpretation |
+| [[methodology/reference/factor-correlation-matrix]] | ✅ Complete | 12×12 Ω matrix specified; validation deferred to Phase 3 |
 | [[methodology/reference/calibration-anchors]] | ⚠️ Needs update | Add causal type classification |
+| [[methodology/concepts/gaussian-copula]] | ✅ Complete | Conceptual foundation for correlated sampling |
+| [[methodology/concepts/factor-correlation-structure]] | ✅ Complete | Design rationale for Ω vs alternatives |
 | [[methodology/concepts/epistemology]] | ✅ Complete | No changes needed |
 | [[methodology/project/research-tiers]] | ✅ Complete | No changes needed |
 | [[methodology/project/validation]] | ✅ Complete | No changes needed |

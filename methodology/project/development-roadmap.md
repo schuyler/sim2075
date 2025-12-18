@@ -213,7 +213,14 @@ For runs in the worst 5% of outcomes (by various metrics):
 - Which latent factors (F_CLIM, F_FIN, F_GPT, etc.) drive worst outcomes?
 - How much does factor correlation contribute to tail risk vs. independent sampling?
 
-#### 3.4 Country/Variable Importance
+#### 3.4 Factor Correlation Matrix Validation
+- **Proxy variable analysis**: Compute historical correlations between observable proxies for each factor (e.g., temperature anomaly for F_CLIM, FAO Food Price Index for F_FOOD, VIX for F_FIN). Compare to specified factor correlations—are we in the right ballpark?
+- **Historical cluster analysis**: Examine historical "bad years" (2008-2009, 2010-2011, 2020) and check whether our correlation structure would predict observed factor clustering.
+- **Implied event correlation review**: With the full event catalog, compute Σ_events = ΛΩΛ' + Ψ and verify implied event correlations are sensible. Check for double-counting inflation from events that load on correlated factors.
+
+See [[methodology/reference/factor-correlation-matrix]] for the current matrix and known limitations.
+
+#### 3.5 Country/Variable Importance
 - Which country trajectories are most predictive of global outcomes?
 - Which variables explain most variance in outcomes?
 - Where is model under-specified (outcomes depend on unmodeled dynamics)?
@@ -306,6 +313,12 @@ Limited backtesting possible for:
 - Frequency of events (do historical base rates match our estimates?)
 - Correlation patterns (do crises cluster as modeled?)
 - Impact magnitudes (do historical shocks match our impact vectors?)
+
+#### Factor Correlation Validation
+If Phase 3 proxy analysis reveals significant discrepancies between specified factor correlations and historical proxy correlations:
+- Revise correlation estimates for high-sensitivity correlations
+- Document rationale for any estimates that deliberately diverge from historical patterns (e.g., if climate-food linkage is expected to strengthen)
+- Re-validate positive semi-definiteness after revisions
 
 ### 5.4 Expert Review
 - Review output distributions with domain experts
