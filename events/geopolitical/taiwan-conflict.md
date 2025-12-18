@@ -192,8 +192,24 @@ aftermath_branches:
     cascade_triggers:
       - event_id: us_china_direct_conflict
         window_opens: true
-        probability: 0.60
-        rationale: "US treaty ambiguity but strong political pressure for response"
+        probability: 0.50
+        probability_rationale: |
+          US intervention is a small-N actor decision (presidential/congressional choice)
+          with the same intractability as resolution probabilities.
+          
+          Structural factors toward intervention:
+          - Taiwan Relations Act creates political/legal pressure
+          - Alliance credibility concerns (Japan, Korea, Philippines watching)
+          - Domestic political pressure if invasion is televised
+          
+          Structural factors against intervention:
+          - Nuclear escalation risk with peer adversary
+          - Economic interdependence costs
+          - War-weariness, competing priorities
+          
+          No clear structural asymmetry identified. Defaulting to 0.50 per entropy
+          maximization. Subject to sensitivity analysis — if tail outcomes are
+          highly sensitive to this parameter, report results conditionally.
       - event_id: korean_peninsula_crisis
         probability_modifier: 1.5
         rationale: "North Korea may see opportunity during US distraction"

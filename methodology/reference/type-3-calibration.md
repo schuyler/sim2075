@@ -141,7 +141,78 @@ resolutions:
         # ...
 ```
 
-Note: Aftermath branch probabilities *within* a resolution are also subject to entropy maximization, but often have more structural grounding than the resolution itself.
+### Aftermath Probability Limits
+
+Aftermath branch probabilities have **more structural grounding** than resolution probabilities — military logistics, escalation dynamics, supply chain constraints, and historical precedent provide traction. But they are not fully tractable. The same epistemic discipline applies, with relaxed limits.
+
+**Default**: When structural reasoning doesn't clearly differentiate branches, use uniform or near-uniform probabilities.
+
+**Deviation limits**: Cap at **3:1 ratios** without strong structural justification. This is more permissive than the 2:1 limit for resolution probabilities, reflecting the higher tractability.
+
+| Branches | Uniform | Maximum Deviation |
+|----------|---------|-------------------|
+| 2 branches | 50/50 | 75/25 |
+| 3 branches | 33/33/33 | 60/20/20 or similar |
+
+**What justifies deviation**:
+
+| Justification Type | Example | Validity |
+|--------------------|---------|----------|
+| Military logistics | "Amphibious assault requires 6 months preparation; blockade can begin immediately" | Valid — observable constraint |
+| Escalation dynamics | "Limited conflict preserves off-ramps; full invasion forecloses them" | Valid — structural asymmetry |
+| Precedent analysis | "Historical blockades rarely escalate to invasion within 6 months" | Partially valid — context may differ |
+| Expert intuition | "Analysts believe full invasion is unlikely" | Invalid — same problem as resolution probabilities |
+
+**Documentation requirement**: Same as resolution probabilities. Every non-uniform aftermath specification needs a rationale block:
+
+```yaml
+aftermath_probability_rationale:
+  default: "uniform (50/50)"
+  specified: "70/30"
+  justification: |
+    [Specific structural reasoning]
+  confidence: "weak/moderate"
+```
+
+### Cascade Trigger Probabilities
+
+Aftermath branches may specify **cascade triggers** — other events whose windows open or whose probabilities increase as a consequence. Some cascade triggers involve small-N actor decisions.
+
+**Example**: "If full Taiwan invasion occurs, what is the probability the US enters direct military conflict?"
+
+This is a small-N decision (US leadership choosing intervention). The same intractability applies:
+- No base rate for "US military intervention in Taiwan conflict"
+- Radical context-dependence (who is president, domestic political situation, alliance posture)
+- Strategic interaction (intervention decision affects PRC decisions, which affect intervention calculus)
+
+**Treatment**: Cascade trigger probabilities involving actor decisions receive the **same entropy-maximization treatment** as resolution probabilities.
+
+| Cascade Type | Tractability | Treatment |
+|--------------|--------------|-----------|
+| Structural/automatic | High | Specify based on mechanism (e.g., "supply chain disruption triggers shortages") |
+| Actor decision (single) | Low | Default toward 50%, cap deviation at 2:1 |
+| Actor decision (multiple parties) | Very Low | Default toward uniform across plausible responses |
+
+**Documentation requirement**: Cascade triggers involving actor decisions must include rationale:
+
+```yaml
+cascade_triggers:
+  - event_id: us_china_direct_conflict
+    window_opens: true
+    probability: 0.50
+    probability_rationale: |
+      US intervention is a small-N actor decision with low tractability.
+      Structural factors that might push toward intervention:
+      - Taiwan Relations Act creates political pressure
+      - Credibility concerns vis-à-vis other allies
+      Structural factors that might push against:
+      - Nuclear escalation risk
+      - Economic interdependence costs
+      No clear structural asymmetry; defaulting to 50%.
+      Subject to sensitivity analysis.
+```
+
+**Common mistake**: Treating cascade triggers as "downstream consequences" exempt from epistemic discipline. They are not. If the trigger depends on an actor decision, the intractability follows the decision, not the event structure.
 
 ### Link to Aftermath Framework
 
@@ -283,7 +354,11 @@ aftermath_branches:
     triggers:
       - event: us_china_direct_conflict
         window_opens: true
-        probability: 0.60
+        probability: 0.50
+        probability_rationale: |
+          US intervention is small-N actor decision; same intractability applies.
+          No clear structural asymmetry — defaulting to 0.50.
+          See full specification for detailed reasoning.
     impact_vector:
       global.semiconductor_supply: -0.95
       global.trade_volume: -0.40
@@ -407,6 +482,7 @@ Before finalizing a Type 3 event:
 - [ ] Aftermath branches include factor modifications, duration, and impact vectors
 - [ ] Aftermath probability rationale documents structural reasoning
 - [ ] High-consequence branches include cascade triggers where appropriate
+- [ ] Cascade trigger probabilities involving actor decisions use entropy maximization (default ~50%, documented rationale for deviation)
 
 ---
 
