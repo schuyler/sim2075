@@ -157,6 +157,7 @@ Tasks moved here when done, with completion date.
 | Date | Task | Notes |
 |------|------|-------|
 | Dec 2025 | Task 1.1: Type 3 calibration guidance | [[methodology/reference/type-3-calibration]]; worked example [[events/geopolitical/taiwan-conflict]] |
+| Dec 2025 | Taiwan Conflict specification | Level 1 complete; [[events/geopolitical/taiwan-conflict]] |
 | Dec 2025 | AMOC Weakening specification | Level 1 complete |
 | Dec 2025 | Pakistan State Failure specification | Level 1 complete |
 | Dec 2025 | Factor correlation matrix (Ω) | 12×12 matrix specified |
