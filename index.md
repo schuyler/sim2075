@@ -64,7 +64,8 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 
 | Document | Purpose |
 |----------|---------|
-| [[methodology/project/progress-tracker]] | What's done, what's next |
+| [[methodology/project/tasks]] | **Actionable development tasks** — start here for next work |
+| [[methodology/project/progress-tracker]] | Event specification status |
 | [[methodology/project/open-questions]] | Methodological issues to explore |
 | [[methodology/project/research-tiers]] | Level 1/2/3 research definitions |
 | [[methodology/project/development-roadmap]] | Overall development plan |
