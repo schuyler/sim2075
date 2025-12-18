@@ -22,6 +22,8 @@ Reference events for calibrating new event specifications. When specifying a new
 
 **Key reference:** [[methodology/reference/causal-types]] for full Type 1/2/3 definitions and decision tree.
 
+**Note on hybrid types:** Many events resist single-type classification because they involve multi-stage causal chains — Type 2 enabling conditions may create windows for Type 3 actor decisions, triggered by Type 1 stochastic events. Where anchors are labeled "Type 1/2" or "Type 2/3", this reflects irreducible hybridity. See [[methodology/concepts/causal-chain-decomposition]] for fuller treatment.
+
 ---
 
 ## Anchor Index by Causal Type
@@ -495,6 +497,7 @@ In your event specification, explicitly note:
 - [[methodology/reference/impact-estimation]] — Impact vector specification
 - [[methodology/reference/durability-types]] — The five durability models
 - [[methodology/reference/priority-event-ranking]] — Cross-check probability rankings
+- [[methodology/concepts/causal-chain-decomposition]] — Why many events resist single-type classification; events as multi-stage causal chains
 
 ---
 

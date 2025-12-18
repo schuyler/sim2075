@@ -60,6 +60,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/concepts/tractability-boundaries]] | What we can vs. cannot reason about structurally |
 | [[methodology/concepts/entropy-maximization]] | Default to maximum entropy for uncalibrated parameters |
 | [[methodology/concepts/small-n-actor-problem]] | Why Type 3 resolution probabilities are intractable |
+| [[methodology/concepts/causal-chain-decomposition]] | Events as multi-stage causal chains with different types per stage |
 
 ### Project Management
 
