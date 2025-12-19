@@ -115,8 +115,8 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | Event | Type | Annual Prob | Status |
 |-------|------|-------------|--------|
 | [[events/climate/amoc-weakening]] | Type 2 | ~1.0% | Level 1 complete |
-| Amazon Tipping Point | Type 2 | TBD | Not started |
-| Permafrost Methane Release | Type 2 | TBD | Not started |
+| [[events/climate/amazon-tipping-point]] | Type 2 | ~2.0% | Level 1 complete |
+| [[events/climate/permafrost-methane-release]] | Type 2 | ~1.5% | Level 1 complete |
 
 ### Geopolitical Events
 
@@ -124,21 +124,22 @@ Events organized by domain. Each specifies causal type, probability, factor load
 |-------|------|-------------|--------|
 | [[events/geopolitical/pakistan-state-failure]] | Type 2 | ~1.5% | Level 1 complete |
 | [[events/geopolitical/taiwan-conflict]] | Type 3 | ~3% window | Level 1 complete |
-| Egypt State Failure | Type 2 | TBD | Not started |
+| [[events/geopolitical/egypt-state-failure]] | Type 2 | ~1.5% | Level 1 complete |
+| [[events/geopolitical/russia-state-failure]] | Type 2 | ~1.2% | Level 1 complete |
 | Sahel Catastrophe | Type 2 | TBD | Not started |
 
 ### Financial Events
 
 | Event | Type | Annual Prob | Status |
 |-------|------|-------------|--------|
-| Global Financial Crisis | Type 1/2 | TBD | Not started |
+| [[events/financial/global-financial-crisis]] | Type 1/2 | ~3.0% | Level 1 complete |
 | Dollar Reserve Crisis | Type 2 | TBD | Not started |
 
 ### Health Events
 
 | Event | Type | Annual Prob | Status |
 |-------|------|-------------|--------|
-| Severe Pandemic | Type 1 | TBD | Not started |
+| [[events/health/severe-pandemic]] | Type 1 | ~2.0% | Level 1 complete |
 
 ### Breakthrough Events (Type 1)
 

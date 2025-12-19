@@ -78,7 +78,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.1.4** | Amazon Tipping Point | Type 2 | ✅ | — | Level 1 complete; [[events/climate/amazon-tipping-point]] |
 | **2.1.5** | Permafrost Methane Release | Type 2 | ✅ | — | Level 1 complete; [[events/climate/permafrost-methane-release]] |
 | **2.1.6** | Egypt State Failure | Type 2 | ✅ | — | Level 1 complete; [[events/geopolitical/egypt-state-failure]] |
-| **2.1.7** | Russia State Failure | Type 2 | 🔲 | — | |
+| **2.1.7** | Russia State Failure | Type 2 | 🟡 | — | Draft created; [[events/geopolitical/russia-state-failure]] |
 | **2.1.8** | Saudi Regime Instability | Type 2 | 🔲 | — | |
 | **2.1.9** | Iran Regime Change | Type 2/3 | 🔲 | 1.1 | May have Type 3 elements |
 | **2.1.10** | Turkey Political Crisis | Type 2 | 🔲 | — | |
