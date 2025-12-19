@@ -125,7 +125,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | [[events/geopolitical/pakistan-state-failure]] | Type 2 | ~1.5% | Level 1 complete |
 | [[events/geopolitical/taiwan-conflict]] | Type 3 | ~3% window | Level 1 complete |
 | [[events/geopolitical/egypt-state-failure]] | Type 2 | ~1.5% | Level 1 complete |
-| [[events/geopolitical/russia-state-failure]] | Type 2 | ~1.2% | Level 1 complete |
+| [[events/geopolitical/russia-state-failure]] | Type 2 | ~1.0% | Level 1 complete |
 | Sahel Catastrophe | Type 2 | TBD | Not started |
 
 ### Financial Events

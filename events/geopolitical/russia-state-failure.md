@@ -102,11 +102,11 @@ A succession crisis alone could trigger state failure even if other pressures ar
 
 | Metric | Value |
 |--------|-------|
-| **Annual probability (current pressure)** | 1.2% |
-| **Low bound** | 0.6% |
-| **High bound** | 2.0% |
+| **Annual probability (current pressure)** | 1.0% |
+| **Low bound** | 0.5% |
+| **High bound** | 1.8% |
 | **Confidence** | Medium-Low |
-| **25-year cumulative** | ~26% at point estimate |
+| **25-year cumulative** | ~22% at point estimate |
 
 ### Current Pressure Estimate
 
@@ -124,7 +124,7 @@ Current pressure: ~50/100 (elevated but below threshold)
    - *Stabilizing*: Strong security services; nuclear deterrent prevents external regime change; resource wealth provides cushion; population politically passive
    - *Destabilizing*: Ongoing war of choice; unprecedented sanctions; demographic collapse; succession uncertainty; regional/ethnic fault lines
 3. **Comparative assessment**: More resilient than late-Soviet state (no ideological collapse, stronger security apparatus) but facing sustained external pressure Soviet Union didn't face
-4. **Central estimate**: 1.2%/year (range 0.6-2.0%)
+4. **Central estimate**: 1.0%/year (range 0.5-1.8%)
 
 ### Comparative Ranking
 
@@ -133,7 +133,7 @@ Per [[methodology/reference/priority-event-ranking]]:
 - Less likely than: Pakistan state failure (~1.5%), Egypt state failure (~1.5%)
 - More likely than: China political crisis (~0.8%)
 
-Russia's coercive apparatus is more effective than Pakistan's or Egypt's fractured systems, but war exhaustion and succession risk are unique destabilizers.
+Russia's coercive apparatus is more effective than Pakistan's or Egypt's fractured systems. War exhaustion and succession risk are destabilizers, but the probability here represents *actual state failure*—not mere regime transition, which occurs without the event firing.
 
 ### Key Uncertainties
 
@@ -178,40 +178,22 @@ Factors shock state variables that feed into pressure function:
 
 ## Severity Branches
 
-Once threshold is crossed, the depth of collapse varies:
+Once threshold is crossed, the depth of dysfunction varies. All branches represent genuine state failure—smooth succession scenarios are not modeled here, as they occur without the event firing.
 
 ```yaml
 severity_branches:
 
-  - id: managed_succession
-    probability: 0.35
+  - id: regional_fragmentation
+    probability: 0.45
     description: |
-      Putin replaced by similar authoritarian figure through elite bargain.
-      Regime continuity maintained; modest reform or retrenchment. War ends
-      through negotiation or frozen conflict. State institutions survive.
-      "Belarus scenario" - new strongman with similar orientation.
+      Center weakens significantly but doesn't fully collapse. Regional power 
+      centers gain de facto autonomy (Chechnya, Siberian regions, Far East).
+      Multiple elite factions compete openly. Formal unity nominally maintained
+      but effective central control severely reduced. "Late Soviet" pattern
+      before formal dissolution. Nuclear command stressed but probably intact.
+      Economic dysfunction but not collapse.
       
-    impact_multiplier: 1.0  # baseline
-    
-    factor_modifications:
-      F_GPT: +0.15
-      F_EUR: +0.10
-      
-    duration:
-      type: decaying
-      half_life_years: 3
-      floor: 0.05
-
-  - id: fragmented_authoritarianism
-    probability: 0.35
-    description: |
-      Center weakens but doesn't collapse. Regional power centers gain
-      de facto autonomy (Chechnya, Siberian regions, etc.). Multiple
-      elite factions compete. Formal unity maintained but effective
-      central control reduced. "Late Soviet" pattern before formal
-      dissolution. Nuclear command nominally intact.
-      
-    impact_multiplier: 2.0
+    impact_multiplier: 1.0  # baseline for this event
     
     factor_modifications:
       F_GPT: +0.30
@@ -229,18 +211,19 @@ severity_branches:
         rationale: "Russian security umbrella weakens"
       - event_id: CAUCASUS_CONFLICT
         probability_modifier: 2.0
-        rationale: "Regional autonomy assertions"
+        rationale: "Regional autonomy assertions; frozen conflicts unfreeze"
 
   - id: civil_conflict
-    probability: 0.20
+    probability: 0.35
     description: |
       Elite faction fighting escalates to armed conflict. Military units
       align with different factions. Wagner-style mutiny but successful
-      or prolonged. Territorial control contested. Some regions assert
-      independence. Nuclear command and control stressed but probably
-      maintained by military professionals.
+      or prolonged. Territorial control actively contested. Some regions
+      assert independence. Nuclear command and control stressed; military
+      professionals likely maintain security but uncertainty is high.
+      Significant population displacement.
       
-    impact_multiplier: 3.5
+    impact_multiplier: 2.0
     
     factor_modifications:
       F_GPT: +0.50
@@ -254,17 +237,17 @@ severity_branches:
       
     cascade_triggers:
       - event_id: NUCLEAR_SECURITY_CRISIS
-        probability: 0.25
+        probability: 0.30
         rationale: "Command and control uncertainty"
-      - event_id: UKRAINE_CONFLICT_ESCALATION
-        probability_modifier: 0.5
-        rationale: "Russian military distracted by internal conflict"
+      - event_id: UKRAINE_CONFLICT_RESOLUTION
+        probability_modifier: 2.0
+        rationale: "Russian military capacity for external war collapses"
       - event_id: EUROPEAN_REFUGEE_CRISIS
         probability_modifier: 2.5
         rationale: "Mass flight from conflict zones"
 
   - id: catastrophic_collapse
-    probability: 0.10
+    probability: 0.20
     description: |
       State disintegration comparable to Soviet collapse but more chaotic.
       Multiple successor states emerge. Nuclear arsenal disposition becomes
@@ -273,7 +256,7 @@ severity_branches:
       likely (nuclear security). Economic collapse. "Yugoslavia with nukes"
       worst-case scenario.
       
-    impact_multiplier: 6.0
+    impact_multiplier: 3.5
     
     factor_modifications:
       F_GPT: +0.80
@@ -298,42 +281,40 @@ severity_branches:
         rationale: "Power vacuum in Russian Far East"
 
 severity_probability_rationale: |
-  Distribution reflects Russia's structural features:
+  Distribution reflects Russia's structural features, conditional on actual
+  state failure occurring (smooth successions don't trigger this event):
   
-  - Managed succession (0.35): Russian elite has demonstrated ability to
-    manage transitions when prepared (2008 Medvedev, 2024 Navalny elimination).
-    Security services provide continuity mechanism. International pressure
-    for stability (nuclear concerns) creates incentives for orderly transition.
+  - Regional fragmentation (0.45): Most likely failure mode. Historical 
+    pattern—late Soviet period showed gradual weakening before formal 
+    collapse. Regional governors and security figures have power bases.
+    Nuclear deterrent prevents external regime change, allowing prolonged
+    dysfunction short of complete collapse.
     
-  - Fragmented authoritarianism (0.35): Historical pattern—late Soviet period
-    showed gradual weakening before formal collapse. Regional governors and
-    security figures have power bases. Nuclear deterrent prevents external
-    regime change, allowing prolonged dysfunction. Most likely failure mode.
+  - Civil conflict (0.35): Wagner mutiny showed fragility exists beneath
+    surface. Elite factions are suppressed but present. Military has shown
+    unity so far but is degraded by war. Succession crisis without clear
+    winner could trigger factional fighting.
     
-  - Civil conflict (0.20): Wagner mutiny showed fragility. Elite factions
-    exist but are suppressed. Military has shown unity so far but is degraded
-    by war. Less likely than passive fragmentation but plausible under
-    succession stress.
-    
-  - Catastrophic (0.10): Lower than Egypt (0.20) because Russia's security
-    apparatus is more robust, and nuclear weapons create strong incentives
-    for all parties (domestic and international) to prevent complete collapse.
-    However, non-negligible given nuclear stakes.
+  - Catastrophic collapse (0.20): Russia's security apparatus is robust,
+    and nuclear weapons create strong incentives for all parties (domestic
+    and international) to prevent complete collapse. However, once civil
+    conflict begins, cascades can accelerate beyond control. Historical
+    Russian state collapses (1917, 1991) were severe.
 ```
 
 ---
 
 ## Impact Vector
 
-### Russia Impacts (Baseline: Managed Succession Branch)
+### Russia Impacts (Baseline: Regional Fragmentation Branch)
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `russia.gdp_real` | ↓ | -15% ± 8% | rapid(2yr) | decaying (half_life: 5yr, floor: -10%) |
+| `russia.gdp_real` | ↓ | -20% ± 10% | rapid(2yr) | decaying (half_life: 8yr, floor: -10%) |
 | `russia.regime_stability` | ↓ | to <25 | immediate | regime_dependent |
-| `russia.military_capability` | ↓ | -25% ± 10% | immediate | decaying (half_life: 10yr) |
-| `russia.population` | ↓ | -3% ± 2% (emigration) | rapid(2yr) | permanent |
-| `russia.nuclear_security` | ↓ | -10 ± 5 | immediate | maintenance_required |
+| `russia.military_capability` | ↓ | -30% ± 12% | immediate | decaying (half_life: 10yr) |
+| `russia.population` | ↓ | -4% ± 2% (emigration) | rapid(3yr) | permanent |
+| `russia.nuclear_security` | ↓ | -15 ± 8 | immediate | maintenance_required |
 
 ### Regional Impacts
 
@@ -358,12 +339,11 @@ severity_probability_rationale: |
 ### Nuclear Consideration
 
 Russia possesses ~6,000 nuclear warheads—the world's largest arsenal. State failure raises unique concerns:
-- **Managed succession**: Nuclear command likely intact; new regime inherits
-- **Fragmented authoritarianism**: Command probably intact but chain of control stressed
+- **Regional fragmentation**: Nuclear command probably intact but chain of control stressed; uncertainty increases
 - **Civil conflict**: Serious concerns; military professionals likely maintain security but uncertainty high
 - **Catastrophic collapse**: Major international crisis; intervention likely; 1990s "loose nukes" fears but worse
 
-Nuclear security concerns dominate international response calculus and create strong incentives for managed outcomes.
+Nuclear security concerns dominate international response calculus and create strong incentives for managed outcomes—which is why smooth successions (not modeled here) are the most likely response to regime stress.
 
 ### Durability Rationale
 
@@ -515,6 +495,8 @@ reduced strategic distraction → P(Taiwan assertiveness window) shifts
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-18 | Revised severity branches; removed "managed succession" | Smooth succession isn't state failure; all branches should represent genuine dysfunction |
+| 2025-12-18 | Adjusted probability to 1.0% (from 1.2%) | Reflects that event now only fires for actual failure, not regime transitions |
 | 2025-12-18 | Initial Level 1 specification | Task 2.1.7 - Type 2 state failure event |
 
 ---
