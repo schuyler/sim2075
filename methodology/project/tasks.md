@@ -91,6 +91,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.1.17** | Korean Peninsula Crisis | Type 3 | 🔲 | 1.1 | |
 | **2.1.18** | US-China Trade War | Type 3 | 🔲 | 1.1 | |
 | **2.1.19** | Oil Supply Shock | Type 1 | 🔲 | 1.3 | |
+| **2.1.20** | Iran Nuclear Acquisition | Type 3 | 🔲 | 1.1, 2.1.9 | Likely Type 3 (decision-driven); interacts with Iran Regime Change; triggers regional proliferation cascade |
 
 **Already complete:**
 - ✅ AMOC Weakening (Type 2)
@@ -215,4 +216,4 @@ When completing tasks:
 
 ---
 
-*Last updated: December 18, 2025*
+*Last updated: December 19, 2025*
