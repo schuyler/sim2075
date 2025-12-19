@@ -73,11 +73,11 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | Priority | Event | Type | Status | Dependencies | Notes |
 |----------|-------|------|--------|--------------|-------|
 | **2.1.1** | Taiwan Conflict | Type 3 | ✅ | — | Level 1 complete; [[events/geopolitical/taiwan-conflict]] |
-| **2.1.2** | Severe Pandemic | Type 1 | 🔲 | 1.3 | First pure Type 1 event; historical base rate exists |
-| **2.1.3** | Global Financial Crisis | Type 1/2 | 🔲 | 1.3 | Hybrid type; historical frequency known |
-| **2.1.4** | Amazon Tipping Point | Type 2 | 🔲 | — | Scientific literature provides guidance |
-| **2.1.5** | Permafrost Methane Release | Type 2 | 🔲 | — | Scientific literature provides guidance |
-| **2.1.6** | Egypt State Failure | Type 2 | 🔲 | — | Similar structure to Pakistan (complete) |
+| **2.1.2** | Severe Pandemic | Type 1 | ✅ | 1.3 | Level 1 complete; [[events/health/severe-pandemic]] |
+| **2.1.3** | Global Financial Crisis | Type 1/2 | ✅ | 1.3 | Level 1 complete; [[events/financial/global-financial-crisis]] |
+| **2.1.4** | Amazon Tipping Point | Type 2 | ✅ | — | Level 1 complete; [[events/climate/amazon-tipping-point]] |
+| **2.1.5** | Permafrost Methane Release | Type 2 | ✅ | — | Level 1 complete; [[events/climate/permafrost-methane-release]] |
+| **2.1.6** | Egypt State Failure | Type 2 | ✅ | — | Level 1 complete; [[events/geopolitical/egypt-state-failure]] |
 | **2.1.7** | Russia State Failure | Type 2 | 🔲 | — | |
 | **2.1.8** | Saudi Regime Instability | Type 2 | 🔲 | — | |
 | **2.1.9** | Iran Regime Change | Type 2/3 | 🔲 | 1.1 | May have Type 3 elements |
@@ -169,6 +169,11 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
+| Dec 2025 | Task 2.1.6: Egypt State Failure | Level 1 complete; [[events/geopolitical/egypt-state-failure]]; Type 2 threshold, F_MENA/F_FOOD/F_CLIM drivers, Nile vulnerability |
+| Dec 2025 | Task 2.1.5: Permafrost Methane Release | Level 1 complete; [[events/climate/permafrost-methane-release]]; Type 2 threshold, F_CLIM dominant |
+| Dec 2025 | Task 2.1.4: Amazon Tipping Point | Level 1 complete; [[events/climate/amazon-tipping-point]]; Type 2 threshold, F_CLIM/F_FOOD drivers |
+| Dec 2025 | Task 2.1.3: Global Financial Crisis | Level 1 complete; [[events/financial/global-financial-crisis]]; Type 2 hybrid with Type 1 floor |
+| Dec 2025 | Task 2.1.2: Severe Pandemic | Level 1 complete; [[events/health/severe-pandemic]]; First Type 1 event; established base-rate methodology |
 | Dec 2025 | Task 1.5: Update factor-loadings reference | Complete. Sub-tasks 1.5.1-1.5.5 addressed conceptual issues: added worked example (Pakistan), per-factor paragraphs, indicator/affected variable separation, cross-reference verification, specific variable IDs. Commit 359ec14. |
 | Dec 2025 | Task 1.4: Update calibration-anchors reference | Historical events typed; Oil Shock, Volcanic, Breakthrough anchors added |
 | Dec 2025 | Task 1.3: Update probability-estimation reference | Type-specific guidance for Type 1/2/3; archived v1 event specs |
@@ -207,4 +212,4 @@ When completing tasks:
 
 ---
 
-*Last updated: December 2025*
+*Last updated: December 18, 2025*
