@@ -151,7 +151,7 @@ This ranking aligns with scientific assessments placing Amazon among the higher-
 |--------|---------|-----------|
 | **F_CLIM** | 0.70 | Dominant: warming, drought, precipitation changes are primary drivers |
 | **F_FOOD** | 0.45 | Agricultural expansion (soy, cattle) drives deforestation |
-| **F_LAM** | 0.35 | Regional governance determines deforestation policy enforcement |
+| **F_LAM** | 0.20 | Regional instability affects governance capacity; imperfect proxy for environmental policy (stable anti-environment government also possible) |
 | **F_FIN** | 0.15 | Commodity prices affect deforestation economics |
 | **F_GPT** | 0.10 | International pressure/trade policy affects deforestation incentives |
 | F_TECH | 0.00 | No significant pathway |
@@ -162,14 +162,14 @@ This ranking aligns with scientific assessments placing Amazon among the higher-
 | F_MENA | 0.00 | No significant pathway |
 | F_SSA | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.87 ✓
+**Sum of squared loadings**: 0.77 ✓
 
 ### Loading Interpretation (Type 2)
 
 Factors shock state variables that feed into pressure function:
 - High F_CLIM → regional warming + drought → `temperature_anomaly` and `drought_frequency` increase → pressure rises
 - High F_FOOD → agricultural commodity demand → deforestation pressure → `deforestation_cumulative` increases → pressure rises
-- High F_LAM → governance breakdown → enforcement failure → deforestation accelerates → pressure rises
+- High F_LAM → governance instability → enforcement failure → deforestation accelerates (imperfect proxy; stable anti-environment governance not captured)
 - High F_FIN → commodity price boom → deforestation economics favor clearing → pressure rises
 
 ---
@@ -246,8 +246,8 @@ severity_branches:
         probability_modifier: 1.5
         rationale: "Carbon release accelerates warming; potential cascade to other tipping points"
       - event_id: PERMAFROST_METHANE_RELEASE
-        probability_modifier: 1.3
-        rationale: "Warming acceleration increases permafrost thaw"
+        probability_modifier: 1.15
+        rationale: "Warming acceleration (+0.1-0.2°C) modestly increases permafrost thaw rate"
 
 severity_probability_rationale: |
   Distribution based on process model outputs and spatial heterogeneity:
@@ -333,7 +333,7 @@ The Amazon is potentially coupled to other tipping elements:
 
 | Target Tipping Point | Coupling Mechanism | Strength |
 |---------------------|-------------------|----------|
-| PERMAFROST_METHANE | Warming acceleration from carbon release | Weak-moderate |
+| PERMAFROST_METHANE | Warming acceleration from carbon release (+0.1-0.2°C) | Weak |
 | AMOC_WEAKENING | Altered atmospheric circulation; freshwater to Atlantic | Weak |
 | WEST_AFRICAN_MONSOON | Teleconnection through tropical circulation | Moderate |
 | OTHER_TROPICAL_FORESTS | Demonstration of vulnerability; shared climate drivers | Moderate |
