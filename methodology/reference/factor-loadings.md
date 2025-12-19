@@ -1,7 +1,7 @@
 ---
 title: factor-loadings
 type: note
-permalink: methodology/factor-loadings
+permalink: methodology/reference/factor-loadings
 tags:
 - methodology
 - factors
@@ -21,6 +21,81 @@ Factor loadings quantify **how strongly an event correlates with latent risk fac
 - Ensure events that should cluster together do cluster in simulation
 - Force explicit thinking about what drives each event
 - Make correlation assumptions transparent and revisable
+
+**Critical distinction**: Factors are latent constructs for dimensionality reduction and correlated event sampling. They are **not causal agents** that directly shock state variables. The relationship is:
+
+```
+Latent Factor → (captures underlying conditions) → Events cluster when factor elevated
+Event fires → Impact vector → State variables change
+```
+
+Factors determine *which events tend to fire together*. The events themselves cause state variable changes through their impact vectors.
+
+---
+
+## Worked Example: Pakistan State Failure
+
+This example traces the complete pathway from factors through event firing to state variable impacts, clarifying what factors do and don't do.
+
+### The Event
+
+**Pakistan State Failure** (Type 2: Threshold) fires in simulation year 2043.
+
+### Factor Loadings Context
+
+The event specification includes these factor loadings:
+
+| Factor | Loading | Role |
+|--------|---------|------|
+| F_SAS | 0.71 | Primary—this IS the South Asian anchor crisis |
+| F_FOOD | 0.42 | Indus water-agriculture nexus vulnerability |
+| F_CLIM | 0.38 | Glacial melt, monsoon variability |
+| F_FIN | 0.29 | Chronic fiscal crisis, IMF dependency |
+| F_GPT | 0.21 | Great power dynamics affect aid flows |
+
+### What the Loadings Mean
+
+In the simulation year when this event fired:
+- F_SAS was elevated (correlated factor draw was high)
+- F_FOOD and F_CLIM were moderately elevated
+- This made Pakistan State Failure more likely to fire *along with* other events loading on these factors
+
+**The factors did NOT cause the state failure.** The elevated factor draws reflect that 2043 was a "bad year" for South Asian stability, food systems, and climate stress—conditions under which Pakistan's collapse became more probable.
+
+Other events that might cluster in this same simulation run (due to shared factor loadings):
+- India-Pakistan Conflict (also loads heavily on F_SAS)
+- Bangladesh climate displacement (loads on F_SAS, F_CLIM)
+- Global food price spike (loads on F_FOOD, F_CLIM)
+
+### State Variable Impacts (From the Event, Not Factors)
+
+When Pakistan State Failure fires, the **event's impact vector** changes state variables:
+
+| Variable | Change | Source |
+|----------|--------|--------|
+| `pakistan.regime_stability` | → <20 | Event impact vector |
+| `pakistan.gdp_real` | -40% | Event impact vector |
+| `pakistan.internal_conflict_intensity` | → 4 (civil war) | Event impact vector |
+| `nuclear_stability` | -15 points | Event impact vector |
+| `india.gdp_real` | -2% | Event impact vector (spillover) |
+
+These changes come from the event specification's impact vector—**not from the factors**. The factors only determined that this event was likely to fire alongside other correlated events.
+
+### The Causal Chain
+
+```
+1. Factor draws: F_SAS=high, F_FOOD=moderate-high, F_CLIM=moderate-high
+   ↓
+2. Event probability elevated (Gaussian copula correlation)
+   ↓
+3. Event fires (random draw below elevated probability)
+   ↓
+4. Impact vector applied to state variables
+   ↓
+5. State variables change: regime_stability↓, gdp_real↓, conflict↑, etc.
+```
+
+Factors operate at step 1-2. State variable changes happen at step 4-5.
 
 ---
 
@@ -84,7 +159,7 @@ How factor loadings function depends on the event's causal type. This is a key i
 
 ### Type 2 (Threshold) Events
 
-**Interpretation**: Loadings identify which factors stress the pressure variables that drive the event toward its threshold.
+**Interpretation**: Loadings identify which factors correlate with conditions that stress the pressure variables driving the event toward its threshold.
 
 **How loadings work (v1.0)**:
 - Loadings modulate probability like Type 1
@@ -97,12 +172,12 @@ How factor loadings function depends on the event's causal type. This is a key i
 - Chain: Factor → Pressure Variable → State → Probability
 
 **Example**: Pakistan state failure
-- Loads on F_SAS (0.85): Regional stress directly pressures regime stability
-- Loads on F_CLIM (0.4): Climate stress pressures water availability
-- Loads on F_FIN (0.3): Financial stress pressures fiscal capacity
-- Each loading indicates "this factor shocks a pressure variable relevant to the threshold"
+- Loads on F_SAS (0.71): Regional stress correlates with regime instability
+- Loads on F_CLIM (0.38): Climate stress correlates with water crisis conditions
+- Loads on F_FIN (0.29): Financial stress correlates with fiscal pressure
+- Each loading indicates "when this factor is elevated, conditions favor this event"
 
-**Key difference from Type 1**: For Type 2, think "what factors accelerate pressure accumulation?" not "what factors make the event more likely in isolation?"
+**Key difference from Type 1**: For Type 2, think "what factors correlate with pressure accumulation?" not "what factors make the event more likely in isolation?"
 
 ### Type 3 (Contingent) Events
 
@@ -122,7 +197,7 @@ How factor loadings function depends on the event's causal type. This is a key i
 
 ---
 
-## Revised Interpretation: Factors as Pressure Drivers (v2.0)
+## Revised Interpretation: Factors as Correlation Drivers (v2.0)
 
 The v2.0 architecture reinterprets factor loadings for Type 2 events:
 
@@ -146,7 +221,7 @@ High F_CLIM → `global_temp_anomaly` shocked upward → `amoc_strength` decline
 
 **v1.0**: Ask "how much more likely is this event when this factor is elevated?"
 
-**v2.0**: Ask "which pressure variables does this factor shock, and how much does that matter for this event's threshold?"
+**v2.0**: Ask "which pressure variables does this factor correlate with, and how much does that matter for this event's threshold?"
 
 For now (v1.0), specify loadings using the direct probability interpretation. Document the pressure pathway in notes for v2.0 migration:
 
@@ -156,57 +231,241 @@ factor_loadings:
   
 loading_notes:
   v2_pressure_pathway: |
-    F_CLIM shocks global_temp_anomaly and regional climate variables.
+    F_CLIM correlates with elevated global_temp_anomaly and regional climate variables.
     For AMOC: temperature affects freshwater input rate, which drives
     amoc_strength toward collapse threshold.
 ```
 
 ---
 
-## Factor → State Variable Categories
+## Factor → State Variable Mapping
 
-Factor loadings connect events to abstract latent factors. But what do those factors *mean* in terms of the simulation's state variables? This section maps each factor to the state variable categories it primarily affects.
+Factor loadings connect events to abstract latent factors. But what do those factors *mean* in terms of the simulation's state variables? This section maps each factor to observable indicators and affected variables.
+
+**Key distinction**:
+- **Indicator Variables**: What we observe to infer that a factor is elevated (the factor's "symptoms")
+- **Affected Variables**: What changes when events correlated with this factor fire (via event impact vectors, not factor causation)
 
 **For v1.0:** This mapping helps specifiers reason about *why* an event loads on a factor—what underlying dynamics connect them. Factors currently drive event correlation, not state variables directly.
 
-**For v2.0:** This mapping becomes operational. Factor realizations will shock state variables, which then drive event probabilities through threshold and conditioning mechanisms. The categories below establish the conceptual architecture; detailed transmission coefficients are a calibration task.
+**For v2.0:** This mapping becomes operational. Factor realizations will shock indicator variables, which then drive event probabilities through threshold and conditioning mechanisms.
 
 For full variable definitions and dynamics, see [[methodology/reference/state-specification]].
 
-### Global Systemic Factors
+---
 
-| Factor | Primary State Categories | Transmission Notes |
-|--------|-------------------------|-------------------|
-| **F_CLIM** | Global: temperature anomaly, sea level, climate variability, tipping point indicators. Country: heat exposure, water stress, agricultural climate risk. Commodity: food prices, food stocks. | Physical climate changes propagate through local exposure differences to economic and humanitarian impacts. See state-specification §Climate and Planetary Variables, §Country Climate and Resource Variables. |
-| **F_FIN** | Global: interest rates, credit spreads, reserve currency shares. Country: debt levels, growth, inflation, reserves, current account. | Credit conditions and contagion affect borrowing costs, capital flows, fiscal space, and growth trajectories. See state-specification §Financial System Variables, §Country Economic Variables. |
-| **F_HLTH** | Global: pandemic status, antibiotic resistance. Country: life expectancy, infant mortality, state capacity (health system proxy). | Pathogen emergence and health system stress affect mortality, economic disruption, and institutional strain. See state-specification §Health and Pandemic Variables, §Country Demographic Flow Variables. |
-| **F_GPT** | Global: US-China tension, NATO cohesion, active conflicts, nuclear stability. Country: alliance positions, sanctions, external conflict involvement. | Great power dynamics alter security environment, economic access, and alliance reliability. See state-specification §Geopolitical Structure Variables, §Country Strategic Position Variables. |
-| **F_TECH** | Global: AI capability, semiconductor supply. Country: GDP growth (productivity channel), institutional quality (governance challenges). | Technology disruption affects productivity, supply chain resilience, and governance capacity. See state-specification §Technology Variables, §Trade and Economic Structure Variables. |
-| **F_FOOD** | Global: food commodity prices, grain stocks, fertilizer prices. Country: food import dependence, inflation, regime stability (via food security). | Food system stress transmits through prices to import-dependent countries, affecting inflation, fiscal burden, and political stability. See state-specification §Commodity Price Variables, §Country Climate and Resource Variables. |
+### F_CLIM: Climate Stress
 
-### Regional Factors
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `global_temp_anomaly`, `climate_variability`, `arctic_sea_ice_sept`, `global_co2_ppm`
+- Country: `water_stress`, `heat_exposure` (aggregated across climate-exposed countries)
 
-| Factor | Primary State Categories | Transmission Notes |
-|--------|-------------------------|-------------------|
-| **F_EUR** | EU cohesion (global). Country (European): regime stability, GDP growth, debt levels, migration pressure, alliance positions. | European stress affects EU institutional function, fiscal solidarity, and political stability across member states. Spillovers to neighbors via trade and migration. |
-| **F_MENA** | Country (MENA region): regime stability, internal conflict, water stress, food import dependence. Global: oil/gas prices, refugee flows. | MENA instability affects energy supply, migration pressure on Europe, and regional conflict dynamics. |
-| **F_SAS** | Country (South Asia): regime stability, water stress, internal/external conflict, GDP growth. Global: nuclear stability. | South Asian stress involves India-Pakistan dynamics, climate-water interactions, and nuclear risk. |
-| **F_EAS** | US-China tension (global), semiconductor supply (global). Country (East Asia): external conflict involvement, alliance positions, trade openness. | East Asian tension centers on Taiwan and great power competition, with global supply chain implications. |
-| **F_SSA** | Country (Sub-Saharan Africa): regime stability, internal conflict, food import dependence, emigration rates. Global: commodity prices (for exporters). | Sub-Saharan crisis involves state fragility, climate stress, demographic pressure, and humanitarian outcomes. |
-| **F_LAM** | Country (Latin America): regime stability, GDP growth, inflation, debt levels. Global: Amazon forest cover. | Latin American stress involves economic volatility, political instability, and (for Brazil) global climate stakes via Amazon. |
+**Affected Variables** (changed when F_CLIM-correlated events fire):
+- Global: `amoc_strength`, `amazon_forest_cover`, `permafrost_integrity`, `sea_level_global`
+- Country: `agricultural_climate_risk`, `gdp_real` (climate-exposed countries), `regime_stability` (climate-stressed states), `food_import_dependence`
+- Commodity: `wheat_price`, `rice_price`, `corn_price`, `food_stocks_grains`
 
-### Using This Mapping
+**Causal Pathway**: F_CLIM represents underlying climate stress conditions—the accumulated effect of warming, extreme weather frequency, and proximity to tipping points. When F_CLIM is elevated in a simulation run, events like AMOC weakening, Amazon tipping point, permafrost release, and climate-driven state failures (Pakistan, Egypt, Bangladesh) are more likely to fire together. The state variable impacts come from the events themselves: AMOC collapse affects `amoc_strength` and Northwest European climate; Amazon tipping affects `amazon_forest_cover` and regional precipitation; state failures affect `regime_stability` and `gdp_real` through their impact vectors.
+
+**Cross-reference**: See state-specification §4.1 (Climate and Planetary Variables), §3.4 (Climate and Resource Variables), §4.2 (Commodity Price Variables).
+
+---
+
+### F_FIN: Financial Fragility
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `global_credit_spread`, `us_10yr_yield`, `us_real_rate`
+- Country: `debt_public`, `debt_external`, `current_account`, `reserves_foreign` (aggregated stress indicators)
+
+**Affected Variables** (changed when F_FIN-correlated events fire):
+- Global: `usd_reserve_share`, `global_trade_volume`, `global_credit_spread`
+- Country: `gdp_real`, `gdp_growth`, `inflation_rate`, `debt_external`, `reserves_foreign`, `regime_stability` (for fiscally fragile states)
+- Commodity: Most commodity prices (demand channel)
+
+**Causal Pathway**: F_FIN captures global financial system fragility—credit conditions, liquidity stress, and contagion potential. When F_FIN is elevated, events like global financial crises, emerging market debt crises, currency collapses, and financially-triggered state failures cluster together. A global financial crisis event changes `global_credit_spread`, country `gdp_growth`, and `debt_external` through its impact vector. An EM debt crisis changes specific country variables. The factor determines clustering; events determine state changes.
+
+**Cross-reference**: See state-specification §4.3 (Financial System Variables), §3.2 (Economic Variables).
+
+---
+
+### F_HLTH: Health/Pandemic
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `antibiotic_resistance`, surveillance system quality (not directly modeled)
+- Country: `life_expectancy`, `infant_mortality`, `state_capacity` (health system proxy)
+
+**Affected Variables** (changed when F_HLTH-correlated events fire):
+- Global: `pandemic_status`, `pandemic_severity`, `global_trade_volume` (disruption)
+- Country: `life_expectancy`, `gdp_real`, `gdp_growth`, `regime_stability` (if severe)
+- Demographic: Excess mortality affects population cohorts
+
+**Causal Pathway**: F_HLTH represents health system stress and pathogen emergence risk—the conditions that make both novel pathogen emergence and health system collapse more likely. When F_HLTH is elevated, pandemic events, antibiotic resistance crises, and health-system-driven state instability cluster. A severe pandemic event changes `pandemic_status`, country `gdp_real`, and population variables through mortality. The factor reflects underlying vulnerability; the event causes the damage.
+
+**Cross-reference**: See state-specification §4.6 (Health and Pandemic Variables), §3.1.2 (Demographic Flow Variables).
+
+---
+
+### F_GPT: Great Power Tension
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `us_china_tension`, `nato_cohesion`, `active_major_conflicts`, `nuclear_stability`
+- Country: `sanctions_level` (for targeted countries), `alliance_west`, `alliance_china`
+
+**Affected Variables** (changed when F_GPT-correlated events fire):
+- Global: `us_china_tension`, `nato_cohesion`, `nuclear_stability`, `semiconductor_supply`, `global_trade_volume`
+- Country: `external_conflict_involvement`, `sanctions_level`, `gdp_real` (war-affected), `regime_stability` (war-affected)
+
+**Causal Pathway**: F_GPT captures US-China-Russia strategic competition intensity—the tension level that creates crisis windows and affects conflict resolution probabilities. When F_GPT is elevated, great power conflicts (Taiwan crisis, Korean peninsula), proxy conflicts, and sanctions escalations cluster. A Taiwan conflict event changes `us_china_tension`, `semiconductor_supply`, affected country `gdp_real`, and potentially `nuclear_stability`. The factor represents the competitive environment; events produce the state changes.
+
+**Cross-reference**: See state-specification §4.7 (Geopolitical Structure Variables), §3.5 (Strategic Position Variables), §4.4 (Trade and Economic Structure Variables).
+
+---
+
+### F_TECH: Technology Disruption
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `ai_capability_index`, `semiconductor_supply` stress indicators
+- Country: Technology adoption rates, cyber incident frequency (not directly modeled)
+
+**Affected Variables** (changed when F_TECH-correlated events fire):
+- Global: `semiconductor_supply`, `ai_capability_index`
+- Country: `gdp_growth` (productivity channel), `institutional_quality` (governance challenges), `unemployment_rate` (labor disruption)
+
+**Causal Pathway**: F_TECH represents technology disruption potential—rapid AI advancement, semiconductor supply concentration, and cyber vulnerability. When F_TECH is elevated, AI disruption events, semiconductor crises, and major cyber attacks cluster. These events change `semiconductor_supply`, country `gdp_growth` (through productivity shocks), and potentially `institutional_quality` (governance stress from rapid change). This factor has fewer specified events currently; its role may expand.
+
+**Cross-reference**: See state-specification §4.5 (Technology Variables), §4.4 (Trade and Economic Structure Variables), §3.2.2 (Economic Flow Variables).
+
+---
+
+### F_FOOD: Food System Stress
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `wheat_price`, `rice_price`, `corn_price`, `fertilizer_price_index`, `food_stocks_grains`
+- Country: `food_import_dependence` (for vulnerable importers), agricultural output indicators
+
+**Affected Variables** (changed when F_FOOD-correlated events fire):
+- Global: `wheat_price`, `rice_price`, `corn_price`, `food_stocks_grains`
+- Country: `inflation_rate`, `regime_stability` (for food-import-dependent states), `gdp_real`
+
+**Causal Pathway**: F_FOOD captures food system stress—production shortfalls, price spikes, and distribution failures. This factor is strongly correlated with F_CLIM (climate affects harvests) but also responds to conflict (Ukraine grain disruption), policy (export bans), and input costs (fertilizer). When F_FOOD is elevated, food price spike events, famine events, and food-security-driven instability cluster. A major food crisis event changes commodity prices and affected country `inflation_rate`, `regime_stability`, and potentially triggers state failure events in vulnerable importers (Egypt, Bangladesh).
+
+**Cross-reference**: See state-specification §4.2 (Commodity Price Variables), §3.4 (Climate and Resource Variables), §3.3 (Political and Institutional Variables).
+
+---
+
+### F_EUR: European Stress
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `eu_cohesion`
+- Country (European): `regime_stability`, `debt_public`, `gdp_growth`, `protest_activity`, `net_migration_rate`
+
+**Affected Variables** (changed when F_EUR-correlated events fire):
+- Global: `eu_cohesion`, `eur_reserve_share`
+- Country (European): `regime_stability`, `gdp_real`, `debt_public`, `institutional_quality`
+- Country (neighbors): `net_migration_rate` (migration pressure)
+
+**Causal Pathway**: F_EUR captures European institutional and economic stress—EU cohesion challenges, fiscal crises, migration pressure, and political instability across member states. When F_EUR is elevated, EU fragmentation events, eurozone fiscal crises, and European political instability cluster. An EU fragmentation event changes `eu_cohesion`, affected country `gdp_real` and `regime_stability`. The factor reflects continental stress conditions; events produce specific state changes.
+
+**Cross-reference**: See state-specification §4.7 (Geopolitical Structure Variables—`eu_cohesion`), §3.2 (Economic Variables), §3.3 (Political and Institutional Variables).
+
+---
+
+### F_MENA: MENA Instability
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `oil_brent`, `gas_europe_ttf` (supply disruption indicators)
+- Country (MENA): `regime_stability`, `internal_conflict_intensity`, `water_stress`, `food_import_dependence`
+
+**Affected Variables** (changed when F_MENA-correlated events fire):
+- Global: `oil_brent`, `gas_europe_ttf`, `active_major_conflicts`
+- Country (MENA): `regime_stability`, `gdp_real`, `internal_conflict_intensity`
+- Country (Europe): `net_migration_rate` (refugee pressure)
+
+**Causal Pathway**: F_MENA captures Middle East and North Africa instability—state fragility, sectarian conflict, resource stress, and regional power competition. When F_MENA is elevated, MENA state failures (Egypt, Saudi instability), regional conflicts, and oil supply disruptions cluster. An Egypt state failure event changes Egypt's `regime_stability` and `gdp_real`, affects `oil_brent` (Suez disruption), and increases European `net_migration_rate`. The factor represents regional volatility; events produce the impacts.
+
+**Cross-reference**: See state-specification §4.2 (Commodity Price Variables—energy), §3.3 (Political and Institutional Variables), §3.4 (Climate and Resource Variables).
+
+---
+
+### F_SAS: South Asian Stress
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `nuclear_stability`
+- Country (South Asia): `regime_stability`, `water_stress`, `internal_conflict_intensity`, `external_conflict_involvement`
+
+**Affected Variables** (changed when F_SAS-correlated events fire):
+- Global: `nuclear_stability`, `active_major_conflicts`
+- Country (South Asia): `regime_stability`, `gdp_real`, `internal_conflict_intensity`, `external_conflict_involvement`
+- Demographic: Population variables (excess mortality, displacement)
+
+**Causal Pathway**: F_SAS captures South Asian stress—India-Pakistan rivalry, climate-water interactions, demographic pressure, and nuclear risk. When F_SAS is elevated, Pakistan state failure, India-Pakistan conflict, Bangladesh climate displacement, and regional instability cluster. Pakistan state failure changes Pakistan's state variables plus `nuclear_stability`; India-Pakistan conflict changes both countries' `external_conflict_involvement` and `gdp_real`. This is a high-consequence regional factor due to nuclear dimension.
+
+**Cross-reference**: See state-specification §4.7 (Geopolitical Structure Variables—`nuclear_stability`), §3.3 (Political and Institutional Variables), §3.4 (Climate and Resource Variables), §3.5 (Strategic Position Variables).
+
+---
+
+### F_EAS: East Asian Tension
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `us_china_tension`, `semiconductor_supply`
+- Country (East Asia): `external_conflict_involvement`, `alliance_west`, `alliance_china`, `trade_openness`
+
+**Affected Variables** (changed when F_EAS-correlated events fire):
+- Global: `us_china_tension`, `semiconductor_supply`, `global_trade_volume`
+- Country (East Asia): `external_conflict_involvement`, `gdp_real`, `trade_openness`
+- Country (global): Supply chain disruption affects manufacturing countries
+
+**Causal Pathway**: F_EAS captures East Asian tension—Taiwan Strait dynamics, Korean peninsula risk, South China Sea disputes, and semiconductor supply concentration. When F_EAS is elevated, Taiwan conflict, Korean peninsula crisis, and regional military incidents cluster. A Taiwan conflict event changes `semiconductor_supply` (TSMC disruption), `us_china_tension`, and affected country `gdp_real`. F_EAS is correlated with F_GPT but captures regional dynamics distinct from global great power competition.
+
+**Cross-reference**: See state-specification §4.4 (Trade and Economic Structure Variables—`semiconductor_supply`), §4.7 (Geopolitical Structure Variables), §3.5 (Strategic Position Variables).
+
+---
+
+### F_SSA: Sub-Saharan Crisis
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Country (SSA): `regime_stability`, `internal_conflict_intensity`, `food_import_dependence`, `net_migration_rate` (emigration)
+
+**Affected Variables** (changed when F_SSA-correlated events fire):
+- Country (SSA): `regime_stability`, `gdp_real`, `internal_conflict_intensity`, `life_expectancy`
+- Demographic: Population variables (excess mortality, displacement)
+- Global: Commodity prices (for major exporters like Nigeria)
+
+**Causal Pathway**: F_SSA captures Sub-Saharan African crisis conditions—state fragility, climate stress, demographic pressure, and humanitarian emergencies. When F_SSA is elevated, Sahel catastrophe, Nigerian instability, Ethiopian crisis, and DRC collapse cluster. A Sahel catastrophe event changes regional `regime_stability`, produces massive displacement, and affects `life_expectancy` through excess mortality. This factor primarily affects humanitarian outcomes rather than global economic variables.
+
+**Cross-reference**: See state-specification §3.3 (Political and Institutional Variables), §3.1 (Demographic Variables), §3.4 (Climate and Resource Variables).
+
+---
+
+### F_LAM: Latin American Stress
+
+**Indicator Variables** (what we observe to infer factor elevation):
+- Global: `amazon_forest_cover` (Brazil policy indicator)
+- Country (LAM): `regime_stability`, `gdp_growth`, `inflation_rate`, `debt_public`
+
+**Affected Variables** (changed when F_LAM-correlated events fire):
+- Global: `amazon_forest_cover` (if Brazil involved)
+- Country (LAM): `regime_stability`, `gdp_real`, `inflation_rate`, `debt_external`
+
+**Causal Pathway**: F_LAM captures Latin American stress—economic volatility, political instability, and (for Brazil) global climate stakes via Amazon deforestation. When F_LAM is elevated, Argentine default, Venezuelan further collapse, Brazilian political crisis, and regional instability cluster. A Brazilian political crisis event could accelerate Amazon deforestation (changing `amazon_forest_cover`) while affecting Brazil's `gdp_real` and `regime_stability`. This factor has moderate global impact primarily through the Amazon pathway.
+
+**Cross-reference**: See state-specification §4.1 (Climate and Planetary Variables—`amazon_forest_cover`), §3.2 (Economic Variables), §3.3 (Political and Institutional Variables).
+
+---
+
+## Using the Factor-Variable Mapping
 
 When assigning factor loadings to an event:
 
 1. **Identify which state variables the event directly affects** (its impact vector targets)
-2. **Check which factors have those variables in their primary categories**
-3. **Factors whose categories overlap with the event's impacts should have non-zero loadings**
+2. **Check which factors have those variables in their "Affected Variables" lists**
+3. **Factors whose affected variables overlap with the event's impacts should have non-zero loadings**
 4. **The strength of loading reflects how central that factor is to the event's causal mechanism**
+5. **Also consider indicator variables**: If the event's preconditions are captured by a factor's indicators, that suggests correlation
 
-If an event affects variables outside all factors' primary categories, either:
+If an event affects variables outside all factors' affected variable lists, either:
 - The event has high idiosyncratic variance (Ψ), or
-- A factor's category coverage should be reconsidered
+- A factor's variable coverage should be reconsidered
 
 ---
 
@@ -221,10 +480,10 @@ Before assigning loadings, confirm the event's causal type. This determines how 
 Ask: "If I could only load this event on one factor, which would it be?"
 
 - For Type 1: What shared vulnerability matters most?
-- For Type 2: What factor most directly stresses the pressure variables?
+- For Type 2: What factor's indicator variables best capture the pressure conditions?
 - For Type 3: What factor most strongly creates crisis windows?
 
-Consult the **Factor → State Variable Categories** table above. Which factor's primary categories best overlap with the event's impact targets and causal mechanisms?
+Consult the **Factor → State Variable Mapping** sections above. Which factor's affected variables best overlap with the event's impact targets and causal mechanisms?
 
 This forces clarity about what fundamentally drives the event.
 
@@ -236,10 +495,8 @@ For each factor, ask:
 - Would the event be noticeably more likely when this factor is elevated?
 
 For Type 2, also ask:
-- Does this factor shock any of the event's pressure variables?
-- How strong is the transmission from factor to pressure?
-
-Use the **Factor → State Variable Categories** mapping to check: do this factor's primary state categories include variables relevant to the event? If not, the loading should be low or zero.
+- Does this factor's indicator variables capture conditions that stress the event's pressure variables?
+- How strong is the correlation between factor elevation and pressure accumulation?
 
 Assign secondary loadings only where genuine linkage exists. **Zero is a valid loading.**
 
@@ -284,26 +541,26 @@ Regional factors: 0.2 - 0.4 (contagion exposure)
 
 **Climate Threshold Events** (AMOC, Amazon, permafrost)
 ```
-F_CLIM: 0.80 - 0.90 (primary pressure driver)
+F_CLIM: 0.80 - 0.90 (primary—indicator variables capture threshold approach)
 F_FOOD: 0.2 - 0.4 (if agricultural feedback)
 Regional: 0.1 - 0.3 (regional exposure variation)
 ```
 
-Rationale: Climate stress is the dominant pressure; loadings reflect which factors accelerate approach to threshold.
+Rationale: Climate stress indicators directly capture threshold approach; loadings reflect which factors' elevation correlates with faster approach.
 
 **State Failure Events**
 ```
-Regional factor: 0.70 - 0.85 (dominant pressure)
+Regional factor: 0.70 - 0.85 (dominant—captures regional instability conditions)
 F_CLIM or F_FOOD: 0.3 - 0.5 (for climate-stressed states)
-F_FIN: 0.2 - 0.4 (fiscal pressure)
+F_FIN: 0.2 - 0.4 (fiscal pressure correlation)
 F_GPT: 0.1 - 0.3 (if great power involvement)
 ```
 
-Rationale: Regional instability is primary; climate/food/financial stress are secondary pressure channels.
+Rationale: Regional instability is primary correlate; climate/food/financial stress are secondary pressure correlates.
 
 **Economic Threshold Events** (hyperinflation, currency crisis)
 ```
-F_FIN: 0.75 - 0.85 (primary pressure)
+F_FIN: 0.75 - 0.85 (primary—indicator variables capture financial stress)
 Regional factor: 0.3 - 0.5 (regional contagion)
 F_GPT: 0.1 - 0.3 (if sanctions/geopolitical exposure)
 ```
@@ -312,7 +569,7 @@ F_GPT: 0.1 - 0.3 (if sanctions/geopolitical exposure)
 
 **Deliberate Conflict Events** (Taiwan, Korea, India-Pakistan)
 ```
-F_GPT: 0.60 - 0.80 (window driver)
+F_GPT: 0.60 - 0.80 (window driver—tension creates crisis opportunities)
 Regional factor: 0.50 - 0.70 (local dynamics)
 F_FIN: 0.2 - 0.4 (economic interdependence affects resolution)
 ```
@@ -321,7 +578,7 @@ Rationale: Great power tension and regional dynamics create windows; resolution 
 
 **International Agreement Events** (climate, arms control)
 ```
-F_GPT: 0.4 - 0.6 (tension reduces window probability)
+F_GPT: 0.4 - 0.6 (tension reduces agreement probability)
 F_CLIM: 0.3 - 0.5 (for climate agreements—urgency driver)
 Regional factors: 0.2 - 0.4 (regional buy-in requirements)
 ```
@@ -342,12 +599,14 @@ Note: For agreements, high factor values may *reduce* positive resolution probab
 | **Causal type context** | How loadings relate to event's causal mechanism |
 
 For Type 2 events, also document:
+
 | Field | Description |
 |-------|-------------|
-| **Pressure pathway** | Which pressure variables each factor shocks |
+| **Indicator correlation** | Which factor indicator variables correlate with event's pressure variables |
 | **v2.0 notes** | How loadings will translate to pressure driver model |
 
 For Type 3 events, also document:
+
 | Field | Description |
 |-------|-------------|
 | **Window vs resolution** | Whether loadings differ by stage (for v2.0) |
@@ -368,10 +627,10 @@ Loadings determine correlation structure regardless of causal type.
 ### v2.0 Implementation (Target)
 
 Type 2 events will use loadings differently:
-1. Factor realizations shock pressure variables (not probability directly)
-2. State evolves based on pressure shocks + baseline dynamics
+1. Factor realizations shock indicator variables (not probability directly)
+2. State evolves based on indicator shocks + baseline dynamics
 3. Event probability computed from state position relative to threshold
-4. Factor correlation still produces event clustering (via correlated pressure shocks)
+4. Factor correlation still produces event clustering (via correlated indicator shocks)
 
 Type 1 and Type 3 continue using loadings for direct probability correlation.
 
@@ -382,8 +641,8 @@ Type 1 and Type 3 continue using loadings for direct probability correlation.
 When upgrading an event specification from v1 to v2:
 
 - [ ] Confirm causal type classification
-- [ ] For Type 2: Document which pressure variables each loaded factor shocks
-- [ ] For Type 2: Estimate factor → pressure transmission strength
+- [ ] For Type 2: Document which indicator variables each loaded factor correlates with
+- [ ] For Type 2: Estimate factor → indicator transmission strength
 - [ ] For Type 3: Note if window vs resolution loadings should differ
 - [ ] Verify loading patterns are consistent with similar events
 - [ ] Update loading rationale to reflect type-specific interpretation
