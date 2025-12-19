@@ -199,22 +199,25 @@ Factors shock state variables that feed into pressure function:
 
 ## Severity Branches
 
-Once threshold is crossed, the form of regime crisis varies. All branches represent genuine regime crisis—protests that are successfully suppressed without fundamental change don't trigger this event.
+Once threshold is crossed, the form of regime crisis varies. All branches represent genuine regime crisis—protests that are successfully suppressed without fundamental change, or smooth leadership successions that maintain system continuity, don't trigger this event.
 
 ```yaml
 severity_branches:
 
-  - id: managed_succession_crisis
+  - id: popular_uprising_suppressed
     probability: 0.40
     description: |
-      Supreme Leader death or incapacitation triggers contested succession.
-      IRGC and clerical factions compete for control. Significant instability
-      but system reconstitutes under new leadership—possibly with modified
-      ideology (more pragmatic or more hardline). International relations
-      may shift but fundamental system architecture persists. Period of
-      uncertainty (1-3 years) before new equilibrium.
+      Mass protests exceed 2022 scale—potentially triggered by economic
+      collapse, environmental disaster, or political catalyst. Regime
+      deploys maximum force; significant casualties (thousands). Uprising
+      eventually suppressed but regime fundamentally weakened. Significant
+      international isolation. Brain drain accelerates. Economy further
+      damaged. Regime survives but severely delegitimized and weakened;
+      future instability more likely. This is a genuine discontinuity
+      because the regime's coercive legitimacy and capacity are permanently
+      degraded.
       
-    impact_multiplier: 1.0  # baseline for this event
+    impact_multiplier: 1.0  # baseline
     
     factor_modifications:
       F_MENA: +0.25
@@ -226,37 +229,6 @@ severity_branches:
       floor: 0.10
       
     cascade_triggers:
-      - event_id: PROXY_NETWORK_WEAKENING
-        probability_modifier: 1.5
-        rationale: "Hezbollah, Houthis, Iraqi militias lose direction during transition"
-      - event_id: NUCLEAR_PROGRAM_UNCERTAINTY
-        probability_modifier: 1.8
-        rationale: "Transition period may see acceleration or negotiation"
-
-  - id: popular_uprising_suppressed
-    probability: 0.30
-    description: |
-      Mass protests exceed 2022 scale—potentially triggered by economic
-      collapse, environmental disaster, or political catalyst. Regime
-      deploys maximum force; significant casualties (thousands). Uprising
-      eventually suppressed but regime fundamentally weakened. Significant
-      international isolation. Brain drain accelerates. Economy further
-      damaged. Regime survives but delegitimized; future instability
-      more likely.
-      
-    impact_multiplier: 1.5
-    
-    factor_modifications:
-      F_MENA: +0.30
-      F_GPT: +0.35
-      F_FIN: +0.20
-      
-    duration:
-      type: decaying
-      half_life_years: 6
-      floor: 0.15
-      
-    cascade_triggers:
       - event_id: REFUGEE_CRISIS_MENA
         probability_modifier: 1.8
         rationale: "Brain drain and refugee outflow"
@@ -265,7 +237,7 @@ severity_branches:
         rationale: "International response to violent suppression"
 
   - id: revolutionary_transition
-    probability: 0.20
+    probability: 0.35
     description: |
       Regime actually falls—security forces fragment or refuse orders,
       elite defections cascade, protests cannot be suppressed. What
@@ -275,7 +247,7 @@ severity_branches:
       become major international concern. Proxy networks lose central
       direction. Regional power vacuum.
       
-    impact_multiplier: 3.5
+    impact_multiplier: 3.0
     
     factor_modifications:
       F_MENA: +0.65
@@ -301,6 +273,39 @@ severity_branches:
       - event_id: REFUGEE_CRISIS_MAJOR
         probability: 0.70
         rationale: "Millions displaced by instability"
+
+  - id: failed_succession_crisis
+    probability: 0.15
+    description: |
+      Supreme Leader death or incapacitation triggers succession process
+      that fails to resolve. IRGC and clerical factions cannot agree on
+      successor or power-sharing arrangement. Open elite conflict emerges.
+      This is distinct from managed succession (which doesn't trigger
+      this event)—here the succession mechanism breaks down, producing
+      prolonged institutional paralysis, factional violence, or civil
+      conflict. System may eventually reconstitute but only after
+      significant instability and permanent damage to institutional
+      legitimacy.
+      
+    impact_multiplier: 2.0
+    
+    factor_modifications:
+      F_MENA: +0.40
+      F_GPT: +0.30
+      F_FIN: +0.25
+      
+    duration:
+      type: decaying
+      half_life_years: 8
+      floor: 0.15
+      
+    cascade_triggers:
+      - event_id: PROXY_NETWORK_WEAKENING
+        probability_modifier: 1.5
+        rationale: "Hezbollah, Houthis, Iraqi militias lose direction during crisis"
+      - event_id: NUCLEAR_PROGRAM_UNCERTAINTY
+        probability_modifier: 1.8
+        rationale: "Factional control over program uncertain"
 
   - id: external_intervention_trigger
     probability: 0.10
@@ -342,26 +347,28 @@ severity_branches:
 
 severity_probability_rationale: |
   Distribution reflects Iran's structural features, conditional on
-  actual regime crisis occurring:
+  actual regime crisis occurring. Smooth successions where the Islamic
+  Republic continues with a new Supreme Leader don't trigger this event.
   
-  - Managed succession crisis (0.40): Most likely mode. Khamenei is 85+;
-    succession will be contested. IRGC has institutional interest in
-    system continuity. Historical pattern in authoritarian regimes is
-    elite management of transitions rather than collapse. However,
-    "managed" may still involve significant instability.
+  - Popular uprising suppressed (0.40): Most likely crisis mode. 2009
+    and 2022 showed regime can suppress major protests, but a crisis-level
+    uprising would be larger and suppression more costly. Regime survives
+    but permanently weakened—this is a discontinuity because coercive
+    capacity and legitimacy are durably degraded, unlike normal protest
+    cycles.
     
-  - Popular uprising suppressed (0.30): 2009 and 2022 showed regime can
-    suppress major protests, but at increasing cost. A crisis-level
-    uprising would be larger than previous; suppression would be more
-    violent and more damaging to regime legitimacy. Syria 2011 is
-    cautionary—Assad survived but at catastrophic cost.
-    
-  - Revolutionary transition (0.20): Requires multiple failures: elite
+  - Revolutionary transition (0.35): Requires multiple failures: elite
     fragmentation AND security force defection AND mass mobilization.
-    1979 shows it can happen in Iran specifically. Soviet 1989-91 shows
-    how rapidly ideological regimes can collapse once threshold crossed.
-    Lower probability than succession crisis but higher than external
-    trigger.
+    1979 shows it can happen in Iran specifically. Higher probability
+    than in Russia because ideological exhaustion is more advanced and
+    population is more mobilized.
+    
+  - Failed succession crisis (0.15): Khamenei is 85+; succession will
+    eventually occur. Most successions will be managed (not triggering
+    this event). This branch captures scenarios where the succession
+    mechanism fails—factional deadlock, open conflict, institutional
+    breakdown. Lower probability because IRGC has strong interest in
+    managed transition.
     
   - External intervention trigger (0.10): Requires deliberate US/Israeli
     decision to strike AND that strike catalyzes regime collapse rather
@@ -374,7 +381,7 @@ severity_probability_rationale: |
 
 ## Impact Vector
 
-### Iran Impacts (Baseline: Managed Succession Crisis Branch)
+### Iran Impacts (Baseline: Popular Uprising Suppressed Branch)
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
@@ -416,8 +423,9 @@ Iran's nuclear program creates unique considerations:
 ### Proxy Network Effects
 
 Iran's regional proxy network (Hezbollah, Iraqi militias, Houthis, Hamas support) would be significantly affected:
-- **Managed transition**: Proxy support likely continues but may be disrupted during transition
+- **Popular uprising suppressed**: Proxy support likely continues but regime distraction may reduce coordination
 - **Revolutionary transition**: Proxies lose central coordination and funding; may fragment or seek new patrons
+- **Failed succession**: Proxies face uncertainty during crisis; direction unclear
 - **External intervention**: Proxies may be activated for retaliation before regime falls
 
 ### Durability Rationale
@@ -572,6 +580,7 @@ P(political stress) ↑ in receiving countries
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-19 | Revised severity branches; removed "managed succession crisis" | Smooth succession isn't regime crisis; replaced with "failed succession crisis" where mechanism breaks down |
 | 2025-12-19 | Initial Level 1 specification | Task 2.1.9 - Type 2 regime change event |
 
 ---

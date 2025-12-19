@@ -259,6 +259,7 @@ For hybrids, model the dominant mechanism and note the secondary.
 | Type 1 when pressure clearly accumulates | Reclassify as Type 2 |
 | Treating all state failures as identical | Each has different pressure variables and thresholds |
 | Investing effort in Type 3 resolution probability estimation | Accept uniform default; invest in aftermath specification instead |
+| **Leadership succession as discontinuity** | Smooth succession that maintains system continuity is NOT a discontinuity—it's normal political turnover. Only model succession as an event if the succession mechanism *fails* (factional conflict, institutional breakdown) or produces permanent/irreversible downstream effects. Khamenei dying and being replaced by another Supreme Leader through normal processes ≠ Iran regime change. Putin dying and being replaced by a managed transition ≠ Russia state failure. |
 
 ---
 
