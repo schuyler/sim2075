@@ -169,15 +169,15 @@ Financial crises are "once per decade" events at current pressure levels.
 | **F_EAS** | 0.25 | China financial stress is major global risk; regional contagion |
 | **F_EUR** | 0.20 | Eurozone fragmentation risk; banking sector vulnerabilities |
 | **F_CLIM** | 0.15 | Climate physical risks → stranded assets, insurance losses |
+| **F_MENA** | 0.12 | Oil shock → inflation → central bank tightening → financial stress (1973 precedent) |
 | **F_TECH** | 0.10 | Tech bubble dynamics; algorithmic trading amplification |
 | F_HLTH | 0.00 | Pandemic trigger captured in Type 1 floor, not factor loading |
 | F_FOOD | 0.00 | Indirect effect via inflation already in pressure function |
 | F_SAS | 0.00 | Marginal to global financial system |
-| F_MENA | 0.00 | Oil price channel captured elsewhere |
 | F_SSA | 0.00 | Marginal to global financial system |
 | F_LAM | 0.00 | Contagion risk lower post-1990s reforms |
 
-**Sum of squared loadings**: 0.87 ✓
+**Sum of squared loadings**: 0.88 ✓
 
 ### Loading Interpretation (Type 2)
 
@@ -186,6 +186,7 @@ Factors shock state variables that feed into pressure function:
 - High F_GPT → capital flight, sanctions → `current_account_imbalances` spike → pressure rises
 - High F_EAS → China stress → `asset_valuation` falls, contagion → pressure rises
 - High F_EUR → eurozone stress → banking sector pressure → European component of global pressure rises
+- High F_MENA → oil supply disruption → inflation shock → central bank tightening → financial stress (exogenous trigger pathway, partially captured in Type 1 floor but factor loading allows correlation with MENA draws)
 
 ---
 
@@ -197,7 +198,7 @@ Financial crises vary substantially in severity. Once crisis occurs, severity is
 severity_branches:
 
   - id: moderate
-    probability: 0.45
+    probability: 0.35
     description: |
       2000 dot-com or 2020 COVID-shock scale: Sharp market decline (25-40%),
       credit tightening, but rapid policy response prevents systemic collapse.
@@ -215,7 +216,7 @@ severity_branches:
       floor: 0.05
 
   - id: severe
-    probability: 0.40
+    probability: 0.50
     description: |
       2008 GFC or 1997 Asian Crisis scale: Major institutional failures,
       credit market seizure, significant real economy impact.
@@ -265,21 +266,23 @@ severity_branches:
         rationale: "1930s pattern: depression → political radicalization"
 
 severity_probability_rationale: |
-  Distribution based on historical crisis severity and policy response capacity:
+  Distribution based on historical crisis severity record:
   
-  - Moderate (0.45): Post-2008 regulatory improvements and central bank
-    experience make rapid response more likely. 2020 COVID shock showed
-    ability to stabilize quickly. Most crises now contained before systemic.
+  Historical sample (crises reaching threshold): ~1 catastrophic, 4 severe, 
+  3 moderate out of 8 major events since 1929. This suggests roughly 35/50/15.
+  
+  - Moderate (0.35): Rapid containment requires both policy competence AND
+    favorable conditions (not already in recession, central bank has room).
+    2020 showed it's possible but required unprecedented intervention.
     
-  - Severe (0.40): 2008-scale events still plausible despite improvements.
-    Shadow banking, interconnection, and novel instruments create channels
-    for contagion that regulation hasn't fully addressed.
+  - Severe (0.50): Most crises that reach the threshold end up severe.
+    Even with post-2008 improvements, shadow banking growth, central bank
+    balance sheet constraints, and interconnection complexity mean severe
+    outcomes remain the modal case.
     
   - Catastrophic (0.15): Requires policy failure (1930s-style procyclical
     response) OR unprecedented shock overwhelming response capacity.
     Less likely given institutional learning, but tail risk remains.
-    Could arise from: China hard landing + eurozone crisis + US political
-    dysfunction preventing response.
 ```
 
 ---
