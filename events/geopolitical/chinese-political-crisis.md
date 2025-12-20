@@ -51,16 +51,76 @@ Resolution sampled → Aftermath branches
 
 ### Pressure Function
 
+The pressure function combines **state-variable-driven components** (observable, tracked by the simulation) with **exogenous parameters** (unobservable, modified only by discrete events or time-based triggers).
+
+#### State-Variable Components (60% of pressure)
+
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `chn.regime_stability` | 0.25 | inverse | Composite legitimacy metric; captures accumulated erosion |
-| *economic_performance_gap* | 0.25 | linear | Gap between actual and expected growth; CCP legitimacy is performance-based |
-| *elite_cohesion_index* | 0.20 | inverse | Factional conflict indicators; visible purge intensity beyond normal |
-| *social_unrest_index* | 0.15 | threshold(high) | Protest frequency, scale, cross-class participation |
-| `chn.youth_unemployment` | 0.10 | linear | Youth alienation; historical pattern of student-led movements |
-| *succession_uncertainty* | 0.05 | linear | Unclear succession; contested legitimacy claims |
+| `chn.regime_stability` | 0.20 | inverse | Composite legitimacy metric; captures accumulated erosion |
+| `chn.gdp_growth` | 0.15 | deviation from 5% baseline | Performance legitimacy; CCP has conditioned expectations to ~5% growth |
+| `chn.protest_activity` | 0.12 | linear | Observable unrest; proxy for social mobilization |
+| `chn.unemployment_rate` | 0.08 | linear | Economic stress; correlates with youth unemployment |
+| `chn.inflation_rate` | 0.05 | threshold (>5%) | Price instability erodes living standards |
 
-*Note: Variables in italics require definition or derivation from observable proxies. `chn.regime_stability` is affected by CHINESE_ECONOMIC_CRISIS through cascade.*
+**State-driven pressure contribution:**
+```
+P_state = 0.20 × (100 - regime_stability) / 100
+        + 0.15 × max(0, (5 - gdp_growth)) / 5
+        + 0.12 × protest_activity / 100
+        + 0.08 × unemployment_rate / 20
+        + 0.05 × max(0, (inflation_rate - 5)) / 10
+```
+
+All terms normalized to 0-1 range; sum weighted by component weights.
+
+#### Exogenous Parameters (40% of pressure)
+
+These parameters cannot be observed or derived from state variables. They are initialized at simulation start and modified only by specific events or time-based triggers.
+
+| Parameter | Initial Value | Range | Modifying Events/Triggers |
+|-----------|---------------|-------|---------------------------|
+| `elite_cohesion` | 75 | 0-100 | CHINESE_ECONOMIC_CRISIS: -15 for 3yr; TAIWAN_CONFLICT (defeat): -20 for 5yr |
+| `succession_uncertainty` | 25 | 0-100 | Leader age >80: +20; Leader incapacitation: +50; Successful succession: reset to 15 |
+
+**Exogenous pressure contribution:**
+```
+P_exogenous = 0.25 × (100 - elite_cohesion) / 100
+            + 0.15 × succession_uncertainty / 100
+```
+
+#### Combined Pressure Function
+
+```
+P_total = P_state + P_exogenous
+```
+
+Both components are on 0-1 scale; total pressure is 0-100 when multiplied by 100.
+
+#### Exogenous Parameter Dynamics
+
+**Elite Cohesion (`elite_cohesion`)**
+
+Represents internal CCP factional alignment. Unobservable from outside; inferred only through visible purges, defections, or policy paralysis.
+
+| Trigger | Effect | Duration | Mechanism |
+|---------|--------|----------|-----------|
+| CHINESE_ECONOMIC_CRISIS fires | -15 points | 3 years (then recovers 5/yr) | Economic failure creates blame dynamics; factions form around response |
+| TAIWAN_CONFLICT (defeat/stalemate) | -20 points | 5 years (then recovers 4/yr) | Military failure triggers recrimination; hardliners vs. reformists |
+| Time since last crisis | +2 points/decade (max 85) | Ongoing | Gradual consolidation absent shocks |
+
+**Succession Uncertainty (`succession_uncertainty`)**
+
+Represents clarity of power transition. Increases with leader age; spikes on incapacitation; resets on successful transition.
+
+| Trigger | Effect | Duration | Mechanism |
+|---------|--------|----------|-----------|
+| Leader age 75-79 | Base +10 points | Ongoing | Actuarial risk increases |
+| Leader age 80+ | Base +25 points | Ongoing | Mortality risk substantial |
+| Leader incapacitation (hypothetical event) | +50 points | Until succession resolved | No clear successor; power vacuum |
+| Successful succession | Reset to 15 | Permanent until next cycle | New leader consolidates |
+
+**Implementation Note:** These parameters require event definitions for "leader incapacitation" and "successful succession" that don't currently exist in the event catalog. For Phase 2 implementation, they can be: (1) treated as fixed at initial values (simplified model), (2) implemented as time-varying functions of simulation year (leader age proxy), or (3) added as simple stochastic events (low priority).
 
 ### Threshold Specification
 
@@ -73,17 +133,20 @@ Resolution sampled → Aftermath branches
 
 ### Current Pressure Assessment (2025)
 
-**Estimated pressure**: ~35-40 on 0-100 scale
+**Estimated pressure**: ~37 on 0-100 scale
 
-| Component | Status | Contribution |
-|-----------|--------|--------------|
-| Economic performance | Slowing but not crisis; property stress managed | Moderate |
-| Elite cohesion | Consolidated under Xi; no visible factional challenge | Low |
-| Social unrest | Elevated (COVID protests, youth unemployment) but controlled | Moderate |
-| Succession | Xi removed term limits; uncertainty deferred but not eliminated | Low |
-| Regime stability | Stressed but functional | Moderate |
+| Component | Value | Contribution |
+|-----------|-------|--------------|
+| `chn.regime_stability` | ~70 | 0.20 × 0.30 = 0.06 |
+| `chn.gdp_growth` | ~4.5% | 0.15 × 0.10 = 0.015 |
+| `chn.protest_activity` | ~25 | 0.12 × 0.25 = 0.03 |
+| `chn.unemployment_rate` | ~5% | 0.08 × 0.25 = 0.02 |
+| `chn.inflation_rate` | ~2% | 0.05 × 0 = 0 |
+| `elite_cohesion` (exogenous) | 75 | 0.25 × 0.25 = 0.0625 |
+| `succession_uncertainty` (exogenous) | 25 | 0.15 × 0.25 = 0.0375 |
+| **Total** | | **~0.37** (37 on 0-100 scale) |
 
-Distance to threshold (~40 points) is substantial. Crisis is not imminent under current baseline conditions.
+Distance to threshold (~80) is substantial. Crisis is not imminent under current baseline conditions.
 
 ### Minimum Probability
 
@@ -278,107 +341,148 @@ Lower loading sum (~0.43) reflects that Chinese political crisis is more domesti
 
 ## Impact Vector
 
-### Global Impacts
+### Analog Basis for Magnitude Estimates
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `global_geopolitical_uncertainty` | ↑ | +40 ± 20 (index) | immediate | resolution_dependent |
-| `global_trade_volume` | ↓ | -8 ± 4% | delayed(6mo) | decaying: half_life=3yr |
-| *nuclear_security_risk* | ↑ | +25 ± 15 (index) | immediate | resolution_dependent |
-| `global_financial_volatility` | ↑ | +60 ± 25% (VIX equivalent) | immediate | decaying: half_life=1yr |
+Impact magnitudes are derived from historical analogs and transmission analysis, not invention. Key reference cases:
 
-### China Impacts
+| Analog | Event Type | Key Observations | Relevance |
+|--------|------------|------------------|-----------|
+| **USSR Collapse (1991)** | Regime collapse + fragmentation | GDP -40% over 5 years (Russia); ~25M displaced across former USSR; nuclear command fragmented then reconsolidated | Collapse branches |
+| **Indonesia 1998** | Economic-political crisis | GDP -13% single year; Suharto fell; minimal territorial change; 2-3 year recovery | Transformation branch |
+| **Tiananmen 1989** | Stabilization via repression | GDP growth dip ~2pp for 2 years; international sanctions ~3 years; no regime change | Stabilization branch |
+| **Russia post-2022** | International isolation analog | Sanctions level ~70-80; GDP -2% to -5%; permanent growth penalty ~1-2pp | Isolation effects |
+| **Yugoslavia 1991-95** | State fragmentation | Multiple successor states; ~140K deaths; ~4M displaced; 5+ year conflict | Fragmentation branch |
+| **South Korea 1987** | Successful transformation | Democratic transition; GDP growth accelerated post-transition; international integration improved | Transformation success case |
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `chn.gdp_growth` | ↓ | -4 ± 2 pp | immediate | resolution_dependent |
-| `chn.regime_stability` | ↓ | -40 ± 15 | immediate | resolution_dependent |
-| `chn.governance_effectiveness` | ↓ | -30 ± 15 | immediate | resolution_dependent |
-| *chn.capital_flight* | ↑ | +$500B ± 200B | immediate | decaying: half_life=2yr |
-| *chn.territorial_integrity* | ↓ | Variable by resolution | delayed(1yr) | resolution_dependent |
+### Global Impacts (All Resolutions)
+
+Immediate effects of crisis onset, before resolution is determined.
+
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `us_china_tension` | ↑ | +25 ± 10 points (0-100 scale) | immediate | resolution_dependent | Chinese instability increases great power uncertainty; cf. Russia 1991 elevated tensions |
+| `global_trade_volume` | ↓ | -6 ± 3% | delayed(6mo) | decaying: half_life=3yr | China is ~15% of world trade; supply chain disruption + demand collapse; USSR collapse saw ~10% FSU trade collapse |
+| `nuclear_stability` | ↓ | -15 ± 8 points (0-100 scale) | immediate | resolution_dependent | Command uncertainty during political crisis; cf. USSR 1991 nuclear concerns |
+| `global_credit_spread` | ↑ | +80 ± 40 bps | immediate | decaying: half_life=1yr | 2008 GFC saw +300bps; this is second-largest economy, expect ~25% of that magnitude |
+| `semiconductor_supply` | ↓ | -8 ± 4% | delayed(3mo) | decaying: half_life=2yr | China is ~25% of semiconductor demand; supply chain uncertainty; less severe than Taiwan conflict |
+
+### China Impacts (All Resolutions)
+
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `chn.gdp_growth` | ↓ | -4 ± 2 pp | immediate | resolution_dependent | Indonesia 1998: -13% GDP (but from financial crisis); Tiananmen: ~2pp dip; midpoint for political crisis |
+| `chn.regime_stability` | ↓ | -35 ± 12 points (0-100) | immediate | resolution_dependent | By definition, crisis crossing means regime stability severely degraded |
+| `chn.state_capacity` | ↓ | -20 ± 10 points (0-100) | immediate | resolution_dependent | State resources diverted to crisis management; institutional function degraded |
+| `chn.reserves_foreign` | ↓ | -6 ± 3 months of imports | gradual(1yr) | decaying: half_life=3yr | Capital flight depletes reserves; China has ~15mo baseline; could lose 30-50% |
+| `chn.current_account` | ↓ | -4 ± 2 pp GDP | delayed(6mo) | decaying: half_life=2yr | Trade disruption + capital flight; cf. Asian crisis countries |
+| `chn.fdi_net` | ↓ | -3 ± 1.5 pp GDP | delayed(6mo) | resolution_dependent | Investment freeze during uncertainty; Indonesia 1998 saw FDI collapse |
 
 ### Resolution-Specific Impacts
 
-**Stabilization via Extraordinary Measures:**
+#### Stabilization via Extraordinary Measures
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `chn.regime_stability` | — | Returns to 60 ± 10 (from crisis low) | gradual(2yr) | permanent |
-| `chn.governance_effectiveness` | ↓ | -20 ± 10 (security focus crowds out governance) | gradual(1yr) | permanent |
-| *chn.international_isolation* | ↑ | +35 ± 15 | delayed(6mo) | permanent |
-| *chn.economic_dynamism* | ↓ | -25 ± 10 | gradual(2yr) | permanent |
-| `chn.gdp_growth` | ↓ | -2 ± 1 pp (permanent growth penalty) | gradual(2yr) | permanent |
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `chn.regime_stability` | — | Recovers to 55 ± 10 (from crisis low ~30) | gradual(2yr) | permanent | Security state achieves stability but at lower baseline; cf. Belarus post-2020 |
+| `chn.state_capacity` | ↓ | -15 ± 8 (permanent, from pre-crisis) | gradual(1yr) | permanent | Security focus crowds out developmental capacity; North Korea model |
+| `chn.civil_liberties` | ↓ | -25 ± 10 points (0-100) | immediate | permanent | Martial law, information lockdown, political repression |
+| `chn.sanctions_level` | ↑ | +40 ± 15 points (0-100) | delayed(6mo) | permanent | International response to repression; cf. Russia post-2022 (~70-80), Myanmar post-2021 |
+| `chn.gdp_growth` | ↓ | -1.5 ± 0.5 pp (permanent trajectory) | gradual(2yr) | permanent | Security overhead + isolation penalty; Russia post-2022 ~1-2pp permanent loss |
+| `chn.fdi_net` | ↓ | -2 ± 1 pp GDP (permanent) | gradual(1yr) | permanent | International isolation deters investment; sanctions effect |
 
 Regime survives but at cost: reduced economic dynamism, international isolation, permanent security state overhead.
 
-**Regime Transformation:**
+#### Regime Transformation
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `chn.regime_stability` | — | Highly uncertain; initial instability then potential improvement | gradual(5yr) | shock_vulnerable |
-| `chn.governance_effectiveness` | — | -15 ± 20 short-term; uncertain long-term | gradual(3yr) | shock_vulnerable |
-| *chn.political_freedom* | ↑ | +30 ± 20 | gradual(5yr) | maintenance_required |
-| *chn.international_integration* | ↑ | +20 ± 15 | gradual(3yr) | maintenance_required |
-| `chn.gdp_growth` | — | High uncertainty; reform could unlock growth or create chaos | gradual(3yr) | shock_vulnerable |
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `chn.regime_stability` | — | 40 ± 15 short-term; trajectory uncertain | gradual(3yr) | shock_vulnerable | Transition creates instability; South Korea 1987-92 was rocky |
+| `chn.state_capacity` | ↓ | -10 ± 8 short-term | gradual(2yr) | shock_vulnerable | Institutional restructuring reduces near-term effectiveness |
+| `chn.civil_liberties` | ↑ | +25 ± 15 points (0-100) | gradual(5yr) | maintenance_required: annual_failure_prob=0.05 | Liberalization gains; Taiwan/Korea path; reversible |
+| `chn.sanctions_level` | ↓ | -15 ± 8 points (0-100) | delayed(1yr) | maintenance_required | International engagement improves; contingent on continued reform |
+| `chn.gdp_growth` | — | High uncertainty: -1 to +2 pp vs. baseline | gradual(3yr) | shock_vulnerable | Reform could unlock growth (Taiwan) or create chaos (USSR); wide range |
 
 High variance outcome. Could be Taiwan/South Korea path (successful democratization, economic growth) or could be unstable transition that fails.
 
-**Regime Collapse:**
+#### Regime Collapse
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `chn.regime_stability` | ↓ | Undefined (regime ceases to exist) | immediate | N/A |
-| `chn.gdp_real` | ↓ | -15 ± 8% (cumulative during transition) | gradual(3yr) | permanent |
-| *chn.territorial_integrity* | ↓ | See aftermath branches | delayed(1yr) | permanent |
-| *nuclear_security_risk* | ↑ | +50 ± 25 | immediate | decaying: half_life=5yr |
-| *global_refugee_flows* | ↑ | +5M ± 3M | delayed(1yr) | decaying: half_life=10yr |
+Collapse impacts depend on aftermath branch (Revolutionary Transition, State Fragmentation, Military Takeover). Common immediate effects:
 
-Collapse implies successor state(s) with uncertain properties. Territorial integrity particularly vulnerable — Tibet, Xinjiang, and Taiwan situations fundamentally altered.
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `chn.regime_stability` | ↓ | Falls to <20 (regime ceases to exist in prior form) | immediate | N/A | Definitional |
+| `chn.gdp_real` | ↓ | -20 ± 8% (cumulative over transition) | gradual(3yr) | permanent | USSR: -40% over 5 years; Yugoslavia: -25%; China larger/more integrated |
+| `chn.state_capacity` | ↓ | -40 ± 15 points (0-100) | immediate | decaying: half_life=10yr | State institutions collapse; rebuilding takes decade+ |
+| `chn.institutional_quality` | ↓ | -1.5 ± 0.5 (on -2.5 to +2.5 scale) | immediate | decaying: half_life=15yr | Institutional destruction; Russia took 15+ years to partial recovery |
+
+**State Fragmentation branch additional impacts:**
+
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `nuclear_stability` (global) | ↓ | -35 ± 15 points | immediate | decaying: half_life=5yr | Multiple actors may control arsenal portions; USSR precedent but more warheads |
+| `active_major_conflicts` (global) | ↑ | +2 ± 1 | delayed(1yr) | decaying: half_life=10yr | Internal conflicts in fragmenting state; cf. Yugoslavia |
 
 ### Regional Impacts
 
-**Hong Kong:**
+#### East Asia (Japan, South Korea)
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `hkg.governance` | — | Determined by China resolution | immediate | resolution_dependent |
-| `hkg.gdp_growth` | ↓ | -8 ± 4 pp | immediate | decaying: half_life=3yr |
-| *hkg.autonomy* | — | Collapse branch could restore; Stabilization eliminates | delayed(1yr) | permanent |
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `jpn.gdp_growth` | ↓ | -1.5 ± 0.8 pp | delayed(3mo) | decaying: half_life=2yr | China is Japan's largest trade partner (~25% exports); demand shock |
+| `kor.gdp_growth` | ↓ | -2.0 ± 1.0 pp | delayed(3mo) | decaying: half_life=2yr | Korea more China-dependent than Japan (~30% exports) |
+| `jpn.military_spending` | ↑ | +0.4 ± 0.2 pp GDP | gradual(2yr) | permanent | Security reassessment; already trending up |
+| `kor.military_spending` | ↑ | +0.5 ± 0.3 pp GDP | gradual(2yr) | permanent | Peninsula uncertainty; North Korea opportunism risk |
 
-**Taiwan:**
+#### Taiwan
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `twn.invasion_risk` | — | Resolution-dependent; see cascade section | immediate | resolution_dependent |
-| `twn.international_status` | — | Collapse could enable independence; Stabilization increases pressure | delayed(1yr) | permanent |
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `twn.gdp_growth` | ↓ | -3.0 ± 1.5 pp | immediate | decaying: half_life=2yr | Cross-strait trade disruption; uncertainty premium |
+| `twn.regime_stability` | — | Resolution-dependent; see Cascade Effects | — | — | Stabilization increases threat; Collapse (Fragmentation) reduces it |
+| `twn.alliance_west` | ↑ | +10 ± 5 points (0-100) | gradual(1yr) | permanent | Accelerated US/Western engagement regardless of resolution |
 
-**East Asia (Japan, Korea):**
+#### United States
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `[country].gdp_growth` | ↓ | -2.0 ± 1.0 pp | delayed(3mo) | decaying: half_life=2yr |
-| `[country].defense_spending` | ↑ | +0.5 ± 0.3 pp GDP | gradual(2yr) | permanent |
-| *[country].china_trade_share* | ↓ | -10 ± 5 pp | gradual(3yr) | permanent |
+| Variable | Direction | Magnitude | Onset | Durability | Derivation |
+|----------|-----------|-----------|-------|------------|------------|
+| `usa.gdp_growth` | ↓ | -0.6 ± 0.3 pp | delayed(6mo) | decaying: half_life=2yr | Trade disruption, financial contagion; US less China-exposed than East Asia |
+| `usa.military_spending` | ↑ | +0.3 ± 0.2 pp GDP | gradual(2yr) | permanent | Strategic reassessment regardless of resolution |
 
-**United States:**
+### Hong Kong Note
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `usa.gdp_growth` | ↓ | -0.8 ± 0.4 pp | delayed(6mo) | decaying: half_life=2yr |
-| `usa.defense_posture` | ↑ | Significant reassessment | delayed(1yr) | permanent |
-| *usa.china_policy* | — | Fundamentally restructured; resolution-dependent direction | immediate | permanent |
+Hong Kong is not a separately modeled entity in the 40-country framework. Its fate is analytically important but tracked narratively rather than through state variables:
+
+- **Stabilization**: Hong Kong autonomy eliminated; full mainland integration
+- **Transformation**: Possible restoration of some autonomy under reformist leadership
+- **Collapse (Fragmentation)**: Status contested; possible de facto independence or contested control
+
+Economic effects on Hong Kong are partially captured through `chn.gdp_real` (Hong Kong is ~2% of China's GDP) and through global financial variables (Hong Kong as financial hub).
+
+### Cascade Effects on Territorial Outcomes
+
+Territorial integrity is not a continuous state variable but a discrete outcome. The State Fragmentation aftermath branch triggers cascade effects on other events:
+
+| Cascade Target | Effect | Mechanism |
+|----------------|--------|-----------|
+| TAIWAN_CONFLICT | -1.5% for 5 years | No unified state to mount invasion; de facto independence |
+| (Future) TIBETAN_INDEPENDENCE | Would trigger if event existed | Power vacuum enables separatism |
+| (Future) XINJIANG_CONFLICT | Would trigger if event existed | Similar dynamics |
+| PAKISTAN_STATE_FAILURE | +1.0% for 5 years | CPEC collapses; Chinese support capacity eliminated |
+
+These cascade targets represent gaps in the current event catalog. For Phase 2.3 (Additional Events), consider adding events for regional separatism contingent on Chinese state weakness.
 
 ### Durability Specifications
 
 | Impact Category | Durability Type | Parameters | Rationale |
 |-----------------|-----------------|------------|-----------|
 | Regime stability (Stabilization) | permanent | — | Security state is a new equilibrium |
-| International isolation (Stabilization) | permanent | — | Relationships fundamentally damaged |
-| Growth penalty (Stabilization) | permanent | — | Security overhead is structural |
-| Political reforms (Transformation) | maintenance_required | annual_failure_prob: 5% | Reforms can be reversed |
-| Economic disruption | decaying | half_life=3yr | Markets adjust |
-| Nuclear security risk | decaying | half_life=5yr | New command structures establish |
-| Territorial changes (Collapse) | permanent | — | Borders don't easily revert |
+| Sanctions/isolation (Stabilization) | permanent | — | Relationships fundamentally damaged; cf. Russia post-2022 |
+| Growth trajectory (Stabilization) | permanent | — | Security overhead and isolation are structural |
+| Civil liberties gains (Transformation) | maintenance_required | annual_failure_prob: 5% | Reforms can be reversed under stress |
+| GDP disruption (all branches) | decaying | half_life=2-3yr | Markets adjust; investment returns |
+| Nuclear stability (Collapse) | decaying | half_life=5yr | New command structures eventually establish |
+| Institutional quality (Collapse) | decaying | half_life=15yr | Institutions rebuild slowly; Russia reference |
+| State capacity (Collapse) | decaying | half_life=10yr | Government effectiveness recovers gradually |
 
 ---
 
@@ -618,6 +722,7 @@ Both events affect China but are distinct:
 |-------|-------|
 | **Tier** | Level 1 |
 | **Last updated** | 2025-12-20 |
+| **Revision note** | Pressure function and impact vector rewritten to use only state-specification-compliant variables and entities. Exogenous parameters (elite_cohesion, succession_uncertainty) now explicit with event-driven modification rules. Hong Kong removed as modeled entity; territorial outcomes moved to cascade effects. |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | High-impact event with complex resolution dynamics; Level 2 could model elite faction dynamics, succession scenarios, and military loyalty with greater specificity |
 
