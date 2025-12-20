@@ -51,76 +51,17 @@ Resolution sampled → Aftermath branches
 
 ### Pressure Function
 
-The pressure function combines **state-variable-driven components** (observable, tracked by the simulation) with **exogenous parameters** (unobservable, modified only by discrete events or time-based triggers).
-
-#### State-Variable Components (60% of pressure)
-
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `chn.regime_stability` | 0.20 | inverse | Composite legitimacy metric; captures accumulated erosion |
-| `chn.gdp_growth` | 0.15 | deviation from 5% baseline | Performance legitimacy; CCP has conditioned expectations to ~5% growth |
-| `chn.protest_activity` | 0.12 | linear | Observable unrest; proxy for social mobilization |
-| `chn.unemployment_rate` | 0.08 | linear | Economic stress; correlates with youth unemployment |
-| `chn.inflation_rate` | 0.05 | threshold (>5%) | Price instability erodes living standards |
+| `chn.regime_stability` | 0.35 | inverse | Composite legitimacy metric; captures accumulated erosion |
+| `chn.gdp_growth` | 0.25 | deviation from 5% baseline | Performance legitimacy; CCP's implicit social contract requires growth |
+| `chn.protest_activity` | 0.20 | linear | Observable unrest; 1989 precedent; cross-class coordination multiplies impact |
+| `chn.unemployment_rate` | 0.15 | linear | Economic stress; proxy for youth alienation and social contract failure |
+| `chn.institutional_quality` | 0.05 | inverse | Governance decay signal; corruption and state capacity erosion |
 
-**State-driven pressure contribution:**
-```
-P_state = 0.20 × (100 - regime_stability) / 100
-        + 0.15 × max(0, (5 - gdp_growth)) / 5
-        + 0.12 × protest_activity / 100
-        + 0.08 × unemployment_rate / 20
-        + 0.05 × max(0, (inflation_rate - 5)) / 10
-```
+*Note: `chn.regime_stability` is affected by CHINESE_ECONOMIC_CRISIS through cascade (+2.0% probability modifier for 5 years).*
 
-All terms normalized to 0-1 range; sum weighted by component weights.
-
-#### Exogenous Parameters (40% of pressure)
-
-These parameters cannot be observed or derived from state variables. They are initialized at simulation start and modified only by specific events or time-based triggers.
-
-| Parameter | Initial Value | Range | Modifying Events/Triggers |
-|-----------|---------------|-------|---------------------------|
-| `elite_cohesion` | 75 | 0-100 | CHINESE_ECONOMIC_CRISIS: -15 for 3yr; TAIWAN_CONFLICT (defeat): -20 for 5yr |
-| `succession_uncertainty` | 25 | 0-100 | Leader age >80: +20; Leader incapacitation: +50; Successful succession: reset to 15 |
-
-**Exogenous pressure contribution:**
-```
-P_exogenous = 0.25 × (100 - elite_cohesion) / 100
-            + 0.15 × succession_uncertainty / 100
-```
-
-#### Combined Pressure Function
-
-```
-P_total = P_state + P_exogenous
-```
-
-Both components are on 0-1 scale; total pressure is 0-100 when multiplied by 100.
-
-#### Exogenous Parameter Dynamics
-
-**Elite Cohesion (`elite_cohesion`)**
-
-Represents internal CCP factional alignment. Unobservable from outside; inferred only through visible purges, defections, or policy paralysis.
-
-| Trigger | Effect | Duration | Mechanism |
-|---------|--------|----------|-----------|
-| CHINESE_ECONOMIC_CRISIS fires | -15 points | 3 years (then recovers 5/yr) | Economic failure creates blame dynamics; factions form around response |
-| TAIWAN_CONFLICT (defeat/stalemate) | -20 points | 5 years (then recovers 4/yr) | Military failure triggers recrimination; hardliners vs. reformists |
-| Time since last crisis | +2 points/decade (max 85) | Ongoing | Gradual consolidation absent shocks |
-
-**Succession Uncertainty (`succession_uncertainty`)**
-
-Represents clarity of power transition. Increases with leader age; spikes on incapacitation; resets on successful transition.
-
-| Trigger | Effect | Duration | Mechanism |
-|---------|--------|----------|-----------|
-| Leader age 75-79 | Base +10 points | Ongoing | Actuarial risk increases |
-| Leader age 80+ | Base +25 points | Ongoing | Mortality risk substantial |
-| Leader incapacitation (hypothetical event) | +50 points | Until succession resolved | No clear successor; power vacuum |
-| Successful succession | Reset to 15 | Permanent until next cycle | New leader consolidates |
-
-**Implementation Note:** These parameters require event definitions for "leader incapacitation" and "successful succession" that don't currently exist in the event catalog. For Phase 2 implementation, they can be: (1) treated as fixed at initial values (simplified model), (2) implemented as time-varying functions of simulation year (leader age proxy), or (3) added as simple stochastic events (low priority).
+**Unobservable factors**: Elite cohesion and succession dynamics significantly affect crisis probability but cannot be tracked through state variables. These contribute to the wide uncertainty bounds (0.4%-1.5%) and low confidence rating. Discrete observable events (visible factional purge, leader incapacitation) would trigger cascade modifiers rather than continuous pressure accumulation — such events are candidates for Phase 2.3 expansion.
 
 ### Threshold Specification
 
@@ -133,20 +74,17 @@ Represents clarity of power transition. Increases with leader age; spikes on inc
 
 ### Current Pressure Assessment (2025)
 
-**Estimated pressure**: ~37 on 0-100 scale
+**Estimated pressure**: ~35-40 on 0-100 scale
 
-| Component | Value | Contribution |
-|-----------|-------|--------------|
-| `chn.regime_stability` | ~70 | 0.20 × 0.30 = 0.06 |
-| `chn.gdp_growth` | ~4.5% | 0.15 × 0.10 = 0.015 |
-| `chn.protest_activity` | ~25 | 0.12 × 0.25 = 0.03 |
-| `chn.unemployment_rate` | ~5% | 0.08 × 0.25 = 0.02 |
-| `chn.inflation_rate` | ~2% | 0.05 × 0 = 0 |
-| `elite_cohesion` (exogenous) | 75 | 0.25 × 0.25 = 0.0625 |
-| `succession_uncertainty` (exogenous) | 25 | 0.15 × 0.25 = 0.0375 |
-| **Total** | | **~0.37** (37 on 0-100 scale) |
+| Component | Status | Contribution |
+|-----------|--------|--------------|
+| Economic performance | Slowing but not crisis; property stress managed | Moderate |
+| Elite cohesion | Consolidated under Xi; no visible factional challenge | Low (unobservable) |
+| Social unrest | Elevated (COVID protests, youth unemployment) but controlled | Moderate |
+| Succession | Xi removed term limits; uncertainty deferred but not eliminated | Low (unobservable) |
+| Regime stability | Stressed but functional | Moderate |
 
-Distance to threshold (~80) is substantial. Crisis is not imminent under current baseline conditions.
+Distance to threshold (~40 points) is substantial. Crisis is not imminent under current baseline conditions.
 
 ### Minimum Probability
 
@@ -331,7 +269,7 @@ Collapse doesn't mean the state disappears — successor regime(s) emerge with u
 
 Lower loading sum (~0.43) reflects that Chinese political crisis is more domestically-driven than externally-driven. International factors matter (F_FIN, F_GPT, F_EAS) but core dynamics are internal: elite cohesion, succession, social contract.
 
-**F_FIN (0.40)**: Global financial stress is the primary external factor because CCP legitimacy rests heavily on economic performance. High F_FIN years create external demand shocks, capital flight pressure, and reduce policy space. The factor operates through `chn.gdp_growth` and `chn.unemployment` which feed the pressure function.
+**F_FIN (0.40)**: Global financial stress is the primary external factor because CCP legitimacy rests heavily on economic performance. High F_FIN years create external demand shocks, capital flight pressure, and reduce policy space. The factor operates through `chn.gdp_growth` and `chn.unemployment_rate` which feed the pressure function.
 
 **F_GPT (0.35)**: Great power tension affects China through trade restrictions, technology access, and geopolitical pressure. Can have complex effects — external threat may unify elite (reduce pressure) or create scapegoats when policies fail (increase pressure). Net effect is pressure-increasing because it constrains economic options.
 
@@ -644,9 +582,9 @@ The relationship is bidirectional and resolution-dependent:
 
 | Taiwan Outcome | Effect on Political Crisis | Duration |
 |----------------|---------------------------|----------|
-| Victory (reunification) | -1.0% | 5 years | Regime legitimacy reinforced |
-| Defeat/Humiliation | +3.0% | 3 years | Nationalist legitimacy shattered; elite blame |
-| Stalemate | +1.0% | 3 years | Costly non-victory; blame dynamics |
+| Victory (reunification) | -1.0% | 5 years |
+| Defeat/Humiliation | +3.0% | 3 years |
+| Stalemate | +1.0% | 3 years |
 
 ---
 
@@ -656,7 +594,7 @@ The relationship is bidirectional and resolution-dependent:
 
 **Mechanism**: Crisis stress exposes and amplifies elite factional divisions. Normal bargaining mechanisms fail when stakes are existential. Military/security loyalty becomes contested.
 
-**Key variables affected**: `chn.regime_stability`, elite cohesion, military loyalty
+**Key variables affected**: `chn.regime_stability`, `chn.state_capacity`
 
 **Resolution depends on**: Which elite faction controls security forces; whether military remains unified; external intervention posture
 
@@ -664,7 +602,7 @@ The relationship is bidirectional and resolution-dependent:
 
 **Mechanism**: Mass unrest (urban protests, rural grievances, ethnic mobilization) creates pressure that exceeds suppression capacity. Cross-class, cross-regional coordination multiplies impact.
 
-**Key variables affected**: Social unrest index, regime capacity, economic activity
+**Key variables affected**: `chn.protest_activity`, `chn.regime_stability`
 
 **Historical precedent**: 1989 protests; COVID protests 2022 (limited but notable)
 
@@ -722,7 +660,7 @@ Both events affect China but are distinct:
 |-------|-------|
 | **Tier** | Level 1 |
 | **Last updated** | 2025-12-20 |
-| **Revision note** | Pressure function and impact vector rewritten to use only state-specification-compliant variables and entities. Exogenous parameters (elite_cohesion, succession_uncertainty) now explicit with event-driven modification rules. Hong Kong removed as modeled entity; territorial outcomes moved to cascade effects. |
+| **Revision note** | Pressure function and impact vector rewritten to use only state-specification-compliant variables and entities. Unobservable factors (elite cohesion, succession uncertainty) acknowledged as contributors to wide probability bounds rather than modeled as separate parameters. Hong Kong removed as modeled entity; territorial outcomes moved to cascade effects. |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | High-impact event with complex resolution dynamics; Level 2 could model elite faction dynamics, succession scenarios, and military loyalty with greater specificity |
 
