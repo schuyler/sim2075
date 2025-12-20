@@ -137,6 +137,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 |-------|------|-------------|--------|
 | [[events/financial/global-financial-crisis]] | Type 1/2 | ~3.0% | Level 1 complete |
 | [[events/financial/dollar-reserve-crisis]] | Type 2 | ~1.5% | Level 1 complete |
+| [[events/financial/chinese-economic-crisis]] | Type 2 | ~2.0% | Level 1 complete |
 
 ### Health Events
 
