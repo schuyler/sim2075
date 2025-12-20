@@ -289,6 +289,26 @@ Transition disruption but strategic positioning for multipolar system; relativel
 
 The crisis event triggers one of three post-event trajectories, determined by policy response and external conditions.
 
+### Branch Probability Calibration Note
+
+**Entropy maximization default**: With three branches and no calibrating data, the principled default would be 33.3% / 33.3% / 33.3%.
+
+**Ordinal adjustment rationale**: We deviate from entropy based on structural reasoning about coordination difficulty:
+
+| Branch | Coordination Required | Structural Difficulty |
+|--------|----------------------|----------------------|
+| Disorderly Collapse | None (passive failure) | Low—requires only that things go wrong |
+| Managed Crisis | Unilateral (Fed/Treasury) | Medium—requires competent response by single government |
+| Bretton Woods III | Multilateral (US + China + EU + Japan) | High—requires rivals to cooperate on burden-sharing |
+
+This ordering suggests P(Bretton Woods III) < P(Managed) < P(Disorderly), with Bretton Woods III notably lower because getting four great powers to agree during a crisis is mechanically harder than one government managing its own response.
+
+**Reference class support**: International institutional redesign is rare in the historical reference class of financial crises. Bretton Woods I required World War II; the 2008 crisis produced coordination but no architectural redesign; the 1997 Asian crisis produced no new framework. "Managed but painful adjustment" is the modal outcome.
+
+**Cardinal uncertainty**: The ordinal reasoning supports the direction of adjustment but provides no basis for specific probabilities. The assigned values (35% / 55% / 10%) are placeholders that respect the ordering while acknowledging we cannot distinguish between, say, 30/55/15 and 40/50/10 on principled grounds.
+
+**Recommendation**: Sensitivity analysis should test whether aftermath branch probabilities materially affect tail outcomes. If they do, invest in better calibration.
+
 ### Branch 1: Disorderly Collapse
 
 **Probability given event**: 35%
