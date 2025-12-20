@@ -81,7 +81,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.1.7** | Russia State Failure | Type 2 | ✅ | — | Level 1 complete; [[events/geopolitical/russia-state-failure]] |
 | **2.1.8** | Saudi Regime Instability | Type 2 | ✅ | — | Level 1 complete; [[events/geopolitical/saudi-regime-instability]] |
 | **2.1.9** | Iran Regime Change | Type 2 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/iran-regime-change]] |
-| **2.1.10** | Turkey Political Crisis | Type 2 | 🔲 | — | |
+| **2.1.10** | Turkey Political Crisis | Type 2 | ✅ | — | Level 1 complete; [[events/geopolitical/turkey-political-crisis]] |
 | **2.1.11** | Dollar Reserve Crisis | Type 2 | 🔲 | — | Research doc exists (BRICS de-dollarization) |
 | **2.1.12** | Chinese Economic Crisis | Type 2 | 🔲 | — | |
 | **2.1.13** | Chinese Political Crisis | Type 2/3 | 🔲 | 1.1 | May have Type 3 elements |
@@ -170,6 +170,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
+| Dec 2025 | Task 2.1.10: Turkey Political Crisis | Level 1 complete; [[events/geopolitical/turkey-political-crisis]]; Type 2 threshold, F_MENA/F_FIN/F_EUR/F_GPT drivers, currency vulnerability and Kurdish dimension |
 | Dec 2025 | Task 2.1.9: Iran Regime Change | Level 1 complete; [[events/geopolitical/iran-regime-change]]; Type 2 threshold, F_MENA/F_GPT/F_CLIM drivers, water crisis emphasis |
 | Dec 2025 | Task 2.1.8: Saudi Regime Instability | Level 1 complete; [[events/geopolitical/saudi-regime-instability]]; Type 2 threshold, F_MENA/F_FIN/F_CLIM drivers, lower probability due to financial cushion |
 | Dec 2025 | Task 2.1.7: Russia State Failure | Level 1 complete; [[events/geopolitical/russia-state-failure]]; Type 2 threshold, F_GPT/F_EUR drivers, nuclear security considerations |
