@@ -170,6 +170,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
+| Dec 2025 | Task 2.1.13 Compliance Fix: Chinese Political Crisis | Pressure function and impact vector rewritten to use only state-specification-compliant variables. Exogenous parameters (elite_cohesion, succession_uncertainty) now explicit with event-driven rules. Hong Kong removed as entity; territorial outcomes moved to cascades. Commit fb39103. |
 | Dec 2025 | Task 2.1.11: Dollar Reserve Crisis | Level 1 complete; [[events/financial/dollar-reserve-crisis]]; Type 2 threshold, F_FIN/F_GPT drivers, three aftermath branches (disorderly/managed/Bretton Woods III) |
 | Dec 2025 | Task 2.1.10: Turkey Political Crisis | Level 1 complete; [[events/geopolitical/turkey-political-crisis]]; Type 2 threshold, F_MENA/F_FIN/F_EUR/F_GPT drivers, currency vulnerability and Kurdish dimension |
 | Dec 2025 | Task 2.1.9: Iran Regime Change | Level 1 complete; [[events/geopolitical/iran-regime-change]]; Type 2 threshold, F_MENA/F_GPT/F_CLIM drivers, water crisis emphasis |
