@@ -125,13 +125,33 @@ Distance to threshold is substantial. Crisis is not imminent under current condi
 
 Per [[methodology/reference/type-3-calibration]], resolution probabilities start with entropy maximization (uniform distribution) unless structural asymmetries justify deviation.
 
-### Proposed Resolutions
+### Critical Framing: What Counts as a Discontinuity
 
-| Resolution | Description |
-|------------|-------------|
-| **Regime Stabilization** | Crisis suppressed; regime survives with increased authoritarianism; likely purges and crackdown |
-| **Managed Transition** | Elite bargain produces controlled reform; possible faction rotation or power-sharing |
-| **Regime Collapse** | CCP loses power; state fragmentation, civil conflict, or revolutionary transition |
+Per [[methodology/reference/causal-types]] (Common Mistakes section):
+
+> **Leadership succession as discontinuity**: Smooth succession that maintains system continuity is NOT a discontinuity—it's normal political turnover. Only model succession as an event if the succession mechanism *fails* (factional conflict, institutional breakdown) or produces permanent/irreversible downstream effects.
+
+This principle applies directly here. If a political crisis is resolved through normal elite bargaining that maintains CCP system continuity, **that's not a discontinuity** — it means the threshold wasn't actually crossed, or the event shouldn't have fired.
+
+The event fires only when stress exceeds what normal CCP political processes can absorb. All resolutions must represent genuine discontinuities with permanent/irreversible effects.
+
+### Proposed Resolutions (Revised)
+
+| Resolution | Description | Why It's a Discontinuity |
+|------------|-------------|--------------------------|
+| **Regime Stabilization via Extraordinary Measures** | Crisis suppressed through means beyond normal CCP operations: martial law, mass purges exceeding Xi-era norms, permanent information lockdown, military deployment against civilians | Permanent shift in governance mode; regime survives but is fundamentally changed |
+| **Regime Transformation** | Crisis forces genuine system change: liberalization, power-sharing, factional federation, or constitutional restructuring that alters CCP's monopoly on power | Irreversible system change even if non-violent; CCP continues but is no longer the same entity |
+| **Regime Collapse** | CCP loses power entirely: state fragmentation, revolution, military takeover, or successor state(s) emerge | Obvious discontinuity |
+
+### What Is NOT a Resolution (Threshold Not Crossed)
+
+If the crisis is managed through:
+- Elite bargaining that preserves existing power structures
+- Leadership rotation through established succession mechanisms
+- Concessions that don't fundamentally alter the system
+- Temporary emergency measures that are later rescinded
+
+...then **the event did not occur**. The pressure function should be calibrated such that these outcomes represent sub-threshold stress, not crisis resolution.
 
 ### Default Probabilities
 
@@ -143,23 +163,24 @@ Is there justification for deviating from uniform?
 
 | Factor | Direction | Strength |
 |--------|-----------|----------|
-| Activation energy: Regime change requires sustained mobilization; stabilization requires only elite coordination | Favors stabilization | Moderate |
-| Historical base rate: Authoritarian collapses are rare but do occur; most crises are suppressed | Favors stabilization | Weak (small N) |
-| Institutional capacity: CCP has exceptional organizational resources vs. alternatives | Favors stabilization | Moderate |
+| Activation energy: Transformation/collapse require sustained mobilization or elite defection; extraordinary stabilization requires only elite coordination + security force loyalty | Favors stabilization | Moderate |
+| Historical pattern: Authoritarian regimes facing acute crisis more often double down than liberalize (Tiananmen 1989, Myanmar 2021) | Favors stabilization over transformation | Moderate |
+| Institutional capacity: CCP has exceptional organizational resources; alternatives are weak | Favors stabilization | Moderate |
 | Information environment: Modern surveillance/control technology advantages incumbents | Favors stabilization | Moderate |
-| Nuclear arsenal: Military unlikely to risk state with nuclear weapons | Favors stabilization | Weak |
+| Nuclear arsenal: Military unlikely to allow state fragmentation with nuclear weapons at stake | Disfavors collapse | Weak |
+| Legitimacy exhaustion: If crisis is severe enough to fire, regime may lack resources for transformation | Disfavors transformation | Weak |
 
-**Assessment**: Structural factors favor regime survival over collapse. Managed transition is the most speculative — it requires elite coordination toward reform, which is rare under crisis conditions.
+**Assessment**: Structural factors favor regime stabilization (via extraordinary measures) over both transformation and collapse. Transformation is the least likely — it requires elite coordination toward reform under crisis conditions, which historically rarely succeeds (most regimes either crush dissent or fall).
 
-**Proposed deviation**: 45% / 25% / 30%
+**Proposed deviation**: 50% / 20% / 30%
 
 | Resolution | Uniform | Proposed | Justification |
 |------------|---------|----------|---------------|
-| Regime Stabilization | 33% | 45% | Structural advantages for incumbents; historical pattern of crisis suppression |
-| Managed Transition | 33% | 25% | Requires elite coordination under stress; historically rare |
-| Regime Collapse | 33% | 30% | High uncertainty; cannot rule out even with structural disadvantages |
+| Stabilization (Extraordinary) | 33% | 50% | Structural advantages for repression; historical pattern (Tiananmen, Belarus 2020, etc.) |
+| Regime Transformation | 33% | 20% | Requires elite coordination toward reform under pressure; historically rare |
+| Regime Collapse | 33% | 30% | High uncertainty; structural disadvantages but cannot rule out |
 
-This represents a weak deviation (~1.5:1 ratio) within the 2:1 cap specified in Type 3 calibration guidance.
+This represents a weak-to-moderate deviation (~1.7:1 maximum ratio) within the 2:1 cap specified in Type 3 calibration guidance. The key ordering (Stabilization > Collapse > Transformation) is more defensible than the specific values.
 
 ---
 
@@ -191,9 +212,9 @@ The Chinese Economic Crisis relationship is already specified in that event file
 The relationship between Chinese political crisis and Taiwan conflict is bidirectional and complex:
 
 **Crisis → Taiwan Conflict**:
-- *Stabilization resolution*: May increase Taiwan risk (+0.5%) — regime uses nationalism to consolidate
-- *Managed Transition resolution*: May decrease Taiwan risk (-0.5%) — new leadership seeks stability
-- *Regime Collapse resolution*: Highly uncertain — fragmented state unlikely to mount invasion; but transition chaos could produce accidental conflict
+- *Stabilization (Extraordinary) resolution*: May increase Taiwan risk (+0.8%) — regime uses nationalism to consolidate; hardened authoritarianism more likely to act
+- *Regime Transformation resolution*: May decrease Taiwan risk (-0.5%) — liberalizing leadership less likely to pursue military adventurism
+- *Regime Collapse resolution*: Highly uncertain — fragmented state unlikely to mount coordinated invasion; but transition chaos could produce accidental conflict or rogue military action
 
 **Taiwan Conflict → Political Crisis**:
 - Victory: Stabilizing (-1.0% to political crisis)
@@ -236,7 +257,7 @@ Both events affect China. The key distinction:
 | Event | Primary Domain | Threshold | Resolution |
 |-------|---------------|-----------|------------|
 | Chinese Economic Crisis | Economic | Banking/property/growth collapse | Economic trajectory (hard landing vs. stagnation vs. reform) |
-| Chinese Political Crisis | Political | Regime stability challenged | Political trajectory (stabilization vs. transition vs. collapse) |
+| Chinese Political Crisis | Political | Regime stability challenged beyond normal processes | Political trajectory (extraordinary stabilization vs. transformation vs. collapse) |
 
 **Economic crisis does not automatically produce political crisis**. The economic event affects the `chn.regime_stability` variable, which feeds the political crisis pressure function. But:
 
@@ -264,7 +285,7 @@ Some impacts are unique to political crisis:
 
 3. **Triggering event specification**: What specific events cross the threshold? Economic crisis is one pathway, but military defeat, succession dispute, or mass movement could also trigger. The pressure function may need multiple pathways.
 
-4. **Resolution probability calibration**: Even with structural asymmetry analysis, we're operating in deep uncertainty. The 45/25/30 split is weakly justified.
+4. **Resolution probability calibration**: Even with structural asymmetry analysis, we're operating in deep uncertainty. The 50/20/30 split is weakly justified; the ordering is more defensible than the specific values.
 
 5. **Aftermath specification difficulty**: The "regime collapse" branch has enormous uncertainty — does China fragment? Is there civil war? What happens to nuclear weapons? This is genuinely uncharted territory.
 
@@ -283,18 +304,18 @@ Some impacts are unique to political crisis:
 
 ### Aftermath Branch Sketch
 
-**Resolution: Regime Stabilization (45%)**
-- Branch: Successful consolidation (60%) — Xi-style crackdown; increased authoritarianism
-- Branch: Pyrrhic victory (40%) — Regime survives but weakened; ongoing instability
+**Resolution: Stabilization via Extraordinary Measures (50%)**
+- Branch: Consolidated hard authoritarianism (60%) — Permanent security state; North Korea-lite governance model; severe international isolation
+- Branch: Unstable repression (40%) — Regime survives but faces ongoing resistance; periodic crackdowns; economic stagnation from control costs
 
-**Resolution: Managed Transition (25%)**
-- Branch: Elite bargain succeeds (50%) — Power sharing or orderly succession
-- Branch: Elite bargain fails (50%) — Triggers second crisis within 5 years
+**Resolution: Regime Transformation (20%)**
+- Branch: Successful liberalization (40%) — Genuine power-sharing emerges; possible democratic transition over 10-20 years
+- Branch: Unstable transition (60%) — Reform opens space for further instability; potential second crisis within 5 years
 
 **Resolution: Regime Collapse (30%)**
-- Branch: Revolutionary transition (40%) — New regime emerges; uncertain character
-- Branch: State fragmentation (30%) — Regional power centers; civil conflict risk
-- Branch: Military takeover (30%) — PLA assumes direct control; praetorian state
+- Branch: Revolutionary transition (35%) — New unified regime emerges; character uncertain (democratic, nationalist, military)
+- Branch: State fragmentation (35%) — Regional power centers; Tibet/Xinjiang/Taiwan implications; civil conflict risk; nuclear security concerns
+- Branch: Military takeover (30%) — PLA assumes direct control; praetorian state; uncertain civilian-military dynamics
 
 ### Estimated Effort
 
@@ -306,13 +327,13 @@ Full Level 1 specification: 1.5-2 hours following this scoping document
 
 Before proceeding to full specification, please confirm:
 
-1. **Event definition**: Is "acute political instability challenging regime survival" the right threshold? Or should we define more narrowly?
+1. **~~Resolution structure~~** ✅ RESOLVED: Three resolutions that are all genuine discontinuities: Stabilization via Extraordinary Measures / Regime Transformation / Regime Collapse. "Managed transition" that maintains system continuity is sub-threshold, not a resolution.
 
-2. **Resolution structure**: Are the three resolutions (Stabilization / Managed Transition / Collapse) the right categorization?
+2. **Event definition**: Is "acute political instability that exceeds normal CCP political processes" the right threshold? The key is that the threshold must be high enough that crossing it necessarily produces permanent change.
 
-3. **Probability deviation**: Is the 45/25/30 deviation from uniform justified, or should we stay closer to 33/33/33?
+3. **Probability deviation**: Is the 50/20/30 deviation from uniform justified? The ordering (Stabilization > Collapse > Transformation) seems defensible; the specific values are less certain.
 
-4. **Scope of collapse aftermath**: How much detail should we invest in the "regime collapse" branches given their speculative nature?
+4. **Scope of collapse/transformation aftermath**: How much detail should we invest in these branches given their speculative nature? State fragmentation and nuclear security concerns warrant serious treatment despite uncertainty.
 
 5. **Taiwan Conflict interaction**: Should we specify the bidirectional relationship now, or defer to a separate cross-event relationship document?
 
