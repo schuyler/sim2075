@@ -136,7 +136,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | Event | Type | Annual Prob | Status |
 |-------|------|-------------|--------|
 | [[events/financial/global-financial-crisis]] | Type 1/2 | ~3.0% | Level 1 complete |
-| Dollar Reserve Crisis | Type 2 | TBD | Not started |
+| [[events/financial/dollar-reserve-crisis]] | Type 2 | ~1.5% | Level 1 complete |
 
 ### Health Events
 
