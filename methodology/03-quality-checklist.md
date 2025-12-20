@@ -15,6 +15,8 @@ tags:
 
 Run this checklist before marking any event specification complete.
 
+**Prerequisite**: Run [[methodology/discontinuity-test]] first. A specification that passes format checks but fails the discontinuity test is wrong in ways that matter more than missing fields.
+
 ---
 
 ## Causal Type Classification

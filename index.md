@@ -28,7 +28,8 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/00-start-here]] | **Orientation — start here** |
 | [[methodology/01-level-1-workflow]] | Step-by-step event production (~40 min) |
 | [[methodology/02-event-template]] | Template to copy for new events |
-| [[methodology/03-quality-checklist]] | Final checks before saving |
+| [[methodology/discontinuity-test]] | Five judgment questions before format checks |
+| [[methodology/03-quality-checklist]] | Format verification before saving |
 
 ### Reference Material
 

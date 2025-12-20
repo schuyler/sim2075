@@ -215,7 +215,19 @@ List 2-4 main pathways from event to impact:
 - Which regions affected
 - Which variables affected
 
-### Step 9: Final Checks (2 min)
+### Step 9: Discontinuity Test (2 min)
+
+Before format checks, run [[methodology/discontinuity-test]]:
+
+1. **Is this actually a discontinuity?** Could these trajectories be reached by drift?
+2. **Does the probability match the structure?** Given pressure and threshold, do the odds make sense?
+3. **Are the resolutions actually different?** Qualitatively distinct outcomes, not variations?
+4. **What's the strongest case against?** State it explicitly.
+5. **Would another analyst agree?** Is reasoning auditable?
+
+If you can't pass these, the specification isn't ready — regardless of format compliance.
+
+### Step 10: Format Checks (2 min)
 
 Run [[methodology/quality-checklist-v2]]:
 
@@ -283,8 +295,9 @@ Save the file.
 | Impact vector | 10 |
 | Cascade effects | 3 |
 | Transmission channels | 2 |
-| Final checks | 2 |
-| **Total** | **~40 min** |
+| Discontinuity test | 2 |
+| Format checks | 2 |
+| **Total** | **~42 min** |
 
 With practice, this compresses to 25-30 minutes.
 
