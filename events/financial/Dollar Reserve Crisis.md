@@ -42,11 +42,13 @@ This event exhibits classic threshold behavior: pressure accumulates through mul
 
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `global.reserve_dollar_share` | 0.30 | inverse | Lower share → higher pressure; crisis more likely as dollar approaches 50% threshold |
-| `usa.debt_to_gdp` | 0.25 | linear | Higher debt burden → greater vulnerability to confidence loss |
-| `usa.foreign_treasury_holdings_pct` | 0.20 | inverse | Lower foreign holdings → less structural demand, auction risk |
-| `usa.fiscal_deficit_pct_gdp` | 0.15 | linear | Larger deficits → more issuance requiring buyers |
-| `global.brics_payment_infrastructure` | 0.10 | linear | More mature alternatives → easier exit from dollar system |
+| `usd_reserve_share` | 0.30 | inverse | Lower share → higher pressure; crisis more likely as dollar approaches 50% threshold |
+| `usa.debt_public` | 0.25 | linear | Higher debt burden (% GDP) → greater vulnerability to confidence loss |
+| *foreign_treasury_holdings_pct* | 0.20 | inverse | Lower foreign holdings → less structural demand, auction risk |
+| *fiscal_deficit_pct_gdp* | 0.15 | linear | Larger deficits → more issuance requiring buyers |
+| `cips_share` | 0.10 | linear | Higher CIPS share as proxy for alternative infrastructure maturity |
+
+*Note: Variables in italics are not in current state-specification and would need to be added or derived. `foreign_treasury_holdings_pct` could be derived from TIC data; `fiscal_deficit_pct_gdp` could be derived from `debt_public` changes plus interest payments.*
 
 **Current pressure estimate (2025)**: ~45 on 0-100 scale
 - Dollar share: 57.7% (moderate pressure)
@@ -159,11 +161,11 @@ Per [[methodology/reference/priority-event-ranking]]:
 
 Factors operate by shocking state variables that feed the pressure function:
 
-**F_FIN (0.7)**: High F_FIN draws manifest as Treasury market stress, yield volatility, credit spread widening, and Fed credibility questions. These directly increase `usa.fiscal_deficit_pct_gdp` (higher debt service), reduce `usa.foreign_treasury_holdings_pct` (flight to safety elsewhere), and potentially trigger the confidence cascade that defines the crisis event.
+**F_FIN (0.7)**: High F_FIN draws manifest as Treasury market stress, yield volatility, credit spread widening, and Fed credibility questions. These directly increase fiscal deficit pressure (higher debt service), reduce foreign Treasury holdings (flight to safety elsewhere), and potentially trigger the confidence cascade that defines the crisis event.
 
-**F_GPT (0.4)**: Elevated geopolitical tension accelerates the "sanctions weaponization" concern that drives reserve diversification. The 2022 Russia sanctions precedent demonstrated that dollar reserves can be frozen—high F_GPT years reinforce this lesson and accelerate `global.reserve_dollar_share` decline.
+**F_GPT (0.4)**: Elevated geopolitical tension accelerates the "sanctions weaponization" concern that drives reserve diversification. The 2022 Russia sanctions precedent demonstrated that dollar reserves can be frozen—high F_GPT years reinforce this lesson and accelerate `usd_reserve_share` decline.
 
-**F_TECH (0.2)**: Technology factor captures alternative payment infrastructure maturity. High F_TECH years may see faster mBridge operationalization, CBDC adoption, or blockchain-based settlement systems that increase `global.brics_payment_infrastructure` and make exit from dollar system more feasible.
+**F_TECH (0.2)**: Technology factor captures alternative payment infrastructure maturity. High F_TECH years may see faster mBridge operationalization, CBDC adoption, or blockchain-based settlement systems that increase `cips_share` and make exit from dollar system more feasible.
 
 **F_EUR (0.2)**: European stress creates complex effects. High F_EUR may weaken euro as alternative (supporting dollar) but also signals broader Western financial system fragility (undermining dollar). Net effect is mild pressure increase.
 
@@ -177,66 +179,66 @@ Factors operate by shocking state variables that feed the pressure function:
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
-| `global.gdp_growth` | ↓ | -2.0 ± 0.8 pp | immediate | decaying: half_life=3yr, floor=-0.5 |
-| `global.trade_volume` | ↓ | -8 ± 3% | immediate | decaying: half_life=2yr, floor=-2% |
-| `global.gold_price` | ↑ | +40 ± 15% | immediate | permanent (new equilibrium) |
-| `global.financial_volatility` | ↑ | +80 ± 30% (VIX equivalent) | immediate | decaying: half_life=1yr |
-| `global.reserve_dollar_share` | ↓ | -12 ± 5 pp | gradual(3yr) | permanent |
-| `global.reserve_gold_share` | ↑ | +5 ± 2 pp | gradual(3yr) | permanent |
-| `global.reserve_yuan_share` | ↑ | +3 ± 2 pp | gradual(5yr) | permanent |
+| *global_gdp_growth* | ↓ | -2.0 ± 0.8 pp | immediate | decaying: half_life=3yr, floor=-0.5 |
+| `global_trade_volume` | ↓ | -8 ± 3% | immediate | decaying: half_life=2yr, floor=-2% |
+| `gold_price` | ↑ | +40 ± 15% | immediate | permanent (new equilibrium) |
+| *global_financial_volatility* | ↑ | +80 ± 30% (VIX equivalent) | immediate | decaying: half_life=1yr |
+| `usd_reserve_share` | ↓ | -12 ± 5 pp | gradual(3yr) | permanent |
+| `gold_reserve_share` | ↑ | +5 ± 2 pp | gradual(3yr) | permanent |
+| `cny_reserve_share` | ↑ | +3 ± 2 pp | gradual(5yr) | permanent |
+
+*Note: Variables in italics would need to be added to state-specification or derived (e.g., `global_gdp_growth` aggregated from country GDP growth rates).*
 
 ### United States Impacts
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
-| `usa.gdp` | ↓ | -10 ± 4% (peak-to-trough) | gradual(2yr) | decaying: half_life=5yr, floor=-3% |
-| `usa.treasury_10yr_yield` | ↑ | +350 ± 100 bps (acute) | immediate | permanent (new equilibrium +150bps) |
-| `usa.unemployment` | ↑ | +6 ± 2 pp | delayed(6mo) | decaying: half_life=4yr |
-| `usa.inflation` | ↑ | +3 ± 1.5 pp | delayed(3mo) | decaying: half_life=2yr |
-| `usa.dollar_index` | ↓ | -30 ± 10% | immediate | permanent (new equilibrium -20%) |
-| `usa.debt_service_pct_revenue` | ↑ | +8 ± 3 pp | delayed(1yr) | permanent |
-| `usa.fiscal_space` | ↓ | severe constraint | gradual(2yr) | permanent |
+| `usa.gdp_real` | ↓ | -10 ± 4% (peak-to-trough) | gradual(2yr) | decaying: half_life=5yr, floor=-3% |
+| `us_10yr_yield` | ↑ | +350 ± 100 bps (acute) | immediate | permanent (new equilibrium +150bps) |
+| `usa.unemployment_rate` | ↑ | +6 ± 2 pp | delayed(6mo) | decaying: half_life=4yr |
+| `usa.inflation_rate` | ↑ | +3 ± 1.5 pp | delayed(3mo) | decaying: half_life=2yr |
+| *dxy_index* | ↓ | -30 ± 10% | immediate | permanent (new equilibrium -20%) |
+| *usa.debt_service_pct_revenue* | ↑ | +8 ± 3 pp | delayed(1yr) | permanent |
+
+*Note: `us_10yr_yield` is a global variable in the state-spec. Variables in italics (`dxy_index`, `debt_service_pct_revenue`) are not in current state-specification.*
 
 ### Regional Impacts
 
-**Eurozone:**
+**Eurozone** (modeled via individual countries: Germany, France, Italy, Spain, Netherlands, Poland + Rest of EU aggregate):
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
-| `eur.gdp_growth` | ↓ | -1.5 ± 0.8 pp | delayed(6mo) | decaying: half_life=2yr |
-| `eur.euro_reserve_share` | ↑ | +3 ± 1.5 pp | gradual(3yr) | permanent |
-| `eur.export_competitiveness` | ↓ | -5 ± 3% | immediate | decaying: half_life=2yr |
+| `[country].gdp_growth` | ↓ | -1.5 ± 0.8 pp | delayed(6mo) | decaying: half_life=2yr |
+| `eur_reserve_share` | ↑ | +3 ± 1.5 pp | gradual(3yr) | permanent |
 
-Mixed impact: Euro gains reserve share but Eurozone hurt by US recession transmission and euro appreciation.
+Mixed impact: Euro gains reserve share but Eurozone hurt by US recession transmission and euro appreciation reducing export competitiveness.
 
 **China:**
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
 | `chn.gdp_growth` | ↓ | -1.0 ± 0.5 pp | delayed(6mo) | decaying: half_life=2yr |
-| `chn.yuan_reserve_share` | ↑ | +3 ± 2 pp | gradual(5yr) | permanent |
-| `chn.export_revenue` | ↓ | -8 ± 4% | delayed(3mo) | decaying: half_life=3yr |
+| `cny_reserve_share` | ↑ | +3 ± 2 pp | gradual(5yr) | permanent |
 
-Mixed impact: Yuan gains but loses US export market; net strategic gain with near-term economic cost.
+Mixed impact: Yuan gains reserve share but loses US export market; net strategic gain with near-term economic cost.
 
-**Emerging Markets (Dollar Debt Exposure):**
-
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `em_dollar_debtors.debt_service_burden` | ↑ | +25 ± 10% | immediate | decaying: half_life=3yr |
-| `em_dollar_debtors.default_probability` | ↑ | +5 ± 3 pp | delayed(6mo) | decaying: half_life=2yr |
-| `em_dollar_debtors.gdp_growth` | ↓ | -2.5 ± 1.5 pp | delayed(6mo) | decaying: half_life=3yr |
-
-Severe impact on countries with large dollar-denominated debt (Argentina, Turkey, Egypt, Pakistan).
-
-**Oil Exporters (Gulf States):**
+**Emerging Markets with High Dollar Debt** (Turkey, Egypt, Pakistan, Argentina, South Africa, Indonesia):
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
-| `gulf.oil_revenue_volatility` | ↑ | +50 ± 20% | immediate | decaying: half_life=2yr |
-| `gulf.reserve_composition_shift` | → | accelerated diversification | gradual(2yr) | permanent |
+| `[country].debt_external` | ↑ | +15 ± 8 pp effective burden | immediate | decaying: half_life=3yr |
+| `[country].gdp_growth` | ↓ | -2.5 ± 1.5 pp | delayed(6mo) | decaying: half_life=3yr |
+| `[country].regime_stability` | ↓ | -10 ± 5 | delayed(1yr) | decaying: half_life=4yr |
 
-Transition disruption but strategic positioning for multipolar system.
+Severe impact through interest rate channel and own-currency depreciation.
+
+**Gulf States** (aggregate):
+
+| Variable | Direction | Magnitude | Onset | Durability |
+|----------|-----------|-----------|-------|------------|
+| `gulf.gdp_growth` | ↓ | -0.5 ± 0.3 pp | delayed(6mo) | decaying: half_life=2yr |
+
+Transition disruption but strategic positioning for multipolar system; relatively insulated due to sovereign wealth reserves.
 
 ### Differential Impacts
 
@@ -381,10 +383,13 @@ The crisis event triggers one of three post-event trajectories, determined by po
 ### Impact Chains
 
 **Chain 1**: Dollar Reserve Crisis → EM debt stress → Pakistan/Egypt state failure risk
-- Crisis causes dollar appreciation in acute phase (flight to safety)
-- EM dollar debt burden increases sharply
+- Crisis triggers sharp rise in US Treasury yields (+350 bps)
+- EM countries face dual pressure: higher global rates AND own-currency depreciation against dollar
+- Dollar debt service burden increases sharply for high-debt EMs
 - Countries with high dollar debt and low reserves face default pressure
 - Political instability follows economic stress
+
+*Note: The dollar may experience brief flight-to-safety appreciation in the acute phase before sustained depreciation. The EM debt stress operates primarily through the interest rate channel and EM currency weakness, not through dollar strength per se.*
 
 **Chain 2**: Dollar Reserve Crisis → Trade disruption → Global recession → Financial crisis
 - Settlement system disruption reduces trade volumes
