@@ -173,29 +173,29 @@ Per [[methodology/reference/priority-event-ranking]]:
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
 | F_CLIM | 0.10 | Climate stress affects agricultural output, infrastructure costs, regional development |
-| F_FIN | 0.45 | **Secondary**: Global financial conditions affect capital flows, contagion risk, investor sentiment |
+| F_FIN | 0.55 | **Primary**: Global financial conditions affect capital flows, contagion risk, investor sentiment; truly exogenous to China |
 | F_HLTH | 0.05 | Pandemic aftermath affects consumer confidence, services sector |
-| F_GPT | 0.30 | **Tertiary**: Trade tensions, tech restrictions, geopolitical risk premium |
+| F_GPT | 0.30 | **Secondary**: Trade tensions, tech restrictions, geopolitical risk premium |
 | F_FOOD | 0.05 | Food security concerns add fiscal pressure, affect rural stability |
 | F_TECH | 0.20 | Semiconductor restrictions, tech war affects growth sectors, investment |
 | F_EUR | 0.10 | European demand affects exports; European financial stress affects global sentiment |
 | F_MENA | 0.0 | Minimal direct linkage |
 | F_SAS | 0.05 | Regional trade linkages |
-| F_EAS | 0.70 | **Primary**: China IS the primary driver of East Asian stress; regional contagion, supply chains |
+| F_EAS | 0.45 | **Secondary**: Regional dynamics (Korea, Japan, Taiwan stress) that transmit to China through trade/investment; excludes China-driven component to avoid circularity |
 | F_SSA | 0.0 | Minimal direct linkage (China is creditor, not affected) |
 | F_LAM | 0.0 | Minimal direct linkage |
 
-**Sum of squared loadings**: 0.49 + 0.20 + 0.09 + 0.04 + 0.01 + 0.01 + 0.01 + 0.0025 + 0.0025 + 0.0025 = **0.76** ✓
+**Sum of squared loadings**: 0.3025 + 0.2025 + 0.09 + 0.04 + 0.01 + 0.01 + 0.0025 + 0.0025 + 0.0025 = **0.66** ✓
 
 ### Loading Rationale
 
-Factors operate by shocking state variables that feed the pressure function:
+Factors operate by shocking state variables that feed the pressure function. A key design principle: factors should represent *exogenous* conditions that affect China, not conditions *caused by* China. This avoids tautological circularity.
 
-**F_EAS (0.70)**: China is the core of East Asian economic dynamics. High F_EAS draws manifest as regional supply chain disruption, reduced intra-Asian trade, property market stress (Hong Kong linkage), and capital flow volatility. Importantly, F_EAS is partially *caused by* Chinese stress, creating feedback—but the factor also captures regional dynamics (Korea, Japan, Taiwan) that independently affect China through trade and investment channels. High F_EAS years see the regional conditions that make Chinese crisis more likely.
+**F_FIN (0.55)**: Global financial fragility is the primary driver because it is genuinely exogenous to China. High F_FIN years feature tighter global liquidity (Fed tightening), wider credit spreads, reduced risk appetite for EM assets, and potential contagion from other financial crises. These conditions stress China's dollar-denominated corporate debt (~$1T), reduce FDI inflows, and increase capital outflow pressure. Global financial stress also reduces external demand, amplifying domestic property/consumption weakness. F_FIN captures the external financial environment that China cannot control.
 
-**F_FIN (0.45)**: Global financial fragility affects China through multiple channels. High F_FIN years feature tighter global liquidity (Fed tightening), wider credit spreads, reduced risk appetite for EM assets, and potential contagion from other financial crises. These conditions stress China's dollar-denominated corporate debt (~$1T), reduce FDI inflows, and increase capital outflow pressure. Global financial stress also reduces external demand, amplifying domestic property/consumption weakness.
+**F_EAS (0.45)**: East Asian regional stress affects China through trade and investment channels—but we must avoid the circularity of "Chinese stress causes F_EAS which causes Chinese crisis." The loading here captures the *non-China* components of regional stress: Korean financial instability, Japanese recession, Taiwan supply chain disruption, or broader Asian contagion originating elsewhere. High F_EAS years see regional conditions that reduce demand for Chinese exports, disrupt supply chains, and create capital flow volatility—external shocks that increase pressure on China's already-stressed system.
 
-**F_GPT (0.30)**: Great power tension directly affects China through trade restrictions, technology access, and investment uncertainty. High F_GPT years see intensified US-China friction—tariffs, semiconductor export controls, investment screening, potential secondary sanctions. These reduce export revenue, constrain technological upgrading, and create political pressure for nationalist response (potentially including Taiwan risk-taking). Trade war escalation directly feeds pressure function through export performance variable.
+**F_GPT (0.30)**: Great power tension directly affects China through trade restrictions, technology access, and investment uncertainty. High F_GPT years see intensified US-China friction—tariffs, semiconductor export controls, investment screening, potential secondary sanctions. These reduce export revenue, constrain technological upgrading, and create political pressure for nationalist response. Trade war escalation directly feeds pressure function through export performance variable.
 
 **F_TECH (0.20)**: Technology disruption and restriction affects China's growth model. High F_TECH years may see accelerated semiconductor restrictions, AI compute limitations, or alternatively breakthrough innovations that China captures or is excluded from. Technology restrictions particularly affect high-value manufacturing, R&D investment returns, and the "common prosperity" sectors Beijing has prioritized.
 
@@ -240,6 +240,17 @@ Factors operate by shocking state variables that feed the pressure function:
 | `[country].exports` | ↓ | -12 ± 5% | immediate | decaying: half_life=2yr |
 
 Korea most exposed (China = 25% of exports); Japan and Taiwan significant but more diversified.
+
+**Hong Kong:**
+
+| Variable | Direction | Magnitude | Onset | Durability |
+|----------|-----------|-----------|-------|------------|
+| `hkg.gdp_growth` | ↓ | -5.0 ± 2.0 pp | immediate | decaying: half_life=3yr |
+| *hkg.property_prices* | ↓ | -30 ± 12% | immediate | permanent |
+| *hkg.banking_stress* | ↑ | Significant | immediate | decaying: half_life=3yr |
+| `hkg.unemployment_rate` | ↑ | +4 ± 1.5 pp | delayed(3mo) | decaying: half_life=3yr |
+
+Hong Kong is uniquely exposed through direct financial integration with mainland, property market linkage, and role as offshore yuan center. Banking sector faces acute stress from mainland corporate exposures. Property prices, already elevated, face severe correction as mainland capital flows reverse and local demand collapses. The "one country, two systems" financial architecture provides limited insulation when the crisis originates in the dominant economy.
 
 **Southeast Asia (ASEAN aggregate):**
 
@@ -402,6 +413,19 @@ Japan 1990 is the most analogous case: credit-fueled property bubble in an aging
 - Gradual managed decline in living standards vs. expectations
 - Political stability maintained through nationalism, control
 
+**Distinguishing from baseline trajectory**: The baseline assumes China's demographic-driven slowdown proceeds *gradually* without discrete crisis—growth declines from ~5% to ~2-3% over 15 years, property prices decline 15-20% over a decade, and adjustment is managed. The post-crisis stagnation branch differs in:
+
+| Marker | Baseline Trajectory | Post-Crisis Stagnation |
+|--------|--------------------|-----------------------|
+| GDP contraction | None (gradual slowdown) | 5-8% discrete drop |
+| Property price decline | -15-20% over 10 years | -30-40% within 3 years |
+| Growth rate (post-adjustment) | 2-3% | ~0% for decade |
+| Banking sector | Stressed but functional | Zombified; NPLs constrain lending |
+| Unemployment spike | Gradual rise | Sharp spike (+6 pp) then elevated plateau |
+| Trigger | No discrete event | Confidence cascade / policy failure |
+
+The crisis event is the discrete threshold-crossing; the stagnation branch describes a post-crisis equilibrium that is *worse* than what baseline trajectory would have produced.
+
 **Impact modifiers**: Base case (×1.0)
 
 **Factor modifications during aftermath**:
@@ -439,9 +463,10 @@ Japan 1990 is the most analogous case: credit-fueled property bubble in an aging
 
 | Target Event | Probability Change | Duration | Mechanism |
 |--------------|-------------------|----------|-----------|
+| CHINESE_POLITICAL_CRISIS | +2.0% | 5 years | Economic failure challenges CCP performance legitimacy; see Task 2.1.13 |
 | GLOBAL_FINANCIAL_CRISIS | +1.5% | 2 years | Financial contagion; EM stress; risk-off sentiment |
 | DOLLAR_RESERVE_CRISIS | -1.0% | 5 years | Yuan alternative becomes less viable; flight to dollar safety |
-| TAIWAN_CONFLICT | Ambiguous | 3 years | Reduced capacity but potential nationalist distraction |
+| TAIWAN_CONFLICT | +0.4% | 3 years | Nationalist distraction dynamics likely outweigh capacity constraints; see special case below |
 | PAKISTAN_STATE_FAILURE | +0.5% | 3 years | BRI debt burden; reduced Chinese support capacity |
 | EGYPT_STATE_FAILURE | +0.3% | 3 years | Reduced Chinese investment; commodity price effects |
 | RUSSIA_STATE_FAILURE | +0.3% | 3 years | Reduced Chinese economic support; commodity revenue collapse |
@@ -450,7 +475,7 @@ Japan 1990 is the most analogous case: credit-fueled property bubble in an aging
 
 ### Taiwan Conflict Special Case
 
-The effect on Taiwan Conflict probability is genuinely ambiguous:
+The effect on Taiwan Conflict probability requires careful reasoning about competing dynamics:
 
 **Factors reducing probability**:
 - Reduced military modernization budget (fiscal constraints)
@@ -459,12 +484,16 @@ The effect on Taiwan Conflict probability is genuinely ambiguous:
 - Reduced capacity for sustained conflict
 
 **Factors increasing probability**:
-- Nationalist distraction from economic failure
-- "Window closing" logic (act before further weakness)
-- Military pressure as regime legitimacy substitute
-- Hardliner faction gains from crisis
+- Nationalist distraction from economic failure (historical pattern: regimes under domestic pressure turn to external conflicts)
+- "Window closing" logic (act before further weakness erodes capabilities)
+- Military pressure as regime legitimacy substitute when economic performance fails
+- Hardliner faction gains influence from crisis; reformers discredited
 
-**Net assessment**: Model as ±0.5% with high uncertainty; could go either direction depending on leadership response.
+**Net assessment: +0.4% with high uncertainty**
+
+We assign a small positive effect because the historical pattern of nationalist mobilization during domestic crises is strong, and CCP legitimacy is unusually tied to performance metrics that a crisis would undermine. The "rally around the flag" dynamic is well-documented across authoritarian regimes facing internal stress.
+
+However, uncertainty is high because this depends heavily on leadership faction dynamics, crisis severity, and international context. A Hard Landing branch (with severe political stress) might see +1.0% or higher; a Reform Breakthrough branch might see -0.5% (successful reform reduces need for nationalist distraction).
 
 ### Triggered By (Probability Increases)
 
@@ -604,6 +633,8 @@ The effect on Taiwan Conflict probability is genuinely ambiguous:
 7. **Global policy response**: Will major economies coordinate response (swap lines, IMF involvement) or engage in beggar-thy-neighbor policies? Affects global transmission.
 
 8. **Supply chain resilience**: How quickly can global supply chains adapt to Chinese disruption? COVID experience suggests 6-18 months for major adjustments.
+
+9. **Time-varying probability**: The 2.0% annual probability is an average across the simulation horizon, but pressure is increasing over time. Early years (2025-2030) might be ~1.5% while later years (2040-2050) might be ~3.0%+ as pressure approaches threshold. Current methodology uses fixed annual probabilities; time-varying Type 2 probabilities are a roadmap item.
 
 ---
 

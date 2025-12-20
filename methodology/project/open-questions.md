@@ -17,6 +17,39 @@ Higher-level methodological and structural questions that warrant dedicated expl
 
 ## Active Questions
 
+### 1. Time-Varying Type 2 Probabilities
+
+**Status:** Unresolved  
+**Added:** December 2025  
+**Source:** Chinese Economic Crisis specification (Task 2.1.12)
+
+Type 2 events have pressure functions that increase over time, but current methodology uses fixed annual probabilities. This creates a disconnect: if pressure increases from 55 to 75 over 15 years, the annual probability should rise correspondingly—but we assign a single average (e.g., 2.0% for Chinese Economic Crisis).
+
+**Key issues:**
+- Fixed probabilities underweight late-horizon risk for accumulating-pressure events
+- Fixed probabilities overweight early-horizon risk relative to current state
+- The "average over horizon" approach loses information about when events are most likely
+- Pressure trajectory estimation adds another layer of uncertainty
+
+**Candidate approaches:**
+
+1. **Explicit time-varying P(t)**: Specify early/middle/late probability bands per event. Requires more parameters; more accurate.
+
+2. **Pressure-to-probability mapping**: Specify current pressure and threshold; simulation computes P(t) dynamically as pressure accumulates. Most principled but requires modeling pressure evolution.
+
+3. **Regime-switching**: Fixed probability with step changes at horizon milestones (e.g., 1.5% for 2025-2035, 2.5% for 2035-2050, 3.5% for 2050-2075).
+
+4. **Status quo + sensitivity analysis**: Keep fixed probabilities; test sensitivity to early/late weighting in analysis phase.
+
+**Implications:**
+- Affects all Type 2 events (majority of catalog)
+- Changes tail outcome distributions at different horizons
+- More complex implementation if dynamic
+
+**Recommendation:** Defer to Phase 2/3. Current fixed-probability approach is acceptable for MVP. Flag as sensitivity analysis target: does time-varying vs. fixed probability materially affect tail outcomes?
+
+---
+
 ### 2. Type 3 Event Calibration
 
 **Status:** Unresolved → Near Resolution  
