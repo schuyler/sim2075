@@ -84,7 +84,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.1.10** | Turkey Political Crisis | Type 2 | ✅ | — | Level 1 complete; [[events/geopolitical/turkey-political-crisis]] |
 | **2.1.11** | Dollar Reserve Crisis | Type 2 | ✅ | — | Level 1 complete; [[events/financial/dollar-reserve-crisis]] |
 | **2.1.12** | Chinese Economic Crisis | Type 2 | 🟡 | — | Level 1 draft complete; [[events/financial/chinese-economic-crisis]]; awaiting review |
-| **2.1.13** | Chinese Political Crisis | Type 2/3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/chinese-political-crisis]]; awaiting confirmation |
+| **2.1.13** | Chinese Political Crisis | Type 2/3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/chinese-political-crisis]] |
 | **2.1.14** | EU Fragmentation | Type 2/3 | 🔲 | 1.1 | |
 | **2.1.15** | US Constitutional Crisis | Type 2/3 | 🔲 | 1.1 | |
 | **2.1.16** | India-Pakistan Conflict | Type 3 | 🔲 | 1.1 | |
@@ -170,7 +170,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
-| Dec 2025 | Task 2.1.13 Compliance Fix: Chinese Political Crisis | Pressure function and impact vector rewritten to use only state-specification-compliant variables. Exogenous parameters (elite_cohesion, succession_uncertainty) now explicit with event-driven rules. Hong Kong removed as entity; territorial outcomes moved to cascades. Commit fb39103. |
+| Dec 2025 | Task 2.1.13: Chinese Political Crisis | Level 1 complete; [[events/geopolitical/chinese-political-crisis]]; Removed Stabilization resolution (not a discontinuity), new split Transformation 40%/Collapse 60%, probability 0.4%. Added [[methodology/discontinuity-test]] to methodology. Commits 4931001, 94ad28c, d73b526. |
 | Dec 2025 | Task 2.1.11: Dollar Reserve Crisis | Level 1 complete; [[events/financial/dollar-reserve-crisis]]; Type 2 threshold, F_FIN/F_GPT drivers, three aftermath branches (disorderly/managed/Bretton Woods III) |
 | Dec 2025 | Task 2.1.10: Turkey Political Crisis | Level 1 complete; [[events/geopolitical/turkey-political-crisis]]; Type 2 threshold, F_MENA/F_FIN/F_EUR/F_GPT drivers, currency vulnerability and Kurdish dimension |
 | Dec 2025 | Task 2.1.9: Iran Regime Change | Level 1 complete; [[events/geopolitical/iran-regime-change]]; Type 2 threshold, F_MENA/F_GPT/F_CLIM drivers, water crisis emphasis |
