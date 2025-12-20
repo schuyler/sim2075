@@ -260,6 +260,7 @@ For hybrids, model the dominant mechanism and note the secondary.
 | Treating all state failures as identical | Each has different pressure variables and thresholds |
 | Investing effort in Type 3 resolution probability estimation | Accept uniform default; invest in aftermath specification instead |
 | **Leadership succession as discontinuity** | Smooth succession that maintains system continuity is NOT a discontinuity—it's normal political turnover. Only model succession as an event if the succession mechanism *fails* (factional conflict, institutional breakdown) or produces permanent/irreversible downstream effects. Khamenei dying and being replaced by another Supreme Leader through normal processes ≠ Iran regime change. Putin dying and being replaced by a managed transition ≠ Russia state failure. |
+| **"Regime survives crisis" as resolution** | If the same regime governs the same territory with the same institutional form after a resolution, the threshold wasn't crossed. "More repressive" or "more isolated" is not discontinuous — it's sub-threshold stress. Tiananmen 1989 is the test case: extraordinary measures, but CCP continued governing China, so no discontinuity occurred. |
 
 ---
 

@@ -45,6 +45,7 @@ Run this checklist before marking any event specification complete.
 - [ ] All resolutions listed with probabilities (must sum to 100%)
 - [ ] Each resolution has separate impact vector
 - [ ] Anti-correlated resolutions identified (mutually exclusive outcomes)
+- [ ] **Discontinuity test**: For each resolution, could these state trajectories be reached through 10 years of gradual drift? If yes, it's not a discontinuity — remove the resolution or raise the threshold.
 
 ---
 
