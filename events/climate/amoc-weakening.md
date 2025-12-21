@@ -90,12 +90,33 @@ Current pressure estimate: ~45/100 (below threshold but accumulating)
 
 Probability rises over simulation horizon as pressure accumulates.
 
+### Probability Evolution
+
+As pressure accumulates, annual probability rises:
+
+| Global Temp Anomaly | Est. Pressure | Annual P |
+|---------------------|---------------|----------|
+| 1.3°C (current) | ~45 | 1.0% |
+| 1.5°C | ~52 | 1.5% |
+| 2.0°C | ~65 | 3.0% |
+| 2.5°C | ~78 | 5.0% |
+
 ### Key Uncertainties
 
 - **Threshold location**: Deep uncertainty; could be much closer or further than estimated
 - **Greenland melt rate**: Accelerating faster than models predicted
 - **Model structural uncertainty**: Climate models may miss critical dynamics
 - **Feedback strength**: Self-reinforcing dynamics uncertain
+
+### Case Against
+
+**Threshold may be much further than estimated**: If true threshold is at 2.5-3.5°C rather than near current levels, probability should be <0.3%/year for coming decades. The Ditlevsen paper suggesting early tipping has been contested.
+
+**Process may be gradual, not abrupt**: Some models show AMOC declining over centuries without a tipping point. If so, this belongs in baseline dynamics, not the event catalog.
+
+**Impact magnitudes may be overstated**: European economies are wealthy and adaptive. The -12% GDP with 25-year half-life may underestimate recovery capacity.
+
+**What would change the estimate by 2× or more**: New paleoclimate constraints on threshold location; observational evidence of AMOC stabilizing despite freshwater input; model consensus shifting toward gradual decline.
 
 ---
 
