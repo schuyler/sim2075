@@ -1,7 +1,7 @@
 ---
 title: causal-types-updates
 type: note
-permalink: methodology/reference/causal-types-updates
+permalink: methodology/reference/causal-types-updates-1
 tags:
 - methodology
 - reference
