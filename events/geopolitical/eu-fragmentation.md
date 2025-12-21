@@ -6,8 +6,6 @@ tags:
 - event
 - geopolitical
 - type-2
-- type-3
-- hybrid
 - eu
 - europe
 - fragmentation
@@ -24,7 +22,7 @@ tags:
 | **ID** | EU_FRAGMENTATION |
 | **Scale** | Regional (with global implications) |
 | **Domain** | Political |
-| **Causal Type** | Type 2/3 Hybrid: Threshold + Contingent Resolution |
+| **Causal Type** | Type 2: Threshold |
 | **Onset Speed** | Rapid (crisis unfolds over 1-3 years) |
 | **Reversibility** | Irreversible (institutional dissolution cannot be undone) |
 
@@ -40,17 +38,15 @@ The event fires only when fragmentation becomes inevitable. Severe crises that t
 
 ## Causal Type Specification
 
-### Type 2/3 Hybrid Structure
+### Type 2 Threshold Structure
 
-This event combines threshold dynamics (Type 2) with contingent resolution (Type 3):
+Pressure accumulates through fiscal divergence, democratic backsliding, economic asymmetry, and political fragmentation. At critical pressure, fragmentation becomes inevitable.
 
-**Type 2 Component**: Pressure accumulates through fiscal divergence, democratic backsliding, economic asymmetry, and political fragmentation. At critical pressure, fragmentation becomes likely.
-
-**Type 3 Component**: Once threshold is crossed, outcome depends on actor decisions (ECB, core governments, periphery governments, markets). Resolution probabilities reflect whether coordination succeeds or fails.
+Unlike some political events with multiple possible resolutions, EU fragmentation has a single outcome: disorderly collapse. "Orderly fragmentation" — negotiated restructuring into formal tiers — is not a discontinuity; it represents managed evolution of the kind the EU has practiced for decades (Schengen opt-outs, Eurozone non-membership, enhanced cooperation). If actors can coordinate an orderly transition, the threshold hasn't truly been crossed.
 
 ```
 Pressure accumulates → Threshold crossed → Fragmentation inevitable →
-Resolution sampled → Aftermath branches
+Disorderly collapse unfolds
 ```
 
 ### Pressure Function
@@ -177,54 +173,6 @@ EU institutions are more robust than personalist regimes (Russia, Turkey) but re
 
 ---
 
-## Resolution Specification (Type 3 Component)
-
-Once the threshold is crossed, one of two resolutions occurs:
-
-### Resolution Branches
-
-| Resolution | Probability | Description |
-|------------|-------------|-------------|
-| **Orderly Fragmentation** | 40% | Negotiated restructuring; managed transition to successor arrangements |
-| **Disorderly Fragmentation** | 60% | Chaotic breakup; financial contagion; institutional collapse |
-
-### Resolution Probability Rationale
-
-**Entropy-maximized default**: 50% / 50%
-
-**Structural deviation**: Slight tilt toward Disorderly (60/40) because:
-- Once confidence breaks, coordination becomes harder, not easier
-- Multiple veto players create gridlock under stress
-- Market dynamics accelerate faster than political processes
-- Historical precedent: most monetary union breakups are disorderly
-
-Maximum ratio is 1.5:1, well within guidelines.
-
-### Resolution Descriptions
-
-**Orderly Fragmentation (40%)**
-
-EU/Eurozone restructures through negotiated process:
-- Managed exit of periphery economies with transition arrangements
-- Formal two-tier Europe with separate governance structures
-- Controlled wind-down of common institutions
-- New bilateral/regional arrangements replace EU functions
-
-Historical models: Czechoslovak "Velvet Divorce" (1993), though EU is far more complex.
-
-**Disorderly Fragmentation (60%)**
-
-Uncontrolled breakup with cascading failures:
-- Sudden exits without transition arrangements
-- Banking crises across multiple countries
-- Target2 imbalance crystallization
-- Legal chaos over treaty obligations
-- Trade disruption within former single market
-
-Historical models: Eurozone crisis 2010-12 if ECB had failed, Argentina 2001 (currency board collapse), but at continental scale.
-
----
-
 ## Factor Loadings
 
 | Factor | Loading | Rationale |
@@ -242,7 +190,7 @@ Historical models: Eurozone crisis 2010-12 if ECB had failed, Argentina 2001 (cu
 | F_SSA | 0.10 | African instability drives migration |
 | F_LAM | 0.0 | No direct linkage |
 
-**Sum of squared loadings**: 0.42 + 0.16 + 0.06 + 0.04 + 0.02 + 0.01 + 0.01 + 0.01 = 0.73 ✓
+**Sum of squared loadings**: 0.65² + 0.40² + 0.25² + 0.20² + 0.15² + 0.10² + 0.10² + 0.05² + 0.05² = 0.42 + 0.16 + 0.06 + 0.04 + 0.02 + 0.01 + 0.01 + 0.003 + 0.003 ≈ **0.73** ✓
 
 High loading sum reflects that EU fragmentation is influenced by multiple external pressures (migration, finance, geopolitics) channeled through the F_EUR factor.
 
@@ -266,80 +214,57 @@ F_EUR is primary because it directly captures European-specific political stress
 | **Czechoslovak divorce** | Orderly separation | Minimal GDP impact; successful transition | Orderly template |
 | **Brexit** | Single member exit | UK GDP -2 to -4% vs counterfactual; EU minimal impact | Below threshold |
 
-### Global Impacts (All Resolutions)
+### Global Impacts
 
 | Variable | Direction | Magnitude | Onset | Durability | Derivation |
 |----------|-----------|-----------|-------|------------|------------|
 | `eu_cohesion` | ↓ | Falls to <20 | immediate | permanent | Definitional |
 | `nato_cohesion` | ↓ | -20 ± 10 points | delayed(6mo) | decaying: half_life=5yr | European defense capacity degraded |
-| `eur_reserve_share` | ↓ | -8 ± 4 pp | gradual(3yr) | permanent | Euro may cease to exist |
-| `global_trade_volume` | ↓ | -4 ± 2% | delayed(6mo) | decaying: half_life=3yr | Single market disruption |
-| `global_credit_spread` | ↑ | +60 ± 30 bps | immediate | decaying: half_life=1.5yr | Financial contagion |
+| `eur_reserve_share` | ↓ | -10 ± 5 pp | gradual(3yr) | permanent | Euro ceases to exist or loses credibility |
+| `global_trade_volume` | ↓ | -6 ± 3% | delayed(3mo) | decaying: half_life=4yr | Single market collapse, supply chain chaos |
+| `global_credit_spread` | ↑ | +120 ± 50 bps | immediate | decaying: half_life=2yr | Full financial contagion |
+| `nuclear_stability` | ↓ | -5 ± 3 points | delayed(1yr) | decaying: half_life=5yr | French nuclear doctrine uncertainty |
 
-### EU Member State Impacts (All Resolutions)
+### EU Member State Impacts
 
 **Germany:**
 
 | Variable | Direction | Magnitude | Onset | Durability | Derivation |
 |----------|-----------|-----------|-------|------------|------------|
-| `deu.gdp_growth` | ↓ | -2.5 ± 1.5 pp | immediate | decaying: half_life=2yr | Export market disruption |
-| `deu.current_account` | ↓ | -4 ± 2 pp GDP | delayed(6mo) | decaying: half_life=3yr | Trade rebalancing |
-| `deu.regime_stability` | ↓ | -15 ± 8 points | delayed(6mo) | decaying: half_life=5yr | Political fallout |
+| `deu.gdp_growth` | ↓ | -4 ± 2 pp | immediate | decaying: half_life=3yr | Export collapse, Target2 losses (~€1T) |
+| `deu.current_account` | ↓ | -5 ± 2.5 pp GDP | delayed(6mo) | decaying: half_life=3yr | Trade rebalancing forced |
+| `deu.regime_stability` | ↓ | -20 ± 10 points | delayed(6mo) | decaying: half_life=5yr | Political fallout, blame dynamics |
 
 **France:**
 
 | Variable | Direction | Magnitude | Onset | Durability | Derivation |
 |----------|-----------|-----------|-------|------------|------------|
-| `fra.gdp_growth` | ↓ | -2.0 ± 1.0 pp | immediate | decaying: half_life=2yr | Trade and confidence |
-| `fra.debt_public` | ↑ | +8 ± 4 pp GDP | gradual(2yr) | permanent | Fiscal stress |
-| `fra.regime_stability` | ↓ | -20 ± 10 points | immediate | decaying: half_life=3yr | Political crisis |
+| `fra.gdp_growth` | ↓ | -3.0 ± 1.5 pp | immediate | decaying: half_life=2yr | Trade, confidence, banking exposure |
+| `fra.debt_public` | ↑ | +12 ± 6 pp GDP | gradual(2yr) | permanent | Fiscal stress, bank bailouts |
+| `fra.regime_stability` | ↓ | -25 ± 12 points | immediate | decaying: half_life=3yr | Political crisis, Fifth Republic stress |
 
 **Italy:**
 
 | Variable | Direction | Magnitude | Onset | Durability | Derivation |
 |----------|-----------|-----------|-------|------------|------------|
-| `ita.gdp_growth` | ↓ | -4.0 ± 2.0 pp | immediate | resolution_dependent | Argentina 2001 reference |
-| `ita.debt_public` | ↑ | +15 ± 8 pp GDP | immediate | permanent | Loss of ECB backstop |
-| `ita.inflation_rate` | ↑ | +6 ± 4 pp | delayed(3mo) | decaying: half_life=2yr | New currency devaluation |
-| `ita.regime_stability` | ↓ | -25 ± 12 points | immediate | resolution_dependent | Political upheaval |
+| `ita.gdp_growth` | ↓ | -8 ± 4 pp | immediate | decaying: half_life=4yr | Argentina 2001 reference; banking collapse |
+| `ita.debt_public` | ↑ | +20 ± 10 pp GDP | immediate | permanent | Loss of ECB backstop, new lira devaluation |
+| `ita.inflation_rate` | ↑ | +8 ± 5 pp | delayed(3mo) | decaying: half_life=2yr | New currency devaluation |
+| `ita.regime_stability` | ↓ | -30 ± 15 points | immediate | decaying: half_life=5yr | Political upheaval |
 
 **Poland:**
 
 | Variable | Direction | Magnitude | Onset | Durability | Derivation |
 |----------|-----------|-----------|-------|------------|------------|
-| `pol.gdp_growth` | ↓ | -3.0 ± 1.5 pp | delayed(3mo) | decaying: half_life=2yr | Trade disruption, EU funds loss |
-| `pol.fdi_net` | ↓ | -2.5 ± 1.0 pp GDP | immediate | decaying: half_life=3yr | Investment freeze |
+| `pol.gdp_growth` | ↓ | -4.0 ± 2.0 pp | delayed(3mo) | decaying: half_life=2yr | Trade disruption, EU funds loss |
+| `pol.fdi_net` | ↓ | -3.0 ± 1.5 pp GDP | immediate | decaying: half_life=3yr | Investment freeze |
 
 **Rest of EU (aggregate):**
 
 | Variable | Direction | Magnitude | Onset | Durability | Derivation |
 |----------|-----------|-----------|-------|------------|------------|
-| `rest_eu.gdp_growth` | ↓ | -2.5 ± 1.5 pp | immediate | decaying: half_life=2yr | Weighted average disruption |
-| `rest_eu.regime_stability` | ↓ | -15 ± 8 points | delayed(3mo) | decaying: half_life=4yr | Political contagion |
-
-### Resolution-Specific Impacts
-
-#### Orderly Fragmentation
-
-| Variable | Direction | Magnitude | Onset | Durability | Derivation |
-|----------|-----------|-----------|-------|------------|------------|
-| `global_credit_spread` | ↑ | +40 ± 20 bps (vs. base) | immediate | decaying: half_life=1yr | Contained stress |
-| `ita.gdp_growth` | ↓ | -2.5 ± 1.5 pp (vs. base) | immediate | decaying: half_life=2yr | Managed transition |
-| `global_trade_volume` | ↓ | -2.5 ± 1.5% (vs. base) | delayed(6mo) | decaying: half_life=2yr | New arrangements form |
-
-Orderly fragmentation allows transition arrangements, bilateral treaties, and managed currency exits. Still disruptive but avoids worst-case cascades.
-
-#### Disorderly Fragmentation
-
-| Variable | Direction | Magnitude | Onset | Durability | Derivation |
-|----------|-----------|-----------|-------|------------|------------|
-| `global_credit_spread` | ↑ | +120 ± 50 bps | immediate | decaying: half_life=2yr | Full financial contagion |
-| `ita.gdp_growth` | ↓ | -8 ± 4 pp | immediate | decaying: half_life=4yr | Argentina-scale crisis |
-| `global_trade_volume` | ↓ | -6 ± 3% | delayed(3mo) | decaying: half_life=4yr | Supply chain chaos |
-| `deu.gdp_growth` | ↓ | -4 ± 2 pp | immediate | decaying: half_life=3yr | Export collapse, Target2 losses |
-| `nuclear_stability` | ↓ | -5 ± 3 points | delayed(1yr) | decaying: half_life=5yr | French nuclear doctrine uncertainty |
-
-Disorderly fragmentation triggers banking crises, Target2 crystallization (Germany loses €1T+ claims), legal chaos, and trade disruption. Multi-year recovery.
+| `rest_eu.gdp_growth` | ↓ | -3.5 ± 2.0 pp | immediate | decaying: half_life=2yr | Weighted average disruption |
+| `rest_eu.regime_stability` | ↓ | -20 ± 10 points | delayed(3mo) | decaying: half_life=4yr | Political contagion |
 
 ### External Impacts
 
@@ -368,13 +293,14 @@ Disorderly fragmentation triggers banking crises, Target2 crystallization (Germa
 
 | Impact Category | Durability Type | Parameters | Rationale |
 |-----------------|-----------------|------------|-----------|
-| EU institutional impacts | permanent | N/A | Dissolution is irreversible |
-| GDP shocks | decaying | half_life=2-4yr | Economies adapt |
-| Trade volume | decaying | half_life=2-3yr | New arrangements form |
-| Credit spreads | decaying | half_life=1-2yr | Markets reprice |
-| Regime stability | decaying | half_life=3-5yr | Political systems stabilize |
-| NATO cohesion | decaying | half_life=5yr | New security arrangements |
-| EUR reserve share | permanent | N/A | Euro may cease to exist |
+| EU institutional collapse | permanent | N/A | Dissolution is irreversible |
+| GDP shocks | decaying | half_life=2-4yr | Economies eventually adapt |
+| Trade volume | decaying | half_life=3-4yr | New arrangements form slowly |
+| Credit spreads | decaying | half_life=1.5-2yr | Markets reprice over time |
+| Regime stability | decaying | half_life=3-5yr | Political systems eventually stabilize |
+| NATO cohesion | decaying | half_life=5yr | New security arrangements develop |
+| EUR reserve share | permanent | N/A | Euro ceases to exist or loses reserve status |
+| Debt increases | permanent | N/A | Accumulated during crisis |
 
 ---
 
@@ -449,35 +375,7 @@ European defense capacity degraded; NATO coordination impaired.
 
 ## Aftermath Branches
 
-### Orderly Fragmentation — Aftermath
-
-**Branch 1: Core Europe Consolidation (50%)**
-
-| Attribute | Value |
-|-----------|-------|
-| **Description** | Northern/Western core forms tighter union; periphery in looser association |
-| **Duration** | New arrangement stabilizes within 5 years |
-| **Factor modifications** | F_EUR: +0.2 for 5 years; F_FIN: +0.1 for 3 years |
-
-- Germany, Netherlands, Austria, Finland form fiscal union
-- France uncertain (may join core or lead alternative)
-- Periphery in trade/regulatory association without monetary union
-- New institutions require decade to mature
-
-**Branch 2: Bilateral Reversion (50%)**
-
-| Attribute | Value |
-|-----------|-------|
-| **Description** | Return to bilateral arrangements; no successor multilateral structure |
-| **Duration** | Permanent fragmentation |
-| **Factor modifications** | F_EUR: +0.3 for 10 years; F_GPT: +0.15 for 10 years |
-
-- No new regional integration
-- Bilateral trade agreements dominate
-- Security arrangements via NATO only
-- Long-term European weakness
-
-### Disorderly Fragmentation — Aftermath
+Once fragmentation occurs, the aftermath unfolds through one of two trajectories:
 
 **Branch 1: Extended Crisis (60%)**
 
@@ -487,10 +385,11 @@ European defense capacity degraded; NATO coordination impaired.
 | **Duration** | 5-10 years of elevated stress |
 | **Factor modifications** | F_EUR: +0.5 for 10 years; F_FIN: +0.4 for 5 years |
 
-- Banking crises in multiple countries
-- Debt restructurings (Italy, Greece, Portugal)
-- Political instability throughout
+- Banking crises in multiple countries simultaneously
+- Debt restructurings (Italy, Greece, Portugal, possibly Spain)
+- Political instability throughout former EU
 - Recovery begins only after crisis exhaustion
+- Model: Eurozone 2010-12 if ECB had failed, but worse
 
 **Branch 2: Rapid Reorganization (40%)**
 
@@ -500,9 +399,10 @@ European defense capacity degraded; NATO coordination impaired.
 | **Duration** | New order within 3-5 years |
 | **Factor modifications** | F_EUR: +0.35 for 5 years; F_FIN: +0.25 for 3 years |
 
-- External pressure (security, economic) forces cooperation
-- New institutions built quickly from necessity
-- Still significant disruption but contained
+- External pressure (security threats, economic necessity) forces cooperation
+- New bilateral or mini-lateral institutions built quickly from necessity
+- Northern core may form tighter arrangements post-crisis
+- Still significant disruption but contained faster than expected
 
 ---
 
@@ -512,6 +412,7 @@ European defense capacity degraded; NATO coordination impaired.
 |-------|-------|
 | **Tier** | Level 1 |
 | **Last updated** | 2025-12-21 |
+| **Revision note** | Removed "Orderly Fragmentation" resolution — negotiated restructuring into differentiated tiers is not a discontinuity but managed evolution (the EU already has opt-outs, multi-speed mechanisms, enhanced cooperation). If actors can coordinate an orderly transition, the threshold hasn't been crossed. Event now models only disorderly collapse. |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | High-impact event; Level 2 could model Italian debt dynamics and ECB capacity limits |
 
@@ -529,15 +430,17 @@ European defense capacity degraded; NATO coordination impaired.
 
 1. **Italian debt threshold**: At what debt/GDP ratio does ECB capacity actually fail? 160%? 180%? 200%?
 
-2. **Target2 crystallization**: How would €1T+ German claims be resolved? Negotiated haircut or total loss?
+2. **Target2 crystallization**: How would €1T+ German claims be resolved in collapse? Total loss or partial recovery through successor state negotiations?
 
-3. **French position**: Would France join a "core Europe" or lead a Mediterranean alternative?
+3. **French nuclear posture**: Does EU collapse force France to reconsider nuclear sharing or trigger German proliferation pressure?
 
-4. **UK role**: Would post-Brexit UK facilitate or complicate European reorganization?
+4. **UK role post-collapse**: Would post-Brexit UK facilitate European reorganization or exploit the chaos?
 
-5. **Security implications**: Does EU fragmentation force European nuclear proliferation (Germany)?
+5. **NATO survival**: Can NATO function effectively with a fragmented Europe, or does EU collapse cascade to NATO dysfunction?
 
-6. **Time-varying probability**: Probability may increase as Italian demographics worsen fiscal trajectory.
+6. **Time-varying probability**: Probability likely increases as Italian demographics worsen fiscal trajectory. Current 0.4% may be an underestimate for 2040s-2050s.
+
+7. **Why not orderly?**: The specification assumes orderly fragmentation is not a discontinuity. This could be wrong if a formal Eurozone dissolution (not just restructuring) could be managed. Historical precedent (Czechoslovakia) suggests orderly separation is possible but EU complexity makes it unlikely.
 
 ---
 
