@@ -16,6 +16,8 @@ tags:
 
 Canonical template for event specifications. Copy this when creating new events.
 
+**Reference**: For valid variable IDs, see [[methodology/reference/state-specification]] Appendix A.
+
 ---
 
 ## Template (Copy Below This Line)
@@ -144,6 +146,8 @@ Canonical template for event specifications. Copy this when creating new events.
 ---
 
 ## Impact Vector
+
+**Valid variable IDs**: See [[methodology/reference/state-specification]] Appendix A (country-level) and Appendix A.2 (global).
 
 ### Global Impacts
 
