@@ -114,6 +114,28 @@ To be identified after Priority Events are complete. Candidates will emerge from
 - Regional coverage gaps
 - Sensitivity analysis (Phase 3)
 
+### 2.4 Critical Review of Existing Events
+
+Apply [[methodology/03-critical-review]] to all completed Level 1 events. Adds "Probability Evolution" (for Type 2) and "Case Against" sections per rubric.
+
+| Priority | Event | Type | Status | Notes |
+|----------|-------|------|--------|-------|
+| **2.4.1** | AMOC Weakening | Type 2 | ✅ | Completed Dec 2025 (commit ea16a2e) |
+| **2.4.2** | Chinese Political Crisis | Type 2/3 | ✅ | Completed Dec 2025 |
+| **2.4.3** | Taiwan Conflict | Type 3 | 🔲 | |
+| **2.4.4** | Severe Pandemic | Type 1 | 🔲 | |
+| **2.4.5** | Global Financial Crisis | Type 1/2 | 🔲 | |
+| **2.4.6** | Amazon Tipping Point | Type 2 | 🔲 | |
+| **2.4.7** | Permafrost Methane Release | Type 2 | 🔲 | |
+| **2.4.8** | Pakistan State Failure | Type 2 | 🔲 | |
+| **2.4.9** | Egypt State Failure | Type 2 | 🔲 | |
+| **2.4.10** | Russia State Failure | Type 2 | 🔲 | |
+| **2.4.11** | Saudi Regime Instability | Type 2 | 🔲 | |
+| **2.4.12** | Iran Regime Change | Type 2 | 🔲 | |
+| **2.4.13** | Turkey Political Crisis | Type 2 | 🔲 | |
+| **2.4.14** | Dollar Reserve Crisis | Type 2 | 🔲 | |
+| **2.4.15** | Chinese Economic Crisis | Type 2 | 🔲 | After 2.1.12 review complete |
+
 ---
 
 ## 3. Validation & Refinement
