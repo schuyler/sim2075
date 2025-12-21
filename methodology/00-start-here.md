@@ -85,7 +85,8 @@ Every event is classified by how its probability works:
 |------|----------|------|
 | **Produce a new event spec** | [[methodology/01-level-1-workflow]] | ~40 min |
 | **Get the blank template** | [[methodology/02-event-template]] | — |
-| **Final checks before saving** | [[methodology/03-quality-checklist]] | 2 min |
+| **Judgment review before saving** | [[methodology/03-critical-review]] | 5 min |
+| **Format checks before saving** | [[methodology/04-format-checklist]] | 2 min |
 
 ## Looking Things Up
 
