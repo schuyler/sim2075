@@ -129,7 +129,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | [[events/geopolitical/russia-state-failure]] | Type 2 | ~1.0% | Level 1 complete |
 | [[events/geopolitical/saudi-regime-instability]] | Type 2 | ~0.8% | Level 1 complete |
 | [[events/geopolitical/iran-regime-change]] | Type 2 | ~1.2% | Level 1 complete |
-| [[events/geopolitical/turkey-political-crisis]] | Type 2 | ~0.55% | Level 1 complete |
+| [[events/geopolitical/turkey-political-breakdown]] | Type 2 | ~0.55% | Level 1 complete |
 | [[events/geopolitical/chinese-political-crisis]] | Type 2/3 | ~0.4% | Level 1 complete |
 | [[events/geopolitical/eu-fragmentation]] | Type 2 | ~0.4% | Level 1 complete |
 | [[events/geopolitical/india-pakistan-military-conflict]] | Type 3 | ~0.9% | Level 1 complete |
