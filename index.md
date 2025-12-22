@@ -124,7 +124,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | Event | Type | Annual Prob | Status |
 |-------|------|-------------|--------|
 | [[events/geopolitical/pakistan-state-failure]] | Type 2 | ~1.5% | Level 1 complete |
-| [[events/geopolitical/taiwan-conflict]] | Type 3 | ~3% window | Level 1 complete |
+| [[events/geopolitical/taiwan-conflict]] | Type 3 | ~2.0% | Level 1 complete |
 | [[events/geopolitical/egypt-state-failure]] | Type 2 | ~1.5% | Level 1 complete |
 | [[events/geopolitical/russia-state-failure]] | Type 2 | ~1.0% | Level 1 complete |
 | [[events/geopolitical/saudi-regime-instability]] | Type 2 | ~0.8% | Level 1 complete |
