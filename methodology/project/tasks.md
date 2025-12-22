@@ -56,6 +56,7 @@ Self-critique identified that the initial implementation treats factors as if th
 | **1.5.5** | ✅ | Included ~80 specific variable IDs replacing category-level descriptions |
 
 | **1.6** | Establish research documentation standards | 🔲 | — | Define schemas for source documentation, synthesis structure, citation conventions. Events and entities become ongoing research projects; need norms for how research accumulates and traces to parameter choices. Includes templates for Level 1/2/3 deliverables. |
+| **1.7** | Investigate Type 3 non-discontinuity resolutions | 🔲 | — | Current Type 3 methodology includes "status quo restoration" and similar resolutions that are explicitly *not* discontinuities. This creates structural inconsistency: the event catalog should enumerate discontinuities, but Type 3 events include non-discontinuity outcomes in their resolution sets. Options: (a) reframe Type 3 events so the *event* is the discontinuity and window/resolution structure is internal probability decomposition, (b) remove non-discontinuity resolutions from Type 3 specs, (c) document that Type 3 catalog entries represent "crisis windows" not discontinuities. Affects Taiwan Conflict, India-Pakistan Conflict, and future Type 3 events. |
 
 **Rationale for ordering:**
 - 1.1 blocks Type 3 event specification (Taiwan, climate agreements, etc.)
