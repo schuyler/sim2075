@@ -14,116 +14,168 @@ tags:
 
 # Taiwan Conflict
 
-**Type 3 (Contingent) Event** — Resolution depends on small-N actor decisions during crisis window.
-
-This specification demonstrates Type 3 calibration methodology. See [[methodology/reference/type-3-calibration]] for the operational guidance this example follows.
+**Type 3 (Contingent) Event** — Military conflict or binding diplomatic resolution following acute cross-strait crisis.
 
 ---
 
-## Event Summary
+## Event Classification
 
 | Attribute | Value |
 |-----------|-------|
-| Event ID | `taiwan_conflict` |
-| Type | 3 (Contingent) |
-| Domain | Geopolitical |
-| Primary Region | East Asia |
-| Status | Level 1 complete |
+| **ID** | `TAIWAN_CONFLICT` |
+| **Scale** | Global |
+| **Domain** | Geopolitical |
+| **Causal Type** | Type 3: Contingent |
+| **Onset Speed** | Sudden (<1yr) |
+| **Reversibility** | Partial to Irreversible (aftermath-dependent) |
 
-**Description**: Acute cross-strait crisis escalating to potential military confrontation between PRC and Taiwan, with high probability of US involvement.
+## Description
+
+Military conflict between PRC and Taiwan, or binding diplomatic resolution fundamentally altering cross-strait relations. Distinguished from baseline tensions and sub-threshold crises by either (a) actual military operations or (b) formal agreements that materially change Taiwan's status. This is the discontinuity; crises that de-escalate without combat or formal resolution are non-events.
+
+---
+
+## Causal Type Specification
+
+### Type 3 (Contingent) Event
+
+This event has Type 3 structure: preconditions create crisis windows, and actor decisions determine whether discontinuity occurs. The probability decomposition is:
+
+- **P(crisis window)**: ~3% annually — acute crisis develops
+- **P(discontinuity | window)**: ~65% — military conflict or binding resolution occurs
+- **P(event)**: ~2% annually — the discontinuity probability
+
+The ~35% of crisis windows that de-escalate without combat or formal agreement are *non-events* — they don't appear in the simulation as discontinuities.
+
+**Window Preconditions**:
+
+| Condition | Threshold |
+|-----------|-----------|
+| F_GPT (Great Power Tension) | Sustained above threshold for 2+ years |
+| F_EAS (East Asian Tension) | Elevated regional instability context |
+| Triggering incident | Election result, sovereignty assertion, military accident, or diplomatic provocation |
+
+**Historical basis for window probability (~3%)**:
+
+Acute crises reaching threshold where military action or major diplomatic shift became imminent:
+- 1954-55 First Taiwan Strait Crisis (military engagement)
+- 1958 Second Taiwan Strait Crisis (military engagement)
+- 1995-96 Third Taiwan Strait Crisis (military mobilization, de-escalated)
+- 2022 Pelosi visit tensions (did not reach acute phase)
+
+Pattern: ~3-4 acute crises per century when baseline tensions elevated. Current period has elevated baseline due to PRC military modernization, US strategic competition, and semiconductor stakes.
+
+**Historical basis for discontinuity probability given window (~65%)**:
+
+Of the 3 acute crises since 1954, 2 involved actual military operations (1954-55, 1958). The 1995-96 crisis de-escalated without combat — a non-event in our framework. This suggests roughly two-thirds of acute crises produce discontinuous outcomes.
+
+However, the sample is small and the nuclear context has changed (PRC became nuclear-armed in 1964). Modern crises may have different resolution dynamics. The 65% estimate reflects:
+- Historical precedent of PRC willingness to use force
+- Elevated current stakes (semiconductors, great power competition)
+- Uncertainty about whether nuclear deterrence suppresses or redirects conflict
+
+---
+
+## Probability
+
+| Metric | Value |
+|--------|-------|
+| **Annual probability** | ~2.0% |
+| **Low bound** | 1.0% |
+| **High bound** | 3.5% |
+| **Confidence** | Medium |
+| **25-year cumulative** | ~40% (at least one discontinuity) |
+
+### Derivation
+
+1. **Window probability**: 3% annually (2-5% range)
+2. **Discontinuity given window**: 65% (50-80% range)
+3. **Combined**: 3% × 65% = 1.95%, rounded to ~2%
+
+### Comparative Ranking
+
+| Event | Annual Probability | Comparison |
+|-------|-------------------|------------|
+| Taiwan Conflict | ~2.0% | — |
+| India-Pakistan Military Conflict | ~0.9% | Lower — more frequent crises but lower conflict-given-crisis |
+| Pakistan State Failure | ~1.5% | Similar magnitude |
+| Chinese Economic Crisis | ~2.0% | Similar magnitude |
+| Global Financial Crisis | ~3.0% | Higher — more frequent, less actor-dependent |
+
+### Key Uncertainties
+
+- **PRC military readiness trajectory**: Rapid capability improvements may shift window toward action
+- **US commitment credibility**: Strategic ambiguity creates uncertainty about response
+- **Semiconductor stakes**: TSMC's value may increase or decrease conflict likelihood (capture vs. destroy calculus)
+- **Domestic politics**: Nationalist pressures on both sides affect crisis behavior
 
 ---
 
 ## Factor Loadings
 
-How systemic factors affect window probability:
-
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| F_GPT | 0.70 | Great power tension is primary driver |
-| F_EAS | 0.80 | Regional instability directly relevant |
+| F_CLIM | 0.00 | No direct pathway |
 | F_FIN | 0.20 | Economic stress may affect calculus but secondary |
+| F_HLTH | 0.00 | No direct pathway |
+| F_GPT | 0.70 | Great power tension is primary driver |
+| F_FOOD | 0.00 | No direct pathway |
 | F_TECH | 0.15 | Semiconductor competition adds stakes but doesn't drive timing |
+| F_EUR | 0.00 | No direct pathway |
+| F_MENA | 0.00 | No direct pathway |
+| F_SAS | 0.00 | No direct pathway |
+| F_EAS | 0.80 | Regional instability directly relevant |
+| F_SSA | 0.00 | No direct pathway |
+| F_LAM | 0.00 | No direct pathway |
 
----
+**Sum of squared loadings**: 1.18 ✓
 
-## Window Specification
+### Loading Rationale
 
-The event requires a crisis window to open before resolution is sampled.
-
-```yaml
-window:
-  description: |
-    Acute crisis phase where military action becomes imminent possibility.
-    Characterized by: military mobilization indicators, diplomatic breakdown,
-    public ultimatums, or triggering incident requiring response.
-  
-  preconditions:
-    - "F_GPT sustained above threshold for 2+ years"
-    - "F_EAS elevated (regional instability context)"
-    - "Triggering incident occurs (election, sovereignty assertion, accident)"
-  
-  annual_window_probability: 0.03
-  
-  probability_rationale: |
-    Historical frequency of Taiwan Strait crises reaching acute phase:
-    - 1954-55 First Taiwan Strait Crisis
-    - 1958 Second Taiwan Strait Crisis  
-    - 1995-96 Third Taiwan Strait Crisis
-    - 2022 Pelosi visit tensions (did not reach acute phase)
-    
-    Roughly 3-4 crises per century when baseline tensions elevated.
-    Current period has elevated baseline; estimate 3% annual window probability.
-    
-    Level 1 estimate. Would benefit from:
-    - Systematic crisis cataloging with severity classification
-    - Analysis of what distinguishes acute vs. sub-acute crises
-```
+F_EAS and F_GPT are dominant because Taiwan conflict sits at the intersection of regional East Asian dynamics and US-China great power competition. F_FIN and F_TECH provide secondary influence through economic interdependence and semiconductor stakes.
 
 ---
 
 ## Resolutions
 
-Once window opens, one of three resolutions occurs:
+Once a crisis window opens *and* a discontinuity occurs (65% of windows), one of two resolutions:
 
 ```yaml
 resolutions:
   - id: military_conflict
-    probability: 0.33
+    probability: 0.50
     description: |
       PRC initiates military action against Taiwan.
       Ranges from blockade to limited strikes to full invasion.
       
-  - id: negotiated_accommodation
-    probability: 0.33
+  - id: negotiated_resolution
+    probability: 0.50
     description: |
-      Crisis de-escalates through diplomatic engagement.
-      May involve formal or informal agreements modifying status quo.
-      
-  - id: status_quo_restoration
-    probability: 0.33
-    description: |
-      Crisis de-escalates without substantive resolution.
-      Return to prior tension baseline with crisis memory effects.
+      Crisis produces binding diplomatic resolution.
+      Formal agreements materially changing Taiwan's status, security 
+      arrangements, or cross-strait governance framework.
 
 resolution_probability_rationale:
-  default: "uniform (33/33/33)"
-  specified: "33/33/33"
+  default: "uniform (50/50)"
+  specified: "50/50"
   justification: |
-    No structural asymmetry identified at Level 1 justifying deviation.
+    Both resolutions face substantial barriers:
     
-    Considered and rejected:
-    - "Military action has higher activation energy" — true, but PRC has
-      invested heavily in rapid-strike capabilities reducing this gap
-    - "Accommodation requires mutual agreement" — also a barrier, faces
-      domestic political constraints on both sides
-    - "Status quo is path of least resistance" — but crisis window implies
-      pressure that makes status quo uncomfortable
+    Military conflict barriers:
+    - Activation energy for military action is high
+    - Nuclear escalation risk with US involvement
+    - Economic costs of conflict with major trading partners
+    - Uncertainty about military success
     
-    Defaulting to uniform. Level 2 research could examine:
-    - Structural constraints on each resolution
-    - Historical crisis resolution patterns (with analogy limitations noted)
-    - Activation energy asymmetries in current military posture
+    Negotiated resolution barriers:
+    - Domestic politics constrain compromise on both sides
+    - US role complicates bilateral negotiation
+    - Sovereignty issues resist ambiguous formulations
+    - Previous frameworks (1992 Consensus) have eroded
+    
+    No clear structural asymmetry identified at Level 1.
+    Defaulting to uniform distribution per entropy maximization.
+    
   confidence: "n/a (using default)"
 ```
 
@@ -190,7 +242,7 @@ aftermath_branches:
       floor: 0.25
       
     cascade_triggers:
-      - event_id: us_china_direct_conflict
+      - event_id: US_CHINA_DIRECT_CONFLICT
         window_opens: true
         probability: 0.50
         probability_rationale: |
@@ -208,9 +260,8 @@ aftermath_branches:
           - War-weariness, competing priorities
           
           No clear structural asymmetry identified. Defaulting to 0.50 per entropy
-          maximization. Subject to sensitivity analysis — if tail outcomes are
-          highly sensitive to this parameter, report results conditionally.
-      - event_id: korean_peninsula_crisis
+          maximization. Subject to sensitivity analysis.
+      - event_id: KOREAN_PENINSULA_CRISIS
         probability_modifier: 1.5
         rationale: "North Korea may see opportunity during US distraction"
         
@@ -250,7 +301,7 @@ aftermath_branches:
       exit_conditions: null  # permanent regime shift in international system
       
     cascade_triggers:
-      - event_id: global_nuclear_reconfiguration
+      - event_id: GLOBAL_NUCLEAR_RECONFIGURATION
         window_opens: true
         probability: 1.0
         rationale: "Nuclear taboo broken; proliferation incentives transform"
@@ -287,23 +338,24 @@ aftermath_probability_rationale: |
   provide traction that small-N actor decisions do not.
 ```
 
-### Negotiated Accommodation Aftermath
+### Negotiated Resolution Aftermath
 
 ```yaml
-resolution: negotiated_accommodation
+resolution: negotiated_resolution
 aftermath_branches:
 
-  - id: stable_new_framework
+  - id: stable_framework
     probability: 0.40
     description: |
-      New cross-strait framework accepted by both parties.
+      Durable cross-strait framework accepted by both parties.
       May involve: formal diplomatic ties, economic integration agreements,
-      security guarantees, or modified "one China" formulation.
-      Represents genuine tension reduction.
+      security guarantees, or modified "one China" formulation with explicit
+      Taiwan governance autonomy.
+      Represents genuine tension reduction backed by binding commitments.
       
     factor_modifications:
-      F_GPT: -0.10  # tension reduction
-      F_EAS: -0.15
+      F_GPT: -0.15
+      F_EAS: -0.20
       
     duration:
       type: maintenance_required
@@ -316,79 +368,128 @@ aftermath_branches:
     impact_vector:
       global:
         trade_confidence: +0.10
+        semiconductor_supply_security: +0.15
       taiwan:
-        sovereignty_status: "ambiguous_but_stable"
+        sovereignty_status: "defined_autonomy"
         economic_integration_prc: +0.30
+        security_guarantee_status: "formalized"
       china:
         international_standing: +0.15
+        taiwan_policy_objective: "partially_achieved"
+      united_states:
+        alliance_credibility: -0.10  # some allies view as abandonment
 
-  - id: unstable_settlement
+  - id: unstable_framework
     probability: 0.60
     description: |
-      Face-saving de-escalation without fundamental resolution.
-      Both sides claim victory; underlying issues unaddressed.
-      Tensions remain elevated; future crisis probability increased.
-      
-    factor_modifications:
-      F_GPT: +0.15
-      F_EAS: +0.20
-      
-    duration:
-      type: decaying
-      half_life_years: 5
-      floor: 0.10
-      
-    modifies_future_events:
-      - event_id: taiwan_conflict
-        window_probability_modifier: 1.3
-        rationale: "Unresolved crisis increases future crisis likelihood"
-        
-    impact_vector:
-      taiwan:
-        sovereignty_status: "unchanged_but_precarious"
-      china:
-        credibility: -0.10  # failed to achieve objectives
-
-aftermath_probability_rationale: |
-  Unstable settlement weighted higher (0.60) because:
-  - Fundamental issues (sovereignty, security) are difficult to resolve
-  - Domestic politics on both sides constrain genuine compromise
-  - Face-saving exits are easier than substantive agreements
-  - Historical pattern of crises ending without resolution
-  
-  Stable framework possible (0.40) if:
-  - Crisis severity creates political space for compromise
-  - External pressure (US, international) pushes toward settlement
-  - Leadership on both sides willing to spend political capital
-```
-
-### Status Quo Restoration Aftermath
-
-```yaml
-resolution: status_quo_restoration
-aftermath_branches:
-
-  - id: default
-    probability: 1.0
-    description: |
-      Crisis passes without military action or formal resolution.
-      Return to baseline tensions with modest elevation from crisis memory.
-      Neither side achieved objectives; underlying dynamics unchanged.
+      Formal agreement reached under crisis pressure, but with structural weaknesses.
+      Agreement is binding and represents discontinuity from status quo ante,
+      but contains ambiguities, lacks enforcement mechanisms, or faces
+      domestic opposition that threatens durability.
+      Creates period of formal framework with elevated collapse risk.
       
     factor_modifications:
       F_GPT: +0.10
       F_EAS: +0.15
       
     duration:
-      type: decaying
-      half_life_years: 3
-      floor: 0.05
-      
+      type: maintenance_required
+      annual_failure_probability: 0.12
+      failure_modes:
+        - "Domestic political change repudiates agreement"
+        - "Ambiguous terms lead to conflicting interpretations"
+        - "One party tests boundaries, other escalates"
+        
+    modifies_future_events:
+      - event_id: TAIWAN_CONFLICT
+        window_probability_modifier: 1.5
+        rationale: "Framework collapse creates new crisis with higher stakes"
+        
     impact_vector:
-      # Minimal lasting impact; crisis becomes historical reference point
-      global:
-        crisis_precedent: "taiwan_2030s"  # for future scenario analysis
+      taiwan:
+        sovereignty_status: "formally_redefined_unstable"
+        governance_autonomy: "contested"
+      china:
+        credibility: +0.05  # achieved formal agreement
+        taiwan_policy_objective: "partially_achieved_fragile"
+
+aftermath_probability_rationale: |
+  Unstable framework weighted higher (0.60) because:
+  - Crisis-driven agreements often prioritize speed over durability
+  - Fundamental sovereignty issues resist stable compromise
+  - Domestic politics on both sides constrain genuine accommodation
+  - Historical precedent: 1992 Consensus was ambiguous and eventually contested
+  
+  Stable framework possible (0.40) if:
+  - Crisis severity creates political space for substantive compromise
+  - External guarantors (US, others) provide enforcement mechanism
+  - Leadership on both sides willing to spend political capital
+  - Agreement structure allows face-saving for all parties
+  
+  Key distinction from previous "status quo restoration": Both aftermath branches
+  represent genuine discontinuities. An unstable framework is still a formal
+  agreement that changes Taiwan's legal/political status — it can fail later,
+  but its existence is itself a break from the status quo ante.
 ```
+
+---
+
+## Case Against
+
+### 1. Probability may be too high
+
+**Argument**: Nuclear deterrence and economic interdependence make Taiwan conflict substantially less likely than historical crises suggest. The 1954-58 crises occurred before PRC had nuclear weapons and before deep economic integration. Modern conflict would be catastrophic for both sides in ways that didn't apply historically.
+
+**Counter**: PRC has invested heavily in military capabilities specifically designed for Taiwan scenarios. This investment is not consistent with deterrence-only posture. Additionally, nationalist pressures and "century of humiliation" narrative create political incentives that may override economic rationality.
+
+### 2. Negotiated resolution may be implausible
+
+**Argument**: The 50% weight on negotiated resolution may be too high. Taiwan's domestic politics have moved steadily away from unification; any leader who signed a framework agreement would face severe political backlash. Similarly, PRC cannot accept any agreement that doesn't move toward unification.
+
+**Counter**: Crisis dynamics differ from peacetime politics. Faced with imminent conflict, political constraints may shift. Additionally, creative ambiguity has historically allowed both sides to claim victory (e.g., 1992 Consensus interpretations).
+
+### 3. Non-event probability may be too low
+
+**Argument**: 35% non-event probability may understate crisis management capacity. The 1995-96 crisis de-escalated despite military mobilization. International pressure, economic stakes, and nuclear risks all push toward de-escalation.
+
+**Counter**: If this is true, it argues for lower window probability rather than higher non-event share. The window is meant to capture crises where discontinuity is genuinely imminent.
+
+### What would change estimate 2x+
+
+| Change | Direction | Magnitude |
+|--------|-----------|-----------|
+| PRC successful amphibious exercise | ↑ | +50-100% window probability |
+| Taiwan nuclear latency revelation | ↑ | +100% conflict probability |
+| US explicit defense commitment | ↓ | -30-50% (deterrence) or ↑ +30% (commitment trap) |
+| Major cross-strait economic agreement | ↓ | -40% window probability |
+| PRC leadership succession crisis | ↑ | +50% window probability |
+
+---
+
+## Cascade Effects
+
+| Pathway | Target Event | Effect | Duration |
+|---------|--------------|--------|----------|
+| Full invasion → US involvement | US_CHINA_DIRECT_CONFLICT | Window opens (50%) | Immediate |
+| Nuclear use → global reconfiguration | GLOBAL_NUCLEAR_RECONFIGURATION | Window opens (100%) | Permanent |
+| Regional instability | KOREAN_PENINSULA_CRISIS | ×1.5 | 3 years |
+| Economic disruption → China stress | CHINESE_ECONOMIC_CRISIS | ×1.3 | 5 years |
+
+---
+
+## Transmission Channels
+
+### Semiconductor Channel
+Taiwan produces ~90% of advanced semiconductors. Any conflict scenario severely disrupts global technology supply chains. Effects persist for years even after conflict ends due to infrastructure damage and supply chain reconfiguration.
+
+### Trade Channel
+Cross-strait conflict disrupts major shipping lanes. Global trade volume impacts depend on conflict intensity and duration.
+
+### Financial Channel
+Conflict triggers capital flight, currency volatility, and risk repricing across Asian markets. Effects transmit globally through financial linkages.
+
+### Alliance Channel
+US response (or non-response) affects alliance credibility in Japan, Korea, Philippines, and beyond. Framework agreements affect perceptions of US commitment.
 
 ---
 
@@ -398,11 +499,12 @@ Key uncertainties for Phase 3 sensitivity testing:
 
 | Parameter | Range to Test | Why It Matters |
 |-----------|---------------|----------------|
-| Window probability | 0.01 - 0.05 | Drives expected timing of crisis |
+| Window probability | 0.02 - 0.05 | Drives expected timing of crisis |
+| Discontinuity given window | 0.50 - 0.80 | Determines how many crises produce lasting change |
+| Military vs. negotiated split | 0.30/0.70 to 0.70/0.30 | Different tail risk profiles |
 | Limited vs. full invasion split | 0.40/0.45 to 0.70/0.15 | Major difference in semiconductor/escalation outcomes |
 | Nuclear escalation probability | 0.05 - 0.25 | Tail risk driver |
 | US involvement probability | 0.40 - 0.80 | Determines whether conflict stays regional |
-| Semiconductor recovery half-life | 2-6 years | Duration of tech disruption |
 
 ---
 
@@ -413,24 +515,33 @@ Key uncertainties for Phase 3 sensitivity testing:
 - Military logistics literature on invasion vs. blockade scenarios
 - Semiconductor supply chain resilience analysis
 - US alliance credibility and commitment literature
+- Comparative analysis of crisis-driven agreements (durability patterns)
 
 **Level 3 (20+ hours):**
 - Expert elicitation on aftermath probabilities (not resolution probabilities)
 - Detailed supply chain modeling for impact vectors
 - War-gaming literature synthesis
 - Nuclear escalation scenario analysis
+- Taiwan domestic politics deep-dive
 
 ---
 
-## Sources and Calibration
+## Research Status
 
-*Level 1 specification based on general knowledge. Source documentation to be added per [[methodology/project/tasks]] Task 1.6 (research documentation standards).*
+| Field | Value |
+|-------|-------|
+| **Tier** | Level 1 |
+| **Last updated** | 2025-12-22 |
+| **Upgrade candidate** | Yes |
+| **Upgrade rationale** | Semiconductor impact modeling; negotiated resolution plausibility; nuclear escalation pathways |
 
-Key references for future documentation:
-- Taiwan Strait crisis history (1954-55, 1958, 1995-96)
-- TSMC and semiconductor supply chain analysis
-- US-Taiwan Relations Act and strategic ambiguity literature
-- PLA amphibious assault capability assessments
+## Open Questions
+
+- Framework agreement durability patterns (historical comparisons)
+- PRC military readiness assessment and timeline
+- US commitment credibility under different political scenarios
+- TSMC destruction vs. capture calculus
+- Nuclear escalation pathways specific to Taiwan scenario
 
 ---
 
@@ -439,7 +550,8 @@ Key references for future documentation:
 | Date | Change | Rationale |
 |------|--------|-----------|
 | Dec 2025 | Initial Level 1 specification | Task 1.1 worked example |
+| Dec 2025 | Critical review revision | Applied critical review rubric: removed status quo restoration as resolution (fails discontinuity test), rebalanced to 50/50 military/negotiated, added Case Against section, clarified probability decomposition following India-Pakistan template |
 
 ---
 
-*See [[methodology/reference/type-3-calibration]] for calibration methodology | [[methodology/reference/aftermath-branches]] for aftermath framework*
+*See [[methodology/reference/type-3-calibration]] for methodology | [[events/geopolitical/india-pakistan-military-conflict]] for comparable Type 3 specification*
