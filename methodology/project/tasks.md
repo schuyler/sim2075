@@ -88,7 +88,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.1.13** | Chinese Political Crisis | Type 2/3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/chinese-political-crisis]] |
 | **2.1.14** | EU Fragmentation | Type 2 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/eu-fragmentation]] |
 | **2.1.15** | US Constitutional Crisis | Type 2/3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/us-constitutional-crisis]] |
-| **2.1.16** | India-Pakistan Conflict | Type 3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/india-pakistan-conflict]] |
+| **2.1.16** | India-Pakistan Military Conflict | Type 3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/india-pakistan-military-conflict]] |
 | **2.1.17** | Korean Peninsula Crisis | Type 3 | 🔲 | 1.1 | |
 | **2.1.18** | US-China Trade War | Type 3 | 🔲 | 1.1 | |
 | **2.1.19** | Oil Supply Shock | Type 1 | 🔲 | 1.3 | |
@@ -193,7 +193,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
-| Dec 2025 | Task 2.1.16: India-Pakistan Conflict | Level 1 complete; [[events/geopolitical/india-pakistan-conflict]]; Type 3 contingent event modeling acute crises between two nuclear-armed states. Three resolutions (Military Conflict 35%, Negotiated De-escalation 25%, Status Quo Restoration 40%). Window probability 2.5% annually. F_SAS primary driver. Nuclear escalation modeled at 10% conditional on conflict. Critical review passed — discontinuity test verified, probability structure consistent with historical pattern. |
+| Dec 2025 | Task 2.1.16: India-Pakistan Military Conflict | Level 1 complete; [[events/geopolitical/india-pakistan-military-conflict]]; Type 3 contingent event. Revised framing: event IS the discontinuity (military conflict), not a crisis window. Annual probability 0.9% (= 2.5% crisis window × 35% escalation). Three aftermath branches: Limited Conflict (55%), Major War (35%), Nuclear Escalation (10%). F_SAS primary driver (0.80). Removed non-discontinuity resolutions per Task 1.7 investigation. |
 | Dec 2025 | Task 2.1.15: US Constitutional Crisis | Level 1 complete; [[events/geopolitical/us-constitutional-crisis]]; Type 2/3 hybrid modeling constitutional breakdown. Four resolutions (Authoritarian Consolidation 30%, Federal Fragmentation 25%, Prolonged Instability 30%, Negotiated Restructuring 15%). Probability 0.5% annually. F_FIN/F_GPT primary drivers. Highest global-impact event due to dollar/NATO/nuclear implications. |
 | Dec 2025 | Task 2.1.14: EU Fragmentation | Level 1 complete; [[events/geopolitical/eu-fragmentation]]; Critical review identified "Orderly Fragmentation" fails discontinuity test — converted to pure Type 2 threshold event modeling disorderly collapse only. Probability 0.4%, F_EUR/F_FIN drivers, Brexit:EU::Tiananmen:CCP calibration insight. Commits 60218a0, 4e73181. |
 | Dec 2025 | Task 2.1.13: Chinese Political Crisis | Level 1 complete; [[events/geopolitical/chinese-political-crisis]]; Removed Stabilization resolution (not a discontinuity), new split Transformation 40%/Collapse 60%, probability 0.4%. Added [[methodology/discontinuity-test]] to methodology. Commits 4931001, 94ad28c, d73b526. |
