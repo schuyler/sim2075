@@ -134,6 +134,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | [[events/geopolitical/eu-fragmentation]] | Type 2 | ~0.4% | Level 1 complete |
 | [[events/geopolitical/india-pakistan-military-conflict]] | Type 3 | ~0.9% | Level 1 complete |
 | [[events/geopolitical/korean-peninsula-crisis]] | Type 3 | ~0.75% | Level 1 complete |
+| [[events/geopolitical/us-china-economic-rupture]] | Type 3 | ~1.75% | Level 1 complete |
 | Sahel Catastrophe | Type 2 | TBD | Not started |
 
 ### Financial Events
