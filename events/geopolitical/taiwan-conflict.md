@@ -14,7 +14,7 @@ tags:
 
 # Taiwan Conflict
 
-**Type 3 (Contingent) Event** — Military conflict or binding diplomatic resolution following acute cross-strait crisis.
+**Type 3 (Contingent) Event** — Military conflict or great power settlement following acute cross-strait crisis.
 
 ---
 
@@ -31,7 +31,9 @@ tags:
 
 ## Description
 
-Military conflict between PRC and Taiwan, or binding diplomatic resolution fundamentally altering cross-strait relations. Distinguished from baseline tensions and sub-threshold crises by either (a) actual military operations or (b) formal agreements that materially change Taiwan's status. This is the discontinuity; crises that de-escalate without combat or formal resolution are non-events.
+Military conflict between PRC and Taiwan, or US-brokered great power settlement fundamentally altering cross-strait relations. Distinguished from baseline tensions and sub-threshold crises by either (a) actual military operations or (b) binding agreements backed by great power guarantees that materially change Taiwan's status. This is the discontinuity; crises that de-escalate without combat or formal settlement are non-events.
+
+Bilateral Taiwan-PRC negotiation is not modeled as a plausible path — the preference sets don't overlap. Settlement requires US involvement as broker and guarantor, fundamentally changing the negotiating dynamic.
 
 ---
 
@@ -42,7 +44,7 @@ Military conflict between PRC and Taiwan, or binding diplomatic resolution funda
 This event has Type 3 structure: preconditions create crisis windows, and actor decisions determine whether discontinuity occurs. The probability decomposition is:
 
 - **P(crisis window)**: ~3% annually — acute crisis develops
-- **P(discontinuity | window)**: ~65% — military conflict or binding resolution occurs
+- **P(discontinuity | window)**: ~65% — military conflict or great power settlement occurs
 - **P(event)**: ~2% annually — the discontinuity probability
 
 The ~35% of crisis windows that de-escalate without combat or formal agreement are *non-events* — they don't appear in the simulation as discontinuities.
@@ -143,41 +145,69 @@ Once a crisis window opens *and* a discontinuity occurs (65% of windows), one of
 ```yaml
 resolutions:
   - id: military_conflict
-    probability: 0.50
+    probability: 0.65
     description: |
       PRC initiates military action against Taiwan.
       Ranges from blockade to limited strikes to full invasion.
       
-  - id: negotiated_resolution
-    probability: 0.50
+  - id: great_power_settlement
+    probability: 0.35
     description: |
-      Crisis produces binding diplomatic resolution.
-      Formal agreements materially changing Taiwan's status, security 
-      arrangements, or cross-strait governance framework.
+      US brokers binding settlement between PRC and Taiwan.
+      Agreement backed by great power guarantees, materially changing
+      Taiwan's status, security arrangements, or governance framework.
+      Taiwan's agency is constrained — this is the least-bad option
+      that greater powers have arranged, not Taiwan's preferred outcome.
 
 resolution_probability_rationale:
   default: "uniform (50/50)"
-  specified: "50/50"
+  specified: "65/35"
   justification: |
-    Both resolutions face substantial barriers:
+    Settlement faces higher structural barriers than military conflict:
     
     Military conflict barriers:
-    - Activation energy for military action is high
+    - Activation energy for military action
     - Nuclear escalation risk with US involvement
     - Economic costs of conflict with major trading partners
     - Uncertainty about military success
     
-    Negotiated resolution barriers:
-    - Domestic politics constrain compromise on both sides
-    - US role complicates bilateral negotiation
-    - Sovereignty issues resist ambiguous formulations
-    - Previous frameworks (1992 Consensus) have eroded
+    Great power settlement barriers (all of the above, plus):
+    - Requires US willingness to reduce its position (domestic political cost)
+    - Requires PRC trust in US commitments (historically low)
+    - Requires Taiwan acquiescence (democratic legitimacy problems)
+    - Must find formula acceptable to all three parties simultaneously
     
-    No clear structural asymmetry identified at Level 1.
-    Defaulting to uniform distribution per entropy maximization.
+    Military conflict only requires one actor (PRC) to decide to act.
+    Settlement requires three actors to agree on terms none would accept
+    under normal circumstances. This structural asymmetry justifies
+    weighting military conflict higher.
     
-  confidence: "n/a (using default)"
+  confidence: "medium — structural reasoning, not historical base rate"
 ```
+
+### Concrete Settlement Scenarios
+
+The following scenarios illustrate what a great power settlement might look like. Each requires crisis conditions severe enough to shift preferences away from peacetime positions.
+
+**Scenario 1: Crisis-Driven Grand Bargain**
+
+During acute crisis with imminent military action, US and PRC negotiate directly. US offers reduced military presence in western Pacific (no new bases, reduced exercises, arms sales constraints). PRC accepts formalized Taiwan autonomy with US security guarantee. Taiwan accepts because alternative is war without guaranteed US support.
+
+*Historical analog*: Austrian State Treaty (1955) — four-power agreement establishing Austrian neutrality, ending occupation.
+
+**Scenario 2: Post-Limited-Conflict Settlement**
+
+After limited PRC military action (e.g., seizure of Kinmen/Matsu or brief blockade), US brokers ceasefire. Settlement formalizes new status quo rather than risking escalation. Taiwan accepts loss of outlying islands in exchange for guarantees on Taiwan proper.
+
+*Historical analog*: Korean Armistice (1953) — great power settlement freezing conflict at status quo ante (roughly).
+
+**Scenario 3: Preemptive Accommodation**
+
+US, seeing crisis approaching and doubting ability to prevail militarily, offers PRC a deal addressing core interests (formal diplomatic recognition, reduced military posture) in exchange for binding commitments on Taiwan autonomy. Taiwan accepts under intense US pressure, framed as "peace with dignity."
+
+*Historical analog*: US-brokered Israel-Egypt peace (1978) — superpower pressure on both parties to accept terms neither would choose independently.
+
+**Common features**: In all scenarios, Taiwan's agency is constrained. The settlement isn't Taiwan choosing a good option; it's Taiwan accepting the least-bad option that greater powers have arranged.
 
 ---
 
@@ -338,20 +368,20 @@ aftermath_probability_rationale: |
   provide traction that small-N actor decisions do not.
 ```
 
-### Negotiated Resolution Aftermath
+### Great Power Settlement Aftermath
 
 ```yaml
-resolution: negotiated_resolution
+resolution: great_power_settlement
 aftermath_branches:
 
   - id: stable_framework
     probability: 0.40
     description: |
-      Durable cross-strait framework accepted by both parties.
-      May involve: formal diplomatic ties, economic integration agreements,
-      security guarantees, or modified "one China" formulation with explicit
-      Taiwan governance autonomy.
-      Represents genuine tension reduction backed by binding commitments.
+      Durable settlement backed by credible great power guarantees.
+      Key features: explicit US security commitment to Taiwan, PRC commitment
+      to non-use of force, Taiwan constraints on independence/alliance options,
+      verification mechanisms, and defined escalation procedures.
+      Represents genuine tension reduction through binding commitments.
       
     factor_modifications:
       F_GPT: -0.15
@@ -361,31 +391,37 @@ aftermath_branches:
       type: maintenance_required
       annual_failure_probability: 0.05
       failure_modes:
-        - "Domestic political change invalidates agreement"
-        - "External shock disrupts framework"
-        - "Gradual erosion through non-compliance"
+        - "US domestic political change withdraws commitment"
+        - "PRC leadership change repudiates constraints"
+        - "Taiwan election produces government that rejects framework"
+        - "External shock (e.g., North Korea crisis) strains guarantees"
         
     impact_vector:
       global:
         trade_confidence: +0.10
         semiconductor_supply_security: +0.15
+        great_power_tension: -0.15
       taiwan:
-        sovereignty_status: "defined_autonomy"
-        economic_integration_prc: +0.30
-        security_guarantee_status: "formalized"
+        sovereignty_status: "defined_autonomy_guaranteed"
+        economic_integration_prc: +0.20
+        security_guarantee_status: "formalized_us_commitment"
+        political_autonomy: "constrained_but_protected"
       china:
         international_standing: +0.15
         taiwan_policy_objective: "partially_achieved"
+        us_military_presence: "reduced"
       united_states:
-        alliance_credibility: -0.10  # some allies view as abandonment
+        alliance_credibility: -0.10  # some allies view as partial abandonment
+        military_posture_asia: "reduced"
+        great_power_management: +0.20  # demonstrated crisis resolution capacity
 
   - id: unstable_framework
     probability: 0.60
     description: |
-      Formal agreement reached under crisis pressure, but with structural weaknesses.
+      Settlement reached under crisis pressure, but with structural weaknesses.
       Agreement is binding and represents discontinuity from status quo ante,
-      but contains ambiguities, lacks enforcement mechanisms, or faces
-      domestic opposition that threatens durability.
+      but contains ambiguities (creative or otherwise), lacks robust enforcement,
+      or faces domestic opposition in one or more parties.
       Creates period of formal framework with elevated collapse risk.
       
     factor_modifications:
@@ -396,41 +432,46 @@ aftermath_branches:
       type: maintenance_required
       annual_failure_probability: 0.12
       failure_modes:
-        - "Domestic political change repudiates agreement"
+        - "Domestic political change in any party repudiates agreement"
         - "Ambiguous terms lead to conflicting interpretations"
-        - "One party tests boundaries, other escalates"
+        - "One party tests boundaries, triggering escalation"
+        - "Verification failures erode trust"
         
     modifies_future_events:
       - event_id: TAIWAN_CONFLICT
         window_probability_modifier: 1.5
-        rationale: "Framework collapse creates new crisis with higher stakes"
+        rationale: "Framework collapse creates new crisis with higher stakes — previous failure raises costs of backing down"
         
     impact_vector:
       taiwan:
         sovereignty_status: "formally_redefined_unstable"
         governance_autonomy: "contested"
+        security_guarantee_status: "ambiguous"
       china:
         credibility: +0.05  # achieved formal agreement
         taiwan_policy_objective: "partially_achieved_fragile"
+      united_states:
+        alliance_credibility: -0.15
+        commitment_clarity: "reduced"
 
 aftermath_probability_rationale: |
   Unstable framework weighted higher (0.60) because:
-  - Crisis-driven agreements often prioritize speed over durability
-  - Fundamental sovereignty issues resist stable compromise
-  - Domestic politics on both sides constrain genuine accommodation
+  - Crisis-driven agreements prioritize speed over durability
+  - Three-party agreements are inherently harder to stabilize than bilateral
+  - Each party has domestic audiences that may reject compromise
   - Historical precedent: 1992 Consensus was ambiguous and eventually contested
+  - Verification and enforcement mechanisms are difficult to design
   
   Stable framework possible (0.40) if:
   - Crisis severity creates political space for substantive compromise
-  - External guarantors (US, others) provide enforcement mechanism
-  - Leadership on both sides willing to spend political capital
+  - US provides credible enforcement mechanism (e.g., explicit treaty)
   - Agreement structure allows face-saving for all parties
+  - Subsequent political transitions in all parties accept framework
   
-  Key distinction from previous "status quo restoration": Both aftermath branches
-  represent genuine discontinuities. An unstable framework is still a formal
-  agreement that changes Taiwan's legal/political status — it can fail later,
-  but its existence is itself a break from the status quo ante.
-```
+  Key distinction: Both aftermath branches represent genuine discontinuities.
+  An unstable framework is still a binding agreement that changes Taiwan's
+  legal/political status — it can fail later, but its existence is itself
+  a break from the status quo ante.
 
 ---
 
@@ -442,11 +483,11 @@ aftermath_probability_rationale: |
 
 **Counter**: PRC has invested heavily in military capabilities specifically designed for Taiwan scenarios. This investment is not consistent with deterrence-only posture. Additionally, nationalist pressures and "century of humiliation" narrative create political incentives that may override economic rationality.
 
-### 2. Negotiated resolution may be implausible
+### 2. Great power settlement may still be implausible
 
-**Argument**: The 50% weight on negotiated resolution may be too high. Taiwan's domestic politics have moved steadily away from unification; any leader who signed a framework agreement would face severe political backlash. Similarly, PRC cannot accept any agreement that doesn't move toward unification.
+**Argument**: Even at 35%, the weight on settlement may be too high. The scenarios require US willingness to reduce its position, PRC trust in US commitments, and Taiwan acquiescence to constrained autonomy. Each of these faces severe barriers. The US has no domestic constituency for accommodation; PRC has no reason to trust US commitments given historical record; Taiwan's democracy would likely reject any framework imposed by great powers.
 
-**Counter**: Crisis dynamics differ from peacetime politics. Faced with imminent conflict, political constraints may shift. Additionally, creative ambiguity has historically allowed both sides to claim victory (e.g., 1992 Consensus interpretations).
+**Counter**: Crisis dynamics differ from peacetime analysis. Faced with imminent catastrophic conflict, preferences may shift in ways current politics don't reveal. Historical precedents (Austria 1955, Korea 1953) show great powers can impose settlements when the alternative is unacceptable. The 35% weight may even be conservative if PRC military capabilities make US conventional defense untenable.
 
 ### 3. Non-event probability may be too low
 
@@ -501,7 +542,7 @@ Key uncertainties for Phase 3 sensitivity testing:
 |-----------|---------------|----------------|
 | Window probability | 0.02 - 0.05 | Drives expected timing of crisis |
 | Discontinuity given window | 0.50 - 0.80 | Determines how many crises produce lasting change |
-| Military vs. negotiated split | 0.30/0.70 to 0.70/0.30 | Different tail risk profiles |
+| Military vs. settlement split | 0.50/0.50 to 0.80/0.20 | Different tail risk profiles |
 | Limited vs. full invasion split | 0.40/0.45 to 0.70/0.15 | Major difference in semiconductor/escalation outcomes |
 | Nuclear escalation probability | 0.05 - 0.25 | Tail risk driver |
 | US involvement probability | 0.40 - 0.80 | Determines whether conflict stays regional |
@@ -515,7 +556,8 @@ Key uncertainties for Phase 3 sensitivity testing:
 - Military logistics literature on invasion vs. blockade scenarios
 - Semiconductor supply chain resilience analysis
 - US alliance credibility and commitment literature
-- Comparative analysis of crisis-driven agreements (durability patterns)
+- Great power settlement precedents (Austria 1955, Korea 1953, Camp David 1978)
+- US domestic politics constraints on accommodation
 
 **Level 3 (20+ hours):**
 - Expert elicitation on aftermath probabilities (not resolution probabilities)
@@ -523,6 +565,7 @@ Key uncertainties for Phase 3 sensitivity testing:
 - War-gaming literature synthesis
 - Nuclear escalation scenario analysis
 - Taiwan domestic politics deep-dive
+- PRC decision-making under crisis conditions
 
 ---
 
@@ -533,11 +576,14 @@ Key uncertainties for Phase 3 sensitivity testing:
 | **Tier** | Level 1 |
 | **Last updated** | 2025-12-22 |
 | **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Semiconductor impact modeling; negotiated resolution plausibility; nuclear escalation pathways |
+| **Upgrade rationale** | Semiconductor impact modeling; great power settlement plausibility; nuclear escalation pathways |
 
 ## Open Questions
 
-- Framework agreement durability patterns (historical comparisons)
+- Great power settlement precedent analysis (Austria, Korea, Camp David)
+- US domestic political constraints on accommodation
+- PRC trust in US commitments under different scenarios
+- Taiwan democratic legitimacy constraints on imposed settlements
 - PRC military readiness assessment and timeline
 - US commitment credibility under different political scenarios
 - TSMC destruction vs. capture calculus
@@ -551,6 +597,7 @@ Key uncertainties for Phase 3 sensitivity testing:
 |------|--------|-----------|
 | Dec 2025 | Initial Level 1 specification | Task 1.1 worked example |
 | Dec 2025 | Critical review revision | Applied critical review rubric: removed status quo restoration as resolution (fails discontinuity test), rebalanced to 50/50 military/negotiated, added Case Against section, clarified probability decomposition following India-Pakistan template |
+| Dec 2025 | Great power settlement reframe | Reframed "negotiated resolution" as "great power settlement" requiring US brokerage. Lowered probability to 35% (from 50%) based on structural asymmetry analysis. Added concrete settlement scenarios with historical analogs. Bilateral Taiwan-PRC negotiation implausible — preference sets don't overlap. |
 
 ---
 
