@@ -90,7 +90,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.1.15** | US Constitutional Crisis | Type 2/3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/us-constitutional-crisis]] |
 | **2.1.16** | India-Pakistan Military Conflict | Type 3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/india-pakistan-military-conflict]] |
 | **2.1.17** | Korean Peninsula Crisis | Type 3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/korean-peninsula-crisis]] |
-| **2.1.18** | US-China Trade War | Type 3 | 🔲 | 1.1 | |
+| **2.1.18** | US-China Economic Rupture | Type 3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/us-china-economic-rupture]] |
 | **2.1.19** | Oil Supply Shock | Type 1 | 🔲 | 1.3 | |
 | **2.1.20** | Iran Nuclear Acquisition | Type 3 | 🔲 | 1.1, 2.1.9 | Likely Type 3 (decision-driven); interacts with Iran Regime Change; triggers regional proliferation cascade |
 
@@ -193,6 +193,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
+| Dec 2025 | Task 2.1.18: US-China Economic Rupture | Level 1 complete; [[events/geopolitical/us-china-economic-rupture]]; Type 3 contingent event. Annual probability 1.75% (= 2.5% crisis window × 70% discontinuity). Two resolutions: Full Rupture (50%), Managed Separation (50%). F_GPT primary driver (0.75), F_EAS secondary (0.40). Comprehensive supply chain impact modeling including pharmaceutical APIs, rare earths, consumer electronics. Distinguished from Taiwan Conflict by non-military trigger. |
 | Dec 2025 | Task 2.1.17: Korean Peninsula Crisis | Level 1 complete; [[events/geopolitical/korean-peninsula-crisis]]; Type 3 contingent event. Annual probability 0.75% (= 2.5% crisis window × 30% conflict). Three aftermath branches: Limited Conflict (55%), Major War (30%), Nuclear Escalation (15%). F_EAS primary driver (0.85), F_GPT secondary (0.40). US tripwire forces mean automatic US involvement. Seoul vulnerability critical for impact estimates. |
 | Dec 2025 | Task 2.1.16: India-Pakistan Military Conflict | Level 1 complete; [[events/geopolitical/india-pakistan-military-conflict]]; Type 3 contingent event. Revised framing: event IS the discontinuity (military conflict), not a crisis window. Annual probability 0.9% (= 2.5% crisis window × 35% escalation). Three aftermath branches: Limited Conflict (55%), Major War (35%), Nuclear Escalation (10%). F_SAS primary driver (0.80). Removed non-discontinuity resolutions per Task 1.7 investigation. |
 | Dec 2025 | Task 2.1.15: US Constitutional Crisis | Level 1 complete; [[events/geopolitical/us-constitutional-crisis]]; Type 2/3 hybrid modeling constitutional breakdown. Four resolutions (Authoritarian Consolidation 30%, Federal Fragmentation 25%, Prolonged Instability 30%, Negotiated Restructuring 15%). Probability 0.5% annually. F_FIN/F_GPT primary drivers. Highest global-impact event due to dollar/NATO/nuclear implications. |
