@@ -151,6 +151,12 @@ Events organized by domain. Each specifies causal type, probability, factor load
 |-------|------|-------------|--------|
 | [[events/health/severe-pandemic]] | Type 1 | ~2.0% | Level 1 complete |
 
+### Energy Events
+
+| Event | Type | Annual Prob | Status |
+|-------|------|-------------|--------|
+| [[events/energy/oil-supply-shock]] | Type 1 | ~2.5% | Level 1 complete |
+
 ### Breakthrough Events (Type 1)
 
 **Planning document**: [[events/planned-breakthrough-events]]
