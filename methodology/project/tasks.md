@@ -102,7 +102,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 
 | Priority | Event | Status | Notes |
 |----------|-------|--------|-------|
-| **2.2.1** | Fusion Commercialization | 🟡 | [[events/breakthrough/fusion-commercialization]]; Level 1 draft complete; awaiting confirmation |
+| **2.2.1** | Fusion Commercialization | ✅ | [[events/breakthrough/fusion-commercialization]]; Level 1 complete |
 | **2.2.2** | Agricultural Yield Breakthrough | 🔲 | Heat/drought-tolerant crops |
 | **2.2.3** | Cancer Treatment Breakthrough | 🔲 | Immunotherapy platform or equivalent |
 | **2.2.4** | Antimicrobial Platform | 🔲 | Antibiotic alternative |
@@ -200,6 +200,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
+| Dec 2025 | Task 2.2.1: Fusion Commercialization | Level 1 complete; [[events/breakthrough/fusion-commercialization]]; First Type 1 breakthrough event. Annual probability 0.9% from energy breakthrough analog reference class. F_TECH primary driver (0.70), F_FIN secondary (0.35). Three deployment branches: Gradual Diffusion (50%), Rapid Transformation (30%), Geopolitically Concentrated (20%). Mixed-valence impacts: petrostate GDP losses (Saudi -15%, Iran -18%, Russia -12%), energy importer gains (Japan +3%, India +4%). Key cascades to petrostate regime instability and reduced climate tipping point risk. |
 | Dec 2025 | Task 2.1.20: Iran Nuclear Acquisition | Level 1 complete; [[events/geopolitical/iran-nuclear-acquisition]]; Type 2/3 hybrid modeling nuclear weapons acquisition. Pressure function based on sanctions, Israeli threat, regime stability, US-China tension, Saudi military buildup. Three resolution modes at uniform probability: covert, breakout, contested acquisition. Annual probability 1.5% (range 0.8-2.5%). F_MENA primary driver (0.70), F_GPT secondary (0.55). Key cascade effect: Saudi Nuclear Acquisition (+5-8%/year for 10 years). Interacts with Iran Regime Change (bidirectional effects). |
 | Dec 2025 | Task 2.1.19: Oil Supply Shock | Level 1 complete; [[events/energy/oil-supply-shock]]; Type 1 stochastic event. Annual probability 2.5% based on historical base rate (2 discontinuities in 55 years) with condition adjustments. Discontinuity defined as sustained major disruption (>15% supply, 6+ months) forcing structural adaptation — excludes routine volatility. Three resolutions: Accelerated Transition (40%), Producer Restructuring (35%), Extended Crisis (25%). F_MENA primary driver (0.55), F_GPT secondary (0.40). Strait of Hormuz and Saudi stability as key vulnerability pathways. |
 | Dec 2025 | Task 2.1.18: US-China Economic Rupture | Level 1 complete; [[events/geopolitical/us-china-economic-rupture]]; Type 3 contingent event. Annual probability 1.75% (= 2.5% crisis window × 70% discontinuity). Two resolutions: Full Rupture (50%), Managed Separation (50%). F_GPT primary driver (0.75), F_EAS secondary (0.40). Comprehensive supply chain impact modeling including pharmaceutical APIs, rare earths, consumer electronics. Distinguished from Taiwan Conflict by non-military trigger. |
