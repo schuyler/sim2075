@@ -92,7 +92,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.1.17** | Korean Peninsula Crisis | Type 3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/korean-peninsula-crisis]] |
 | **2.1.18** | US-China Economic Rupture | Type 3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/us-china-economic-rupture]] |
 | **2.1.19** | Oil Supply Shock | Type 1 | ✅ | 1.3 | Level 1 complete; [[events/energy/oil-supply-shock]] |
-| **2.1.20** | Iran Nuclear Acquisition | Type 3 | 🔲 | 1.1, 2.1.9 | Likely Type 3 (decision-driven); interacts with Iran Regime Change; triggers regional proliferation cascade |
+| **2.1.20** | Iran Nuclear Acquisition | Type 3 | ✅ | 1.1, 2.1.9 | Level 1 complete; [[events/geopolitical/iran-nuclear-acquisition]]; Type 2/3 hybrid. Pressure from regional threats + decision to weaponize. F_MENA/F_GPT primary drivers. Three acquisition modes (covert/breakout/contested) at uniform probability. Key cascade: Saudi Nuclear Acquisition (+5-8%/year for 10 years). |
 
 **Already complete:**
 - ✅ AMOC Weakening (Type 2)
@@ -114,6 +114,13 @@ To be identified after Priority Events are complete. Candidates will emerge from
 - Cascade triggers referenced by priority events
 - Regional coverage gaps
 - Sensitivity analysis (Phase 3)
+
+**Identified candidates:**
+
+| Event | Type | Source | Notes |
+|-------|------|--------|-------|
+| Saudi Nuclear Acquisition | Type 3 | Cascade from IRAN_NUCLEAR_ACQUISITION | Stated Saudi policy to match Iranian capability; Pakistan assistance pathway |
+| Sahel Catastrophe | Type 2 | Regional coverage | Highest-risk humanitarian zone |
 
 ### 2.4 Critical Review of Existing Events
 
@@ -193,6 +200,7 @@ Tasks moved here when done, with completion date.
 
 | Date | Task | Notes |
 |------|------|-------|
+| Dec 2025 | Task 2.1.20: Iran Nuclear Acquisition | Level 1 complete; [[events/geopolitical/iran-nuclear-acquisition]]; Type 2/3 hybrid modeling nuclear weapons acquisition. Pressure function based on sanctions, Israeli threat, regime stability, US-China tension, Saudi military buildup. Three resolution modes at uniform probability: covert, breakout, contested acquisition. Annual probability 1.5% (range 0.8-2.5%). F_MENA primary driver (0.70), F_GPT secondary (0.55). Key cascade effect: Saudi Nuclear Acquisition (+5-8%/year for 10 years). Interacts with Iran Regime Change (bidirectional effects). |
 | Dec 2025 | Task 2.1.19: Oil Supply Shock | Level 1 complete; [[events/energy/oil-supply-shock]]; Type 1 stochastic event. Annual probability 2.5% based on historical base rate (2 discontinuities in 55 years) with condition adjustments. Discontinuity defined as sustained major disruption (>15% supply, 6+ months) forcing structural adaptation — excludes routine volatility. Three resolutions: Accelerated Transition (40%), Producer Restructuring (35%), Extended Crisis (25%). F_MENA primary driver (0.55), F_GPT secondary (0.40). Strait of Hormuz and Saudi stability as key vulnerability pathways. |
 | Dec 2025 | Task 2.1.18: US-China Economic Rupture | Level 1 complete; [[events/geopolitical/us-china-economic-rupture]]; Type 3 contingent event. Annual probability 1.75% (= 2.5% crisis window × 70% discontinuity). Two resolutions: Full Rupture (50%), Managed Separation (50%). F_GPT primary driver (0.75), F_EAS secondary (0.40). Comprehensive supply chain impact modeling including pharmaceutical APIs, rare earths, consumer electronics. Distinguished from Taiwan Conflict by non-military trigger. |
 | Dec 2025 | Task 2.1.17: Korean Peninsula Crisis | Level 1 complete; [[events/geopolitical/korean-peninsula-crisis]]; Type 3 contingent event. Annual probability 0.75% (= 2.5% crisis window × 30% conflict). Three aftermath branches: Limited Conflict (55%), Major War (30%), Nuclear Escalation (15%). F_EAS primary driver (0.85), F_GPT secondary (0.40). US tripwire forces mean automatic US involvement. Seoul vulnerability critical for impact estimates. |
@@ -248,4 +256,4 @@ When completing tasks:
 
 ---
 
-*Last updated: December 21, 2025*
+*Last updated: December 25, 2025*
