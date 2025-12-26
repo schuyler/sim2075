@@ -102,7 +102,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 
 | Priority | Event | Status | Notes |
 |----------|-------|--------|-------|
-| **2.2.1** | Fusion Commercialization | 🔲 | Per positive-discontinuity resolution |
+| **2.2.1** | Fusion Commercialization | 🟡 | [[events/breakthrough/fusion-commercialization]]; Level 1 draft complete; awaiting confirmation |
 | **2.2.2** | Agricultural Yield Breakthrough | 🔲 | Heat/drought-tolerant crops |
 | **2.2.3** | Cancer Treatment Breakthrough | 🔲 | Immunotherapy platform or equivalent |
 | **2.2.4** | Antimicrobial Platform | 🔲 | Antibiotic alternative |

@@ -165,7 +165,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 
 | Event | Type | Annual Prob | Status |
 |-------|------|-------------|--------|
-| Fusion Commercialization | Type 1 | TBD | Not started |
+| [[events/breakthrough/fusion-commercialization]] | Type 1 | ~0.9% | Level 1 complete |
 | Agricultural Yield Breakthrough | Type 1 | TBD | Not started |
 | Cancer Treatment Breakthrough | Type 1 | TBD | Not started |
 | Antimicrobial Platform | Type 1 | TBD | Not started |
