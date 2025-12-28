@@ -73,6 +73,8 @@ Complete values for all state variables:
 | Global | 1 | 42 | 42 |
 | **Total** | **53** | — | **3,072** |
 
+*Note: Variable counts reflect current catalog versions. Verify consistency with [[methodology/reference/state-variables-country]] and [[methodology/reference/state-variables-global]] when those documents are finalized.*
+
 This is the raw simulation output—every tracked variable for every entity at the assessment time.
 
 ### 3.2 Country Summary Statistics
@@ -259,8 +261,12 @@ def compute_alignment_profile(state, country) -> dict:
     arms_china = state[country].arms_import_share_east
     
     # Trade (25%)
-    trade_west = min(100, state[country].trade_share_west * 2)  # Scale up; 50% trade = 100 score
-    trade_china = min(100, state[country].trade_share_china * 4)  # Scale up; 25% trade = 100 score
+    # Asymmetric scaling: "West" is a bloc of many countries while China is one country,
+    # so 25% trade with China is proportionally more significant than 25% trade with
+    # the entire Western bloc. A country trading 50% with US+EU+allies is moderately
+    # Western-oriented; a country trading 25% with China alone is heavily China-oriented.
+    trade_west = min(100, state[country].trade_share_west * 2)  # 50% trade = 100 score
+    trade_china = min(100, state[country].trade_share_china * 4)  # 25% trade = 100 score
     
     # Composite scores
     west = 0.25 * alliance_west + 0.25 * un_west + 0.25 * arms_west + 0.25 * trade_west
@@ -376,11 +382,17 @@ def compute_us_china_tension(state) -> float:
     sanctions = state['CHN'].sanctions_level
     
     # Alliance competition (20%)
-    # Count of countries shifting alignment
+    # Count of countries shifting alignment — requires trajectory comparison
     alignment_competition = compute_alignment_shift_index(state)
     
     return min(100, 0.25 * trade_tension + military + 0.20 * sanctions + 0.20 * alignment_competition)
 ```
+
+**Note on `compute_alignment_shift_index`:** This function requires trajectory data (comparing current alignment profiles to prior period) rather than point-in-time state. It should count countries whose alignment profile has shifted significantly (e.g., west score changed >20 points) over the past 5-10 years. Implementation requires either:
+- Access to historical state snapshots, OR
+- Tracking "alignment at simulation start" as a baseline reference variable
+
+This is a trajectory-based measure and may be deferred to v2.0 or simplified to a proxy based on observable indicators (e.g., count of recent alliance_status changes).
 
 #### NATO Cohesion Index
 
