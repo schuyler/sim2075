@@ -13,6 +13,8 @@ tags:
 
 Persistent memory for conceptual exploration sessions. Each session picks a seed, traces its ramifications, and documents findings.
 
+**Agent prompt**: [[journal/prompt]]
+
 ## Frontier
 
 Concepts and documents not yet explored, or flagged for revisit:
