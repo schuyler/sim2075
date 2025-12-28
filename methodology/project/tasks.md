@@ -106,6 +106,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.2.2** | Agricultural Yield Breakthrough | ✅ | [[events/breakthrough/agricultural-yield-breakthrough]]; Level 1 complete |
 | **2.2.3** | Cancer Treatment Breakthrough | ✅ | [[events/breakthrough/cancer-treatment-breakthrough]]; Level 1 complete; Platform technology achieving broad efficacy across solid tumor types. Annual probability 1.0% from medical breakthrough reference class. F_TECH primary driver (0.70), F_HLTH secondary (0.30). Three deployment branches: Gradual Diffusion (50%), Rapid Transformation (30%), Economically Concentrated (20%). Differential impact by population age structure and health system capacity—Japan/Germany highest benefit (+3.0-3.5 years life expectancy), young populations see minimal impact. Critical review flagged Gradual/Rapid branch distinction for Level 2 reconsideration. |
 | **2.2.4** | Antimicrobial Platform | ✅ | [[events/breakthrough/antimicrobial-platform]]; Level 1 complete |
+| **2.2.5** | Energy Storage Breakthrough | - | Commercialization of disruptive improvements in battery density; TODO |
 
 ### 2.3 Additional Events (to reach 40+)
 
