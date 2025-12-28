@@ -80,7 +80,7 @@ methodology/reference/
 
 | Sub-task | Status | Session | Deliverables |
 |----------|--------|---------|--------------|
-| **1.8.1** | 🔲 | 1 | Create `state-overview`, `state-entities`; update index |
+| **1.8.1** | ✅ | 1 | Create `state-overview`, `state-entities`; update index |
 | **1.8.2** | 🔲 | 2 | Create `state-variables-country` with synthetic variable changes applied |
 | **1.8.3** | 🔲 | 3 | Create `state-variables-global` with synthetic variable changes applied |
 | **1.8.4** | 🔲 | 4 | Create `state-dynamics`, `state-transmission`, `state-outputs`; archive old doc; final cleanup |

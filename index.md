@@ -45,7 +45,20 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/reference/factor-correlation-matrix]] | Inter-factor correlation matrix (Ω) |
 | [[methodology/reference/calibration-anchors]] | Reference events for comparison |
 | [[methodology/reference/priority-event-ranking]] | Cross-check probability estimates |
-| [[methodology/reference/state-specification]] | State variable definitions |
+
+### State Model Reference
+
+| Document | Purpose |
+|----------|---------|
+| [[methodology/reference/state-overview]] | **State model orientation — start here** |
+| [[methodology/reference/state-entities]] | The 40 countries and 12 regional aggregates |
+| [[methodology/reference/state-variables-country]] | Country-level variable catalog |
+| [[methodology/reference/state-variables-global]] | Global variable catalog |
+| [[methodology/reference/state-dynamics]] | How variables evolve between events |
+| [[methodology/reference/state-transmission]] | How variables affect each other |
+| [[methodology/reference/state-outputs]] | What the simulation produces |
+
+*Note: `state-specification` is being refactored into the above modular documents. See [[methodology/project/tasks]] §1.8.*
 
 ### Conceptual Foundations
 
