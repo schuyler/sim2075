@@ -57,6 +57,61 @@ Self-critique identified that the initial implementation treats factors as if th
 
 | **1.6** | Establish research documentation standards | 🔲 | — | Define schemas for source documentation, synthesis structure, citation conventions. Events and entities become ongoing research projects; need norms for how research accumulates and traces to parameter choices. Includes templates for Level 1/2/3 deliverables. |
 | **1.7** | Investigate Type 3 non-discontinuity resolutions | 🟡 | — | Current Type 3 methodology includes "status quo restoration" and similar resolutions that are explicitly *not* discontinuities. This creates structural inconsistency: the event catalog should enumerate discontinuities, but Type 3 events include non-discontinuity outcomes in their resolution sets. **India-Pakistan Military Conflict revised as worked example of correct approach**: event IS the discontinuity, probability is occurrence rate (0.9%), non-discontinuity outcomes are simply non-occurrence. Remaining work: apply same revision to Taiwan Conflict and update Type 3 methodology docs. |
+| **1.8** | Refactor state-specification into modular documents | 🟡 | — | Current document is ~1,100 lines mixing entities, variables, dynamics, transmission, and outputs. Refactor into 7 focused documents per [[methodology/concepts/synthetic-variable-problem]] analysis. See §1.8 sub-tasks below. |
+| **1.9** | Apply synthetic variable changes | ⏸️ | 1.8.2, 1.8.3 | Implement recommendations from [[methodology/concepts/synthetic-variable-problem]]: eliminate synthetic indices, decompose to observables, move assessments to outputs. Changes land in `state-variables-country` and `state-variables-global`. |
+
+#### Task 1.8 Sub-tasks (State Specification Refactoring)
+
+The current `state-specification` document (~1,100 lines) mixes several concerns and duplicates content between main body and appendices. Refactor into focused documents for maintainability and progressive disclosure.
+
+**Analysis document:** [[methodology/concepts/synthetic-variable-problem]]
+
+**Target structure:**
+```
+methodology/reference/
+├── state-overview.md              # Entry point (~200 lines)
+├── state-entities.md              # 40 countries + 12 aggregates (~250 lines)
+├── state-variables-country.md     # Full country variable catalog (~400 lines)
+├── state-variables-global.md      # Full global variable catalog (~250 lines)
+├── state-dynamics.md              # Variable dynamics classification (~200 lines)
+├── state-transmission.md          # Transmission mechanisms (~200 lines)
+└── state-outputs.md               # Output specs + derived assessments (~300 lines)
+```
+
+| Sub-task | Status | Session | Deliverables |
+|----------|--------|---------|--------------|
+| **1.8.1** | 🔲 | 1 | Create `state-overview`, `state-entities`; update index |
+| **1.8.2** | 🔲 | 2 | Create `state-variables-country` with synthetic variable changes applied |
+| **1.8.3** | 🔲 | 3 | Create `state-variables-global` with synthetic variable changes applied |
+| **1.8.4** | 🔲 | 4 | Create `state-dynamics`, `state-transmission`, `state-outputs`; archive old doc; final cleanup |
+
+**Session 1 entry criteria:** This plan documented and committed.
+**Session 1 exit criteria:** `state-overview` and `state-entities` created; index updated; git committed.
+
+**Session 2 entry criteria:** Session 1 complete.
+**Session 2 exit criteria:** `state-variables-country` created with synthetic variable changes (eliminate `regime_stability`, `institutional_quality`, `state_capacity`, `corruption_index`; decompose alliance variables; add observable replacements); git committed.
+
+**Session 3 entry criteria:** Session 2 complete.
+**Session 3 exit criteria:** `state-variables-global` created with synthetic variable changes (address geopolitical structure indices); git committed.
+
+**Session 4 entry criteria:** Session 3 complete.
+**Session 4 exit criteria:** Remaining documents created; derived assessment formulas in `state-outputs`; old `state-specification` archived or deleted; cross-references updated; git committed.
+
+**Content migration map:**
+
+| Current Section | Destination |
+|-----------------|-------------|
+| Executive Summary | `state-overview` |
+| Entity Inventory (§2) | `state-entities` |
+| Country Variables (§3) | `state-variables-country` |
+| Global Variables (§4) | `state-variables-global` |
+| Dynamics Classification (§5) | `state-dynamics` |
+| Transmission Mechanisms (§6) | `state-transmission` |
+| Outputs & Assessments (§7) | `state-outputs` |
+| Open Questions (§8) | Distribute to relevant docs or retire |
+| Appendix A (variable tables) | Merge into variable catalogs (eliminate duplication) |
+| Appendix B (regional composition) | `state-entities` |
+| Appendix C (data sources) | Distribute to variable catalogs |
 
 **Rationale for ordering:**
 - 1.1 blocks Type 3 event specification (Taiwan, climate agreements, etc.)
@@ -212,4 +267,4 @@ When completing tasks:
 
 ---
 
-*Last updated: December 26, 2025*
+*Last updated: December 28, 2025*
