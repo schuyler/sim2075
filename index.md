@@ -200,6 +200,12 @@ Foundational analysis informing the simulation's worldview and parameters.
 
 ---
 
+## Journal
+
+[[journal/index]] — Conceptual exploration sessions and emerging patterns
+
+---
+
 ## Quick Reference
 
 ### Causal Types
