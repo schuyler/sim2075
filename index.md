@@ -58,8 +58,6 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/reference/state-transmission]] | How variables affect each other |
 | [[methodology/reference/state-outputs]] | What the simulation produces |
 
-*Note: `state-specification` is being refactored into the above modular documents. See [[methodology/project/tasks]] §1.8.*
-
 ### Conceptual Foundations
 
 | Document | Purpose |
