@@ -74,6 +74,8 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/concepts/small-n-actor-problem]] | Why Type 3 resolution probabilities are intractable |
 | [[methodology/concepts/causal-chain-decomposition]] | Events as multi-stage causal chains with different types per stage |
 | [[methodology/concepts/synthetic-variable-problem]] | Why synthetic indices undermine validity; observable decomposition approach |
+| [[methodology/concepts/displacement-variables-design]] | IDP/refugee variable design (pending implementation) |
+| [[methodology/concepts/displacement-variables-design]] | IDP/refugee variable design (pending implementation) |
 
 ### Project Management
 

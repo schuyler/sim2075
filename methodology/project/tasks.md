@@ -59,6 +59,7 @@ Self-critique identified that the initial implementation treats factors as if th
 | **1.7** | Investigate Type 3 non-discontinuity resolutions | 🟡 | — | Current Type 3 methodology includes "status quo restoration" and similar resolutions that are explicitly *not* discontinuities. This creates structural inconsistency: the event catalog should enumerate discontinuities, but Type 3 events include non-discontinuity outcomes in their resolution sets. **India-Pakistan Military Conflict revised as worked example of correct approach**: event IS the discontinuity, probability is occurrence rate (0.9%), non-discontinuity outcomes are simply non-occurrence. Remaining work: apply same revision to Taiwan Conflict and update Type 3 methodology docs. |
 | **1.8** | Refactor state-specification into modular documents | ✅ | — | Refactored ~1,100 line document into 7 focused documents per [[methodology/concepts/synthetic-variable-problem]] analysis. See §1.8 sub-tasks below. |
 | **1.9** | Apply synthetic variable changes | ✅ | 1.8.2, 1.8.3 | Synthetic variable changes applied during 1.8.2 and 1.8.3. Country variables: eliminated `regime_stability`, `institutional_quality`, `state_capacity`, `corruption_index`; added observable political stress and governance indicators. Global variables: moved geopolitical indices to derived outputs in `state-outputs`. |
+| **1.10** | Add displacement variables to state model | 🔲 | — | Per [[methodology/concepts/displacement-variables-design]]: add `idp_population`, `refugees_abroad`, `refugees_hosted` to state-variables-country. Required for Sahel Catastrophe and other humanitarian events. |
 
 #### Task 1.8 Sub-tasks (State Specification Refactoring)
 
@@ -166,7 +167,7 @@ To be identified after Priority Events are complete. Candidates will emerge from
 | Event | Type | Status | Notes |
 |-------|------|--------|-------|
 | Saudi Nuclear Acquisition | Type 3 | ✅ | [[events/geopolitical/saudi-nuclear-acquisition]]; Level 1 complete; Critical review completed Dec 2025. Cascade from Iran Nuclear Acquisition. Conditional probability ~70-85% given Iran acquires. Pakistan assistance pathway. Three resolutions: Rapid (55%), Hedging (30%), Alternative Security (15%). |
-| Sahel Catastrophe | Type 2 | ✅ | [[events/geopolitical/sahel-catastrophe]]; Level 1 complete; Critical review completed Dec 2025. Regional catastrophe in Mali/Niger/Burkina Faso/Chad. Annual probability 1.8% (rising over simulation). F_SSA (0.75), F_CLIM (0.50), F_FOOD (0.45) primary drivers. Three severity branches: Regional Crisis (40%), Humanitarian Catastrophe (40%), Civilizational Collapse (20%). Major cascade to coastal West Africa. |
+| Sahel Catastrophe | Type 2 | ✅ | [[events/geopolitical/sahel-catastrophe]]; Level 1 complete; Critical review completed Dec 2025. Regional catastrophe in Mali/Niger/Burkina Faso/Chad. Annual probability 1.8% (rising over simulation). F_SSA (0.75), F_CLIM (0.50), F_FOOD (0.45) primary drivers. Three severity branches: Regional Crisis (40%), Humanitarian Catastrophe (40%), Civilizational Collapse (20%). Major cascade to coastal West Africa. **⚠️ Needs revision**: pressure function and impact vector reference non-existent state variables; blocked on task 1.10 (displacement variables). |
 
 **Remaining candidates:**
 
