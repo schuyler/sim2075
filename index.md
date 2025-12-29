@@ -148,8 +148,8 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | [[events/geopolitical/korean-peninsula-crisis]] | Type 3 | ~0.75% | Level 1 complete |
 | [[events/geopolitical/us-china-economic-rupture]] | Type 3 | ~1.75% | Level 1 complete |
 | [[events/geopolitical/iran-nuclear-acquisition]] | Type 2/3 | ~1.5% | Level 1 complete |
-| Sahel Catastrophe | Type 2 | TBD | Not started |
-| Saudi Nuclear Acquisition | Type 3 | TBD | Not started |
+| [[events/geopolitical/sahel-catastrophe]] | Type 2 | ~1.8% | Level 1 complete |
+| [[events/geopolitical/saudi-nuclear-acquisition]] | Type 3 | ~0.5% | Level 1 complete |
 
 ### Financial Events
 
@@ -181,6 +181,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | [[events/breakthrough/agricultural-yield-breakthrough]] | Type 1 | ~1.3% | Level 1 complete |
 | [[events/breakthrough/cancer-treatment-breakthrough]] | Type 1 | ~1.0% | Level 1 complete |
 | [[events/breakthrough/antimicrobial-platform]] | Type 1 | ~1.2% | Level 1 complete |
+| [[events/breakthrough/energy-storage-breakthrough]] | Type 1 | ~0.8% | Level 1 complete |
 
 ---
 

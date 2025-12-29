@@ -151,7 +151,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.2.2** | Agricultural Yield Breakthrough | ✅ | [[events/breakthrough/agricultural-yield-breakthrough]]; Level 1 complete |
 | **2.2.3** | Cancer Treatment Breakthrough | ✅ | [[events/breakthrough/cancer-treatment-breakthrough]]; Level 1 complete; Platform technology achieving broad efficacy across solid tumor types. Annual probability 1.0% from medical breakthrough reference class. F_TECH primary driver (0.70), F_HLTH secondary (0.30). Three deployment branches: Gradual Diffusion (50%), Rapid Transformation (30%), Economically Concentrated (20%). Differential impact by population age structure and health system capacity—Japan/Germany highest benefit (+3.0-3.5 years life expectancy), young populations see minimal impact. Critical review flagged Gradual/Rapid branch distinction for Level 2 reconsideration. |
 | **2.2.4** | Antimicrobial Platform | ✅ | [[events/breakthrough/antimicrobial-platform]]; Level 1 complete |
-| **2.2.5** | Energy Storage Breakthrough | - | Commercialization of disruptive improvements in battery density; TODO |
+| **2.2.5** | Energy Storage Breakthrough | ✅ | [[events/breakthrough/energy-storage-breakthrough]]; Level 1 complete; Critical review completed Dec 2025. Step-change improvement in electrochemical storage beyond learning curve. Annual probability 0.8% (lower than other breakthroughs due to strong 8-10%/yr baseline). F_TECH primary driver (0.70), F_CLIM secondary (0.35). Three deployment branches: Accelerated Transition (45%), Constraint Removal (35%), Grid-Focused (20%). Major impacts on oil exporters (stranded assets) and energy importers (reduced dependence). |
 
 ### 2.3 Additional Events (to reach 40+)
 
@@ -161,12 +161,21 @@ To be identified after Priority Events are complete. Candidates will emerge from
 - Regional coverage gaps
 - Sensitivity analysis (Phase 3)
 
-**Identified candidates:**
+**Completed additional events:**
+
+| Event | Type | Status | Notes |
+|-------|------|--------|-------|
+| Saudi Nuclear Acquisition | Type 3 | ✅ | [[events/geopolitical/saudi-nuclear-acquisition]]; Level 1 complete; Critical review completed Dec 2025. Cascade from Iran Nuclear Acquisition. Conditional probability ~70-85% given Iran acquires. Pakistan assistance pathway. Three resolutions: Rapid (55%), Hedging (30%), Alternative Security (15%). |
+| Sahel Catastrophe | Type 2 | ✅ | [[events/geopolitical/sahel-catastrophe]]; Level 1 complete; Critical review completed Dec 2025. Regional catastrophe in Mali/Niger/Burkina Faso/Chad. Annual probability 1.8% (rising over simulation). F_SSA (0.75), F_CLIM (0.50), F_FOOD (0.45) primary drivers. Three severity branches: Regional Crisis (40%), Humanitarian Catastrophe (40%), Civilizational Collapse (20%). Major cascade to coastal West Africa. |
+
+**Remaining candidates:**
 
 | Event | Type | Source | Notes |
 |-------|------|--------|-------|
-| Saudi Nuclear Acquisition | Type 3 | Cascade from IRAN_NUCLEAR_ACQUISITION | Stated Saudi policy to match Iranian capability; Pakistan assistance pathway |
-| Sahel Catastrophe | Type 2 | Regional coverage | Highest-risk humanitarian zone |
+| Coastal West Africa Destabilization | Type 2 | Cascade from SAHEL_CATASTROPHE | Ghana, Côte d'Ivoire, Benin vulnerability |
+| Nigeria Northern Crisis | Type 2 | Regional coverage | Boko Haram, climate stress, demographic pressure |
+| Turkey Nuclear Reconsideration | Type 3 | Cascade from IRAN_NUCLEAR_ACQUISITION | NATO member response to regional proliferation |
+| Egypt Nuclear Reconsideration | Type 3 | Cascade from SAUDI_NUCLEAR_ACQUISITION | Regional proliferation response |
 
 ### 2.4 Critical Review of Existing Events
 
