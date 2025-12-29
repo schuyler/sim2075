@@ -44,14 +44,14 @@ This document catalogs all country-level state variables tracked by the simulati
 | Category | Variables |
 |----------|-----------|
 | Demographic stocks | 12 |
-| Demographic flows | 5 |
+| Demographic flows | 8 |
 | Economic stocks | 6 |
 | Economic flows | 4 |
 | Economic structure | 5 |
 | Political & governance | 12 |
 | Climate & resource | 6 |
 | Strategic position | 13 |
-| **Total** | **63** |
+| **Total** | **66** |
 
 ---
 
@@ -78,7 +78,7 @@ Compressed population pyramid by sex and functional age cohort.
 
 **Dynamics:** Deterministic cohort aging + mortality/fertility/migration flows.
 
-### 2.2 Demographic Flows (5 variables)
+### 2.2 Demographic Flows (8 variables)
 
 | Variable ID | Description | Units | Data Source |
 |-------------|-------------|-------|-------------|
@@ -87,8 +87,24 @@ Compressed population pyramid by sex and functional age cohort.
 | `infant_mortality` | Infant mortality rate | Deaths per 1,000 live births | UN Pop Division |
 | `net_migration_rate` | Net migration as share of population | % per year | UN Pop Division |
 | `emigration_skilled_rate` | Emigration rate of skilled workers (15-34 educated) | % per year | World Bank |
+| `idp_population` | Internally displaced persons | Millions | IDMC |
+| `refugees_abroad` | Refugees from this country living in other countries | Millions | UNHCR |
+| `refugees_hosted` | Refugees from other countries hosted here | Millions | UNHCR |
 
-**Dynamics:** Slow-moving with event shocks (pandemic mortality, conflict displacement, economic pull/push).
+**Dynamics:** Fertility, mortality, and migration rates are slow-moving with event shocks (pandemic mortality, conflict displacement, economic pull/push).
+
+**Displacement dynamics:** Displacement variables are event-driven with slow decay:
+- `idp_population`: Event-driven increase; half-life ~10-15 years; conflict resolution enables faster return
+- `refugees_abroad`: Event-driven increase; half-life ~15-20 years; repatriation is slow even after crisis resolution
+- `refugees_hosted`: Driven by `refugees_abroad` in neighboring countries; policy-dependent
+
+Cross-country refugee transfers maintain global consistency per [[methodology/reference/state-transmission]].
+
+**Derived displacement measures** (computed, not stored):
+| Measure | Formula | Meaning |
+|---------|---------|---------|
+| `displaced_present` | `idp_population` + `refugees_hosted` | Total displaced persons physically IN this country (burden measure) |
+| `displacement_caused` | `idp_population` + `refugees_abroad` | Total displacement originating FROM this country's crisis (severity measure) |
 
 ### 2.3 Derived Demographic Indicators
 
@@ -352,24 +368,24 @@ Observable behavioral measures of alignment.
 | Category | Variables | Tier 2 Subset |
 |----------|-----------|---------------|
 | Demographic stocks | 12 | 4 (totals only) |
-| Demographic flows | 5 | 3 |
+| Demographic flows | 8 | 6 |
 | Economic stocks | 6 | 3 |
 | Economic flows | 4 | 2 |
 | Economic structure | 5 | 0 |
 | Political & governance | 12 | 4 |
 | Climate & resource | 6 | 3 |
 | Strategic position | 13 | 3 |
-| **Total** | **63** | **22** |
+| **Total** | **66** | **25** |
 
 ### 7.2 Tier 2 Aggregate Treatment
 
 Tier 2 aggregates (Central Asia other, Southeast Asia other, Andean/Caribbean, Maghreb, Southern Africa other, West/Central Africa other) track a reduced variable set for computational tractability.
 
-**Tier 2 variables (22):**
+**Tier 2 variables (25):**
 
 | Category | Variables Tracked |
 |----------|-------------------|
-| Demographics | `pop_total`, `pop_working_age`, `tfr`, `life_expectancy`, `net_migration_rate` |
+| Demographics | `pop_total`, `pop_working_age`, `tfr`, `life_expectancy`, `net_migration_rate`, `idp_population`, `refugees_abroad`, `refugees_hosted` |
 | Economics | `gdp_real`, `gdp_per_capita`, `debt_external`, `gdp_growth`, `inflation_rate` |
 | Political | `regime_type`, `internal_conflict_intensity`, `protest_intensity_annual`, `years_since_irregular_transition` |
 | Climate | `water_stress`, `heat_exposure`, `food_import_dependence` |
@@ -379,10 +395,10 @@ Tier 2 aggregates (Central Asia other, Southeast Asia other, Andean/Caribbean, M
 
 | Entity Type | Count | Variables Each | Total |
 |-------------|-------|----------------|-------|
-| Individual countries | 40 | 63 | 2,520 |
-| Tier 1 aggregates | 6 | 63 | 378 |
-| Tier 2 aggregates | 6 | 22 | 132 |
-| **Total country/regional** | **52** | — | **3,030** |
+| Individual countries | 40 | 66 | 2,640 |
+| Tier 1 aggregates | 6 | 66 | 396 |
+| Tier 2 aggregates | 6 | 25 | 150 |
+| **Total country/regional** | **52** | — | **3,186** |
 
 ---
 
@@ -390,7 +406,7 @@ Tier 2 aggregates (Central Asia other, Southeast Asia other, Andean/Caribbean, M
 
 | Source | Variables Covered |
 |--------|-------------------|
-| UN Population Division | All demographic stocks and flows |
+| UN Population Division | All demographic stocks and flows (except displacement) |
 | IMF WEO | GDP, growth, inflation, current account |
 | IMF Fiscal Monitor | Public debt |
 | IMF GFS | Tax revenue |
@@ -409,6 +425,8 @@ Tier 2 aggregates (Central Asia other, Southeast Asia other, Andean/Caribbean, M
 | IEA | Energy data |
 | UN Comtrade | Trade flows |
 | UN DGACM | UNGA voting records |
+| UNHCR | Refugees abroad, refugees hosted |
+| IDMC | Internally displaced persons |
 
 ---
 
