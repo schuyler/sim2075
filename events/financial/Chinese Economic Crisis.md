@@ -42,22 +42,28 @@ The gradual deterioration of property sector health, local government finances, 
 
 ### Pressure Function
 
+Uses universal state variables per [[methodology/reference/state-variables-country]]. China-specific constructs (property sector stress, LGFV debt, banking NPL ratio) are proxied through observable economic and fiscal indicators.
+
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| *property_sector_stress* | 0.30 | linear | Real estate = ~25-30% of GDP; Evergrande-style contagion; household wealth concentration |
-| *lgfv_debt_to_gdp* | 0.25 | linear | Local government financing vehicle debt; hidden fiscal liabilities; rollover risk |
-| *banking_npl_ratio* | 0.20 | threshold(8%) | Non-performing loans; accelerates above 8% as confidence erodes |
-| `chn.working_age_population_growth` | 0.15 | inverse | Demographic pressure; negative growth increases fiscal burden, reduces dynamism |
-| *fx_reserve_adequacy* | 0.10 | inverse | Reserves relative to short-term external debt + import cover; capital flight buffer |
+| `chn.debt_public` | 0.25 | logistic(center=80, k=0.1) | Captures overall fiscal stress including hidden liabilities; official figures understate true burden |
+| `chn.gdp_growth` | 0.20 | inverse | Economic deceleration signals stress accumulation; growth below 3% triggers confidence concerns |
+| `chn.current_account` | 0.15 | inverse | External balance deterioration signals capital outflow pressure and export weakness |
+| `chn.reserves_foreign` | 0.15 | inverse | Reserve buffer in months of imports; depletion signals vulnerability to capital flight |
+| `chn.fdi_net` | 0.10 | inverse | FDI outflows signal loss of investor confidence; negative FDI is crisis precursor |
+| `chn.unemployment_rate` | 0.10 | linear | Labor market stress; elevated unemployment signals domestic demand weakness |
+| Working-age population growth (derived) | 0.05 | inverse | Demographic pressure; negative growth increases fiscal burden, reduces dynamism |
 
-*Note: Variables in italics are not in current state-specification and would need to be added or derived. `property_sector_stress` could be constructed from housing price indices, developer default rates, and construction activity. `lgfv_debt_to_gdp` requires aggregation of local government financing vehicle liabilities. `banking_npl_ratio` official figures are widely considered understated; true ratio likely 2-3× reported.*
+**Proxy limitations**: The universal variable set cannot directly capture China's distinctive vulnerabilities (property sector = 25-30% of GDP, LGFV hidden debt = 50-60% of GDP, true NPL ratio 3-5× official figures). The pressure function proxies these through their downstream effects: `debt_public` captures fiscal stress, `gdp_growth` captures real economy impact, `current_account` and `fdi_net` capture capital confidence. This is a known fidelity limitation; probability is calibrated primarily via reference class reasoning rather than mechanical pressure calculation.
 
 **Current pressure estimate (2025)**: ~55 on 0-100 scale
-- Property sector: Severe stress (Evergrande, Country Garden defaults; prices falling in most cities)
-- LGFV debt: ~50-60% of GDP (IMF estimates); rollover increasingly difficult
-- Banking NPLs: Officially ~1.6%, true ratio likely 5-8%
-- Demographics: Working-age population declining since 2012; accelerating
-- FX reserves: $3.2T nominal but $1T+ illiquid; adequate but declining buffer
+- Public debt: ~80% of GDP officially, higher including LGFV (~120%+ by IMF estimates)
+- GDP growth: ~4.5%, declining from historical trend
+- Current account: Positive but narrowing; services deficit growing
+- FX reserves: ~15 months of imports (adequate but no longer growing)
+- FDI: Net negative in recent quarters (unprecedented)
+- Unemployment: Official 5%, true urban rate likely 8-10%
+- Demographics: Working-age population declining ~0.5% annually
 
 ### Threshold Specification
 
@@ -166,6 +172,47 @@ Per [[methodology/reference/priority-event-ranking]]:
 - Global demand recovery supports export sector
 - Political stability enables sustained reform implementation
 
+### Case Against This Specification
+
+Per [[methodology/03-critical-review]] Q4, the strongest objections to this specification:
+
+**1. "China is different" (state capacity argument)**
+
+China has unprecedented policy tools: $3T+ FX reserves, state-owned banking system, effective capital controls, and demonstrated willingness to intervene. Every prior crisis prediction (2007, 2015, 2020) has been wrong. The party has successfully extended-and-pretended for 15+ years. The threshold may be far higher than estimated, or the system may be able to absorb stress indefinitely through financial repression.
+
+*Counter*: Japan also had exceptional state capacity and still experienced threshold breach. State tools delay crisis but don't eliminate underlying imbalances. Each intervention consumes policy space.
+
+**2. Japan analogy limitations**
+
+Japan had open capital flows when its bubble burst; China's capital controls fundamentally change the confidence cascade mechanism. The 1990 template may not apply. China can force domestic savers to hold yuan assets indefinitely.
+
+*Counter*: Capital controls are porous under stress (2015-16 saw $1T+ outflows). Elite capital flight occurs regardless. And even without external confidence collapse, domestic confidence can erode (property buyers striking, bank runs in rural areas).
+
+**3. Political economy prevents discontinuity**
+
+CCP prioritizes stability above all else. Evergrande was managed, not allowed to cascade. Every potential crisis trigger gets smothered with intervention. "Crisis" becomes a slow leak rather than acute event. This means the event as specified (acute systemic crisis) may never occur—only gradual decline.
+
+*Counter*: This is the Japan-style Stagnation branch (55% probability). The specification acknowledges most likely outcome is managed decline. But management can fail—political transition, policy error, external shock (Taiwan) could overwhelm tools.
+
+**4. No relevant reference class**
+
+China at 18% of global GDP with unique political economy may have no historical comparables. Japan, Asian crisis, Argentina are all structurally different. We may be reasoning from false analogies.
+
+*Counter*: All forecasting involves imperfect analogies. The reference class captures common elements (credit bubble, property dependence, demographic reversal) even if scale differs. Acknowledging uncertainty (medium-low confidence, 1.2-3.5% range) reflects this limitation.
+
+### Probability Evolution
+
+For Type 2 events, probability varies with pressure accumulation over the simulation horizon. The 2.0% annual probability is a period average; actual probability is lower early and higher late.
+
+| Period | Estimated Pressure | Annual Probability | Rationale |
+|--------|-------------------|-------------------|-----------|
+| 2025-2030 | 55 → 65 | ~1.5% | Current stress elevated but below threshold; policy tools still effective |
+| 2030-2040 | 65 → 75 | ~2.0% | Pressure enters threshold zone; demographic decline accelerates; policy space narrowing |
+| 2040-2050 | 75 → 85 | ~2.5-3.0% | Threshold likely breached; cumulative stress from demographics, debt, and reduced growth |
+| 2050-2075 | 85+ | ~3.0%+ | If no crisis by 2050, either pressure very high (crisis likely) or China found sustainable path (reduce probability) |
+
+**Implementation note**: Current methodology uses fixed annual probabilities. Time-varying Type 2 probabilities are a Phase 2 roadmap item. The values above inform intuition about how probability evolves but are not mechanically implemented in v1.0.
+
 ---
 
 ## Factor Loadings
@@ -217,18 +264,26 @@ Factors operate by shocking state variables that feed the pressure function. A k
 
 ### China Impacts
 
+*Variables marked with * are illustrative but not tracked in the v1.0 state model. They document expected real-world effects for completeness and potential Level 2 expansion.*
+
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
 | `chn.gdp_real` | ↓ | -8 ± 3% (cumulative over 2-3 years) | gradual(2yr) | decaying: half_life=5yr, floor=-4% |
 | `chn.gdp_growth` | ↓ | -4 ± 1.5 pp (relative to trend) | immediate | decaying: half_life=3yr |
-| *chn.unemployment_rate* | ↑ | +6 ± 2 pp | delayed(6mo) | decaying: half_life=4yr |
-| *chn.youth_unemployment* | ↑ | +12 ± 5 pp | delayed(6mo) | decaying: half_life=5yr |
+| `chn.unemployment_rate` | ↑ | +6 ± 2 pp | delayed(6mo) | decaying: half_life=4yr |
 | `chn.inflation_rate` | ↑ | +4 ± 2 pp (currency depreciation) | delayed(3mo) | decaying: half_life=2yr |
+| `chn.debt_public` | ↑ | +15 ± 5 pp GDP (bailouts, stimulus) | gradual(2yr) | permanent |
+| `chn.reserves_foreign` | ↓ | -6 ± 2 months of imports | gradual(2yr) | permanent |
+| `chn.fdi_net` | ↓ | -3 ± 1 pp GDP | immediate | decaying: half_life=3yr |
+| `chn.protest_intensity_annual` | ↑ | +25 ± 10 | delayed(6mo) | decaying: half_life=3yr |
+| `chn.years_since_irregular_transition` | — | Potential reset to 0 (Hard Landing branch only) | conditional | regime-dependent |
+| *chn.youth_unemployment* | ↑ | +12 ± 5 pp | delayed(6mo) | decaying: half_life=5yr |
 | *cny_usd_rate* | ↓ | -25 ± 10% (depreciation) | immediate | permanent (new equilibrium -15%) |
-| *chn.fx_reserves* | ↓ | -$800B ± 300B | gradual(2yr) | permanent |
+| *chn.fx_reserves_usd* | ↓ | -$800B ± 300B | gradual(2yr) | permanent |
 | *chn.property_prices* | ↓ | -35 ± 12% (national average) | gradual(3yr) | permanent |
 | *chn.household_wealth* | ↓ | -25 ± 10% | gradual(2yr) | decaying: half_life=8yr |
-| `chn.regime_stability` | ↓ | -15 ± 8 | delayed(1yr) | decaying: half_life=5yr |
+
+**Political stress transmission**: Economic crisis increases political stress through observable indicators rather than synthetic `regime_stability`. The primary channels are elevated `protest_intensity_annual` (economic grievances), potential cabinet reshuffles (`cabinet_turnover_annual`), and in severe cases (Hard Landing branch), irregular political transition that would reset `years_since_irregular_transition` to zero.
 
 ### Regional Impacts
 
@@ -241,16 +296,20 @@ Factors operate by shocking state variables that feed the pressure function. A k
 
 Korea most exposed (China = 25% of exports); Japan and Taiwan significant but more diversified.
 
-**Hong Kong:**
+**Hong Kong (illustrative — not a modeled entity):**
+
+*Hong Kong is not among the 40 individually modeled countries or 12 regional aggregates. The impacts below document expected real-world effects for completeness. In the simulation, Hong Kong effects would transmit through the broader East Asian regional dynamics and global financial system variables.*
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
-| `hkg.gdp_growth` | ↓ | -5.0 ± 2.0 pp | immediate | decaying: half_life=3yr |
+| *hkg.gdp_growth* | ↓ | -5.0 ± 2.0 pp | immediate | decaying: half_life=3yr |
 | *hkg.property_prices* | ↓ | -30 ± 12% | immediate | permanent |
 | *hkg.banking_stress* | ↑ | Significant | immediate | decaying: half_life=3yr |
-| `hkg.unemployment_rate` | ↑ | +4 ± 1.5 pp | delayed(3mo) | decaying: half_life=3yr |
+| *hkg.unemployment_rate* | ↑ | +4 ± 1.5 pp | delayed(3mo) | decaying: half_life=3yr |
 
 Hong Kong is uniquely exposed through direct financial integration with mainland, property market linkage, and role as offshore yuan center. Banking sector faces acute stress from mainland corporate exposures. Property prices, already elevated, face severe correction as mainland capital flows reverse and local demand collapses. The "one country, two systems" financial architecture provides limited insulation when the crisis originates in the dominant economy.
+
+**Simulation treatment**: Hong Kong's financial system stress would manifest through `global_credit_spread` increases and capital flow effects on regional economies (Japan, Korea, Singapore). Hong Kong-specific dynamics are a potential Level 2 refinement if entity coverage expands.
 
 **Southeast Asia (ASEAN aggregate):**
 
@@ -601,9 +660,10 @@ However, uncertainty is high because this depends heavily on leadership faction 
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-20 |
+| **Last updated** | 2025-12-29 |
+| **Critical review** | Complete (2025-12-29) |
 | **Upgrade candidate** | Yes |
-| **Upgrade rationale** | High-impact event with extensive existing research; Level 2 could model property sector dynamics, LGFV debt resolution scenarios, and banking system stress testing in greater detail |
+| **Upgrade rationale** | High-impact event with extensive existing research; Level 2 could add China-specific tracking variables (property sector, LGFV debt, NPL ratios) for mechanical pressure calculation rather than reference-class calibration |
 
 ## Sources
 
