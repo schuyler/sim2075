@@ -148,7 +148,7 @@ type_3_specification:
       # Impact vector specified separately, keyed by resolution_id
 ```
 
-**Key Insight**: The same window can produce very different outcomes. "Taiwan crisis" is a window; resolution could be war, peaceful accommodation, or status quo. These aren't three separate events—they're three resolutions of one contingent situation.
+**Key Insight**: The same window can produce very different outcomes. "Taiwan crisis" is a window; *within* the discontinuity cases, resolution could be military conflict or great power settlement. Crises that de-escalate without discontinuity are non-events—they don't appear as resolutions because nothing fundamental changed. See [[methodology/reference/type-3-calibration]] for the full treatment.
 
 **Calibration Insight**: Resolution probabilities are inherently difficult to estimate (see [[methodology/concepts/small-n-actor-problem]]). Default to uniform distribution across plausible resolutions; deviation requires explicit structural justification. The value of Type 3 modeling comes from specifying *what follows* each resolution, not from estimating *which* resolution occurs.
 
@@ -279,7 +279,8 @@ For hybrids, model the dominant mechanism and note the secondary.
 - [[methodology/concepts/epistemology]] — Intellectual honesty framing
 
 ### Worked Examples
-- [[events/geopolitical/taiwan-conflict]] — Type 3 worked example
+- [[events/geopolitical/india-pakistan-military-conflict]] — Type 3 worked example (single discontinuity type)
+- [[events/geopolitical/taiwan-conflict]] — Type 3 worked example (multiple discontinuity types)
 - [[events/climate/amoc-weakening]] — Type 2 worked example
 - [[events/geopolitical/pakistan-state-failure]] — Type 2 worked example
 
