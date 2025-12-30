@@ -424,14 +424,13 @@ Major war or nuclear exchange creates massive displacement. China faces refugee 
 ---
 
 ## Research Status
-
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-22 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
-| **Upgrade rationale** | DPRK nuclear doctrine; succession dynamics; China intervention scenarios; Seoul vulnerability modeling |
-
+| **Upgrade rationale** | DPRK nuclear doctrine; succession dynamics; China intervention scenarios; Seoul vulnerability modeling; impact vectors use some synthetic variables that should be replaced with observables in Level 2 |
 ## Open Questions
 
 - DPRK nuclear doctrine and "use before you lose" threshold
@@ -445,3 +444,21 @@ Major war or nuclear exchange creates massive displacement. China faces refugee 
 ---
 
 *See [[methodology/reference/type-3-calibration]] for methodology | [[events/geopolitical/taiwan-conflict]] for related event | [[events/geopolitical/india-pakistan-military-conflict]] for comparable Type 3 specification*
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Critical review complete; noted synthetic variable issue in impact vectors | Task 2.4 systematic review |
+| 2025-12-22 | Initial Level 1 specification | Type 3 contingent event |
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Critical review complete; noted synthetic variables for Level 2 upgrade | Task 2.4 systematic review |
+| 2025-12-22 | Initial Level 1 specification | Type 3 contingent event |

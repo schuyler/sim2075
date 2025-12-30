@@ -333,9 +333,10 @@ Nuclear use transforms global security architecture permanently. `nuclear_stabil
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-21 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Nuclear escalation pathways; water stress dynamics; Pakistan tactical nuclear doctrine |
+| **Upgrade rationale** | Nuclear escalation pathways; water stress dynamics; Pakistan tactical nuclear doctrine; impact vector uses synthetic variables (regime_stability, institutional_quality) that should be replaced with observables in Level 2 |
 
 ## Open Questions
 
@@ -344,6 +345,15 @@ Nuclear use transforms global security architecture permanently. `nuclear_stabil
 - China military intervention scenarios
 - Non-state actor triggering probability
 - US/international management capacity trends
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Critical review complete; noted synthetic variable issue in impact vectors | Task 2.4 systematic review |
+| 2025-12-21 | Initial Level 1 specification | Type 3 contingent event |
 
 ---
 
