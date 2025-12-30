@@ -214,6 +214,21 @@ As a Type 2 event, probability depends on pressure trajectory:
 
 | Period | Annual Probability | Rationale |
 |--------|-------------------|-----------|
+| 2025-2035 | 0.4-0.7% | Erdoğan consolidated; inflation declining; system tested and surviving |
+| 2035-2050 | 0.5-1.0% | Succession window opens; Istanbul earthquake risk accumulates; climate stress builds |
+| 2050-2075 | 0.4-0.8% | Post-succession; depends heavily on institutional trajectory; earthquake may have occurred |
+
+**Key inflection points**:
+- Erdoğan succession (whenever it occurs) opens high-risk window
+- Major Istanbul earthquake (probabilistically likely within 50 years) would stress-test all systems
+- Return to orthodox monetary policy would reduce economic pressure significantly
+
+### Probability Evolution
+
+As a Type 2 event, probability depends on pressure trajectory:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
 | 2025-2035 | 0.4-0.7% | Erdoğan consolidation continues; currency stress manageable; earthquake risk constant |
 | 2035-2050 | 0.5-1.0% | Succession window opens (Erdoğan aging); economic trajectory uncertain; climate stress rising |
 | 2050-2075 | 0.4-1.2% | Depends heavily on successor regime stability and economic trajectory |
@@ -400,34 +415,34 @@ severity_probability_rationale: |
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `turkey.gdp_real` | ↓ | -20% ± 10% | rapid(1yr) | decaying (half_life: 6yr, floor: -8%) |
-| `turkey.regime_stability` | ↓ | to <25 | immediate | regime_dependent |
-| `turkey.currency_value` | ↓ | -60% ± 25% | immediate | decaying (half_life: 4yr) |
-| `turkey.inflation_rate` | ↑ | +60% ± 30% | immediate | decaying (half_life: 3yr) |
-| `turkey.fdi_inflows` | ↓ | -70% ± 20% | rapid(6mo) | decaying (half_life: 8yr) |
-| `turkey.unemployment` | ↑ | +12% ± 5% | rapid(1yr) | decaying (half_life: 5yr) |
-| `turkey.institutional_quality` | ↓ | -25 ± 10 | delayed(1yr) | regime_dependent |
+| `tur.gdp_real` | ↓ | -20% ± 10% | rapid(1yr) | decaying (half_life: 6yr, floor: -8%) |
+| `tur.gdp_growth` | ↓ | -12% ± 6% | immediate | decaying (half_life: 3yr) |
+| `tur.inflation_rate` | ↑ | +60% ± 30% | immediate | decaying (half_life: 3yr) |
+| `tur.unemployment_rate` | ↑ | +12% ± 5% | rapid(1yr) | decaying (half_life: 5yr) |
+| `tur.fdi_net` | ↓ | -4% GDP ± 2% | rapid(6mo) | decaying (half_life: 8yr) |
+| `tur.internal_conflict_intensity` | ↑ | +2 levels | immediate | decaying (half_life: 8yr) |
+| `tur.refugees_abroad` | ↑ | +1M ± 0.5M | rapid(2yr) | decaying (half_life: 10yr) |
 
 *Scale by impact_multiplier for state_fragmentation (2.5×) and earthquake_cascade (3.0×) branches*
-
-### Regional Impacts
-
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `syria.reconstruction_prospects` | ↓ | -25 ± 12 | delayed(1yr) | persistent |
-| `iraq.kurdish_region_stability` | variable | ±20 | delayed(1yr) | persistent |
-| `greece.security_environment` | ↓ | -15 ± 8 | immediate | regime_dependent |
-| `bulgaria.economic_exposure` | ↓ | -12% ± 6% | rapid(6mo) | decaying |
-| `europe.migration_pressure` | ↑ | +3M ± 1.5M | rapid(1yr) | decaying |
-| `mena_aggregate.stability` | ↓ | -15 ± 7 | delayed(1yr) | decaying |
 
 ### Global Impacts
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `global.em_risk_premium` | ↑ | +75bp ± 35bp | immediate | decaying (half_life: 2yr) |
-| `global.grain_prices` | ↑ | +8% ± 4% | immediate | decaying (half_life: 9mo) |
-| `nato.cohesion` | ↓ | -15 ± 7 | delayed(6mo) | regime_dependent |
+| `global_credit_spread` | ↑ | +50bps ± 25bps | immediate | decaying (half_life: 2yr) |
+| `wheat_price` | ↑ | +10% ± 5% | immediate | decaying (half_life: 9mo) |
+
+### Regional Impacts (Selected Countries)
+
+| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
+|----------|-----------|------------------------|-------|------------|
+| `grc.gdp_growth` | ↓ | -2% ± 1% | rapid(6mo) | decaying (half_life: 2yr) |
+| `bgr.gdp_growth` | ↓ | -3% ± 1.5% | rapid(6mo) | decaying (half_life: 2yr) |
+| `irq.internal_conflict_intensity` | ↑ | +1 level | rapid(1yr) | decaying (Kurdish dimension) |
+| `syr.internal_conflict_intensity` | variable | ±1 level | rapid(1yr) | uncertain |
+| `deu.refugees_hosted` | ↑ | +0.5M ± 0.3M | rapid(2yr) | decaying (half_life: 10yr) |
+
+**Note**: Many intuitive impact channels (NATO cohesion, regional stability indices) are derived outputs, not state variables. The simulation tracks observable impacts on GDP, conflict levels, commodity prices, and migration flows.
 
 ### Bosphorus/Dardanelles Consideration
 
@@ -456,43 +471,28 @@ Turkey is NATO's second-largest military and controls the alliance's southeaster
 
 ## Cascade Effects
 
-### State → Probability Cascades
+### Narrative Cascade Pathways
 
-| Pathway | Target Event | Probability Change | Duration | Mechanism |
-|---------|--------------|-------------------|----------|-----------|
-| Kurdish opportunity | KURDISH_STATE_FORMATION | +3%/year | 10 years | Turkish Kurdistan joins Syrian/Iraqi Kurdish autonomy |
-| Migration pressure | EU_POLITICAL_CRISIS | +1%/year | 5 years | Turkey-EU deal collapses; migration surge |
-| EM contagion | EM_FINANCIAL_CRISIS | +2%/year | 2 years | Contagion to other vulnerable EMs |
-| NATO stress | NATO_COHESION_CRISIS | +1%/year | 5 years | Alliance framework tested |
-| Regional instability | SYRIA_FRAGMENTATION_DEEPENS | +2%/year | 5 years | Turkish buffer zone collapses |
-| Strait disruption | BLACK_SEA_ACCESS_CRISIS | +2%/year | Duration of crisis | Russian/Ukrainian grain exports affected |
+Turkey political breakdown would trigger significant cascade effects. Key pathways include:
 
-### Impact Chains
+**Migration pathway**: Turkey-EU deal collapses → refugee/migrant flows resume → European border pressure → political polarization
 
-**Pathway 1**: Turkey crisis → EU migration surge → European politics
-```
-Political breakdown → Turkey-EU deal collapses → Refugee/migrant flows resume →
-European border pressure → Political polarization → P(EU fragmentation dynamics) ↑
-```
+**Kurdish pathway**: Central control of Kurdish regions lost → Turkish Kurdistan seeks autonomy → links to Syrian/Iraqi Kurdistan → regional border changes
 
-**Pathway 2**: Turkey crisis → Kurdish consolidation → Regional map change
-```
-State fragmentation → Central control of Kurdish regions lost →
-Turkish Kurdistan seeks autonomy → Links to Syrian/Iraqi Kurdistan →
-P(Kurdish state formation) ↑
-```
+**Financial pathway**: Currency collapse → EM risk repricing → capital flight from vulnerable EMs → broader financial stress
 
-**Pathway 3**: Turkey crisis → EM contagion → Global financial stress
-```
-Currency collapse → EM risk repricing → Capital flight from vulnerable EMs →
-Financial stress → P(broader EM crisis) ↑
-```
+**NATO pathway**: State fragmentation → Article 5 ambiguity → alliance credibility questioned → security vacuum
 
-**Pathway 4**: Turkey crisis → NATO uncertainty → Security vacuum
-```
-State fragmentation → NATO Article 5 ambiguity → Alliance credibility questioned →
-Adversaries test commitments → P(NATO cohesion crisis) ↑
-```
+### Specified Event Cascades
+
+| Pathway | Target Event | Probability Change | Mechanism |
+|---------|--------------|-------------------|-----------|
+| Migration pressure | EU_FRAGMENTATION | +0.5%/year for 5 years | Turkey-EU deal collapse; migration surge |
+| EM contagion | GLOBAL_FINANCIAL_CRISIS | +1%/year for 2 years | Contagion to other vulnerable EMs |
+| Energy transit | OIL_SUPPLY_SHOCK | +0.5%/year for 2 years | Black Sea transit disruption |
+| Regional instability | EGYPT_STATE_FAILURE | +0.3%/year for 5 years | Regional contagion; refugee dynamics |
+
+**Note**: Many intuitive cascade targets (Kurdish state formation, NATO crisis, Bosphorus disruption, European migration crisis) are not yet specified in the event catalog.
 
 ---
 

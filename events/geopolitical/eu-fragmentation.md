@@ -51,14 +51,31 @@ Disorderly collapse unfolds
 
 ### Pressure Function
 
+Per [[methodology/concepts/synthetic-variable-problem]], we use observable indicators rather than synthetic indices like "eu_cohesion" or "regime_stability."
+
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `eu_cohesion` (global) | 0.30 | inverse | Composite measure of EU political unity |
-| `ita.debt_public` | 0.20 | threshold(150%) | Italy is the systemic risk; debt dynamics key |
+| `ita.debt_public` | 0.25 | threshold(150%) | Italy is the systemic risk; debt dynamics key |
 | `deu.gdp_growth` | 0.15 | inverse | German economy anchors EU; weakness undermines capacity |
-| `fra.regime_stability` | 0.15 | inverse | Franco-German engine requires French stability |
-| `global_credit_spread` | 0.10 | linear | Financial stress transmission |
-| `pol.institutional_quality` | 0.10 | inverse | Rule of law erosion in major Eastern member |
+| `fra.protest_intensity_annual` | 0.15 | linear | French political stress (observable proxy for instability) |
+| `global_credit_spread` | 0.15 | linear | Financial stress transmission |
+| `ita.gdp_growth` | 0.10 | inverse | Italian economic performance affects debt dynamics |
+| `pol.years_since_irregular_transition` | 0.10 | complex | Rule of law pressure; time since democratic consolidation |
+| `fra.unemployment_rate` | 0.10 | linear | Economic stress in core member |
+
+**Pressure calculation**:
+```
+pressure = 0.25 × max(0, (ita_debt_public - 100) / 100)
+         + 0.15 × max(0, (1 - deu_gdp_growth) / 5)
+         + 0.15 × fra_protest_intensity_annual / 100
+         + 0.15 × global_credit_spread / 300
+         + 0.10 × max(0, -ita_gdp_growth) / 5
+         + 0.10 × (pol_democratic_backsliding_proxy)
+         + 0.10 × fra_unemployment_rate / 15
+```
+*Normalized to 0-100 scale*
+
+**Proxy limitations**: True "EU cohesion" and "political unity" are unobservable. We proxy through economic stress in key members (Italy debt, German growth, French unemployment/protests) and financial market indicators. The key unobservables—Commission-Council dynamics, Franco-German coordination quality, member state political will—cannot be directly captured. Probability calibration relies on reference class reasoning from historical monetary/political union dissolutions.
 
 *Note: Italy debt is the single most dangerous variable — a debt crisis in the third-largest eurozone economy exceeds ECB capacity.*
 
@@ -170,6 +187,33 @@ EU institutions are more robust than personalist regimes (Russia, Turkey) but re
 - **German political evolution**: AfD in government could fundamentally alter dynamics
 - **ECB capacity limits**: Unknown where "whatever it takes" actually fails
 - **External shocks**: Major war, pandemic, or financial crisis could accelerate
+
+### Case Against This Specification
+
+**The EU has survived everything**: The EU survived the 2010-12 debt crisis, Brexit, COVID, and the Ukraine war. Each time forecasters predicted collapse; each time institutions adapted. 0.4%/year may be too high given this track record.
+
+**ECB "whatever it takes" has no known limit**: Draghi's 2012 pledge ended the debt crisis instantly. There's no evidence ECB couldn't repeat this. The specification assumes ECB capacity has a limit, but we've never observed it.
+
+**Brexit proved fragmentation doesn't cascade**: The UK's exit was supposed to trigger others. Instead, EU approval ratings rose and remaining members consolidated. The "domino effect" theory failed its major test.
+
+**Voluntary wealthy unions don't dissolve**: Unlike the USSR (coercive) or Yugoslavia (held together by strongman), the EU is a voluntary association of wealthy democracies. No comparable entity has ever dissolved. Reference class is effectively empty.
+
+**Counterargument**: The Eurozone design flaw (monetary without fiscal union) is real and creates genuine vulnerability. Italian debt dynamics are unsustainable long-term. The 0.4%/year estimate is already low—it reflects these stabilizing factors while acknowledging structural vulnerability.
+
+### Probability Evolution
+
+As a Type 2 event, probability depends on pressure trajectory, primarily Italian debt dynamics and energy transition stress on Germany:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2035 | 0.3-0.5% | Italian debt stable; ECB credible; Franco-German coordination functional |
+| 2035-2050 | 0.4-0.8% | Italian demographics worsen fiscal trajectory; German energy transition stress |
+| 2050-2075 | 0.5-1.0% | Long-term fiscal pressures accumulate; climate stress on southern members |
+
+**Key inflection points**:
+- Italian debt crossing 160% GDP (if not offset by growth) opens danger zone
+- German economic model failure (energy transition, China competition) weakens anchor
+- Major external shock (financial crisis, war) during period of elevated pressure
 
 ---
 
@@ -411,7 +455,8 @@ Once fragmentation occurs, the aftermath unfolds through one of two trajectories
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-21 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Revision note** | Removed "Orderly Fragmentation" resolution — negotiated restructuring into differentiated tiers is not a discontinuity but managed evolution (the EU already has opt-outs, multi-speed mechanisms, enhanced cooperation). If actors can coordinate an orderly transition, the threshold hasn't been crossed. Event now models only disorderly collapse. |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | High-impact event; Level 2 could model Italian debt dynamics and ECB capacity limits |
@@ -441,6 +486,16 @@ Once fragmentation occurs, the aftermath unfolds through one of two trajectories
 6. **Time-varying probability**: Probability likely increases as Italian demographics worsen fiscal trajectory. Current 0.4% may be an underestimate for 2040s-2050s.
 
 7. **Why not orderly?**: The specification assumes orderly fragmentation is not a discontinuity. This could be wrong if a formal Eurozone dissolution (not just restructuring) could be managed. Historical precedent (Czechoslovakia) suggests orderly separation is possible but EU complexity makes it unlikely.
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Critical review: replaced synthetic variables (eu_cohesion, regime_stability, institutional_quality) with observables; added Case Against and Probability Evolution sections | Task 2.4 systematic review |
+| 2025-12-21 | Removed "Orderly Fragmentation" resolution | Negotiated restructuring is managed evolution, not discontinuity |
+| 2025-12-20 | Initial Level 1 specification | Type 2 threshold event |
 
 ---
 
