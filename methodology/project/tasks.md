@@ -130,7 +130,7 @@ The core intellectual work. Populate the event catalog with fully specified disc
 | **2.1.9** | Iran Regime Change | Type 2 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/iran-regime-change]] |
 | **2.1.10** | Turkey Political Crisis | Type 2 | ✅ | — | Level 1 complete; [[events/geopolitical/turkey-political-crisis]] |
 | **2.1.11** | Dollar Reserve Crisis | Type 2 | ✅ | — | Level 1 complete; [[events/financial/dollar-reserve-crisis]] |
-| **2.1.12** | Chinese Economic Crisis | Type 2 | 🟡 | — | Level 1 draft complete; [[events/financial/chinese-economic-crisis]]; awaiting review |
+| **2.1.12** | Chinese Economic Crisis | Type 2 | ✅ | — | Level 1 complete; critical review complete (2025-12-29); [[events/financial/chinese-economic-crisis]]; pressure function uses universal state variables; "Case Against" and "Probability Evolution" sections added |
 | **2.1.13** | Chinese Political Crisis | Type 2/3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/chinese-political-crisis]] |
 | **2.1.14** | EU Fragmentation | Type 2 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/eu-fragmentation]] |
 | **2.1.15** | US Constitutional Crisis | Type 2/3 | ✅ | 1.1 | Level 1 complete; [[events/geopolitical/us-constitutional-crisis]] |
@@ -198,7 +198,7 @@ Apply [[methodology/03-critical-review]] to all completed Level 1 events. Adds "
 | **2.4.12** | Iran Regime Change | Type 2 | 🔲 | |
 | **2.4.13** | Turkey Political Crisis | Type 2 | 🔲 | |
 | **2.4.14** | Dollar Reserve Crisis | Type 2 | 🔲 | |
-| **2.4.15** | Chinese Economic Crisis | Type 2 | 🔲 | After 2.1.12 review complete |
+| **2.4.15** | Chinese Economic Crisis | Type 2 | ✅ | — | Completed Dec 2025 (commit 6fb2cd0); pressure function revised to universal variables; Case Against and Probability Evolution added |
 
 ---
 
@@ -267,4 +267,4 @@ When completing tasks:
 
 ---
 
-*Last updated: December 28, 2025*
+*Last updated: December 29, 2025*
