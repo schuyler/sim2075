@@ -36,7 +36,7 @@ This specification follows the pattern established in [[events/geopolitical/paki
 
 Collapse or severe fragmentation of effective Russian state authority, characterized by loss of central control over regions, military fragmentation or coup, elite faction warfare, potential territorial disintegration, and/or loss of control over nuclear arsenal. Russia's vulnerability is distinctive: extreme personalization of power in Putin, ongoing war exhaustion, unprecedented sanctions isolation, severe demographic decline, and nuclear weapons complexity.
 
-This is a **state transition**: `russia.regime_stability` crosses below failure threshold (~20), triggering shift from "authoritarian but functional" regime to "failed/fragmented state" regime.
+This is a **state transition**: accumulated pressure crosses failure threshold, triggering shift from "authoritarian but functional" regime to "failed/fragmented state" regime. Observable via `internal_conflict_intensity` rising to 3-4, displacement flows activating, and GDP collapse.
 
 **What marks occurrence**: Central government loses ability to command obedience from military/security services across territory; elite factions engage in open conflict; regions assert de facto independence; or nuclear command and control becomes uncertain.
 
@@ -56,21 +56,27 @@ Russia state failure exhibits threshold dynamics:
 
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `russia.war_exhaustion` | 0.30 | linear | Ukraine conflict intensity, duration, casualties, economic cost |
-| `russia.regime_stability` | 0.25 | inverse | Elite cohesion, succession clarity, repression effectiveness |
-| `russia.economic_resilience` | 0.20 | inverse | Sanctions impact, trade isolation, revenue decline |
-| `russia.military_cohesion` | 0.15 | inverse | Armed forces morale, equipment losses, command integrity |
-| `russia.demographic_stress` | 0.10 | linear | Population decline, emigration, labor force contraction |
+| `rus.external_conflict_involvement` | 0.25 | linear | War intensity (0-4 scale); currently 3-4 for Ukraine |
+| `rus.military_spending_deviation` | 0.15 | linear | Abnormal military burden signals war stress |
+| `rus.sanctions_level` | 0.20 | linear | Economic isolation (0-100); currently ~75 |
+| `rus.years_since_irregular_transition` | 0.10 | inverse | Time builds succession pressure; Putin era = 25+ years |
+| `rus.leadership_tenure_years` | 0.10 | threshold(>20) | Hyper-personalization risk; currently 25+ years |
+| `rus.gdp_growth` | 0.10 | inverse | Economic stress indicator |
+| `rus.emigration_skilled_rate` | 0.10 | linear | Brain drain / elite exit signal |
 
 **Pressure calculation**:
 ```
-pressure = 0.30 × war_exhaustion / 100
-         + 0.25 × (100 - regime_stability) / 100
-         + 0.20 × (100 - economic_resilience) / 100
-         + 0.15 × (100 - military_cohesion) / 100
-         + 0.10 × demographic_stress / 100
+pressure = 0.25 × external_conflict_involvement / 4
+         + 0.15 × military_spending_deviation / 3  # normalized to ~3 std dev max
+         + 0.20 × sanctions_level / 100
+         + 0.10 × (1 - years_since_irregular_transition / 50)  # caps at 50 years
+         + 0.10 × (leadership_tenure_years > 20 ? 1 : 0)
+         + 0.10 × max(0, -gdp_growth) / 10  # only negative growth contributes
+         + 0.10 × emigration_skilled_rate / 5  # normalized to ~5% max
 ```
 *Normalized to 0-100 scale*
+
+**Proxy limitations**: True "war exhaustion," "elite cohesion," and "military morale" are unobservable. We proxy through measurable indicators: conflict involvement level, spending deviation, sanctions severity, and emigration rates. The key unobservable—elite factional dynamics—cannot be captured directly; probability calibration relies on reference class reasoning from Soviet collapse and comparable authoritarian stress cases.
 
 ### Threshold
 
@@ -110,12 +116,14 @@ A succession crisis alone could trigger state failure even if other pressures ar
 
 ### Current Pressure Estimate
 
-Current pressure: ~50/100 (elevated but below threshold)
-- `war_exhaustion`: ~55 (sustained conflict; significant but not catastrophic losses)
-- `regime_stability`: ~45 (Putin in control; elite grumbling but contained; succession unclear)
-- `economic_resilience`: ~50 (sanctions biting but adapted; energy revenue reduced but continuing)
-- `military_cohesion`: ~55 (degraded by losses; Wagner mutiny was warning; still functional)
-- `demographic_stress`: ~60 (severe long-term trajectory; war/emigration accelerating)
+Current pressure: ~55/100 (elevated but below threshold)
+- `external_conflict_involvement`: 3-4 (major war in Ukraine)
+- `military_spending_deviation`: ~+2 std dev (significantly elevated)
+- `sanctions_level`: ~75 (comprehensive Western sanctions)
+- `years_since_irregular_transition`: 32 years (since 1993 constitutional crisis)
+- `leadership_tenure_years`: 25 years (Putin era)
+- `gdp_growth`: ~-2% to +1% (volatile, sanctions-constrained)
+- `emigration_skilled_rate`: ~2-3% (accelerated post-2022)
 
 ### Derivation
 
@@ -143,6 +151,34 @@ Russia's coercive apparatus is more effective than Pakistan's or Egypt's fractur
 - **Elite cohesion**: Will elites remain loyal under pressure, or factional competition emerge?
 - **Military loyalty**: Will armed forces remain unified command structure?
 - **Regional dynamics**: Will ethnic republics (Chechnya, Tatarstan, etc.) or resource regions (Siberia) seek autonomy?
+
+### Case Against This Specification
+
+**Security apparatus is exceptionally strong**: Russia's FSB/security services are among the world's most capable at suppressing dissent and detecting threats. The Wagner mutiny was contained within 24 hours. This argues for lower probability than other state failure events.
+
+**Nuclear weapons create stability**: Both domestic actors and external powers have overwhelming incentives to prevent state failure. Any faction approaching power would need to reassure the international community on nuclear security. This "too big to fail" dynamic may make managed succession far more likely than failure.
+
+**Historical resilience**: Russia survived the 1990s chaos, 1998 default, 2008 crisis, 2014 sanctions, and COVID without state failure. The regime has demonstrated adaptability. 1.0%/year may be too high.
+
+**War could end**: If Ukraine conflict reaches negotiated end, the primary pressure driver diminishes substantially. Current pressure estimate assumes sustained conflict.
+
+**Counterargument**: Soviet collapse demonstrates that apparently stable authoritarian systems can fail rapidly when pressure exceeds threshold. Wagner mutiny showed cracks exist. Hyper-personalization creates succession vulnerability that didn't exist in collective Soviet leadership. The estimate acknowledges resilience in the relatively low 1.0%/year rate.
+
+### Probability Evolution
+
+As a Type 2 event, probability depends on pressure trajectory:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2030 | 0.8-1.2% | War ongoing; Putin in power; pressure elevated but contained |
+| 2030-2040 | 1.0-2.0% | Succession window opens (Putin aging); war outcome uncertain |
+| 2040-2050 | 0.8-1.5% | Post-succession; depends heavily on successor regime stability |
+| 2050-2075 | 0.5-1.5% | Long-term demographic decline; path-dependent on earlier outcomes |
+
+**Key inflection points**:
+- Putin succession (whenever it occurs) opens high-risk window
+- War termination scenarios affect pressure substantially
+- Sanctions erosion vs. persistence affects economic resilience
 
 ---
 
@@ -206,12 +242,10 @@ severity_branches:
       floor: 0.15
       
     cascade_triggers:
-      - event_id: CENTRAL_ASIA_INSTABILITY
-        probability_modifier: 1.8
-        rationale: "Russian security umbrella weakens"
-      - event_id: CAUCASUS_CONFLICT
-        probability_modifier: 2.0
-        rationale: "Regional autonomy assertions; frozen conflicts unfreeze"
+      # Note: CENTRAL_ASIA_INSTABILITY and CAUCASUS_CONFLICT not yet in catalog
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 1.5
+        rationale: "Energy supply disruption"
 
   - id: civil_conflict
     probability: 0.35
@@ -236,15 +270,13 @@ severity_branches:
       floor: 0.20
       
     cascade_triggers:
-      - event_id: NUCLEAR_SECURITY_CRISIS
-        probability: 0.30
-        rationale: "Command and control uncertainty"
-      - event_id: UKRAINE_CONFLICT_RESOLUTION
+      # Note: NUCLEAR_SECURITY_CRISIS, UKRAINE_CONFLICT_RESOLUTION, EUROPEAN_REFUGEE_CRISIS not in catalog
+      - event_id: GLOBAL_FINANCIAL_CRISIS
+        probability_modifier: 1.5
+        rationale: "Market panic from major power instability"
+      - event_id: OIL_SUPPLY_SHOCK
         probability_modifier: 2.0
-        rationale: "Russian military capacity for external war collapses"
-      - event_id: EUROPEAN_REFUGEE_CRISIS
-        probability_modifier: 2.5
-        rationale: "Mass flight from conflict zones"
+        rationale: "Russian energy export disruption"
 
   - id: catastrophic_collapse
     probability: 0.20
@@ -270,15 +302,16 @@ severity_branches:
       floor: 0.30
       
     cascade_triggers:
-      - event_id: NUCLEAR_SECURITY_CRISIS
-        probability: 0.60
-        rationale: "Arsenal fragmentation risk"
-      - event_id: GREAT_POWER_INTERVENTION
-        probability: 0.50
-        rationale: "Nuclear security demands response"
-      - event_id: CHINA_FAR_EAST_ASSERTION
-        probability: 0.40
-        rationale: "Power vacuum in Russian Far East"
+      # Note: NUCLEAR_SECURITY_CRISIS, GREAT_POWER_INTERVENTION, CHINA_FAR_EAST_ASSERTION not in catalog
+      - event_id: GLOBAL_FINANCIAL_CRISIS
+        probability_modifier: 2.0
+        rationale: "Systemic shock from major power collapse"
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 2.5
+        rationale: "Severe energy supply disruption"
+      - event_id: TAIWAN_CONFLICT
+        probability_modifier: 1.3
+        rationale: "Strategic distraction; US attention divided"
 
 severity_probability_rationale: |
   Distribution reflects Russia's structural features, conditional on actual
@@ -310,31 +343,34 @@ severity_probability_rationale: |
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `russia.gdp_real` | ↓ | -20% ± 10% | rapid(2yr) | decaying (half_life: 8yr, floor: -10%) |
-| `russia.regime_stability` | ↓ | to <25 | immediate | regime_dependent |
-| `russia.military_capability` | ↓ | -30% ± 12% | immediate | decaying (half_life: 10yr) |
-| `russia.population` | ↓ | -4% ± 2% (emigration) | rapid(3yr) | permanent |
-| `russia.nuclear_security` | ↓ | -15 ± 8 | immediate | maintenance_required |
-
-### Regional Impacts
-
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `ukraine.security_environment` | ↑ | +30 ± 15 | immediate | persistent (depends on successor regime) |
-| `central_asia.stability` | ↓ | -15 ± 10 | rapid(2yr) | decaying |
-| `europe.energy_security` | ↑ | +10 ± 5 | gradual(3yr) | persistent (accelerated transition) |
-| `europe.security_spending` | ↑ | +2% GDP ± 1% | rapid(2yr) | persistent |
-| `china.strategic_position` | ↑ | +15 ± 10 | immediate | persistent |
-| `caucasus.stability` | ↓ | -25 ± 15 | immediate | decaying |
+| `rus.gdp_real` | ↓ | -20% ± 10% | rapid(2yr) | decaying (half_life: 8yr, floor: -10%) |
+| `rus.gdp_growth` | ↓ | -8% ± 4% | immediate | decaying (half_life: 3yr) |
+| `rus.internal_conflict_intensity` | ↑ | to 3-4 | immediate | decaying (half_life: 10yr) |
+| `rus.sanctions_level` | — | complex | — | May decrease if regime changes |
+| `rus.net_migration_rate` | ↓ | -2% ± 1% | rapid(2yr) | decaying (half_life: 5yr) |
+| `rus.emigration_skilled_rate` | ↑ | +3% ± 1.5% | immediate | decaying (half_life: 5yr) |
+| `rus.refugees_abroad` | ↑ | +2M ± 1M | rapid(3yr) | decaying (half_life: 15yr) |
+| `rus.idp_population` | ↑ | +3M ± 2M | rapid(2yr) | decaying (half_life: 10yr) |
 
 ### Global Impacts
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `global.nuclear_risk` | ↑ | +20% ± 15% | immediate | decaying (half_life: 5yr) |
-| `global.energy_prices` | ↑ | +25% ± 20% | immediate | decaying (half_life: 2yr) |
-| `global.commodity_prices` | ↑ | +15% ± 10% | immediate | decaying (half_life: 1yr) |
-| `global.great_power_stability` | ↓ | -20 ± 10 | immediate | decaying (half_life: 10yr) |
+| `oil_brent` | ↑ | +30% ± 20% | immediate | decaying (half_life: 2yr) |
+| `gas_europe_ttf` | ↑ | +50% ± 30% | immediate | decaying (half_life: 2yr) |
+| `global_credit_spread` | ↑ | +50bps ± 30bps | immediate | decaying (half_life: 1yr) |
+| `active_major_conflicts` | ↑ | +1 | immediate | event-dependent |
+
+### Regional Impacts (Selected Countries)
+
+| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
+|----------|-----------|------------------------|-------|------------|
+| `ukr.external_conflict_involvement` | ↓ | -2 levels | rapid(1yr) | persistent |
+| `kaz.internal_conflict_intensity` | ↑ | +1 level | rapid(2yr) | decaying |
+| `deu.gdp_growth` | ↓ | -1% ± 0.5% | rapid(1yr) | decaying (half_life: 2yr) |
+| `chn.trade_share_china` | — | regional reorientation | gradual | persistent |
+
+**Note**: Many intuitive impact channels (nuclear security indices, great power stability measures) are derived outputs, not state variables. The simulation tracks observable impacts on GDP, conflict levels, commodity prices, and displacement—interpretive assessments are computed from these.
 
 ### Nuclear Consideration
 
@@ -357,43 +393,27 @@ Nuclear security concerns dominate international response calculus and create st
 
 ## Cascade Effects
 
-### State → Probability Cascades
+### Narrative Cascade Pathways
 
-| Pathway | Target Event | Probability Change | Duration | Mechanism |
-|---------|--------------|-------------------|----------|-----------|
-| Security vacuum | CENTRAL_ASIA_INSTABILITY | +4%/year | 10 years | Russian security umbrella withdraws |
-| Power vacuum | CAUCASUS_CONFLICT | +5%/year | 10 years | Frozen conflicts unfreeze; Armenia-Azerbaijan |
-| Nuclear uncertainty | NUCLEAR_SECURITY_CRISIS | +2%/year | 5 years | Command and control questions |
-| Energy disruption | EUROPEAN_ENERGY_CRISIS | +3%/year | 3 years | Supply uncertainty |
-| Strategic shift | CHINA_STRATEGIC_EXPANSION | +2%/year | 15 years | Reduced counterbalance |
-| War resolution | UKRAINE_CONFLICT_END | +15%/year | 3 years | Russian political will collapses |
+Russia state failure would trigger significant cascade effects, but most target events are not yet specified in the catalog. Key pathways include:
 
-### Impact Chains
+**Nuclear security pathway**: State failure → command and control uncertainty → international crisis over arsenal security → potential great power intervention
 
-**Pathway 1**: Russia failure → Nuclear security crisis → Great power intervention
-```
-State failure → command and control uncertainty → loose nuclear material fears →
-US/NATO/China intervention discussions → unprecedented security operations →
-either stabilization or dangerous standoff
-```
+**Energy market pathway**: State failure → energy production/export disruption → global price spikes → inflation surge → financial stress
 
-**Pathway 2**: Russia failure → Central Asian destabilization → Migration cascade
-```
-State failure → Russian security guarantees void → regional conflicts activate →
-mass displacement → pressure on China, Europe, Turkey → P(migration crises) ↑
-```
+**Regional destabilization pathway**: State failure → Russian security guarantees void → Central Asian and Caucasus conflicts activate → displacement cascades
 
-**Pathway 3**: Russia failure → Energy market shock → Global economic stress
-```
-State failure → energy production/export disruption → price spikes →
-inflation surge → P(global financial stress) ↑ → P(political instability) ↑
-```
+**Strategic realignment pathway**: State failure → Russia becomes Chinese client/dependency → power transition acceleration → shifts in Taiwan calculus
 
-**Pathway 4**: Russia failure → China strategic windfall → Power transition acceleration
-```
-State failure → Russia becomes Chinese client/dependency → resource access →
-reduced strategic distraction → P(Taiwan assertiveness window) shifts
-```
+### Specified Event Cascades
+
+| Pathway | Target Event | Probability Change | Mechanism |
+|---------|--------------|-------------------|-----------|
+| Energy disruption | OIL_SUPPLY_SHOCK | +3%/year for 3 years | Russian supply uncertainty |
+| Financial contagion | GLOBAL_FINANCIAL_CRISIS | +1%/year for 2 years | Market panic, commodity volatility |
+| Regional instability | IRAN_REGIME_CHANGE | +0.5%/year for 5 years | Russian support withdrawn |
+
+**Note**: Many intuitive cascade targets (Central Asian instability, Caucasus conflicts, nuclear security crisis) are not yet specified in the event catalog. These should be considered for future event development.
 
 ---
 
@@ -463,7 +483,8 @@ reduced strategic distraction → P(Taiwan assertiveness window) shifts
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-18 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | War trajectory assessment; elite cohesion analysis; nuclear security deep-dive; succession scenario modeling |
 
@@ -495,6 +516,7 @@ reduced strategic distraction → P(Taiwan assertiveness window) shifts
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Critical review: replaced synthetic variables with observables; added Case Against and Probability Evolution; fixed cascade/impact references | Task 2.4 systematic review |
 | 2025-12-18 | Revised severity branches; removed "managed succession" | Smooth succession isn't state failure; all branches should represent genuine dysfunction |
 | 2025-12-18 | Adjusted probability to 1.0% (from 1.2%) | Reflects that event now only fires for actual failure, not regime transitions |
 | 2025-12-18 | Initial Level 1 specification | Task 2.1.7 - Type 2 state failure event |
