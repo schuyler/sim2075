@@ -24,15 +24,21 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 ## Active Work
 
-### 1.7 Investigate Type 3 Non-Discontinuity Resolutions (🟡 In Progress)
+*No active tasks — all methodology foundations complete.*
 
-**Issue:** Current Type 3 methodology includes "status quo restoration" and similar resolutions that are explicitly *not* discontinuities. This creates structural inconsistency—the event catalog should enumerate discontinuities, but Type 3 events include non-discontinuity outcomes.
+---
 
-**Solution identified:** India-Pakistan Military Conflict revised as worked example. Event IS the discontinuity, probability is occurrence rate (0.9%), non-discontinuity outcomes are simply non-occurrence.
+## Recently Completed
 
-**Remaining work:**
-- Apply same revision to Taiwan Conflict
-- Update Type 3 methodology documents ([[methodology/reference/type-3-calibration]], [[methodology/reference/causal-types]])
+| Task | Completion Date | Notes |
+|------|-----------------|-------|
+| **1.7** Type 3 non-discontinuity resolutions | Dec 30, 2025 | Resolved structural inconsistency: resolutions are discontinuity types, not all possible outcomes. Updated type-3-calibration.md and causal-types.md. India-Pakistan is primary example. |
+| Energy Storage Breakthrough critical review | Dec 2025 | 0.8% annual probability; differential impacts on oil exporters |
+| Cancer Treatment Breakthrough critical review | Dec 2025 | Platform technology; age-structure sensitive impacts |
+| Saudi Nuclear Acquisition critical review | Dec 2025 | Cascade event; 70-85% conditional probability |
+| Sahel Catastrophe critical review | Dec 2025 | Regional crisis; factor loadings rescaled |
+
+See [[methodology/project/tasks-completed]] for full completion history.
 
 ---
 
@@ -133,20 +139,6 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 | Variable expansion | Sensitivity shows unmodeled mechanisms matter |
 | Dynamics refinement | Sensitivity shows dynamics parameters are important |
 | Level 2/3 research for high-impact events | Sensitivity identifies events driving tail outcomes |
-
----
-
-## Recently Completed (Last 5)
-
-| Task | Completion Date | Notes |
-|------|-----------------|-------|
-| Energy Storage Breakthrough critical review | Dec 2025 | 0.8% annual probability; differential impacts on oil exporters |
-| Cancer Treatment Breakthrough critical review | Dec 2025 | Platform technology; age-structure sensitive impacts |
-| Saudi Nuclear Acquisition critical review | Dec 2025 | Cascade event; 70-85% conditional probability |
-| Sahel Catastrophe critical review | Dec 2025 | Regional crisis; factor loadings rescaled |
-| Chinese Economic Crisis critical review | Dec 29, 2025 | Pressure function revised to universal variables |
-
-See [[methodology/project/tasks-completed]] for full completion history.
 
 ---
 
