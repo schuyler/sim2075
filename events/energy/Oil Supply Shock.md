@@ -554,6 +554,22 @@ Oil shock → energy security salience → policy window opens → transition in
 | Accelerated EV adoption (50%+ of new sales) | ↓ | -40% for demand elasticity |
 | US-Iran military conflict | ↑ | +150% for regional disruption |
 
+### Probability Evolution
+
+As a Type 1 stochastic event, probability is relatively stable but influenced by structural factors:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2035 | 2.0-3.0% | Elevated geopolitical tension; Hormuz chokepoint risk; supply concentration persists |
+| 2035-2050 | 1.5-2.5% | Energy transition reduces demand; diversification continues; but producer state instability may rise |
+| 2050-2075 | 1.0-2.0% | Lower if transition advanced; but remaining oil demand concentrated in harder-to-substitute uses |
+
+**Key inflection points**:
+- Energy transition pace: Faster transition = lower probability and lower impact when shocks occur
+- Hormuz alternative infrastructure: Bypass pipelines would reduce chokepoint risk
+- Producer state stability: Saudi/Gulf instability would elevate risk
+- US-Iran relationship: Military conflict would sharply elevate probability
+
 ---
 
 ## Sensitivity Analysis Notes
@@ -592,7 +608,8 @@ Oil shock → energy security salience → policy window opens → transition in
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-25 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Hormuz scenario detail; shale response capacity; food security cascade |
 
@@ -615,3 +632,12 @@ Oil shock → energy security salience → policy window opens → transition in
 ---
 
 *See [[methodology/reference/calibration-anchors]] for Type 1 methodology | [[methodology/reference/probability-estimation]] for estimation approach*
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Critical review: added Probability Evolution section; updated research status | Task 2.4 systematic review |
+| 2025-12-25 | Initial Level 1 specification | Type 1 stochastic event |

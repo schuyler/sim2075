@@ -114,6 +114,36 @@ This ranking seems appropriate—fusion commercialization is a "once per lifetim
 - **Tritium availability**: Breeding blanket technology unproven at scale; tritium scarcity could bottleneck deployment
 - **"Faster than expected" scenario**: If compact tokamaks or alternative approaches work, timeline could compress dramatically
 
+### Case Against This Specification
+
+**Fusion has been "30 years away" for 70 years**: The history of fusion promises is one of repeated disappointment. Private investment surges have occurred before (1980s, 2000s) without breakthrough. The 0.9%/year estimate may be optimistic given this track record.
+
+**Solar+storage may solve the same problem cheaper**: Grid-scale solar with battery storage is achieving cost reductions on a steeper curve than any fusion pathway. By the time fusion achieves commercialization, the market need may have disappeared. Fusion may be a solution in search of a problem.
+
+**Engineering challenges are more severe than scientific ones**: NIF ignition demonstrated scientific feasibility, but commercial viability requires sustained operation (not single shots), materials that withstand neutron bombardment, tritium breeding that actually works, and costs competitive with alternatives. These engineering challenges may prove intractable even with scientific success.
+
+**Regulatory timelines are prohibitive**: Nuclear licensing takes decades. Even if fusion technology works, regulatory approval for commercial plants may take 10-15 years in most jurisdictions. First commercial operation ≠ material grid impact.
+
+**Reference class selection is questionable**: Comparing fusion to shale or solar may be inappropriate. Shale used existing drilling technology in new ways; solar scaled existing manufacturing. Fusion requires building entirely new industrial supply chains. The "energy breakthrough" reference class may be too optimistic.
+
+**Counterargument**: The counterarguments are valid but incomplete. Private investment today differs qualitatively from past surges—multiple credible approaches with near-term milestones, not just government megaprojects. NIF ignition was a genuine scientific breakthrough, not hype. The estimate acknowledges uncertainty with a 0.4-1.8% range and explicitly models the possibility that fusion remains "30 years away" indefinitely.
+
+### Probability Evolution
+
+As a Type 1 stochastic event, probability is relatively stable but influenced by R&D progress and competitor technologies:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2035 | 0.8-1.2% | Private venture milestones expected; ITER progress; but still early stage |
+| 2035-2050 | 0.8-1.5% | If early milestones hit, acceleration likely; if not, probability declines |
+| 2050-2075 | 0.5-1.5% | Highly path-dependent on 2025-2050 outcomes; solar+storage competition intensifies |
+
+**Key inflection points**:
+- Commonwealth/Helion/TAE milestones (2025-2030): Success accelerates; failure chills investment
+- ITER first plasma and full operation: Validates tokamak path or exposes challenges
+- Solar+storage cost trajectory: If battery costs fall 10× more, fusion market shrinks
+- First commercial plant (if achieved): Validates deployment pathway and triggers acceleration
+
 ---
 
 ## Factor Loadings
@@ -329,7 +359,8 @@ industrial location shifts → developed economy re-industrialization
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-25 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Private fusion venture progress; ITER timeline updates; detailed petrostate impact modeling |
 
@@ -359,6 +390,7 @@ industrial location shifts → developed economy re-industrialization
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Critical review: added Case Against and Probability Evolution sections | Task 2.4 systematic review |
 | 2025-12-25 | Initial Level 1 specification | Task 2.2.1 - first Type 1 breakthrough event |
 
 ---
