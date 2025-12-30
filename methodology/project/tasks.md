@@ -55,6 +55,8 @@ Self-critique identified that the initial implementation treats factors as if th
 | **1.5.4** | ✅ | Verified and updated cross-references to state-specification section numbers |
 | **1.5.5** | ✅ | Included ~80 specific variable IDs replacing category-level descriptions |
 
+| Priority | Task | Status | Dependencies | Notes |
+|----------|------|--------|--------------|-------|
 | **1.6** | Establish research documentation standards | 🔲 | — | Define schemas for source documentation, synthesis structure, citation conventions. Events and entities become ongoing research projects; need norms for how research accumulates and traces to parameter choices. Includes templates for Level 1/2/3 deliverables. |
 | **1.7** | Investigate Type 3 non-discontinuity resolutions | 🟡 | — | Current Type 3 methodology includes "status quo restoration" and similar resolutions that are explicitly *not* discontinuities. This creates structural inconsistency: the event catalog should enumerate discontinuities, but Type 3 events include non-discontinuity outcomes in their resolution sets. **India-Pakistan Military Conflict revised as worked example of correct approach**: event IS the discontinuity, probability is occurrence rate (0.9%), non-discontinuity outcomes are simply non-occurrence. Remaining work: apply same revision to Taiwan Conflict and update Type 3 methodology docs. |
 | **1.8** | Refactor state-specification into modular documents | ✅ | — | Refactored ~1,100 line document into 7 focused documents per [[methodology/concepts/synthetic-variable-problem]] analysis. See §1.8 sub-tasks below. |
@@ -198,7 +200,7 @@ Apply [[methodology/03-critical-review]] to all completed Level 1 events. Adds "
 | **2.4.12** | Iran Regime Change | Type 2 | 🔲 | |
 | **2.4.13** | Turkey Political Crisis | Type 2 | 🔲 | |
 | **2.4.14** | Dollar Reserve Crisis | Type 2 | 🔲 | |
-| **2.4.15** | Chinese Economic Crisis | Type 2 | ✅ | — | Completed Dec 2025 (commit 6fb2cd0); pressure function revised to universal variables; Case Against and Probability Evolution added |
+| **2.4.15** | Chinese Economic Crisis | Type 2 | ✅ | Completed Dec 2025 (commit 6fb2cd0); pressure function revised to universal variables; Case Against and Probability Evolution added |
 
 ---
 
