@@ -18,7 +18,6 @@ Operational guidance for specifying Type 3 (Contingent) events. Synthesizes the 
 ---
 
 ## Core Principle
-
 **Shift modeling effort from resolution probabilities (intractable) to aftermath specification (tractable).**
 
 "What happens if conflict occurs" is more answerable than "will conflict occur."
@@ -27,6 +26,7 @@ Operational guidance for specifying Type 3 (Contingent) events. Synthesizes the 
 |-----------|--------------|-----------|
 | Window preconditions | Moderate | Structural reasoning about tension escalation |
 | Window probability | Moderate | Historical frequency of crises reaching critical phase |
+| Discontinuity probability | Moderate | Historical rate of crises producing discontinuities |
 | Resolution probabilities | **Low** | Entropy maximization → uniform or weakly-informed |
 | Aftermath given each resolution | Moderate-High | Supply chain data, financial precedents, escalation logic |
 
@@ -37,6 +37,85 @@ For the underlying reasoning, see:
 
 ---
 
+## 0. Resolutions Are Discontinuity Types
+
+**Critical framing**: Resolutions enumerate *types of discontinuity*, not *all possible outcomes*.
+
+The event catalog contains discontinuities. A Type 3 event IS a discontinuity — when it fires, something fundamental has changed. Resolutions describe the different *forms* that discontinuity can take.
+
+### What Resolutions Are
+
+- Different types of system break (military conflict vs. great power settlement)
+- Different forms of the discontinuity occurring
+- Mutually exclusive ways the threshold gets crossed
+
+### What Resolutions Are NOT
+
+- "Status quo restoration" or "crisis de-escalates" — these are **non-events**
+- Outcomes where nothing fundamental changed
+- The full space of "what could happen given a crisis window"
+
+### The Correct Two-Stage Structure
+
+```
+P(event) = P(window opens) × P(discontinuity | window)
+```
+
+Where:
+- **P(window opens)**: Crisis develops to acute phase
+- **P(discontinuity | window)**: Crisis produces a discontinuity (any type)
+- **P(non-event | window)** = 1 - P(discontinuity | window): Crisis de-escalates without discontinuity — these are simply non-occurrences of the event
+
+Within the discontinuity cases, resolutions partition the space:
+```
+P(resolution_i) where Σ P(resolution_i) = 1.0 across all discontinuity types
+```
+
+### Example: India-Pakistan Military Conflict
+
+The cleanest example of correct Type 3 structure:
+
+| Component | Value | Meaning |
+|-----------|-------|---------|
+| P(window) | 2.5% | Acute crisis develops |
+| P(discontinuity \| window) | 35% | Military conflict occurs |
+| P(non-event \| window) | 65% | Crisis de-escalates — not modeled as resolution |
+| P(event) | 0.9% | Annual probability of military conflict |
+
+The event IS military conflict. Non-conflict outcomes are non-events. Aftermath branches (limited, major, nuclear) describe different intensities of the discontinuity that occurred.
+
+See [[events/geopolitical/india-pakistan-military-conflict]] for the full specification.
+
+### Example: Taiwan Conflict (Multiple Discontinuity Types)
+
+Taiwan is more complex because there are two genuinely distinct discontinuity types:
+
+| Component | Value | Meaning |
+|-----------|-------|---------|
+| P(window) | 3% | Acute crisis develops |
+| P(discontinuity \| window) | 65% | Military conflict OR great power settlement |
+| P(non-event \| window) | 35% | Crisis de-escalates — not modeled |
+| P(event) | ~2% | Annual probability of discontinuity |
+
+Within the 65% discontinuity cases:
+- Military conflict: 65% of discontinuities
+- Great power settlement: 35% of discontinuities
+
+Both are genuine discontinuities — both fundamentally change Taiwan's status. They're different *types* of system break, not "discontinuity vs. non-discontinuity."
+
+See [[events/geopolitical/taiwan-conflict]] for the full specification.
+
+### Why This Matters
+
+The old pattern included "status quo restoration" as a resolution. This was wrong because:
+
+1. **Catalog coherence**: The event catalog enumerates discontinuities. Including non-discontinuities as resolutions conflates "event types" with "all possible outcomes."
+
+2. **Probability interpretation**: If P(event) = 2% and one resolution is "nothing changed," then P(event) doesn't mean what it should mean.
+
+3. **Simulation mechanics**: When an event fires, it should produce impacts. "Status quo restoration" produces no meaningful impact — so why is it firing?
+
+The correct approach: non-discontinuity outcomes are captured in P(non-event | window). They don't appear in the resolution set because they're not resolutions — they're non-occurrences.
 ## 1. Resolution Probability Defaults
 
 ### The Default: Uniform Distribution
@@ -256,20 +335,21 @@ If conclusions are highly sensitive to Type 3 resolution probabilities, the hone
 ---
 
 ## 4. Worked Example: Taiwan Conflict
+This example demonstrates Level 1 specification of a Type 3 event with multiple discontinuity types. See [[events/geopolitical/taiwan-conflict]] for the full event file.
 
-This example demonstrates Level 1 specification of a Type 3 event. See [[events/geopolitical/taiwan-conflict]] for the full event file.
+For a simpler example with a single discontinuity type, see [[events/geopolitical/india-pakistan-military-conflict]].
 
 ### Window Definition
 
-The event requires a **crisis window** to open before resolution is sampled.
+The event requires a **crisis window** to open before discontinuity is sampled.
 
 ```yaml
 window:
-  description: "Acute crisis phase where military action becomes imminent possibility"
+  description: "Acute crisis phase where military action or major diplomatic shift becomes imminent"
   preconditions:
     - "Sustained elevation of F_GPT and F_EAS factors"
     - "Triggering incident (election outcome, sovereignty assertion, military accident)"
-  annual_probability_given_preconditions: 0.03
+  annual_probability: 0.03
   rationale: |
     Historical frequency of Taiwan Strait crises reaching acute phase: 
     roughly 3-4 per century when baseline tensions are elevated.
@@ -278,33 +358,67 @@ window:
 
 Window probability is *moderate tractability* — we can look at historical crisis frequency, though context changes limit precision.
 
-### Resolution Options
+### Probability Decomposition
+
+```yaml
+probability_structure:
+  window_probability: 0.03
+  discontinuity_given_window: 0.65
+  non_event_given_window: 0.35  # crises that de-escalate — NOT a resolution
+  annual_event_probability: 0.02  # 3% × 65% ≈ 2%
+  
+  rationale: |
+    Of historical Taiwan Strait crises (1954-55, 1958, 1995-96), two of three
+    produced military operations. The 1995-96 crisis de-escalated without
+    combat — a non-event in our framework, not a "status quo resolution."
+    
+    The 65% discontinuity rate reflects:
+    - Historical precedent of PRC willingness to use force
+    - Elevated current stakes (semiconductors, great power competition)
+    - Some crises will de-escalate through crisis management (the 35%)
+```
+
+### Resolution Options (Discontinuity Types Only)
+
+Once a discontinuity occurs (65% of windows), it takes one of two forms:
 
 ```yaml
 resolutions:
   - id: military_conflict
-    probability: 0.33
+    probability: 0.65
     description: "PRC initiates military action (blockade, strikes, or invasion)"
     
-  - id: negotiated_accommodation  
-    probability: 0.33
-    description: "Crisis de-escalates through diplomatic engagement; status quo modified"
-    
-  - id: status_quo_restoration
-    probability: 0.33
-    description: "Crisis de-escalates without resolution; return to prior tensions"
+  - id: great_power_settlement
+    probability: 0.35
+    description: |
+      US brokers binding settlement between PRC and Taiwan.
+      Agreement backed by great power guarantees, materially changing
+      Taiwan's status, security arrangements, or governance framework.
 
 resolution_probability_rationale:
-  default: "uniform (33/33/33)"
-  specified: "33/33/33"
+  default: "uniform (50/50)"
+  specified: "65/35"
   justification: |
-    No structural asymmetry identified at Level 1 that justifies deviation.
-    Military action has higher activation energy (mobilization, logistics),
-    but PRC has been investing in rapid-strike capabilities that reduce this gap.
-    Accommodation requires both parties to accept terms, which faces its own barriers.
-    Defaulting to uniform pending Level 2 analysis of structural constraints.
-  confidence: "n/a (using default)"
+    Settlement faces higher structural barriers than military conflict:
+    
+    Military conflict barriers:
+    - Activation energy for military action
+    - Nuclear escalation risk
+    - Economic costs
+    
+    Settlement barriers (all of the above, plus):
+    - Requires US willingness to reduce its position
+    - Requires PRC trust in US commitments
+    - Requires Taiwan acquiescence
+    - Must find formula acceptable to all three parties
+    
+    Military conflict requires one actor to decide to act.
+    Settlement requires three actors to agree. This structural
+    asymmetry justifies weighting military conflict higher.
+  confidence: "moderate — structural reasoning, not historical base rate"
 ```
+
+**Note**: There is no "status quo restoration" resolution. Crises that de-escalate without producing either military conflict or settlement are non-events — they're captured in the 35% non-discontinuity rate, not as a resolution type.
 
 ### Aftermath Branches
 
@@ -395,87 +509,81 @@ aftermath_probability_rationale:
     Level 1 estimate; aftermath probabilities more defensible than resolution probs.
 ```
 
-**Negotiated Accommodation Aftermath:**
+**Great Power Settlement Aftermath:**
 
 ```yaml
-# Under resolution: negotiated_accommodation
+# Under resolution: great_power_settlement
 aftermath_branches:
-  - id: stable_new_framework
+  - id: stable_framework
     probability: 0.40
     description: |
-      New cross-strait framework accepted by both parties.
-      Reduced tensions, increased economic integration.
+      Durable settlement backed by credible great power guarantees.
+      Explicit US security commitment, PRC commitment to non-use of force,
+      Taiwan constraints on independence options.
     factor_modifications:
-      F_GPT: -0.10  # tension reduction
-      F_EAS: -0.15
+      F_GPT: -0.15
+      F_EAS: -0.20
     duration:
       type: maintenance_required
       annual_failure_probability: 0.05
     impact_vector:
-      taiwan.sovereignty: "ambiguous_but_stable"
+      taiwan.sovereignty: "defined_autonomy_guaranteed"
+      global.great_power_tension: -0.15
       
-  - id: unstable_settlement
+  - id: unstable_framework
     probability: 0.60
     description: |
-      Face-saving de-escalation without fundamental resolution.
-      Tensions remain elevated; future crisis more likely.
-    factor_modifications:
-      F_GPT: +0.15
-      F_EAS: +0.20
-    duration:
-      type: decaying
-      half_life: 5
-      floor: 0.10
-```
-
-**Status Quo Restoration Aftermath:**
-
-```yaml
-# Under resolution: status_quo_restoration
-aftermath_branches:
-  - id: default
-    probability: 1.0
-    description: |
-      Crisis passes without resolution. Return to baseline tensions
-      with modest elevation from crisis memory.
+      Settlement reached under crisis pressure with structural weaknesses.
+      Agreement is binding but contains ambiguities, lacks robust enforcement,
+      or faces domestic opposition.
     factor_modifications:
       F_GPT: +0.10
       F_EAS: +0.15
     duration:
-      type: decaying
-      half_life: 3
-      floor: 0.05
+      type: maintenance_required
+      annual_failure_probability: 0.12
+    impact_vector:
+      taiwan.sovereignty: "formally_redefined_unstable"
+
+aftermath_probability_rationale:
+  justification: |
+    Unstable framework weighted higher because:
+    - Crisis-driven agreements prioritize speed over durability
+    - Three-party agreements are inherently harder to stabilize
+    - Each party has domestic audiences that may reject compromise
+    - Historical precedent: 1992 Consensus was ambiguous and contested
 ```
 
 ### What This Example Shows
 
-1. **Resolution probabilities are uniform** — no structural justification for deviation at Level 1
-2. **Analytical effort is in aftermath branches** — supply chain impacts, escalation triggers, duration modeling
-3. **Aftermath probabilities have more grounding** — military logistics, precedent analysis, structural constraints
-4. **Documentation traces reasoning** — rationale blocks explain each choice
+1. **Non-discontinuities are non-events** — the 35% of windows that de-escalate don't appear as resolutions
+2. **Resolutions are discontinuity types** — military conflict and great power settlement are both genuine system breaks
+3. **Analytical effort is in aftermath branches** — supply chain impacts, escalation triggers, duration modeling
+4. **Aftermath probabilities have more grounding** — military logistics, precedent analysis, structural constraints
+5. **Documentation traces reasoning** — rationale blocks explain each choice
 
 ---
 
 ## 5. Common Mistakes
-
 | Mistake | Why It's Wrong | Correction |
 |---------|----------------|------------|
+| **Including "status quo restoration" as a resolution** | Non-discontinuities are non-events, not resolutions. The event catalog enumerates discontinuities; "nothing changed" isn't a discontinuity type. | Capture non-discontinuity outcomes in P(non-event \| window). Resolutions partition only the discontinuity space. |
 | Investing 10 hours in resolution probability research | Time doesn't create tractability; small-N decisions remain opaque | Invest those hours in aftermath specification |
 | "Experts assess 60% conflict probability" | Expert intuitions on small-N decisions have poor track records | Use structural constraints, not intuitions |
 | Adjusting probabilities based on recent news | News updates your *understanding* but doesn't make the decision predictable | Update preconditions or aftermath branches, not resolution probs |
 | Precise probabilities (e.g., 37.5%) | False precision; implies calibration that doesn't exist | Round to nearest 5% or 10%; use uniform when possible |
 | Treating historical analogies as base rates | Cuban Missile Crisis ≠ Taiwan 2030; actors and contexts differ radically | Use analogies for mechanism insight, not probability calibration |
 | Skipping aftermath specification because resolution is uncertain | Uncertainty about *which* outcome makes consequence analysis *more* valuable | Specify full aftermath for each resolution |
-
----
-
+| Confusing "resolutions" with "all possible outcomes" | Resolutions are discontinuity types. "Crisis de-escalates" is a non-event, not a resolution. | Ask: "Does this resolution represent a genuine system break?" If no, it's not a resolution. |
 ## Checklist for Type 3 Event Specification
-
 Before finalizing a Type 3 event:
 
 - [ ] Window preconditions defined with structural reasoning
 - [ ] Window probability grounded in historical crisis frequency
-- [ ] Resolution options are mutually exclusive and collectively exhaustive
+- [ ] Discontinuity probability specified (what fraction of windows produce discontinuities)
+- [ ] Non-discontinuity outcomes treated as non-events, NOT as resolutions
+- [ ] Resolution options are mutually exclusive discontinuity types that sum to 1.0
+- [ ] Each resolution represents a genuine system break (not "status quo restoration")
 - [ ] Resolution probabilities are uniform OR deviation is structurally justified and documented
 - [ ] Deviation does not exceed 2:1 ratio without extraordinary evidence
 - [ ] Each resolution has aftermath branches specified
@@ -483,18 +591,18 @@ Before finalizing a Type 3 event:
 - [ ] Aftermath probability rationale documents structural reasoning
 - [ ] High-consequence branches include cascade triggers where appropriate
 - [ ] Cascade trigger probabilities involving actor decisions use entropy maximization (default ~50%, documented rationale for deviation)
-
----
-
 ## Related Documents
-
 - [[methodology/reference/causal-types]] — Type 3 definition (event-type framework)
 - [[methodology/reference/aftermath-branches]] — Full aftermath specification guide
 - [[methodology/concepts/tractability-boundaries]] — Why resolution probabilities are intractable
 - [[methodology/concepts/entropy-maximization]] — Default principle for uncalibrated parameters
 - [[methodology/concepts/small-n-actor-problem]] — Deep dive on small-N forecasting limits
-- [[events/geopolitical/taiwan-conflict]] — Full worked example
+
+### Worked Examples
+
+- [[events/geopolitical/india-pakistan-military-conflict]] — **Primary example**: Single discontinuity type (military conflict)
+- [[events/geopolitical/taiwan-conflict]] — Multiple discontinuity types (military conflict vs. great power settlement)
 
 ---
 
-*Completed: December 2025 (Task 1.1)*
+*Last updated: December 2025 (Task 1.7 revision)*
