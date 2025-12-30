@@ -48,36 +48,36 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 Apply [[methodology/03-critical-review]] to all Level 1 events (24 remaining). Adds "Probability Evolution" (Type 2) and "Case Against" sections.
 
-**Completed:** AMOC Weakening, Chinese Political Crisis, Chinese Economic Crisis (3/27)
+**Completed:** 2.4.1 (AMOC), 2.4.2 (Chinese Political), 2.4.15 (Chinese Economic) — 3/27
 
 **Remaining:**
 
-| Event | Type | Status |
-|-------|------|--------|
-| Taiwan Conflict | Type 3 | 🔲 |
-| Severe Pandemic | Type 1 | 🔲 |
-| Global Financial Crisis | Type 1/2 | 🔲 |
-| Amazon Tipping Point | Type 2 | 🔲 |
-| Permafrost Methane Release | Type 2 | 🔲 |
-| Pakistan State Failure | Type 2 | 🔲 |
-| Egypt State Failure | Type 2 | 🔲 |
-| Russia State Failure | Type 2 | 🔲 |
-| Saudi Regime Instability | Type 2 | 🔲 |
-| Iran Regime Change | Type 2 | 🔲 |
-| Turkey Political Crisis | Type 2 | 🔲 |
-| Dollar Reserve Crisis | Type 2 | 🔲 |
-| EU Fragmentation | Type 2 | 🔲 |
-| US Constitutional Crisis | Type 2/3 | 🔲 |
-| India-Pakistan Military Conflict | Type 3 | 🔲 |
-| Korean Peninsula Crisis | Type 3 | 🔲 |
-| US-China Economic Rupture | Type 3 | 🔲 |
-| Oil Supply Shock | Type 1 | 🔲 |
-| Iran Nuclear Acquisition | Type 2/3 | 🔲 |
-| Fusion Commercialization | Type 1 | 🔲 |
-| Agricultural Yield Breakthrough | Type 1 | 🔲 |
-| Antimicrobial Platform | Type 1 | 🔲 |
-| Sahel Catastrophe | Type 2 | 🔲 |
-| Saudi Nuclear Acquisition | Type 3 | 🔲 |
+| Task | Event | Type | Status |
+|------|-------|------|--------|
+| **2.4.3** | Taiwan Conflict | Type 3 | 🔲 |
+| **2.4.4** | Severe Pandemic | Type 1 | 🔲 |
+| **2.4.5** | Global Financial Crisis | Type 1/2 | 🔲 |
+| **2.4.6** | Amazon Tipping Point | Type 2 | 🔲 |
+| **2.4.7** | Permafrost Methane Release | Type 2 | 🔲 |
+| **2.4.8** | Pakistan State Failure | Type 2 | 🔲 |
+| **2.4.9** | Egypt State Failure | Type 2 | 🔲 |
+| **2.4.10** | Russia State Failure | Type 2 | 🔲 |
+| **2.4.11** | Saudi Regime Instability | Type 2 | 🔲 |
+| **2.4.12** | Iran Regime Change | Type 2 | 🔲 |
+| **2.4.13** | Turkey Political Crisis | Type 2 | 🔲 |
+| **2.4.14** | Dollar Reserve Crisis | Type 2 | 🔲 |
+| **2.4.16** | EU Fragmentation | Type 2 | 🔲 |
+| **2.4.17** | US Constitutional Crisis | Type 2/3 | 🔲 |
+| **2.4.18** | India-Pakistan Military Conflict | Type 3 | 🔲 |
+| **2.4.19** | Korean Peninsula Crisis | Type 3 | 🔲 |
+| **2.4.20** | US-China Economic Rupture | Type 3 | 🔲 |
+| **2.4.21** | Oil Supply Shock | Type 1 | 🔲 |
+| **2.4.22** | Iran Nuclear Acquisition | Type 2/3 | 🔲 |
+| **2.4.23** | Fusion Commercialization | Type 1 | 🔲 |
+| **2.4.24** | Agricultural Yield Breakthrough | Type 1 | 🔲 |
+| **2.4.25** | Antimicrobial Platform | Type 1 | 🔲 |
+| **2.4.26** | Sahel Catastrophe | Type 2 | 🔲 |
+| **2.4.27** | Saudi Nuclear Acquisition | Type 3 | 🔲 |
 
 ### Validation
 
