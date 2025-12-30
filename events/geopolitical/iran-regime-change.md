@@ -36,7 +36,7 @@ This specification follows the pattern established in [[events/geopolitical/saud
 
 Fundamental destabilization of the Islamic Republic regime, characterized by loss of coercive control, elite fragmentation (particularly IRGC-clerical split), mass popular uprising beyond suppression capacity, or systemic breakdown of governance. Iran's vulnerability is distinctive: an aging revolutionary ideology facing a young, increasingly secular population; severe economic isolation from Western sanctions; and an accelerating water crisis that threatens the habitability of the central plateau including Tehran.
 
-This is a **state transition**: `iran.regime_stability` crosses below crisis threshold (~35), triggering shift from "stable theocratic state" to "regime crisis" state.
+This is a **state transition**: accumulated pressure crosses crisis threshold, triggering shift from "stable theocratic state" to "regime crisis" state. Observable via `protest_intensity_annual` spiking beyond suppression capacity, `internal_conflict_intensity` rising, and economic indicators collapsing.
 
 **What marks occurrence**: Security forces (IRGC, Basij) fragment or refuse orders to suppress protests; elite defections from revolutionary establishment; Supreme Leader succession crisis that cannot be resolved through normal mechanisms; or economic/environmental collapse that overwhelms regime capacity.
 
@@ -60,21 +60,27 @@ Iran regime change exhibits threshold dynamics:
 
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `iran.economic_stress` | 0.30 | linear | Sanctions bite; inflation, unemployment, currency collapse |
-| `iran.regime_legitimacy` | 0.25 | inverse | Revolutionary ideology fading; reform frustration; religious authority eroding |
-| `iran.water_crisis` | 0.20 | exponential | Aquifer depletion, desertification accelerating; existential threat to central plateau |
-| `iran.social_contract_stress` | 0.15 | linear | Youth unemployment, gender restrictions, cultural gap with population |
-| `iran.elite_cohesion` | 0.10 | inverse | IRGC vs. clerical establishment; succession uncertainty |
+| `irn.sanctions_level` | 0.25 | linear | Economic isolation; currently ~80 |
+| `irn.gdp_growth` | 0.20 | inverse | Economic performance under sanctions |
+| `irn.unemployment_rate` | 0.15 | linear | Youth unemployment particularly high |
+| `irn.water_stress` | 0.15 | exponential | Aquifer depletion, desertification; existential threat |
+| `irn.protest_intensity_annual` | 0.10 | linear | Observable dissent (2022 protests elevated this) |
+| `irn.years_since_irregular_transition` | 0.10 | complex | 1979 was last transition; 46 years of regime stability |
+| `irn.inflation_rate` | 0.05 | linear | Currency crisis, purchasing power erosion |
 
 **Pressure calculation**:
 ```
-pressure = 0.30 × economic_stress / 100
-         + 0.25 × (100 - regime_legitimacy) / 100
-         + 0.20 × exp(water_crisis / 50) / exp(2)  # accelerating
-         + 0.15 × social_contract_stress / 100
-         + 0.10 × (100 - elite_cohesion) / 100
+pressure = 0.25 × sanctions_level / 100
+         + 0.20 × max(0, -gdp_growth) / 10  # negative growth contributes
+         + 0.15 × unemployment_rate / 30
+         + 0.15 × exp(water_stress / 50) / exp(2)  # accelerating
+         + 0.10 × protest_intensity_annual / 100
+         + 0.10 × (years_since_irregular_transition > 40 ? 0.3 : 0)  # aging revolution
+         + 0.05 × min(inflation_rate, 50) / 50  # capped contribution
 ```
 *Normalized to 0-100 scale*
+
+**Proxy limitations**: True "regime legitimacy," "elite cohesion," and "social contract stress" are unobservable. We proxy through economic indicators (sanctions, GDP, unemployment, inflation), water stress (measurable), and protest intensity. The key unobservables—IRGC-clerical faction dynamics, succession positioning—cannot be directly captured. Probability calibration relies on reference class reasoning from comparable ideological authoritarian regimes.
 
 ### Threshold
 
@@ -133,12 +139,14 @@ Despite vulnerabilities, the regime possesses:
 
 ### Current Pressure Estimate
 
-Current pressure: ~45/100 (elevated but below threshold)
-- `economic_stress`: ~65 (severe sanctions, high inflation, currency crisis)
-- `regime_legitimacy`: ~40 (eroded but core supporters remain)
-- `water_crisis`: ~55 (severe and worsening; capital relocation discussed)
-- `social_contract_stress`: ~60 (youth unemployment high, gender restrictions resented)
-- `elite_cohesion`: ~50 (IRGC consolidated but succession uncertainty looms)
+Current pressure: ~50/100 (elevated but below threshold)
+- `sanctions_level`: ~80 (comprehensive Western sanctions)
+- `gdp_growth`: ~-2% to +2% (volatile under sanctions)
+- `unemployment_rate`: ~12% official, likely higher for youth
+- `water_stress`: ~70 (severe and worsening; capital relocation discussed)
+- `protest_intensity_annual`: ~40 (elevated post-2022; suppressed but persistent)
+- `years_since_irregular_transition`: 46 years (1979 revolution)
+- `inflation_rate`: ~40% (severe currency depreciation)
 
 ### Derivation
 
@@ -164,6 +172,65 @@ Per [[methodology/reference/priority-event-ranking]]:
 - **External military action**: Israeli/US strike on nuclear facilities could trigger destabilization or rally-around-flag
 - **IRGC loyalty**: Under what conditions might IRGC prioritize institutional survival over regime defense?
 - **Protest catalyst**: Unpredictable triggers (like Mahsa Amini's death) can rapidly shift dynamics
+
+### Case Against This Specification
+
+**The regime has survived worse**: The Islamic Republic survived eight years of war with Iraq (1980-88) with hundreds of thousands of casualties, the 2009 Green Movement, 2019 fuel protests with 1,500+ deaths, and 2022 Mahsa Amini protests. Each time, forecasters predicted collapse and were wrong. 1.2%/year may significantly overstate probability given demonstrated resilience.
+
+**Coercive capacity is exceptional**: Iran's security apparatus is among the world's most effective at suppressing dissent. The IRGC has deep economic interests in regime survival. Unlike Egypt 2011 or Romania 1989, there's no evidence of security force wavering. The 2022 protests, despite unprecedented scale, were eventually suppressed without elite defection.
+
+**No organized opposition**: Iranian opposition is fragmented (reformists, monarchists, ethnic movements, MEK) with no unified leadership or credible alternative. Even if protests succeed, what replaces the regime is deeply uncertain—which may make elites less willing to defect.
+
+**Water crisis timeline is longer than implied**: While Iran's water crisis is severe, major cities can be supplied through infrastructure investment and imports for decades. Tehran relocation discussion may reflect long-term planning rather than imminent crisis. Environmental pressure adds to baseline stress but isn't an acute trigger.
+
+**External intervention is unlikely to cause collapse**: Historical evidence (Iraq 2003, Libya 2011) suggests external intervention produces chaos rather than stable transition. More importantly, a strike on nuclear facilities might trigger rally-around-flag rather than collapse—rallying moderates to the regime. The 10% probability for this branch may overstate how reliably intervention produces regime change.
+
+**Counterargument**: The counterarguments are valid but don't eliminate risk. Soviet collapse demonstrated that ideological regimes can appear stable until they suddenly aren't. Generational change is real—today's protesters have no memory of revolutionary legitimacy. The water crisis is genuinely unprecedented. And the specification acknowledges regime survival as the most likely crisis outcome (40% suppressed uprising branch). The estimate reflects genuine uncertainty, not confident prediction of collapse.
+
+### Probability Evolution
+
+As a Type 2 event, probability depends on pressure trajectory:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2030 | 1.0-1.5% | Khamenei succession window; sanctions maintained; water crisis worsening |
+| 2030-2040 | 1.0-1.8% | Post-succession period (if transition occurs); water crisis acute in many regions |
+| 2040-2050 | 0.8-2.0% | Depends heavily on successor regime legitimacy; water crisis potentially critical |
+| 2050-2075 | 0.5-2.5% | Wide range; climate impacts accelerate; long-term institutional trajectory uncertain |
+
+**Key inflection points**:
+- Khamenei succession (timing uncertain but within decade): High-risk window regardless of outcome
+- Major water infrastructure failure (city-level water crisis): Would accelerate pressure dramatically
+- Sanctions trajectory: Relief could reduce pressure substantially; escalation increases it
+- Regional developments: Major proxy network success/failure affects regime legitimacy
+
+### Case Against This Specification
+
+**Security apparatus has proven resilient**: The regime suppressed 2009 Green Movement, 2019 fuel protests, and 2022 Mahsa Amini uprising. IRGC and Basij have remained loyal through all challenges. 1.2%/year may be too high for a regime with this track record.
+
+**No organized opposition**: Unlike 1979, there is no coherent opposition movement with leadership, ideology, and organization. Diaspora is fragmented. Internal opposition is leaderless and cannot coordinate. Uprisings dissipate without institutional channels.
+
+**Revolutionary ideology still has adherents**: While generational legitimacy gap is real, a significant minority genuinely believes in the Islamic Republic. IRGC's economic interests align with regime survival. Core supporters would fight.
+
+**Sanctions create rally-around-flag**: External pressure allows regime to blame hardship on foreign enemies. Sanctions relief might actually be more destabilizing than sustained pressure.
+
+**Counterargument**: 1979 demonstrated that Iranian regimes can collapse rapidly when conditions align. The Shah's security apparatus was also effective—until it wasn't. Water crisis is irreversible pressure that no policy can relieve. Succession will eventually occur and creates vulnerability window. The estimate acknowledges regime resilience in the moderate 1.2%/year rate, but structural vulnerabilities justify non-trivial probability.
+
+### Probability Evolution
+
+As a Type 2 event, probability depends on pressure trajectory:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2030 | 1.0-1.5% | Succession uncertainty (Khamenei 85+); sanctions sustained; water stress building |
+| 2030-2040 | 1.2-2.0% | Post-succession period; water crisis acute; generational change advanced |
+| 2040-2050 | 1.0-2.5% | Depends heavily on succession outcome and water adaptation |
+| 2050-2075 | 0.8-2.0% | Path-dependent; water crisis either managed or catastrophic |
+
+**Key inflection points**:
+- Supreme Leader succession (whenever it occurs) opens high-risk window
+- Water crisis thresholds for Tehran habitability
+- Sanctions relief or intensification shifts economic pressure
 
 ---
 
@@ -229,12 +296,10 @@ severity_branches:
       floor: 0.10
       
     cascade_triggers:
-      - event_id: REFUGEE_CRISIS_MENA
-        probability_modifier: 1.8
-        rationale: "Brain drain and refugee outflow"
-      - event_id: SANCTIONS_INTENSIFICATION
-        probability_modifier: 2.0
-        rationale: "International response to violent suppression"
+      # Note: REFUGEE_CRISIS_MENA, SANCTIONS_INTENSIFICATION not in catalog
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 1.4
+        rationale: "Production disruption during crisis"
 
   - id: revolutionary_transition
     probability: 0.35
@@ -261,18 +326,16 @@ severity_branches:
       floor: 0.20
       
     cascade_triggers:
-      - event_id: NUCLEAR_SECURITY_CRISIS
-        probability: 0.40
-        rationale: "Regime collapse raises nuclear material security concerns"
-      - event_id: PROXY_NETWORK_COLLAPSE
-        probability: 0.60
-        rationale: "Hezbollah, Houthis, Iraqi militias lose state sponsor"
-      - event_id: KURDISH_AUTONOMY_EXPANSION
-        probability: 0.50
-        rationale: "Iranian Kurdistan may seek autonomy/independence"
-      - event_id: REFUGEE_CRISIS_MAJOR
-        probability: 0.70
-        rationale: "Millions displaced by instability"
+      # Note: NUCLEAR_SECURITY_CRISIS, PROXY_NETWORK_COLLAPSE, KURDISH_AUTONOMY_EXPANSION, REFUGEE_CRISIS_MAJOR not in catalog
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 2.5
+        rationale: "Major production disruption"
+      - event_id: GLOBAL_FINANCIAL_CRISIS
+        probability_modifier: 1.5
+        rationale: "Oil shock, regional instability"
+      - event_id: SAUDI_REGIME_INSTABILITY
+        probability_modifier: 0.7
+        rationale: "External threat may consolidate Gulf regimes"
 
   - id: failed_succession_crisis
     probability: 0.15
@@ -300,12 +363,13 @@ severity_branches:
       floor: 0.15
       
     cascade_triggers:
-      - event_id: PROXY_NETWORK_WEAKENING
+      # Note: PROXY_NETWORK_WEAKENING, NUCLEAR_PROGRAM_UNCERTAINTY not in catalog
+      - event_id: OIL_SUPPLY_SHOCK
         probability_modifier: 1.5
-        rationale: "Hezbollah, Houthis, Iraqi militias lose direction during crisis"
-      - event_id: NUCLEAR_PROGRAM_UNCERTAINTY
-        probability_modifier: 1.8
-        rationale: "Factional control over program uncertain"
+        rationale: "Production uncertainty during crisis"
+      - event_id: IRAN_NUCLEAR_ACQUISITION
+        probability_modifier: 1.3
+        rationale: "Factional competition may accelerate program"
 
   - id: external_intervention_trigger
     probability: 0.10
@@ -332,18 +396,16 @@ severity_branches:
       floor: 0.25
       
     cascade_triggers:
-      - event_id: STRAIT_OF_HORMUZ_CRISIS
-        probability: 0.70
-        rationale: "Iran retaliates against oil shipping"
-      - event_id: GULF_STATE_ATTACKS
-        probability: 0.60
-        rationale: "Iran strikes Saudi/UAE/Bahrain"
-      - event_id: ISRAEL_IRAN_WAR
-        probability: 0.80
-        rationale: "Escalation to broader conflict"
-      - event_id: OIL_SUPPLY_CRISIS
-        probability: 0.75
+      # Note: STRAIT_OF_HORMUZ_CRISIS, GULF_STATE_ATTACKS, ISRAEL_IRAN_WAR not in catalog
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 4.0
         rationale: "Regional conflict disrupts ~20% of global oil"
+      - event_id: GLOBAL_FINANCIAL_CRISIS
+        probability_modifier: 2.0
+        rationale: "Oil spike, market panic"
+      - event_id: SAUDI_REGIME_INSTABILITY
+        probability_modifier: 1.5
+        rationale: "Iran retaliation against Gulf states"
 
 severity_probability_rationale: |
   Distribution reflects Iran's structural features, conditional on
@@ -385,32 +447,31 @@ severity_probability_rationale: |
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `iran.gdp_real` | ↓ | -12% ± 8% | rapid(1yr) | decaying (half_life: 4yr, floor: -5%) |
-| `iran.regime_stability` | ↓ | to <40 | immediate | regime_dependent |
-| `iran.oil_production` | ↓ | -20% ± 15% | rapid(6mo) | decaying (half_life: 3yr) |
-| `iran.foreign_investment` | ↓ | -50% ± 25% | immediate | decaying (half_life: 6yr) |
-| `iran.brain_drain` | ↑ | +40% ± 20% | rapid(1yr) | persistent |
-| `iran.military_capability` | variable | ±20% | delayed(2yr) | regime_dependent |
-
-### Regional Impacts
-
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `lebanon.hezbollah_capacity` | ↓ | -25% ± 15% | rapid(1yr) | persistent until new patron |
-| `iraq.militia_coherence` | ↓ | -30% ± 20% | immediate | decaying |
-| `yemen.houthi_support` | ↓ | -40% ± 25% | rapid(6mo) | persistent |
-| `syria.assad_support` | ↓ | -35% ± 20% | rapid(1yr) | persistent |
-| `gulf_states.threat_perception` | ↓ | -20 ± 15 | immediate | regime_dependent |
-| `israel.strategic_environment` | ↑ | +15 ± 10 | delayed(1yr) | regime_dependent |
-| `mena_aggregate.stability` | variable | ±15 | immediate | uncertain |
+| `irn.gdp_real` | ↓ | -12% ± 8% | rapid(1yr) | decaying (half_life: 4yr, floor: -5%) |
+| `irn.gdp_growth` | ↓ | -8% ± 4% | immediate | decaying (half_life: 2yr) |
+| `irn.internal_conflict_intensity` | ↑ | +2-3 levels | immediate | decaying (half_life: 5yr) |
+| `irn.protest_intensity_annual` | ↑ | +40 ± 20 | immediate | decaying (half_life: 3yr) |
+| `irn.fdi_net` | ↓ | -2% GDP ± 1% | immediate | decaying (half_life: 6yr) |
+| `irn.emigration_skilled_rate` | ↑ | +3% ± 1.5% | rapid(1yr) | decaying (half_life: 5yr) |
+| `irn.refugees_abroad` | ↑ | +1M ± 0.5M | rapid(2yr) | decaying (half_life: 10yr) |
 
 ### Global Impacts
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `global.oil_price` | ↑ | +15% ± 10% | immediate | decaying (half_life: 1yr) |
-| `global.nuclear_proliferation_risk` | ↑ | +20 ± 15 | immediate | persistent until resolved |
-| `global.terrorism_risk` | variable | ±10 | delayed(1yr) | uncertain |
+| `oil_brent` | ↑ | +20% ± 12% | immediate | decaying (half_life: 1yr) |
+| `global_credit_spread` | ↑ | +25bps ± 15bps | immediate | decaying (half_life: 1yr) |
+
+### Regional Impacts (Selected Countries)
+
+| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
+|----------|-----------|------------------------|-------|------------|
+| `lbn.gdp_growth` | ↓ | -3% ± 2% | rapid(1yr) | persistent (Hezbollah funding cut) |
+| `irq.internal_conflict_intensity` | ↑ | +1 level | rapid(1yr) | decaying (militia fragmentation) |
+| `yem.internal_conflict_intensity` | variable | ±1 level | rapid(6mo) | uncertain (Houthi support cut) |
+| `tur.refugees_hosted` | ↑ | +0.5M ± 0.3M | rapid(2yr) | decaying (half_life: 10yr) |
+
+**Note**: Many intuitive impact channels (proxy network capacity, regional influence indices, nuclear proliferation risk) are derived outputs, not state variables. The simulation tracks observable impacts on GDP, conflict levels, commodity prices, and migration flows.
 
 ### Nuclear Dimension
 
@@ -440,45 +501,29 @@ Iran's regional proxy network (Hezbollah, Iraqi militias, Houthis, Hamas support
 
 ## Cascade Effects
 
-### State → Probability Cascades
+### Narrative Cascade Pathways
 
-| Pathway | Target Event | Probability Change | Duration | Mechanism |
-|---------|--------------|-------------------|----------|-----------|
-| Proxy collapse | LEBANON_POLITICAL_CRISIS | +4%/year | 5 years | Hezbollah loses patron; Lebanese political balance shifts |
-| Power vacuum | SAUDI_REGIONAL_EXPANSION | +2%/year | 10 years | Primary rival weakened |
-| Nuclear uncertainty | NUCLEAR_PROLIFERATION_REGIONAL | +3%/year | 10 years | Saudi, Turkey may reconsider nuclear options |
-| Oil disruption | GLOBAL_ENERGY_CRISIS | +3%/year | 2 years | Supply uncertainty |
-| Refugee flows | TURKEY_MIGRATION_STRESS | +2%/year | 5 years | Iranian refugees add to existing pressures |
-| Kurdish opportunity | KURDISH_INDEPENDENCE_MOVEMENT | +5%/year | 10 years | Iranian Kurdistan may seek autonomy |
+Iran regime change would trigger significant cascade effects. Key pathways include:
 
-### Impact Chains
+**Proxy network pathway**: Regime crisis → Hezbollah/Houthi/militia funding disrupted → regional balance shifts → new equilibrium or power competition
 
-**Pathway 1**: Iran regime change → Proxy network collapse → Regional power rebalancing
-```
-Regime crisis → Hezbollah/Houthi/militia funding disrupted →
-Regional balance shifts toward Saudi/Israel →
-New equilibrium or power competition
-```
+**Nuclear uncertainty pathway**: Regime crisis → nuclear program status uncertain → regional proliferation incentives shift → Saudi/Turkey may reassess nuclear restraint
 
-**Pathway 2**: Iran regime change → Nuclear uncertainty → Proliferation cascade
-```
-Regime crisis → Nuclear program status uncertain →
-Saudi/Turkey reassess nuclear restraint →
-P(regional proliferation) ↑
-```
+**Oil supply pathway**: Regime crisis → production disruption + Hormuz risk → oil price spike → global economic stress
 
-**Pathway 3**: Iran regime change → Oil supply concern → Economic disruption
-```
-Regime crisis → Production disruption + Hormuz risk →
-Oil price spike → Global economic stress
-```
+**Refugee pathway**: Revolutionary transition → millions flee → Turkey, Iraq, Gulf states receive refugees → regional migration stress
 
-**Pathway 4**: Iran regime change → Refugee flows → Regional migration stress
-```
-Revolutionary transition → Millions flee →
-Turkey, Iraq, Gulf states receive refugees →
-P(political stress) ↑ in receiving countries
-```
+### Specified Event Cascades
+
+| Pathway | Target Event | Probability Change | Mechanism |
+|---------|--------------|-------------------|-----------|
+| Oil disruption | OIL_SUPPLY_SHOCK | +5%/year for 3 years | Iranian production disruption; Hormuz risk |
+| Financial contagion | GLOBAL_FINANCIAL_CRISIS | +1.5%/year for 2 years | Oil shock, regional instability |
+| Regional shift | SAUDI_REGIME_INSTABILITY | -0.3%/year for 5 years | External threat consolidates Gulf regimes |
+| Nuclear cascade | SAUDI_NUCLEAR_ACQUISITION | +1%/year for 10 years | Primary restraint removed |
+| Nuclear acceleration | IRAN_NUCLEAR_ACQUISITION | uncertain | Could accelerate or collapse with regime |
+
+**Note**: Many intuitive cascade targets (proxy network collapse, Lebanon political crisis, Kurdish autonomy, Hormuz crisis) are not yet specified in the event catalog.
 
 ---
 
@@ -549,7 +594,8 @@ P(political stress) ↑ in receiving countries
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-19 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Water crisis modeling; IRGC political economy; succession dynamics; nuclear program trajectory; proxy network dependencies |
 
@@ -580,6 +626,7 @@ P(political stress) ↑ in receiving countries
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Critical review: replaced synthetic variables with observables; added Case Against and Probability Evolution; fixed cascade/impact references | Task 2.4 systematic review |
 | 2025-12-19 | Revised severity branches; removed "managed succession crisis" | Smooth succession isn't regime crisis; replaced with "failed succession crisis" where mechanism breaks down |
 | 2025-12-19 | Initial Level 1 specification | Task 2.1.9 - Type 2 regime change event |
 
