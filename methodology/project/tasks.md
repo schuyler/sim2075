@@ -167,7 +167,7 @@ To be identified after Priority Events are complete. Candidates will emerge from
 | Event | Type | Status | Notes |
 |-------|------|--------|-------|
 | Saudi Nuclear Acquisition | Type 3 | ✅ | [[events/geopolitical/saudi-nuclear-acquisition]]; Level 1 complete; Critical review completed Dec 2025. Cascade from Iran Nuclear Acquisition. Conditional probability ~70-85% given Iran acquires. Pakistan assistance pathway. Three resolutions: Rapid (55%), Hedging (30%), Alternative Security (15%). |
-| Sahel Catastrophe | Type 2 | ✅ | [[events/geopolitical/sahel-catastrophe]]; Level 1 complete; Critical review completed Dec 2025. Regional catastrophe in Mali/Niger/Burkina Faso/Chad. Annual probability 1.8% (rising over simulation). F_SSA (0.75), F_CLIM (0.50), F_FOOD (0.45) primary drivers. Three severity branches: Regional Crisis (40%), Humanitarian Catastrophe (40%), Civilizational Collapse (20%). Major cascade to coastal West Africa. **⚠️ Needs revision**: pressure function and impact vector reference variables that need updating to use new displacement variable names. |
+| Sahel Catastrophe | Type 2 | ✅ | [[events/geopolitical/sahel-catastrophe]]; Level 1 complete; Critical review completed Dec 2025. Regional catastrophe in Mali/Niger/Burkina Faso/Chad. Annual probability 1.8% (rising over simulation). F_SSA (0.72), F_CLIM (0.48), F_FOOD (0.43) primary drivers. Three severity branches: Regional Crisis (40%), Humanitarian Catastrophe (40%), Civilizational Collapse (20%). Major cascade to coastal West Africa. Revised Dec 2025: factor loadings rescaled, pressure function and impact vectors aligned with state model. |
 
 **Remaining candidates:**
 

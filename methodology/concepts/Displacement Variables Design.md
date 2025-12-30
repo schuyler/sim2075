@@ -118,7 +118,7 @@ Similar logic applies to Pakistan State Failure, Egypt State Failure, and any co
 ## Pending Actions
 
 - [x] Add three variables to [[methodology/reference/state-variables-country]] *(completed December 2025)*
-- [ ] Update [[events/geopolitical/sahel-catastrophe]] pressure function and impact vector
+- [x] Update [[events/geopolitical/sahel-catastrophe]] pressure function and impact vector *(completed December 2025)*
 - [ ] Review other humanitarian events for displacement variable usage
 - [ ] Define transmission mechanism for refugee flows between countries in [[methodology/reference/state-transmission]]
 

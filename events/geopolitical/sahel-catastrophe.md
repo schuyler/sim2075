@@ -57,25 +57,31 @@ Sahel catastrophe exhibits threshold dynamics:
 
 ### Pressure Function
 
-The Sahel's pressure function integrates stress across multiple countries. Using regional aggregate indicators:
+The Sahel's pressure function integrates stress across multiple observable state variables. Using the Sahel regional aggregate:
 
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `sahel.rainfall_anomaly` | 0.25 | threshold(-1.5σ) | Rainfall below -1.5 standard deviations triggers acute food crisis |
-| `sahel.food_insecurity_population` | 0.25 | linear | Baseline ~25M; catastrophe threshold ~40M+ |
-| `sahel.conflict_deaths_annual` | 0.20 | threshold(10000) | Sharp increase above 10K deaths/year indicates escalation |
-| `sahel.displaced_population` | 0.15 | threshold(5M) | Current ~3M; catastrophe threshold ~10M+ |
-| `sahel.governance_index` | 0.15 | inverse | Aggregate of coup events, territorial control loss |
+| `sahel.agricultural_climate_risk` | 0.20 | linear (0-100 → 0-1) | Structural climate vulnerability; annual shocks via F_CLIM |
+| `sahel.food_import_dependence` | 0.20 | linear (0-100 → 0-1) | Proxy for food insecurity vulnerability |
+| `sahel.internal_conflict_intensity` | 0.20 | linear (0-4 → 0-1) | Conflict escalation indicator |
+| `sahel.idp_population` | 0.15 | linear, cap at 10M | Displacement as crisis severity measure |
+| `sahel.years_since_irregular_transition` | 0.10 | inverse (recent = high) | Recent coups indicate instability |
+| `sahel.coup_attempts_10yr` | 0.08 | linear, cap at 5 | Frequency of irregular transition attempts |
+| `sahel.tax_revenue_gdp` | 0.07 | inverse (low = high) | State capacity proxy |
 
 **Pressure calculation**:
 ```
-pressure = 0.25 × rainfall_anomaly_function(rainfall)
-         + 0.25 × food_insecurity_population / 50M
-         + 0.20 × conflict_deaths_threshold(deaths)
-         + 0.15 × displaced_population / 10M
-         + 0.15 × (100 - governance_index) / 100
+pressure = 0.20 × (agricultural_climate_risk / 100)
+         + 0.20 × (food_import_dependence / 100)
+         + 0.20 × (internal_conflict_intensity / 4)
+         + 0.15 × min(idp_population / 10, 1.0)
+         + 0.10 × (10 - min(years_since_irregular_transition, 10)) / 10
+         + 0.08 × min(coup_attempts_10yr, 5) / 5
+         + 0.07 × (15 - min(tax_revenue_gdp, 15)) / 15
 ```
-*Normalized to 0-100 scale*
+*Normalized to 0-1 scale; multiply by 100 for 0-100 scale*
+
+**Variable sources**: All variables are defined in [[methodology/reference/state-variables-country]]. Climate shocks are delivered through F_CLIM factor draws affecting `agricultural_climate_risk`.
 
 ### Threshold
 
@@ -105,11 +111,13 @@ pressure = 0.25 × rainfall_anomaly_function(rainfall)
 ### Current Pressure Estimate
 
 Current pressure: ~55/100 (elevated and rising)
-- `rainfall_anomaly`: Increasingly variable; 2024 below average in key zones
-- `food_insecurity_population`: ~25-30M annually requiring assistance
-- `conflict_deaths`: ~8,000-10,000/year (ACLED data); rising trend
-- `displaced_population`: ~3M internally displaced; ~1M refugees
-- `governance_index`: Very low; three coup governments; territorial control fragmented
+- `agricultural_climate_risk`: High (~70/100); Sahel among most climate-vulnerable regions
+- `food_import_dependence`: Moderate-high (~50%); urban populations import-dependent
+- `internal_conflict_intensity`: 2-3 (intermediate to war); ~8,000-10,000 deaths/year
+- `idp_population`: ~3M internally displaced
+- `years_since_irregular_transition`: 1-2 years (Niger 2023, Burkina Faso 2022)
+- `coup_attempts_10yr`: 4-5 (Mali 2020/2021, Burkina Faso 2022, Niger 2023)
+- `tax_revenue_gdp`: Very low (~8-10%); weak state capacity
 
 ### Derivation
 
@@ -149,11 +157,11 @@ This is a Type 2 event where probability is rising over the simulation period:
 
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_SSA** | 0.75 | Primary regional factor; Sahel is core of Sub-Saharan stress |
-| **F_CLIM** | 0.50 | Climate is existential for Sahel; rainfall determines food production |
-| **F_FOOD** | 0.45 | Global food prices affect import-dependent urban populations; regional production critical |
-| **F_GPT** | 0.20 | Great power competition affects intervention, support; Russia/Wagner presence |
-| **F_HLTH** | 0.15 | Health system collapse amplifies mortality; disease outbreaks in displacement settings |
+| **F_SSA** | 0.72 | Primary regional factor; Sahel is core of Sub-Saharan stress |
+| **F_CLIM** | 0.48 | Climate is existential for Sahel; rainfall determines food production |
+| **F_FOOD** | 0.43 | Global food prices affect import-dependent urban populations; regional production critical |
+| **F_GPT** | 0.19 | Great power competition affects intervention, support; Russia/Wagner presence |
+| **F_HLTH** | 0.14 | Health system collapse amplifies mortality; disease outbreaks in displacement settings |
 | **F_FIN** | 0.10 | Aid flows depend on donor fiscal space |
 | F_MENA | 0.10 | Libya instability affects northern Mali; weapons flows |
 | F_EUR | 0.05 | European migration concern drives some engagement |
@@ -162,9 +170,7 @@ This is a Type 2 event where probability is rising over the simulation period:
 | F_SAS | 0.00 | No significant pathway |
 | F_LAM | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.56 + 0.25 + 0.20 + 0.04 + 0.02 + 0.01 + 0.01 + 0.003 = 1.09
-
-**Note**: Sum of squares slightly exceeds 1.0, indicating this event is highly exposed to correlated factor stress. This is intentional—Sahel catastrophe occurs precisely when multiple stressors align. For implementation, may need to rescale or accept as modeling choice reflecting extreme multi-factor vulnerability.
+**Sum of squared loadings**: 0.52 + 0.23 + 0.18 + 0.04 + 0.02 + 0.01 + 0.01 + 0.003 ≈ 1.01
 
 ### Loading Interpretation (Type 2)
 
@@ -250,31 +256,34 @@ Sustained, region-wide catastrophe approaching 1984-85 famine scale but with 5×
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `sahel_aggregate.gdp_real` | ↓ | -30% ± 15% | gradual(3yr) | decaying (half_life: 12yr) |
-| `sahel_aggregate.pop_total` | ↓ | -3% to -8% (mortality + emigration) | gradual(5yr) | permanent (mortality component) |
-| `sahel_aggregate.food_import_dependence` | ↑ | +30% ± 15% | immediate | decaying (half_life: 10yr) |
-| `sahel_aggregate.internal_conflict_intensity` | ↑ | to 4 (major war) | immediate | regime_dependent |
-| Displaced population | ↑ | +10-15M | gradual(3yr) | decaying (half_life: 15yr) |
-| Excess mortality | ↑ | 500K-1M | gradual(5yr) | permanent |
+| `sahel.gdp_real` | ↓ | -30% ± 15% | gradual(3yr) | decaying (half_life: 12yr) |
+| `sahel.pop_total` | ↓ | -3% to -8% (mortality + emigration) | gradual(5yr) | permanent (mortality component) |
+| `sahel.food_import_dependence` | ↑ | +30% ± 15% | immediate | decaying (half_life: 10yr) |
+| `sahel.internal_conflict_intensity` | ↑ | to 4 (major war) | immediate | regime_dependent |
+| `sahel.idp_population` | ↑ | +6-10M | gradual(3yr) | decaying (half_life: 15yr) |
+| `sahel.refugees_abroad` | ↑ | +4-5M | gradual(4yr) | decaying (half_life: 18yr) |
 
-### Coastal West Africa Impacts
+### Coastal West Africa and Nigeria Impacts
 
-| Country/Region | Variable | Direction | Magnitude | Onset |
-|----------------|----------|-----------|-----------|-------|
-| Ghana | `regime_stability` | ↓ | -10 ± 5 | gradual(3yr) |
-| Côte d'Ivoire | `regime_stability` | ↓ | -15 ± 8 | gradual(2yr) |
-| Benin | `regime_stability` | ↓ | -15 ± 8 | gradual(2yr) |
-| Togo | `regime_stability` | ↓ | -12 ± 6 | gradual(2yr) |
-| Nigeria (north) | `internal_conflict_intensity` | ↑ | +0.5 ± 0.3 | gradual(2yr) |
-| Coastal aggregate | Refugee population | ↑ | +2-5M | gradual(3yr) |
+Coastal states (Ghana, Côte d'Ivoire, Benin, Togo) are part of the **West/Central Africa (other)** Tier 2 aggregate. Nigeria is individually modeled.
 
-### Global Impacts
+| Entity | Variable | Direction | Magnitude | Onset | Durability |
+|--------|----------|-----------|-----------|-------|------------|
+| `west_central_africa_other` | `protest_intensity_annual` | ↑ | +15 ± 8 | gradual(2yr) | decaying (half_life: 5yr) |
+| `west_central_africa_other` | `refugees_hosted` | ↑ | +2-4M | gradual(3yr) | decaying (half_life: 12yr) |
+| `west_central_africa_other` | `internal_conflict_intensity` | ↑ | +0.5 ± 0.3 | gradual(3yr) | regime_dependent |
+| `nigeria` | `internal_conflict_intensity` | ↑ | +0.5 ± 0.3 | gradual(2yr) | regime_dependent |
+| `nigeria` | `refugees_hosted` | ↑ | +0.3-0.7M | gradual(3yr) | decaying (half_life: 10yr) |
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| Global displaced persons | ↑ | +10-20M | gradual(3yr) | decaying |
-| Humanitarian funding demand | ↑ | +$10-20B/year | immediate | duration of crisis |
-| `europe.net_migration_rate` | ↑ | +0.1% ± 0.05% | gradual(5yr) | decaying |
+### Global and European Impacts
+
+| Entity | Variable | Direction | Magnitude | Onset | Durability |
+|--------|----------|-----------|-----------|-------|------------|
+| `italy` | `net_migration_rate` | ↑ | +0.15% ± 0.08% | gradual(3yr) | decaying |
+| `spain` | `net_migration_rate` | ↑ | +0.10% ± 0.05% | gradual(3yr) | decaying |
+| `france` | `net_migration_rate` | ↑ | +0.05% ± 0.03% | gradual(4yr) | decaying |
+
+**Note**: "Global displaced persons" and "Humanitarian funding demand" are simulation outputs derived from entity-level displacement variables, not state variables to be shocked.
 
 ### Differential Impacts by Severity Branch
 
@@ -289,11 +298,13 @@ Sustained, region-wide catastrophe approaching 1984-85 famine scale but with 5×
 | Impact Type | Durability | Parameters | Rationale |
 |-------------|------------|------------|-----------|
 | Mortality | permanent | N/A | Deaths cannot be undone |
-| Displacement | decaying | half_life: 15yr | Return/resettlement very slow in conflict zones |
+| IDP displacement | decaying | half_life: 15yr | Return slow in conflict zones |
+| Refugee displacement | decaying | half_life: 18yr | Repatriation even slower than IDP return |
 | Economic damage | decaying | half_life: 12yr | Development setback; infrastructure destruction |
 | Human development | shock_vulnerable | Can be reversed by subsequent crises | Fragile gains |
 | Territorial control | regime_dependent | Persists until governance restored | Jihadist consolidation |
-| Coastal state pressure | decaying | half_life: 8yr | Pressure eases as crisis stabilizes |
+| Coastal/Nigeria pressure | decaying | half_life: 5-10yr | Pressure eases as crisis stabilizes |
+| European migration | decaying | half_life: 8yr | Migration pressure eases with stabilization |
 
 ---
 
@@ -395,16 +406,16 @@ response capacity for other crises degraded → P(cascading humanitarian failure
 
 ## Early Warning Indicators
 
-| Indicator | Current Status | Warning Level |
-|-----------|---------------|---------------|
-| Rainfall anomaly (seasonal) | Variable; 2024 below average in key zones | <-1.5σ is danger zone |
-| Food insecurity population (IPC 3+) | ~25-30M | >40M is catastrophe threshold |
-| Conflict deaths (ACLED annual) | ~8-10K | >15K indicates escalation |
-| Internally displaced persons | ~3M | >6M indicates acceleration |
-| Coup/transition events | 3 coup governments (Mali, Niger, Burkina Faso) | Additional coups, or coastal coups, is major warning |
-| Humanitarian funding gap | ~50% funded | <40% funded indicates system strain |
-| Jihadist territorial control | Significant rural areas | Urban capture or capital threats would be escalation |
-| Coastal state indicators | Currently stable | Rising instability in Ghana, Côte d'Ivoire, Benin is warning |
+| Indicator | State Variable | Current Status | Warning Level |
+|-----------|---------------|---------------|---------------|
+| Climate vulnerability | `agricultural_climate_risk` | ~70/100 | >80 is danger zone |
+| Food vulnerability | `food_import_dependence` | ~50% | >65% indicates high exposure |
+| Conflict intensity | `internal_conflict_intensity` | 2-3 | 4 (major war) is catastrophe |
+| Internal displacement | `idp_population` | ~3M | >6M indicates acceleration |
+| Governance instability | `years_since_irregular_transition` | 1-2 years | <3 years is elevated risk |
+| Transition attempts | `coup_attempts_10yr` | 4-5 | >3 indicates chronic instability |
+| State capacity | `tax_revenue_gdp` | ~8-10% | <10% indicates weak state |
+| Coastal spillover | `west_central_africa_other.protest_intensity_annual` | Currently stable | Rising intensity is warning |
 
 ---
 
@@ -536,6 +547,10 @@ Disagreement might be on:
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2025-12-28 | Initial Level 1 specification | Task 2.3 - regional coverage gap; highest-risk humanitarian zone |
+| 2025-12-29 | Rescaled factor loadings to sum of squares = 1.0 | Normalization requirement |
+| 2025-12-29 | Replaced pressure function variables with observables | Eliminated synthetic `governance_index`; mapped to state model variables per [[methodology/concepts/synthetic-variable-problem]] |
+| 2025-12-29 | Updated impact vectors to use correct entities | Coastal states → `west_central_africa_other` aggregate; Europe → Italy/Spain/France; displacement → `idp_population`/`refugees_abroad`/`refugees_hosted` |
+| 2025-12-29 | Updated early warning indicators to match state variables | Aligned with pressure function variables |
 
 ---
 
