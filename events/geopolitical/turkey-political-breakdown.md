@@ -39,7 +39,7 @@ This specification follows the pattern established in [[events/geopolitical/egyp
 
 Fundamental breakdown of the Turkish political system, characterized by: political system collapse (constitutional crisis, military intervention, violent succession struggle), state fragmentation (loss of control in Kurdish regions), or cascading crisis triggered by natural disaster that overwhelms governance capacity. Turkey's vulnerability is distinctive: a middle-income NATO member with significant institutional capacity experiencing democratic backsliding, chronic currency instability driven by unorthodox monetary policy, hosting the world's largest refugee population, and facing an unresolved internal conflict.
 
-This is a **state transition**: `turkey.regime_stability` crosses below crisis threshold (~30), triggering shift from "stressed but functional democracy" to "political breakdown" state.
+This is a **state transition**: accumulated pressure crosses crisis threshold, triggering shift from "stressed but functional democracy" to "political breakdown" state. Observable via `internal_conflict_intensity` spiking, economic indicators collapsing (inflation, currency), and `protest_intensity_annual` rising beyond suppression capacity.
 
 **What marks occurrence**: Political system breaks down (constitutional crisis, military intervention, violent succession struggle); state loses effective control of significant territory (Kurdish regions, major urban areas); or earthquake/disaster triggers political collapse beyond recovery capacity.
 
@@ -63,21 +63,27 @@ Turkey political crisis exhibits threshold dynamics:
 
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `turkey.currency_stability` | 0.30 | inverse | Lira crises are primary economic vulnerability; unorthodox monetary policy amplifies |
-| `turkey.regime_stability` | 0.25 | inverse | Political polarization, democratic backsliding, institutional erosion |
-| `turkey.inflation_rate` | 0.20 | threshold(50) | High inflation erodes living standards and political legitimacy |
-| `turkey.social_cohesion` | 0.15 | inverse | Refugee-host tensions, Kurdish conflict, secular-religious divide |
-| `turkey.external_position` | 0.10 | inverse | NATO/EU relations, sanctions risk, regional conflicts |
+| `tur.inflation_rate` | 0.25 | threshold(50) | High inflation erodes living standards and political legitimacy |
+| `tur.current_account` | 0.20 | inverse | External financing vulnerability; currency pressure |
+| `tur.unemployment_rate` | 0.15 | linear | Economic stress indicator |
+| `tur.protest_intensity_annual` | 0.15 | linear | Observable political dissent |
+| `tur.internal_conflict_intensity` | 0.10 | linear | Kurdish conflict level |
+| `tur.reserves_foreign` | 0.10 | inverse | Buffer capacity for currency defense |
+| `tur.leadership_tenure_years` | 0.05 | threshold(20) | Succession risk with prolonged leadership |
 
 **Pressure calculation**:
 ```
-pressure = 0.30 × (100 - currency_stability) / 100
-         + 0.25 × (100 - regime_stability) / 100
-         + 0.20 × inflation_threshold_function(inflation_rate)
-         + 0.15 × (100 - social_cohesion) / 100
-         + 0.10 × (100 - external_position) / 100
+pressure = 0.25 × min(inflation_rate, 100) / 100
+         + 0.20 × max(0, -current_account) / 10  # deficit contributes
+         + 0.15 × unemployment_rate / 25
+         + 0.15 × protest_intensity_annual / 100
+         + 0.10 × internal_conflict_intensity / 4
+         + 0.10 × (6 - reserves_foreign) / 6  # months of imports
+         + 0.05 × (leadership_tenure_years > 20 ? 0.5 : 0)
 ```
 *Normalized to 0-100 scale*
+
+**Proxy limitations**: True "currency stability," "regime stability," and "social cohesion" are unobservable. We proxy through economic indicators (inflation, current account, reserves, unemployment) and conflict/protest measures. The key unobservables—elite loyalty, succession planning, military political orientation post-purges—cannot be directly captured. Probability calibration relies on reference class reasoning from middle-income democracies under stress.
 
 ### Threshold
 
@@ -155,12 +161,14 @@ The ~45% of crisis windows where the system absorbs the shock (2001/2018/2023 pa
 
 ### Current Pressure Estimate
 
-Current pressure: ~48/100 (elevated but well below threshold)
-- `currency_stability`: ~30 (chronic lira weakness; repeated crises)
-- `regime_stability`: ~45 (functioning but degraded; 2023 elections showed resilience)
+Current pressure: ~45/100 (elevated but well below threshold)
 - `inflation_rate`: ~50-60% (elevated but declining from peak)
-- `social_cohesion`: ~40 (refugee tensions, polarization, but not acute)
-- `external_position`: ~50 (NATO member but relations strained; regional entanglements)
+- `current_account`: ~-4% GDP (chronic deficit but manageable)
+- `unemployment_rate`: ~10% (elevated)
+- `protest_intensity_annual`: ~25 (periodic but suppressed)
+- `internal_conflict_intensity`: ~2 (Kurdish conflict contained but ongoing)
+- `reserves_foreign`: ~4 months (limited but functional)
+- `leadership_tenure_years`: 22 years (Erdoğan since 2003)
 
 ### Derivation
 
@@ -199,6 +207,22 @@ Turkey's demonstrated shock absorption capacity (2001, 2018, 2023) justifies low
 **Economic crises don't produce political breakdown in middle-income democracies**: Argentina 2001, Greece 2010-15, and Turkey 2001 all produced severe economic damage but democratic continuity. The political_breakdown and state_fragmentation branches may be drawing too heavily on MENA analogies that don't apply to a NATO democracy.
 
 **What would change the estimate by 2× or more**: Evidence of military political ambitions post-purges; Erdoğan health crisis with no succession mechanism; major Istanbul earthquake during economic stress; Kurdish conflict escalation to civil war intensity.
+
+### Probability Evolution
+
+As a Type 2 event, probability depends on pressure trajectory:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2035 | 0.4-0.7% | Erdoğan consolidation continues; currency stress manageable; earthquake risk constant |
+| 2035-2050 | 0.5-1.0% | Succession window opens (Erdoğan aging); economic trajectory uncertain; climate stress rising |
+| 2050-2075 | 0.4-1.2% | Depends heavily on successor regime stability and economic trajectory |
+
+**Key inflection points**:
+- Erdoğan succession (timing uncertain): Opens high-risk window regardless of mechanism
+- Major Istanbul earthquake (timing unpredictable): Could accelerate pressure dramatically if occurs during other stress
+- Monetary policy normalization (if achieved): Would reduce economic pressure substantially
+- Kurdish political resolution (if achieved): Would remove major fragmentation pathway
 
 ---
 
@@ -264,12 +288,13 @@ severity_branches:
       floor: 0.15
       
     cascade_triggers:
-      - event_id: NATO_CRISIS
-        probability_modifier: 1.5
-        rationale: "Turkey's NATO status becomes contested"
-      - event_id: KURDISH_AUTONOMY_EXPANSION
-        probability_modifier: 1.8
-        rationale: "Political weakness creates Kurdish opportunity"
+      # Note: NATO_CRISIS, KURDISH_AUTONOMY_EXPANSION not in catalog
+      - event_id: EU_FRAGMENTATION
+        probability_modifier: 1.3
+        rationale: "Migration surge, NATO uncertainty"
+      - event_id: GLOBAL_FINANCIAL_CRISIS
+        probability_modifier: 1.4
+        rationale: "EM contagion channel"
 
   - id: state_fragmentation
     probability: 0.27
@@ -296,18 +321,16 @@ severity_branches:
       floor: 0.20
       
     cascade_triggers:
-      - event_id: KURDISH_STATE_FORMATION
-        probability: 0.40
-        rationale: "Turkish Kurdistan joins Syrian/Iraqi Kurdish autonomy"
-      - event_id: EUROPEAN_MIGRATION_CRISIS
-        probability_modifier: 2.5
-        rationale: "80M+ population; geographic position on migration route"
-      - event_id: NATO_ARTICLE_5_CRISIS
-        probability: 0.30
-        rationale: "What are NATO obligations during internal collapse?"
-      - event_id: BOSPHORUS_TRANSIT_DISRUPTION
-        probability: 0.50
-        rationale: "Strategic chokepoint affected"
+      # Note: KURDISH_STATE_FORMATION, EUROPEAN_MIGRATION_CRISIS, NATO_ARTICLE_5_CRISIS, BOSPHORUS_TRANSIT_DISRUPTION not in catalog
+      - event_id: EU_FRAGMENTATION
+        probability_modifier: 1.8
+        rationale: "Migration surge from 80M population"
+      - event_id: GLOBAL_FINANCIAL_CRISIS
+        probability_modifier: 1.6
+        rationale: "EM contagion, banking stress"
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 1.3
+        rationale: "Black Sea transit disruption"
 
   - id: earthquake_cascade
     probability: 0.18
@@ -335,12 +358,13 @@ severity_branches:
       floor: 0.25
       
     cascade_triggers:
-      - event_id: GLOBAL_REINSURANCE_CRISIS
+      # Note: GLOBAL_REINSURANCE_CRISIS, BOSPHORUS_TRANSIT_DISRUPTION not in catalog
+      - event_id: GLOBAL_FINANCIAL_CRISIS
         probability_modifier: 1.5
-        rationale: "Istanbul earthquake is reinsurance industry nightmare scenario"
-      - event_id: BOSPHORUS_TRANSIT_DISRUPTION
-        probability: 0.60
-        rationale: "Port and transit infrastructure damaged"
+        rationale: "Reinsurance stress, market panic"
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 1.4
+        rationale: "Bosphorus transit disruption"
 
 severity_probability_rationale: |
   Distribution reflects Turkey's structural features, conditional on
@@ -561,7 +585,8 @@ These cases inform the 55% of crisis windows that produce genuine political brea
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-22 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Istanbul earthquake modeling; Kurdish conflict dynamics; Erdoğan succession scenarios; banking sector exposure analysis; NATO contingency planning |
 
@@ -594,6 +619,7 @@ These cases inform the 55% of crisis windows that produce genuine political brea
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Added Probability Evolution section; updated research status | Task 2.4 critical review completion |
 | 2025-12-22 | Removed "economic_crisis_managed" branch; renamed to Political Breakdown; lowered probability to 0.55% | Critical review identified that absorbed economic crises (2001, 2018 pattern) are not discontinuities—they're the ~45% of crisis windows where the system survives intact. Event now models only genuine political breakdown. |
 | 2025-12-22 | Reweighted remaining branches to 100% (55/27/18); updated impact magnitudes | Political_breakdown now baseline; state_fragmentation and earthquake_cascade retain relative weights |
 | 2025-12-22 | Added Case Against section; revised Historical Analogues to distinguish absorbed vs. breakdown cases | Per critical review requirements; clarifies what is and isn't a discontinuity |
