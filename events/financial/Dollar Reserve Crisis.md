@@ -131,10 +131,48 @@ Given unprecedented nature and wide scenario range, confidence is Medium-Low.
 
 ### Comparative Ranking
 
-Per [[methodology/reference/priority-event-ranking]]:
 - More likely than: AMOC collapse, Russia state failure
 - Similar to: Pakistan state failure, Iran regime change
 - Less likely than: Global financial crisis, severe pandemic
+
+### Case Against This Specification
+
+Per [[methodology/03-critical-review]] Q4:
+
+**1. No precedent for reserve currency crisis**
+
+The dollar system has no historical analog for acute collapse. Sterling's decline was gradual (1945-1970). The 2008 crisis strengthened dollar demand (flight to safety). The "crisis" scenario may be a category error—reserve currency transitions may only happen gradually.
+
+*Counter*: Gradual decline is the baseline trajectory, not this event. The event specifically models the tail scenario where gradual becomes acute. The absence of precedent doesn't mean impossibility—it means high uncertainty, which we acknowledge.
+
+**2. Network effects protect incumbency**
+
+The dollar's dominance is self-reinforcing through invoicing, settlement, and liquidity. Even if alternatives mature, switching costs are enormous. The threshold for crisis may be much higher than estimated.
+
+*Counter*: Network effects explain why crisis is low probability (1.5%/year), not why it's impossible. Network effects can collapse suddenly when alternatives become "good enough"—see technology platform disruptions.
+
+**3. China won't want the responsibility**
+
+Reserve currency status brings burdens (Triffin dilemma, overvaluation). China may prefer dollar dominance to continue, limiting the drive for alternatives.
+
+*Counter*: China doesn't need to replace the dollar—a multipolar system with reduced dollar share is sufficient. And China's revealed preference (mBridge, gold accumulation, bilateral settlement) contradicts the "China prefers dollar" hypothesis.
+
+**4. Crisis would hurt everyone, forcing cooperation**
+
+The systemic importance of dollar markets means all major economies have incentive to prevent collapse. The "Bretton Woods III" response would likely emerge before full crisis.
+
+*Counter*: This is a plausible path (10% probability to Bretton Woods III branch). But coordination during crisis is hard—2008 showed cooperation is possible but imperfect. The question is whether cooperation comes fast enough.
+
+### Probability Evolution
+
+For Type 2 events, probability varies with pressure accumulation.
+
+| Period | Estimated Pressure | Annual Probability | Rationale |
+|--------|-------------------|-------------------|-----------|
+| 2025-2030 | 45 → 52 | ~1.3% | Current trajectory; slow dollar share erosion |
+| 2030-2040 | 52 → 62 | ~1.8% | Dollar approaches 50% threshold; alternatives maturing |
+| 2040-2050 | 62 → 72 | ~2.5% | Entering threshold zone if no prior crisis |
+| 2050-2075 | 72+ | ~3.0%+ | High pressure if no prior resolution |
 
 ---
 
@@ -494,7 +532,8 @@ This ordering suggests P(Bretton Woods III) < P(Managed) < P(Disorderly), with B
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-19 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete (2025-12-30) |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | High-impact event with extensive research foundation; Level 2 could model Treasury auction dynamics, Fed intervention scenarios, and international coordination mechanisms in greater detail |
 

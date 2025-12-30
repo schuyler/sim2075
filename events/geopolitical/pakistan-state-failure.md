@@ -31,33 +31,49 @@ tags:
 
 Collapse of effective Pakistani state authority, characterized by loss of territorial control over significant portions of the country, failure to provide basic services, potential military fragmentation, and mass displacement. 
 
-This is a **state transition**: `pakistan.regime_stability` crosses below failure threshold (~25), triggering shift from "stressed but functional" regime to "failed state" regime.
+This is a **state transition**: Pakistan crosses from "stressed but functional" to "failed state" regime, marked by `pak.internal_conflict_intensity` rising to 4 (major war/state collapse) and loss of effective territorial control.
+
+**What marks occurrence**: Central government loses control over multiple provinces; military fragments or is unable to maintain order; mass displacement begins; basic services collapse outside major cities.
 
 ---
 
 ## Causal Type Specification (Type 2: Threshold)
 
+### Why Type 2?
+
+Pakistan exhibits classic pressure accumulation:
+- Multiple stressors compound over time (water, debt, governance, conflict)
+- State appears stable until threshold crossed, then rapid cascade
+- No single actor decision determines outcome (unlike Type 3)
+- Not random timing (unlike Type 1)—probability increases with stress
+
 ### Pressure Function
+
+Uses observable state variables per [[methodology/reference/state-variables-country]]. Note that `regime_stability` has been replaced by observable indicators.
 
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `pakistan.regime_stability` | 0.35 | inverse | Lower stability → higher pressure |
-| `pakistan.water_stress` | 0.25 | linear | Indus water is binding constraint |
-| `pakistan.debt_external` | 0.15 | threshold(80) | Sharp increase above 80% debt/GDP |
-| `pakistan.internal_conflict_intensity` | 0.15 | exponential | Conflict accelerates pressure |
-| `pakistan.food_import_dependence` | 0.10 | linear | Fiscal vulnerability to food prices |
+| `pak.water_stress` | 0.25 | linear | Indus water is binding constraint; civilizational risk |
+| `pak.debt_external` | 0.20 | threshold(80) | Sharp increase above 80% debt/GDP; IMF dependency |
+| `pak.internal_conflict_intensity` | 0.20 | exponential | Conflict accelerates pressure; currently ~2 |
+| `pak.years_since_irregular_transition` | 0.15 | inverse_log | Recent coups/irregular transitions signal fragility |
+| `pak.protest_intensity_annual` | 0.10 | linear | Mass unrest indicates stress |
+| `pak.food_import_dependence` | 0.10 | linear | Fiscal vulnerability to food prices |
 
 **Pressure calculation**:
 ```
-pressure = 0.35 × (100 - regime_stability) / 100
-         + 0.25 × water_stress / 100
-         + 0.15 × debt_threshold_function(debt_external)
-         + 0.15 × exp_transform(conflict_intensity)
-         + 0.10 × food_import_dependence / 100
+pressure = 0.25 × pak.water_stress / 100
+         + 0.20 × debt_threshold_function(pak.debt_external, 80)
+         + 0.20 × exp_transform(pak.internal_conflict_intensity)
+         + 0.15 × inverse_log(pak.years_since_irregular_transition)
+         + 0.10 × pak.protest_intensity_annual / 100
+         + 0.10 × pak.food_import_dependence / 100
 ```
 *Normalized to 0-100 scale*
 
-### Threshold
+**Proxy note**: The original specification used `regime_stability` as a composite variable. Per [[methodology/concepts/synthetic-variable-problem]], this has been replaced with observable indicators. The pressure function now directly uses `years_since_irregular_transition`, `protest_intensity_annual`, and `internal_conflict_intensity` as the political stress measures.
+
+### Threshold Specification
 
 | Parameter | Value |
 |-----------|-------|
@@ -85,23 +101,63 @@ pressure = 0.35 × (100 - regime_stability) / 100
 ### Current Pressure Estimate
 
 Current pressure: ~55/100 (elevated but below threshold)
-- `regime_stability`: ~45 (chronically stressed)
-- `water_stress`: ~70 (severe, worsening)
-- `debt_external`: ~75% (near threshold)
-- `internal_conflict_intensity`: ~2 (moderate ongoing)
-- `food_import_dependence`: ~35%
+- `pak.water_stress`: ~70 (severe, worsening)
+- `pak.debt_external`: ~75% (near threshold)
+- `pak.internal_conflict_intensity`: 2 (intermediate conflict)
+- `pak.years_since_irregular_transition`: ~2 (recent PTI crisis counts)
+- `pak.protest_intensity_annual`: ~45 (elevated)
+- `pak.food_import_dependence`: ~35%
 
 ### Derivation
 
-1. **Base rate**: 15-25% over 25 years for Tier 1 vulnerability countries (from collapse-patterns)
+1. **Base rate**: 15-25% over 25 years for high-vulnerability states (from historical collapse patterns)
 2. **Annualization**: ~0.9%/year assuming constant hazard
 3. **Adjustment for worsening baseline**: Water stress accelerating; IMF dependency chronic; Indus glacier melt accelerating
 4. **Adjusted estimate**: 1.5%/year (range: 0.8-2.5%)
 
+### Case Against This Specification
+
+Per [[methodology/03-critical-review]] Q4:
+
+**1. Military has always intervened before failure**
+
+Pakistan's military has a history of seizing power when civilian governance fails—1958, 1969, 1977, 1999. The military is more coherent than the civilian state. "State failure" in the Syria/Somalia sense may be impossible because the military would impose order first. The event as specified may not be reachable.
+
+*Counter*: Military intervention is a different outcome from state failure, but military fragmentation IS possible. The military's coherence depends on ethnic/provincial balance (Punjabi dominated), institutional discipline, and external support. Under severe enough stress (especially combined with India-Pakistan conflict), even the military could fragment. The 1971 breakup of Pakistan demonstrates this is possible.
+
+**2. External support will always arrive**
+
+Pakistan is "too nuclear to fail." China has $60B+ invested in CPEC. The US cares about nuclear security. Gulf states care about remittances. Saudi/UAE/IMF have repeatedly bailed out Pakistan. Someone will always provide enough support to prevent collapse.
+
+*Counter*: External support has been sufficient for "muddle through" but not for structural resolution. Each bailout creates more debt; at some point, bailout fatigue sets in. China's appetite for throwing good money after bad is limited. And if collapse begins rapidly (e.g., triggered by severe climate event), external support may not arrive fast enough.
+
+**3. 1.5%/year is too high for a nuclear state**
+
+The international community's interest in preventing nuclear state failure creates enormous stabilization pressure. No nuclear-armed state has ever failed. The 1.5%/year estimate may be 2-3× too high compared to what the nuclear dimension justifies.
+
+*Counter*: The nuclear dimension creates intervention incentive but doesn't guarantee intervention success. A rapid cascade could outrun international response. And internal dynamics—not external intervention—determine collapse. The Soviet Union was nuclear-armed and did fragment (though not into "failed state" conditions).
+
+**4. Water stress timeline is longer than implied**
+
+Indus water stress is severe but the crisis timeline is decades, not years. Glacier melt increases flow in the medium term before reducing it. The binding constraint may be 2040s-2050s, not 2025-2035. Current probability may be lower than estimated.
+
+*Counter*: Fair point on timeline. But the 2022 floods showed acute shocks can accelerate stress. And water stress interacts with other pressures—it doesn't need to reach peak to contribute to failure. The probability estimate includes uncertainty about timeline.
+
+### Probability Evolution
+
+For Type 2 events, probability varies with pressure accumulation.
+
+| Period | Estimated Pressure | Annual Probability | Rationale |
+|--------|-------------------|-------------------|-----------|
+| 2025-2035 | 55 → 62 | ~1.3% | Current trajectory; water stress worsening |
+| 2035-2045 | 62 → 72 | ~2.0% | Entering threshold zone; glacier melt accelerating |
+| 2045-2060 | 72 → 80+ | ~2.5-3.5% | Peak water stress period |
+| 2060-2075 | 80+ | ~3.0%+ | If no prior failure, either very high pressure or adaptation |
+
 ### Key Uncertainties
 
-- **Indus water trajectory**: Faster glacial melt → pressure rises faster → probability increases
-- **Military cohesion**: Military fracture vs. military intervention (the key swing variable)
+- **Indus water trajectory**: Faster glacial melt → pressure rises faster
+- **Military cohesion**: Military fracture vs. military intervention is the key swing variable
 - **External support**: IMF, China, Gulf states willingness to provide bailouts
 - **Climate shock timing**: 2022 floods were preview; worse shocks possible
 - **India-Pakistan dynamics**: External conflict could trigger cascade
@@ -122,20 +178,38 @@ Current pressure: ~55/100 (elevated but below threshold)
 | **F_EAS** | 0.08 | Via China relationship |
 | **F_TECH** | 0.04 | Marginal |
 | **F_EUR** | 0.04 | Diaspora link |
-| **F_SSA** | 0.00 | No link |
-| **F_LAM** | 0.00 | No link |
+| F_SSA | 0.00 | No link |
+| F_LAM | 0.00 | No link |
 
 **Sum of squared loadings**: 0.94 ✓
 
-### Loading Interpretation (per Integrated Framework)
+---
 
-Factors shock state variables that feed into pressure function:
-- High F_SAS → regional instability → `regime_stability` declines → pressure rises
-- High F_FOOD → food prices → `food_import_dependence` stress → pressure rises
-- High F_CLIM → water stress → `water_stress` increases → pressure rises
-- High F_FIN → credit conditions → `debt_external` pressure → pressure rises
+## Severity Branches
 
-This is the Type 2 factor→state→pressure→probability pathway.
+### Branch 1: Controlled Collapse
+
+**Probability given event**: 40%
+
+**Description**: Central government loses control of periphery but military maintains core territorial integrity. Baluchistan, parts of KPK effectively autonomous. Major humanitarian crisis but not complete state dissolution. International intervention helps stabilize.
+
+**Impact modifiers**: 0.7× baseline
+
+### Branch 2: Fragmentation
+
+**Probability given event**: 45%
+
+**Description**: State fragments along provincial/ethnic lines. Multiple power centers emerge. Sindh-Punjab core barely holds together. Mass displacement. Prolonged civil conflict. Nuclear security uncertain but probably maintained.
+
+**Impact modifiers**: 1.0× baseline
+
+### Branch 3: Complete Collapse
+
+**Probability given event**: 15%
+
+**Description**: Military fragments. No coherent central authority. Nuclear security becomes acute international concern. External intervention likely. Mortality and displacement at upper end of range.
+
+**Impact modifiers**: 1.8× baseline
 
 ---
 
@@ -145,49 +219,33 @@ This is the Type 2 factor→state→pressure→probability pathway.
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
-| `pakistan.gdp_real` | ↓ | -40% ± 12% | rapid(2) | decaying (half_life: 15yr, floor: -20%) |
-| `pakistan.regime_stability` | ↓ | to <20 | immediate | regime_dependent (recovery requires reconstitution) |
-| `pakistan.internal_conflict_intensity` | ↑ | to 4 (civil war) | immediate | decaying (half_life: 8yr) |
-| `pakistan.displacement` | ↑ | 30M ± 15M | rapid(3) | decaying (half_life: 20yr) |
-| `pakistan.excess_mortality` | ↑ | 6M ± 4M | gradual(10) | permanent |
+| `pak.gdp_real` | ↓ | -40% ± 12% | rapid(2yr) | decaying: half_life=15yr, floor=-20% |
+| `pak.internal_conflict_intensity` | ↑ | to 4 (civil war) | immediate | decaying: half_life=8yr |
+| `pak.idp_population` | ↑ | +25M ± 10M | rapid(2yr) | decaying: half_life=15yr |
+| `pak.refugees_abroad` | ↑ | +5M ± 3M | rapid(3yr) | decaying: half_life=20yr |
+| `pak.unemployment_rate` | ↑ | +20 ± 8 pp | immediate | decaying: half_life=10yr |
+
+*Mortality impact: Not a tracked state variable, but estimated at 2-10M excess deaths over 10 years depending on severity branch*
 
 ### Regional Impacts
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
-| `india.gdp_real` | ↓ | -2% ± 1% | delayed(2) | decaying (half_life: 5yr) |
-| `afghanistan.regime_stability` | ↓ | -15 ± 5 | immediate | persistent |
-| `south_asia_aggregate.displacement` | ↑ | +35M ± 18M | rapid(3) | decaying |
+| `ind.gdp_growth` | ↓ | -1.0 ± 0.5 pp | delayed(1yr) | decaying: half_life=3yr |
+| `ind.refugees_hosted` | ↑ | +2M ± 1.5M | rapid(2yr) | decaying: half_life=15yr |
+| `active_major_conflicts` (global) | ↑ | +1 | immediate | until resolution |
 
 ### Global Impacts
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
-| `global_gdp` | ↓ | -0.3% ± 0.15% | gradual(5) | decaying (half_life: 7yr) |
-| `nuclear_stability` | ↓ | -15 ± 10 | immediate | maintenance_required (depends on resolution) |
-| `active_major_conflicts` | ↑ | +1 | immediate | decaying |
+| `active_major_conflicts` | ↑ | +1 | immediate | until resolution |
 
 ### Durability Rationale
 
 - **GDP**: Decaying with long half-life; recovery possible but slow (Syria analogy: 12+ years, still not recovered)
-- **Deaths**: Permanent by definition
-- **Displacement**: Decaying but slow; "trapped population" dynamics limit return rates
-- **Nuclear stability impact**: Maintenance_required—depends on how arsenal is secured/controlled
-- **Regional instability**: Persistent contagion effects
-
----
-
-## Differential Impacts
-
-**Exposure variable**: Border proximity and economic ties to Pakistan
-
-| Country/Region | Impact Multiplier | Rationale |
-|----------------|-------------------|-----------|
-| Afghanistan | 2.0× regional stability impact | Shared border, Taliban ties |
-| India | 1.5× security impact, 1.0× economic | Nuclear risk, refugee pressure, Kashmir |
-| Iran | 0.8× | Baluchistan border, but more distant |
-| Gulf States | 1.5× remittance disruption | Large Pakistani diaspora |
-| China | 1.2× economic impact | CPEC investments at risk |
+- **Displacement**: Decaying but slow; "trapped population" dynamics limit return rates; closed borders
+- **Conflict intensity**: Decaying as civil war eventually exhausts or resolves
 
 ---
 
@@ -195,30 +253,19 @@ This is the Type 2 factor→state→pressure→probability pathway.
 
 ### State → Probability Cascades
 
-| Pathway | Target Event | Probability Change | Duration | Mechanism |
-|---------|--------------|-------------------|----------|-----------|
-| Ungoverned space → terrorism | TERRORISM_MAJOR_ATTACK | +3%/year | 15 years | Safe haven formation |
-| Regional destabilization → India-Pakistan | INDIA_PAKISTAN_CONFLICT | +2%/year | 10 years | Escalation risk from chaos |
-| Afghan spillover | AFGHANISTAN_FURTHER_COLLAPSE | +4%/year | 10 years | Border pressure, militant flows |
-| Nuclear uncertainty | NUCLEAR_INCIDENT | +0.5%/year | Until resolved | Command-and-control uncertainty |
-| Remittance collapse → Gulf pressure | GULF_LABOR_CRISIS | +1%/year | 5 years | Mass worker returns |
+| Target Event | Probability Change | Duration | Mechanism |
+|--------------|-------------------|----------|-----------|
+| INDIA_PAKISTAN_MILITARY_CONFLICT | +1.5%/year | 10 years | Chaos creates escalation risk; potential preemptive action |
+| CHINESE_ECONOMIC_CRISIS | +0.2%/year | 5 years | CPEC losses; regional instability |
 
-### Impact Chains
+### Triggered By
 
-**Pathway 1**: Pakistan failure → Afghan spillover → Central Asian pressure
-```
-Event → ungoverned Af-Pak border → militant flows → regional instability → P(Central Asia crisis) ↑
-```
-
-**Pathway 2**: Pakistan failure → nuclear uncertainty → international intervention
-```
-Event → command-and-control concerns → US/India intervention pressure → escalation risk
-```
-
-**Pathway 3**: Pakistan failure → Gulf remittance collapse → South Asian poverty
-```
-Event → Gulf states expel workers → remittances collapse → Bangladesh/India household income ↓
-```
+| Source Event | Effect on This Event | Mechanism |
+|--------------|---------------------|-----------|
+| INDIA_PAKISTAN_MILITARY_CONFLICT | +3%/year | Military engagement diverts resources; defeat could trigger fragmentation |
+| SEVERE_PANDEMIC | +0.5%/year | Healthcare collapse; economic stress |
+| GLOBAL_FINANCIAL_CRISIS | +0.8%/year | Capital flight; IMF unable to help |
+| CHINESE_ECONOMIC_CRISIS | +0.5%/year | CPEC support collapses; regional contagion |
 
 ---
 
@@ -227,32 +274,32 @@ Event → Gulf states expel workers → remittances collapse → Bangladesh/Indi
 ### Migration Channel
 
 **Direction**: Pakistan → (constrained in all directions)
-- India: Militarized border; minimal acceptance
+- India: Militarized border; minimal acceptance expected
 - Afghanistan: No capacity; already in crisis
 - Iran: Limited willingness
-- Gulf states: Would expel existing workers
+- Gulf states: Would likely expel existing workers
 
-**Implication**: "Trapped population" dynamic—displacement is internal or fatal
+**Implication**: "Trapped population" dynamic—displacement is internal or results in mortality
 
 ### Nuclear Security Channel
 
 **Mechanism**: State failure raises arsenal security concerns
 - Military cohesion is key variable
-- External intervention likely if fragmentation
+- External intervention likely if fragmentation occurs
 - India's response is critical unknown
+- US and international community would prioritize arsenal security
 
 ### Regional Contagion Channel
 
-- Afghanistan: Further destabilization
-- India: Refugee pressure, terrorism, Kashmir opportunism
-- China: CPEC investments at risk; potential intervention
+- Afghanistan: Further destabilization from border pressure
+- India: Refugee pressure, terrorism risk, Kashmir opportunism
+- China: CPEC investments at risk ($60B+); potential intervention to protect assets
 
 ### Remittance Channel
 
 - ~$30B/year in remittances
 - Gulf workers expelled during crisis
 - Remittance collapse deepens economic crisis (feedback loop)
-- Affects Bangladesh, India (Gulf labor market competition)
 
 ---
 
@@ -263,7 +310,7 @@ Event → Gulf states expel workers → remittances collapse → Bangladesh/Indi
 | Syria (2011-) | Compound crisis → state failure | No nuclear weapons |
 | Yugoslavia (1991-) | Multi-ethnic state fragmentation | International intervention earlier |
 | Somalia (1991-) | Complete state collapse | Smaller population, no nuclear weapons |
-| Venezuela (2013-) | Economic collapse → dysfunction | Didn't reach territorial fragmentation |
+| Pakistan 1971 | Actual fragmentation of Pakistan | External war catalyst; Bangladesh was geographically separate |
 
 ---
 
@@ -272,21 +319,35 @@ Event → Gulf states expel workers → remittances collapse → Bangladesh/Indi
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-17 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete (2025-12-30) |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Nuclear dimension unprecedented; military cohesion is key swing variable requiring deeper analysis |
 
 ## Sources
 
-- [[21st-century-assessment]] South Asia section
-- collapse-patterns-predictive-framework.md
 - IMF Article IV consultations
 - IPCC Indus basin projections
+- World Bank Pakistan Climate Assessment
+- Historical state failure case studies
 
 ## Open Questions
 
-- **Military cohesion**: Will military fragment or intervene to prevent collapse?
-- **Nuclear security**: How robust are command-and-control systems under stress?
-- **External intervention**: Would US/China/India intervene? How?
-- **Trapped population**: What are realistic mortality rates with closed borders?
-- **Recovery pathway**: What does reconstitution look like? Somalia model or Yugoslavia model?
+1. **Military cohesion**: Will military fragment or intervene to prevent collapse?
+2. **Nuclear security**: How robust are command-and-control systems under stress?
+3. **External intervention**: Would US/China/India intervene? How?
+4. **Trapped population**: What are realistic mortality rates with closed borders?
+5. **Recovery pathway**: What does reconstitution look like? Somalia model or Yugoslavia model?
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-17 | Initial Level 1 specification | Type 2 state failure template |
+| 2025-12-30 | Critical review complete | Task 2.4.8 - Added Case Against, Probability Evolution; replaced regime_stability with observable indicators; fixed event references |
+
+---
+
+*See [[methodology/reference/state-variables-country]] for variable definitions | [[methodology/03-critical-review]] for review methodology*

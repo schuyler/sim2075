@@ -16,8 +16,6 @@ tags:
 
 **Type 1 (Stochastic) Event** — Base rate from historical frequency; timing unpredictable; factor loadings modify annual probability.
 
-This specification demonstrates Type 1 calibration methodology—events with stable historical base rates where probability estimation relies on reference class frequency.
-
 ---
 
 ## Event Classification
@@ -35,13 +33,24 @@ This specification demonstrates Type 1 calibration methodology—events with sta
 
 Global pandemic causing ≥1 million excess deaths within first 24 months AND/OR ≥3% global GDP contraction. This threshold distinguishes "severe" pandemics from endemic disease burden and minor outbreaks.
 
-This is a **state transition**: `global.pandemic_active` flips from 0 to 1, triggering acute-phase dynamics across health, economic, and social systems.
+This is a **state transition**: `pandemic_status` (global) shifts from 0 to 3-4, triggering acute-phase dynamics across health, economic, and social systems.
 
 **What marks occurrence**: WHO declares Public Health Emergency of International Concern (PHEIC) AND early epidemiological data indicates trajectory toward severity threshold.
 
 ---
 
 ## Causal Type Specification (Type 1: Stochastic)
+
+### Why Type 1?
+
+Pandemic emergence is fundamentally stochastic at the annual level:
+- Zoonotic spillover events are unpredictable
+- Which spillovers become pandemics depends on pathogen characteristics that are random
+- No clear pressure accumulation—a pandemic could occur any year
+- Historical frequency provides the best probability estimate
+
+Not Type 2: No observable pressure variable predicts timing
+Not Type 3: No small-N actor decision determines occurrence
 
 ### Base Rate Derivation
 
@@ -65,19 +74,15 @@ This is a **state transition**: `global.pandemic_active` flips from 0 to 1, trig
 
 ### Condition Adjustments
 
-Current conditions that may modify base rate:
-
 | Condition | Direction | Magnitude | Rationale |
 |-----------|-----------|-----------|-----------|
-| Increased zoonotic interface | ↑ | +0.3% | Agricultural intensification, habitat encroachment, wet markets |
-| Global connectivity | ↑ | +0.2% | Faster spread means more pandemics reach severity threshold |
-| Surveillance capacity | ↓ | -0.2% | Earlier detection enables containment (H5N1 near-misses contained) |
-| Vaccine platform technology | ↓ | -0.3% | mRNA platforms reduce time-to-vaccine; may prevent some pandemics from reaching severity threshold |
-| Antimicrobial resistance | ↑ | +0.2% | Secondary bacterial infections harder to treat |
+| Increased zoonotic interface | ↑ | +0.3% | Agricultural intensification, habitat encroachment |
+| Global connectivity | ↑ | +0.2% | Faster spread means more pandemics reach threshold |
+| Surveillance capacity | ↓ | -0.2% | Earlier detection enables containment |
+| Vaccine platform technology | ↓ | -0.3% | mRNA platforms reduce time-to-vaccine |
+| Antimicrobial resistance | ↑ | +0.2% | Secondary infections harder to treat |
 
-**Net adjustment**: Roughly offsetting; retain base rate of ~2%/year
-
-**Adjusted annual probability**: 2.0% (range: 1.5%-3.0%)
+**Net adjustment**: Roughly offsetting; retain ~2%/year
 
 ---
 
@@ -93,27 +98,63 @@ Current conditions that may modify base rate:
 
 ### Derivation
 
-1. **Historical frequency**: 2-4 severe pandemics per century in reference class
+1. **Historical frequency**: 2-4 severe pandemics per century
 2. **Annualized**: 2-4%/year base rate
-3. **Central estimate**: 2.0%/year (emphasizing clear cases over borderline)
+3. **Central estimate**: 2.0%/year (emphasizing clear cases)
 4. **Adjustment**: Condition adjustments roughly net to zero
-5. **Final estimate**: 2.0%/year
 
 ### Comparative Ranking
 
-Per [[methodology/priority-event-ranking]]:
-- More likely than: AMOC collapse (~0.5%), major asteroid impact (~0.01%)
-- Similar to: Global financial crisis (~3%), major volcanic eruption (~1%)
-- Less likely than: Minor recession (~15%), regional conflict (~5%)
+- More likely than: AMOC collapse (~0.5%), state failures (~1-2%)
+- Similar to: Global financial crisis (~3%)
+- This ranking feels correct—severe pandemics are "once per generation" events.
 
-This ranking feels correct—severe pandemics are "once per generation" events.
+### Case Against This Specification
+
+Per [[methodology/03-critical-review]] Q4:
+
+**1. COVID-19 was an outlier, not a new baseline**
+
+The 2020-22 pandemic may have been a "100-year event" that shouldn't shift our base rate estimate. Including it gives excessive weight to a single recent observation. The true base rate for 1M+ death pandemics may be closer to 1%/year (once per century).
+
+*Counter*: COVID-19 confirms that conditions for severe pandemics exist in the modern world. If anything, increased connectivity and ecological disruption suggest the rate may be increasing, not that COVID was anomalous.
+
+**2. Post-COVID preparedness reduces future severity**
+
+Massive investments in pandemic preparedness, surveillance, and vaccine platforms post-COVID mean future pandemics are less likely to reach severity threshold. The 2.0% may be calibrated to a pre-2020 world.
+
+*Counter*: Preparedness investment decays without political will. The pattern after 2009 H1N1 was rapid erosion of preparedness. Also, preparedness helps with known pathogens more than novel ones.
+
+**3. The threshold is arbitrary**
+
+Why 1M deaths? Why 3% GDP? Different thresholds give very different base rates. The 1957 and 1968 flu pandemics are "in" or "out" depending on exactly where you draw the line, which significantly affects the estimate.
+
+*Counter*: Fair point. The threshold is a modeling choice. But the estimate is robust to reasonable variations—whether 2, 3, or 4 events per century, the annual rate is in the 1.5-3% range.
+
+**4. Type 1 may be wrong classification**
+
+Pandemic risk may be increasing over time due to ecological disruption, making this more Type 2 (pressure accumulation) than Type 1 (stable base rate). The "stochastic" framing may miss an important trend.
+
+*Counter*: This could be captured by increasing the base rate over time, but we don't have enough data points to estimate a trend reliably. Treating it as Type 1 with acknowledged uncertainty is more honest than fitting a trend to 4 data points.
+
+### Probability Stability (Type 1)
+
+For Type 1 events, the key question is whether the base rate is stable or trending.
+
+| Period | Estimated Annual Probability | Rationale |
+|--------|------------------------------|-----------|
+| 2025-2035 | ~1.8% | Post-COVID preparedness may slightly reduce; but also higher vigilance |
+| 2035-2050 | ~2.0% | Preparedness decays; ecological disruption continues |
+| 2050-2075 | ~2.2% | Possible slight increase from climate-driven ecological change |
+
+The trend is speculative. Treating the rate as stable at 2.0% is defensible given data limitations.
 
 ### Key Uncertainties
 
 - **Novel pathogen emergence**: Could be higher if gain-of-function research or bioweapons accident
-- **Pandemic preparedness**: Post-COVID investments may reduce severity of future events
+- **Pandemic preparedness**: Post-COVID investments may reduce severity
 - **Pathogen characteristics**: High-CFR + high-transmissibility combination is rare but catastrophic
-- **Definition sensitivity**: Threshold choice (1M deaths) significantly affects base rate
+- **Definition sensitivity**: Threshold choice significantly affects base rate
 
 ---
 
@@ -121,133 +162,42 @@ This ranking feels correct—severe pandemics are "once per generation" events.
 
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_CLIM** | 0.50 | Primary driver: ecological disruption increases zoonotic spillover rates, vector range shifts, habitat encroachment |
-| **F_HLTH** | 0.45 | Affects outbreak→pandemic escalation: detection speed, containment effectiveness, severity once underway |
-| **F_FOOD** | 0.40 | Agricultural intensification, wet markets, livestock density, land use change |
-| **F_FIN** | 0.20 | Economic stress reduces health investment, increases risky practices |
-| **F_GPT** | 0.15 | Great power tension impedes cooperation, information sharing |
+| **F_CLIM** | 0.50 | Ecological disruption increases zoonotic spillover |
+| **F_HLTH** | 0.45 | Affects outbreak→pandemic escalation |
+| **F_FOOD** | 0.40 | Agricultural intensification, wet markets |
+| **F_FIN** | 0.20 | Economic stress reduces health investment |
+| **F_GPT** | 0.15 | Great power tension impedes cooperation |
 | **F_TECH** | 0.05 | Dual-use research risk (marginal) |
-| F_SAS | 0.00 | Regional instability ≠ emergence risk; ecological factors already captured above |
-| F_EAS | 0.00 | Regional instability ≠ emergence risk; ecological factors already captured above |
-| F_SSA | 0.00 | Regional instability ≠ emergence risk; ecological factors already captured above |
-| F_MENA | 0.00 | No distinct pathway beyond factors above |
-| F_EUR | 0.00 | No distinct pathway beyond factors above |
-| F_LAM | 0.00 | No distinct pathway beyond factors above |
+| F_SAS | 0.00 | Regional instability ≠ emergence risk |
+| F_EAS | 0.00 | Regional instability ≠ emergence risk |
+| F_SSA | 0.00 | Regional instability ≠ emergence risk |
+| F_MENA | 0.00 | No distinct pathway |
+| F_EUR | 0.00 | No distinct pathway |
+| F_LAM | 0.00 | No distinct pathway |
 
 **Sum of squared loadings**: 0.68 ✓
-
-### Loading Interpretation (Type 1)
-
-For Type 1 events, factors modify the annual probability directly:
-- High F_CLIM → ecological disruption → zoonotic spillover rates increase (primary emergence driver)
-- High F_FOOD → agricultural intensification → more human-animal interface, risky practices
-- High F_HLTH → healthcare systems stressed → outbreaks more likely to escalate to pandemic scale
-
-**Why regional factors are zeroed**: Pandemic emergence location (e.g., East Asia, South Asia) is driven by ecological and agricultural conditions, not regional political instability. Those ecological conditions are already captured by F_CLIM and F_FOOD. Adding regional factors would double-count through different proxies.
-
-The probability in any given year is: `P_base × (1 + Σ factor_contributions)`
 
 ---
 
 ## Severity Branches
 
-Unlike Type 3 events with discrete resolutions, Type 1 events have **severity variation**. Once a severe pandemic occurs, its magnitude varies:
+### Branch 1: Moderate-Severe (55%)
 
-```yaml
-severity_branches:
+COVID-19 scale event: 1-5M excess deaths globally over 2 years. Major economic disruption but not civilizational threat.
 
-  - id: moderate_severe
-    probability: 0.55
-    description: |
-      COVID-19 scale event: 1-5M confirmed excess deaths globally over 2 years.
-      Major economic disruption but not civilizational threat.
-      Healthcare systems severely stressed but not collapsed in most regions.
-      Examples: COVID-19 (2020-22), Asian Flu (1957)
-      
-    impact_multiplier: 1.0  # baseline for this event class
-    
-    factor_modifications:
-      F_HLTH: +0.40
-      F_FIN: +0.30
-      F_GPT: +0.15
-      
-    duration:
-      type: decaying
-      half_life_years: 3
-      floor: 0.05
+**Impact modifiers**: 1.0× baseline
 
-  - id: severe
-    probability: 0.35
-    description: |
-      1918 Flu scale event: 5-30M excess deaths globally.
-      Severe economic contraction (5-10% global GDP).
-      Healthcare system collapse in many regions.
-      Significant social disruption.
-      
-    impact_multiplier: 3.0
-    
-    factor_modifications:
-      F_HLTH: +0.70
-      F_FIN: +0.50
-      F_GPT: +0.25
-      F_FOOD: +0.20
-      
-    duration:
-      type: decaying
-      half_life_years: 5
-      floor: 0.10
+### Branch 2: Severe (35%)
 
-  - id: catastrophic
-    probability: 0.10
-    description: |
-      Unprecedented scale: 30M+ excess deaths globally.
-      Potential civilizational disruption.
-      Could arise from: high-CFR novel pathogen, engineered pathogen,
-      antimicrobial resistance crisis, or compound pandemic.
-      
-    impact_multiplier: 8.0
-    
-    factor_modifications:
-      F_HLTH: +1.00
-      F_FIN: +0.80
-      F_GPT: +0.50
-      F_FOOD: +0.40
-      F_CLIM: +0.15  # agricultural labor disruption
-      
-    duration:
-      type: decaying
-      half_life_years: 10
-      floor: 0.20
-      
-    cascade_triggers:
-      - event_id: GLOBAL_FINANCIAL_CRISIS
-        probability_modifier: 2.0
-        rationale: "Economic disruption triggers financial instability"
-      - event_id: STATE_FAILURE_VULNERABLE
-        probability_modifier: 1.5
-        rationale: "Weak states collapse under healthcare/economic burden"
+1918 Flu scale event: 5-30M excess deaths globally. Severe economic contraction (5-10% global GDP). Healthcare system stress in many regions.
 
-severity_probability_rationale: |
-  Distribution based on historical pandemic severity distribution and 
-  pathogen characteristics:
-  
-  - Moderate-severe (0.55): Most pandemics that reach threshold cluster here.
-    COVID-19 is the recent example. Limited CFR or limited transmissibility
-    caps total impact.
-    
-  - Severe (0.35): 1918-scale events. Requires combination of high CFR and
-    high transmissibility, which is evolutionarily disfavored but possible.
-    Historical frequency: ~1 per century.
-    
-  - Catastrophic (0.10): Tail risk. No clear historical precedent at global
-    scale (Black Death was pre-modern). Could arise from:
-    - Novel pathogen with unusual characteristics
-    - Engineered pathogen (accident or deliberate)
-    - Antimicrobial resistance removing treatment options
-    - Compound event (pandemic + other crisis)
-    
-  These probabilities are conditional on a severe pandemic occurring.
-```
+**Impact modifiers**: 3.0× baseline
+
+### Branch 3: Catastrophic (10%)
+
+Unprecedented scale: 30M+ excess deaths. Could arise from high-CFR novel pathogen, engineered pathogen, or antimicrobial resistance crisis.
+
+**Impact modifiers**: 8.0× baseline
 
 ---
 
@@ -255,49 +205,33 @@ severity_probability_rationale: |
 
 ### Global Impacts (Baseline: Moderate-Severe Branch)
 
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `global.excess_mortality` | ↑ | 3M ± 2M | immediate | permanent |
-| `global.gdp_real` | ↓ | -4% ± 2% | immediate | decaying (half_life: 2yr) |
-| `global.trade_volume` | ↓ | -8% ± 4% | immediate | decaying (half_life: 1.5yr) |
-| `global.healthcare_capacity` | ↓ | -25% ± 10% | immediate | decaying (half_life: 2yr) |
-| `global.tourism` | ↓ | -60% ± 20% | immediate | decaying (half_life: 1yr) |
-| `global.supply_chain_resilience` | ↓ | -20% ± 10% | delayed(6mo) | decaying (half_life: 3yr) |
+| Variable | Direction | Magnitude | Onset | Durability |
+|----------|-----------|-----------|-------|------------|
+| `pandemic_status` | ↑ | to 3-4 | immediate | until resolution (1-3 years) |
+| `pandemic_severity` | ↑ | 3-5% GDP | immediate | until resolution |
+| `global_trade_volume` | ↓ | -8% ± 4% | immediate | decaying: half_life=1.5yr |
+| `global_credit_spread` | ↑ | +150 ± 75 bps | immediate | decaying: half_life=1yr |
 
 *Scale by impact_multiplier for severe (3.0×) and catastrophic (8.0×) branches*
 
-### Regional Differential Impacts
+### Country-Level Impacts
 
-**Exposure variables**: Healthcare capacity, population density, age structure
+| Variable | Direction | Magnitude | Onset | Durability |
+|----------|-----------|-----------|-------|------------|
+| `[country].gdp_real` | ↓ | -4% ± 2% | immediate | decaying: half_life=2yr |
+| `[country].unemployment_rate` | ↑ | +4 ± 2 pp | immediate | decaying: half_life=1.5yr |
+| `[country].debt_public` | ↑ | +10 ± 5 pp GDP | gradual(2yr) | permanent |
 
-| Region | GDP Multiplier | Mortality Multiplier | Rationale |
-|--------|----------------|---------------------|-----------|
-| High-income (NA, EUR, EAS-developed) | 0.8× | 0.7× | Better healthcare, faster vaccine access |
-| Middle-income (LAM, MENA, EAS-developing) | 1.0× | 1.0× | Baseline |
-| Low-income (SSA, SAS) | 1.3× | 1.5× | Weaker healthcare, slower vaccine access |
+**Differential exposure by healthcare capacity**: Countries with lower `tax_revenue_gdp` (proxy for state capacity) experience 1.3-1.5× impact multiplier.
 
 ### Durability Specifications
 
-| Impact Type | Durability | Parameters | Rationale |
-|-------------|------------|------------|-----------|
-| Excess mortality | permanent | N/A | Deaths are irreversible |
-| GDP contraction | decaying | half_life: 2yr | V-shaped or U-shaped recovery typical |
-| Trade disruption | decaying | half_life: 1.5yr | Supply chains rebuild |
-| Healthcare capacity | decaying | half_life: 2yr | Systems recover but with lag |
-| Behavioral changes | decaying | half_life: 5yr | Some permanent (remote work), most fade |
-| Public health investment | maintenance_required | annual_failure: 10% | Post-pandemic investment erodes without political will |
-
-### Impact Derivation
-
-Primary method: **Historical analog scaling**
-
-| Analog | Deaths | GDP Impact | Scaling Factor |
-|--------|--------|------------|----------------|
-| COVID-19 (2020-22) | 15-25M | -3% (2020) | 1.0× (anchor) |
-| 1918 Flu | 50-100M | -5% estimated | 3-4× mortality, similar GDP |
-| 1957 Asian Flu | 1-2M | <1% | 0.3× (below threshold) |
-
-COVID-19 serves as the primary anchor for moderate-severe branch.
+| Impact Type | Durability | Rationale |
+|-------------|------------|-----------|
+| Mortality | permanent | Deaths are irreversible |
+| GDP contraction | decaying: half_life=2yr | V-shaped or U-shaped recovery typical |
+| Trade disruption | decaying: half_life=1.5yr | Supply chains rebuild |
+| Public debt | permanent | Debt incurred persists |
 
 ---
 
@@ -305,33 +239,18 @@ COVID-19 serves as the primary anchor for moderate-severe branch.
 
 ### State → Probability Cascades
 
-| Pathway | Target Event | Probability Change | Duration | Mechanism |
-|---------|--------------|-------------------|----------|-----------|
-| Economic stress → financial crisis | GLOBAL_FINANCIAL_CRISIS | +2%/year | 3 years | Debt accumulation, market disruption |
-| Healthcare collapse → state failure | STATE_FAILURE_VULNERABLE | +1.5%/year per affected state | 5 years | Legitimacy crisis, fiscal exhaustion |
-| Supply disruption → food crisis | FOOD_CRISIS_REGIONAL | +2%/year | 2 years | Agricultural labor, logistics disruption |
-| Social stress → political instability | POLITICAL_CRISIS_DOMESTIC | +1%/year (multiple countries) | 5 years | Legitimacy challenges, polarization |
-| Pandemic fatigue → reduced preparedness | SEVERE_PANDEMIC (next) | -0.5%/year | 10 years | Investment and vigilance post-crisis |
+| Target Event | Probability Change | Duration | Mechanism |
+|--------------|-------------------|----------|-----------|
+| GLOBAL_FINANCIAL_CRISIS | +2.0%/year | 3 years | Debt accumulation, market disruption |
+| PAKISTAN_STATE_FAILURE | +0.5%/year | 5 years | Healthcare/fiscal stress on fragile state |
+| EGYPT_STATE_FAILURE | +0.5%/year | 5 years | Healthcare/fiscal stress on fragile state |
+| CHINESE_ECONOMIC_CRISIS | +0.8%/year | 3 years | Economic disruption, confidence |
 
-### Impact Chains
+### Triggered By
 
-**Pathway 1**: Pandemic → Economic disruption → Financial crisis
-```
-Severe pandemic → GDP contraction → corporate defaults → banking stress → 
-credit contraction → P(financial crisis) ↑
-```
-
-**Pathway 2**: Pandemic → State capacity exhaustion → State failure
-```
-Severe pandemic → healthcare spending spike → fiscal crisis → 
-service delivery failure → legitimacy crisis → P(state failure) ↑
-```
-
-**Pathway 3**: Pandemic → Supply chain disruption → Food crisis
-```
-Severe pandemic → labor shortage → agricultural disruption → 
-logistics breakdown → P(regional food crisis) ↑
-```
+| Source Event | Effect on This Event | Mechanism |
+|--------------|---------------------|-----------|
+| (No significant triggers) | — | Type 1 event is fundamentally stochastic |
 
 ---
 
@@ -339,46 +258,18 @@ logistics breakdown → P(regional food crisis) ↑
 
 ### Direct Health Channel
 
-**Mechanism**: Pathogen causes morbidity and mortality directly
-**Affected regions**: All (global by definition)
-**Affected variables**: `excess_mortality`, `healthcare_capacity`, `disability_burden`
-**Differential exposure**: Age structure, baseline health, healthcare access
+**Mechanism**: Pathogen causes morbidity and mortality
+**Affected variables**: `pandemic_status`, `pandemic_severity`, country-level mortality effects
 
 ### Economic Disruption Channel
 
 **Mechanism**: Containment measures + illness reduce economic activity
-**Affected regions**: All, but especially service-dependent economies
-**Affected variables**: `gdp_real`, `trade_volume`, `employment`, `tourism`
-**Differential exposure**: Economic structure, policy response capacity
+**Affected variables**: `[country].gdp_real`, `[country].unemployment_rate`, `global_trade_volume`
 
-### Supply Chain Channel
+### Fiscal Channel
 
-**Mechanism**: Production and logistics disruption
-**Affected regions**: Globalized supply chain participants
-**Affected variables**: `supply_chain_resilience`, `manufacturing_output`, `inflation`
-**Differential exposure**: Import dependence, supply chain position
-
-### Social/Political Channel
-
-**Mechanism**: Stress on social cohesion and political legitimacy
-**Affected regions**: All, especially low-trust societies
-**Affected variables**: `social_cohesion`, `political_stability`, `institutional_trust`
-**Differential exposure**: Pre-existing polarization, government effectiveness
-
----
-
-## Pathogen Characteristics (Scenario Variants)
-
-Different pathogen profiles produce different impact patterns:
-
-| Characteristic | Moderate-Severe | Severe | Catastrophic |
-|----------------|-----------------|--------|--------------|
-| **CFR** | 0.5-2% | 2-5% | 5%+ |
-| **R₀** | 2-4 | 3-6 | 4+ |
-| **Generation time** | 4-7 days | 3-5 days | 2-5 days |
-| **Age skew** | Elderly-skewed | All ages | All ages |
-| **Vaccine timeline** | 12-24 months | 12-36 months | 18+ months or ineffective |
-| **Examples** | COVID-19, H1N1 | 1918 Flu | Novel/engineered |
+**Mechanism**: Emergency spending increases public debt
+**Affected variables**: `[country].debt_public`
 
 ---
 
@@ -387,10 +278,8 @@ Different pathogen profiles produce different impact patterns:
 | Case | Year | Deaths | GDP Impact | Key Lesson |
 |------|------|--------|------------|------------|
 | Spanish Flu | 1918-19 | 50-100M | ~5% | High CFR + high R₀ possible |
-| Asian Flu | 1957-58 | 1-2M | <1% | Not all pandemics reach severity threshold |
-| Hong Kong Flu | 1968-69 | 1-4M | <1% | Immune memory from prior pandemic helped |
-| H1N1 Swine Flu | 2009-10 | 150-575K | <0.5% | Early containment + low CFR limited impact |
-| COVID-19 | 2020-22 | 15-25M | -3% (2020) | Modern anchor case |
+| Asian Flu | 1957-58 | 1-2M | <1% | Not all pandemics reach threshold |
+| COVID-19 | 2020-22 | 15-25M | ~3-4% | Modern anchor case |
 
 ---
 
@@ -399,28 +288,24 @@ Different pathogen profiles produce different impact patterns:
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-18 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete (2025-12-30) |
 | **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Emerging pathogen surveillance data; gain-of-function risk assessment; antimicrobial resistance trajectories |
+| **Upgrade rationale** | Emerging pathogen surveillance; gain-of-function risk; antimicrobial resistance |
 
 ## Sources
-
-*Level 1 specification based on general knowledge. Key references for future documentation:*
 
 - WHO pandemic history and PHEIC declarations
 - Global Burden of Disease pandemic mortality estimates
 - IMF World Economic Outlook pandemic impact assessments
 - Johns Hopkins COVID-19 data (anchor case)
-- 1918 Flu historiography (Taubenberger, Barry)
 
 ## Open Questions
 
-- **Gain-of-function risk**: How much does lab research increase catastrophic branch probability?
-- **Vaccine platform speed**: Will mRNA platforms meaningfully reduce future pandemic severity?
-- **Antimicrobial resistance**: Should AMR pandemic be separate event or branch of this one?
-- **Preparedness decay**: How quickly does post-pandemic investment erode?
-- **Compound risk**: How to model pandemic + other crisis (e.g., pandemic during financial crisis)?
-- **Detection threshold**: At what point in emergence does "severe pandemic" event fire?
+1. **Gain-of-function risk**: How much does lab research increase catastrophic branch probability?
+2. **Vaccine platform speed**: Will mRNA platforms meaningfully reduce future severity?
+3. **Antimicrobial resistance**: Should AMR pandemic be separate event or branch?
+4. **Preparedness decay**: How quickly does post-pandemic investment erode?
 
 ---
 
@@ -429,7 +314,8 @@ Different pathogen profiles produce different impact patterns:
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2025-12-18 | Initial Level 1 specification | Task 2.1.2 - first Type 1 event |
+| 2025-12-30 | Critical review complete | Task 2.4.4 - Added Case Against, Probability Stability; fixed variable/event references |
 
 ---
 
-*See [[methodology/reference/probability-estimation]] for Type 1 base rate methodology | [[methodology/reference/calibration-anchors]] for reference events*
+*See [[methodology/reference/state-variables-global]] for global variables | [[methodology/03-critical-review]] for review methodology*
