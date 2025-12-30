@@ -204,34 +204,6 @@ As a Type 2 event, probability depends on pressure trajectory:
 - Sanctions trajectory: Relief could reduce pressure substantially; escalation increases it
 - Regional developments: Major proxy network success/failure affects regime legitimacy
 
-### Case Against This Specification
-
-**Security apparatus has proven resilient**: The regime suppressed 2009 Green Movement, 2019 fuel protests, and 2022 Mahsa Amini uprising. IRGC and Basij have remained loyal through all challenges. 1.2%/year may be too high for a regime with this track record.
-
-**No organized opposition**: Unlike 1979, there is no coherent opposition movement with leadership, ideology, and organization. Diaspora is fragmented. Internal opposition is leaderless and cannot coordinate. Uprisings dissipate without institutional channels.
-
-**Revolutionary ideology still has adherents**: While generational legitimacy gap is real, a significant minority genuinely believes in the Islamic Republic. IRGC's economic interests align with regime survival. Core supporters would fight.
-
-**Sanctions create rally-around-flag**: External pressure allows regime to blame hardship on foreign enemies. Sanctions relief might actually be more destabilizing than sustained pressure.
-
-**Counterargument**: 1979 demonstrated that Iranian regimes can collapse rapidly when conditions align. The Shah's security apparatus was also effective—until it wasn't. Water crisis is irreversible pressure that no policy can relieve. Succession will eventually occur and creates vulnerability window. The estimate acknowledges regime resilience in the moderate 1.2%/year rate, but structural vulnerabilities justify non-trivial probability.
-
-### Probability Evolution
-
-As a Type 2 event, probability depends on pressure trajectory:
-
-| Period | Annual Probability | Rationale |
-|--------|-------------------|-----------|
-| 2025-2030 | 1.0-1.5% | Succession uncertainty (Khamenei 85+); sanctions sustained; water stress building |
-| 2030-2040 | 1.2-2.0% | Post-succession period; water crisis acute; generational change advanced |
-| 2040-2050 | 1.0-2.5% | Depends heavily on succession outcome and water adaptation |
-| 2050-2075 | 0.8-2.0% | Path-dependent; water crisis either managed or catastrophic |
-
-**Key inflection points**:
-- Supreme Leader succession (whenever it occurs) opens high-risk window
-- Water crisis thresholds for Tehran habitability
-- Sanctions relief or intensification shifts economic pressure
-
 ---
 
 ## Factor Loadings
