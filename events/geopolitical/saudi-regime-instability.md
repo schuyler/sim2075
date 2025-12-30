@@ -37,7 +37,7 @@ This specification follows the pattern established in [[events/geopolitical/egyp
 
 Severe destabilization of the Saudi regime, characterized by elite fragmentation, loss of internal security control, popular uprising, or breakdown of the social contract between the ruling family and population. Saudi Arabia's vulnerability is distinctive: extreme dependence on oil revenue facing energy transition, climate conditions approaching habitability limits, a welfare-state social contract that requires continuous funding, and legitimacy tensions between modernization and religious conservatism.
 
-This is a **state transition**: `saudi.regime_stability` crosses below crisis threshold (~30), triggering shift from "stable authoritarian petrostate" to "regime crisis" state.
+This is a **state transition**: accumulated pressure crosses crisis threshold, triggering shift from "stable authoritarian petrostate" to "regime crisis" state. Observable via `protest_intensity_annual` spiking, `internal_conflict_intensity` rising, and economic indicators deteriorating rapidly.
 
 **What marks occurrence**: Sustained protests beyond regime's ability to suppress through normal means; elite defections or factional conflict within royal family; security services fragment or refuse orders; or fiscal crisis forces sudden austerity that breaks social contract.
 
@@ -59,21 +59,27 @@ Saudi regime instability exhibits threshold dynamics:
 
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `saudi.oil_revenue_trend` | 0.30 | inverse | Core driver; energy transition erodes long-term revenue base |
-| `saudi.fiscal_reserves` | 0.25 | inverse | Buffer capacity; depletion removes shock absorption |
-| `saudi.regime_legitimacy` | 0.20 | inverse | Religious and reform tensions; Vision 2030 execution |
-| `saudi.social_contract_stress` | 0.15 | linear | Unemployment, subsidy cuts, expectations gap |
-| `saudi.regional_security` | 0.10 | linear | Iran tensions, Yemen, regional conflicts |
+| `sau.gdp_growth` | 0.20 | inverse | Economic performance; oil revenue proxy |
+| `sau.unemployment_rate` | 0.20 | linear | Citizen employment; social contract stress |
+| `sau.reserves_foreign` | 0.15 | inverse | Buffer depletion signal |
+| `sau.current_account` | 0.15 | inverse | Fiscal sustainability indicator |
+| `sau.protest_intensity_annual` | 0.15 | linear | Observable dissent (heavily suppressed) |
+| `sau.years_since_irregular_transition` | 0.10 | complex | Long stability but succession concentration risk |
+| `oil_brent` | 0.05 | inverse | Global oil price affects revenue directly |
 
 **Pressure calculation**:
 ```
-pressure = 0.30 × (baseline_oil_revenue - oil_revenue_trend) / baseline
-         + 0.25 × (baseline_reserves - fiscal_reserves) / baseline
-         + 0.20 × (100 - regime_legitimacy) / 100
-         + 0.15 × social_contract_stress / 100
-         + 0.10 × regional_security_stress / 100
+pressure = 0.20 × max(0, 2 - gdp_growth) / 5  # below 2% contributes
+         + 0.20 × unemployment_rate / 20
+         + 0.15 × (12 - reserves_foreign) / 12  # months of import cover
+         + 0.15 × max(0, -current_account) / 10  # deficit contributes
+         + 0.15 × protest_intensity_annual / 100
+         + 0.10 × (leadership_tenure_years > 30 ? 0.5 : 0)  # succession factor
+         + 0.05 × max(0, 80 - oil_brent) / 80  # below $80 breakeven
 ```
 *Normalized to 0-100 scale*
+
+**Proxy limitations**: True "regime legitimacy" and "social contract stress" are unobservable. We proxy through economic indicators (unemployment, growth, reserves) and protest intensity. The key unobservables—elite factional dynamics within royal family, religious establishment sentiment—cannot be directly captured. Probability calibration relies on reference class reasoning from Gulf petrostates and comparable authoritarian rentier states.
 
 ### Threshold
 
@@ -123,12 +129,14 @@ This cushion means the threshold is far away under current conditions. The proba
 
 ### Current Pressure Estimate
 
-Current pressure: ~30/100 (low; financial cushion provides substantial buffer)
-- `oil_revenue_trend`: ~45 (elevated prices recently but long-term transition risk)
-- `fiscal_reserves`: ~25 (large reserves intact; buffer strong)
-- `regime_legitimacy`: ~40 (MBS consolidated but reforms create tensions)
-- `social_contract_stress`: ~35 (unemployment elevated but manageable; subsidies maintained)
-- `regional_security`: ~40 (Yemen winding down; Iran tensions persistent but contained)
+Current pressure: ~25/100 (low; financial cushion provides substantial buffer)
+- `gdp_growth`: ~2-3% (moderate; oil prices supportive recently)
+- `unemployment_rate`: ~11% (elevated but stable for citizens)
+- `reserves_foreign`: ~16 months (substantial buffer)
+- `current_account`: ~+5% GDP (surplus due to oil prices)
+- `protest_intensity_annual`: ~5 (heavily suppressed; minimal visible dissent)
+- `years_since_irregular_transition`: 0 (no irregular transitions in modern Saudi history)
+- `oil_brent`: ~$75-80 (near breakeven; adequate)
 
 ### Derivation
 
@@ -157,6 +165,33 @@ Saudi Arabia's financial cushion and consolidated leadership provide substantial
 - **Climate trajectory**: How quickly do conditions approach uninhabitability thresholds?
 - **Regional dynamics**: Iran conflict, Yemen, Israel normalization effects
 - **Social media/information environment**: Can regime maintain information control?
+
+### Case Against This Specification
+
+**Financial cushion is enormous**: Saudi Arabia has $700B+ in sovereign wealth plus central bank reserves. Even with declining oil revenue, the regime can sustain current spending for 15-20+ years. 0.8%/year may be too high for a state with this much fiscal buffer.
+
+**No historical precedent for Gulf regime collapse**: No Gulf monarchy has ever experienced regime change. Arab Spring 2011 was contained through spending. The reference class is effectively zero failures in ~70 years of modern Gulf history.
+
+**Security apparatus is effective and loyal**: Saudi internal security services have successfully suppressed all dissent. Guest worker population (75% of residents) has no political rights and can be expelled. Citizen population is small and dependent on state employment.
+
+**Young, consolidated leadership**: MBS has purged rivals and consolidated power. Unlike aging Soviet leadership before 1991, succession is not imminent. He could rule for 40+ more years.
+
+**Counterargument**: Iran 1979 shows wealthy, Western-backed regimes can collapse rapidly. Energy transition creates structural vulnerability no Gulf state has faced. Climate change will make the region increasingly difficult to inhabit. The estimate is low (0.8%/year) precisely because of these stabilizing factors, but long-term structural risks justify non-trivial probability.
+
+### Probability Evolution
+
+As a Type 2 event, probability depends on pressure trajectory, primarily driven by oil market dynamics:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2035 | 0.5-0.8% | High reserves; oil demand still growing; MBS consolidated |
+| 2035-2050 | 0.8-1.5% | Energy transition accelerates; fiscal pressure builds; climate stress rises |
+| 2050-2075 | 1.0-2.5% | Oil demand decline advanced; reserves depleted; habitability constraints; succession question |
+
+**Key inflection points**:
+- Oil demand peak (whenever it occurs) marks major trajectory shift
+- Climate thresholds for outdoor work (wet bulb >35°C) constrain economic activity
+- MBS succession (decades away but eventually relevant)
 
 ---
 
@@ -219,9 +254,10 @@ severity_branches:
       floor: 0.05
       
     cascade_triggers:
-      - event_id: GULF_COOPERATION_STRESS
-        probability_modifier: 1.5
-        rationale: "Uncertainty about Saudi leadership affects GCC"
+      # Note: GULF_COOPERATION_STRESS not in catalog
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 1.3
+        rationale: "Production uncertainty during transition"
 
   - id: popular_uprising_contained
     probability: 0.35
@@ -247,15 +283,13 @@ severity_branches:
       floor: 0.10
       
     cascade_triggers:
-      - event_id: OIL_SUPPLY_DISRUPTION
-        probability: 0.30
+      # Note: GULF_STATE_CONTAGION, GUEST_WORKER_CRISIS not in catalog
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 1.8
         rationale: "Production disruption during unrest"
-      - event_id: GULF_STATE_CONTAGION
-        probability_modifier: 2.0
-        rationale: "Bahrain, Kuwait, UAE watch nervously"
-      - event_id: GUEST_WORKER_CRISIS
-        probability_modifier: 1.5
-        rationale: "Instability triggers worker flight/expulsion"
+      - event_id: EGYPT_STATE_FAILURE
+        probability_modifier: 1.3
+        rationale: "Gulf aid reduced; Egypt fiscal stress"
 
   - id: regime_collapse
     probability: 0.20
@@ -282,18 +316,19 @@ severity_branches:
       floor: 0.25
       
     cascade_triggers:
-      - event_id: OIL_SUPPLY_CRISIS
-        probability: 0.70
+      # Note: GULF_STATE_CASCADE, MASS_MIGRATION_CRISIS not in catalog
+      - event_id: OIL_SUPPLY_SHOCK
+        probability_modifier: 3.0
         rationale: "Major production disruption"
-      - event_id: GULF_STATE_CASCADE
-        probability: 0.50
-        rationale: "Regional security architecture collapses"
-      - event_id: IRAN_REGIONAL_ASSERTION
-        probability_modifier: 2.5
-        rationale: "Primary rival weakened; opportunity"
-      - event_id: MASS_MIGRATION_CRISIS
-        probability: 0.60
-        rationale: "10M+ guest workers displaced"
+      - event_id: IRAN_REGIME_CHANGE
+        probability_modifier: 0.7
+        rationale: "Regime may consolidate against external threat"
+      - event_id: EGYPT_STATE_FAILURE
+        probability_modifier: 1.8
+        rationale: "Gulf financial support collapses"
+      - event_id: PAKISTAN_STATE_FAILURE
+        probability_modifier: 1.3
+        rationale: "Remittance shock; Gulf migrant return"
 
 severity_probability_rationale: |
   Distribution reflects Saudi Arabia's structural features, conditional
@@ -329,29 +364,29 @@ severity_probability_rationale: |
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `saudi.gdp_real` | ↓ | -8% ± 5% | rapid(1yr) | decaying (half_life: 3yr, floor: -3%) |
-| `saudi.regime_stability` | ↓ | to <35 | immediate | regime_dependent |
-| `saudi.oil_production` | ↓ | -10% ± 8% | immediate | decaying (half_life: 2yr) |
-| `saudi.foreign_investment` | ↓ | -40% ± 20% | immediate | decaying (half_life: 5yr) |
-| `saudi.guest_worker_population` | ↓ | -15% ± 10% | rapid(2yr) | persistent |
-
-### Regional Impacts
-
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `gulf_states.stability` | ↓ | -20 ± 10 | immediate | decaying |
-| `iran.regional_influence` | ↑ | +15 ± 10 | rapid(1yr) | persistent |
-| `mena_aggregate.stability` | ↓ | -15 ± 8 | immediate | decaying |
-| `yemen.conflict_intensity` | variable | ±20 | immediate | uncertain |
-| `egypt.fiscal_support` | ↓ | -30% ± 20% | rapid(1yr) | persistent |
+| `sau.gdp_real` | ↓ | -8% ± 5% | rapid(1yr) | decaying (half_life: 3yr, floor: -3%) |
+| `sau.gdp_growth` | ↓ | -5% ± 3% | immediate | decaying (half_life: 2yr) |
+| `sau.internal_conflict_intensity` | ↑ | +1-2 levels | immediate | decaying (half_life: 5yr) |
+| `sau.fdi_net` | ↓ | -3% GDP ± 1.5% | immediate | decaying (half_life: 5yr) |
+| `sau.protest_intensity_annual` | ↑ | +30 ± 20 | immediate | decaying (half_life: 3yr) |
+| `sau.net_migration_rate` | ↓ | -5% ± 3% | rapid(1yr) | decaying (half_life: 3yr) |
 
 ### Global Impacts
 
 | Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
 |----------|-----------|------------------------|-------|------------|
-| `global.oil_price` | ↑ | +20% ± 15% | immediate | decaying (half_life: 1yr) |
-| `global.inflation` | ↑ | +1.5% ± 1% | rapid(6mo) | decaying (half_life: 2yr) |
-| `global.energy_security_concern` | ↑ | +25 ± 15 | immediate | decaying |
+| `oil_brent` | ↑ | +25% ± 15% | immediate | decaying (half_life: 1yr) |
+| `global_credit_spread` | ↑ | +30bps ± 20bps | immediate | decaying (half_life: 1yr) |
+
+### Regional Impacts (Selected Countries)
+
+| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
+|----------|-----------|------------------------|-------|------------|
+| `egy.reserves_foreign` | ↓ | -2 months ± 1 | rapid(1yr) | persistent |
+| `pak.current_account` | ↓ | -2% GDP ± 1% | rapid(1yr) | decaying (half_life: 3yr) |
+| `irn.gdp_growth` | variable | ±1% | gradual | uncertain |
+
+**Note**: Many intuitive impact channels (regime stability indices, regional influence measures, religious legitimacy scores) are derived outputs, not state variables. The simulation tracks observable impacts on GDP, conflict levels, commodity prices, and migration flows.
 
 ### Holy Sites Consideration
 
@@ -383,43 +418,29 @@ Displaced workers would return to South Asia, Southeast Asia, and Africa, creati
 
 ## Cascade Effects
 
-### State → Probability Cascades
+### Narrative Cascade Pathways
 
-| Pathway | Target Event | Probability Change | Duration | Mechanism |
-|---------|--------------|-------------------|----------|-----------|
-| Regional contagion | BAHRAIN_INSTABILITY | +5%/year | 5 years | Saudi security guarantee wavers |
-| Regional contagion | UAE_INSTABILITY | +2%/year | 5 years | Gulf model questioned |
-| Power vacuum | IRAN_REGIONAL_EXPANSION | +3%/year | 10 years | Saudi counterweight weakened |
-| Oil disruption | GLOBAL_ENERGY_CRISIS | +4%/year | 2 years | Supply disruption |
-| Fiscal shock | EGYPT_STATE_FAILURE | +1%/year | 5 years | Gulf aid reduced |
-| Migration | SOUTH_ASIA_REMITTANCE_CRISIS | +3%/year | 3 years | Guest workers displaced |
+Saudi regime instability would trigger significant cascade effects. Key pathways include:
 
-### Impact Chains
+**Oil market pathway**: Regime crisis → production disruption → global price spike → inflation surge → economic stress
 
-**Pathway 1**: Saudi instability → Oil supply disruption → Global economic shock
-```
-Regime crisis → production disruption → oil price spike →
-global inflation → economic stress → P(political instability) ↑ elsewhere
-```
+**Gulf contagion pathway**: Saudi instability → Gulf security model questioned → neighboring states nervous → potential cascade
 
-**Pathway 2**: Saudi instability → Gulf contagion → Regional transformation
-```
-Regime crisis → Gulf security model questioned → Bahrain/UAE/Kuwait nervousness →
-potential cascade → Iran advantage → regional power shift
-```
+**Guest worker pathway**: Instability → workers flee/expelled → remittance collapse → household income shock in South Asia, Southeast Asia
 
-**Pathway 3**: Saudi instability → Guest worker displacement → South Asian shock
-```
-Regime crisis → guest workers flee/expelled → remittance collapse →
-household income shock in India, Pakistan, Bangladesh, Philippines →
-P(political stress) ↑ in source countries
-```
+**Religious-political pathway**: Holy sites uncertainty → Muslim world divided → unprecedented religious-political crisis
 
-**Pathway 4**: Saudi instability → Holy sites uncertainty → Religious-political crisis
-```
-Regime collapse → Custodianship legitimacy questioned →
-Muslim world divided over recognition → potential for unprecedented religious-political crisis
-```
+### Specified Event Cascades
+
+| Pathway | Target Event | Probability Change | Mechanism |
+|---------|--------------|-------------------|-----------|
+| Oil disruption | OIL_SUPPLY_SHOCK | +5%/year for 3 years | Saudi production disruption |
+| Financial contagion | GLOBAL_FINANCIAL_CRISIS | +1.5%/year for 2 years | Oil shock, market panic |
+| Regional fiscal | EGYPT_STATE_FAILURE | +1%/year for 5 years | Gulf aid reduced |
+| Regional shift | IRAN_REGIME_CHANGE | -0.5%/year for 5 years | External threat may consolidate regime |
+| South Asian stress | PAKISTAN_STATE_FAILURE | +0.5%/year for 5 years | Remittance shock, migrant return |
+
+**Note**: Many intuitive cascade targets (Gulf state contagion, mass migration crisis, Bahrain/UAE instability) are not yet specified in the event catalog.
 
 ---
 
@@ -490,7 +511,8 @@ Muslim world divided over recognition → potential for unprecedented religious-
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-19 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Energy transition modeling; Vision 2030 assessment; religious legitimacy dynamics; climate habitability analysis |
 
@@ -521,6 +543,7 @@ Muslim world divided over recognition → potential for unprecedented religious-
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Critical review: replaced synthetic variables with observables; added Case Against and Probability Evolution; fixed cascade/impact references | Task 2.4 systematic review |
 | 2025-12-19 | Initial Level 1 specification | Task 2.1.8 - Type 2 regime instability event |
 
 ---
