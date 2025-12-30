@@ -185,16 +185,16 @@ Tracks event specification progress and methodology documentation status.
 | Event | Type | Status | Critical Review |
 |-------|------|--------|-----------------|
 | [[events/climate/amoc-weakening]] | Type 2 | ✅ Complete | ✅ Complete |
-| [[events/climate/amazon-tipping-point]] | Type 2 | ✅ Complete | 🔲 Pending |
-| [[events/climate/permafrost-methane-release]] | Type 2 | ✅ Complete | 🔲 Pending |
+| [[events/climate/amazon-tipping-point]] | Type 2 | ✅ Complete | ✅ Complete |
+| [[events/climate/permafrost-methane-release]] | Type 2 | ✅ Complete | ✅ Complete |
 
 ### ✅ Geopolitical Events (15/15)
 
 | Event | Type | Status | Critical Review |
 |-------|------|--------|-----------------|
-| [[events/geopolitical/pakistan-state-failure]] | Type 2 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/taiwan-conflict]] | Type 3 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/egypt-state-failure]] | Type 2 | ✅ Complete | 🔲 Pending |
+| [[events/geopolitical/pakistan-state-failure]] | Type 2 | ✅ Complete | ✅ Complete |
+| [[events/geopolitical/taiwan-conflict]] | Type 3 | ✅ Complete | ✅ Complete |
+| [[events/geopolitical/egypt-state-failure]] | Type 2 | ✅ Complete | ✅ Complete |
 | [[events/geopolitical/russia-state-failure]] | Type 2 | ✅ Complete | 🔲 Pending |
 | [[events/geopolitical/saudi-regime-instability]] | Type 2 | ✅ Complete | 🔲 Pending |
 | [[events/geopolitical/iran-regime-change]] | Type 2 | ✅ Complete | 🔲 Pending |
@@ -212,15 +212,15 @@ Tracks event specification progress and methodology documentation status.
 
 | Event | Type | Status | Critical Review |
 |-------|------|--------|-----------------|
-| [[events/financial/global-financial-crisis]] | Type 1/2 | ✅ Complete | 🔲 Pending |
-| [[events/financial/dollar-reserve-crisis]] | Type 2 | ✅ Complete | 🔲 Pending |
+| [[events/financial/global-financial-crisis]] | Type 1/2 | ✅ Complete | ✅ Complete |
+| [[events/financial/dollar-reserve-crisis]] | Type 2 | ✅ Complete | ✅ Complete |
 | [[events/financial/chinese-economic-crisis]] | Type 2 | ✅ Complete | ✅ Complete |
 
 ### ✅ Health Events (1/1)
 
 | Event | Type | Status | Critical Review |
 |-------|------|--------|-----------------|
-| [[events/health/severe-pandemic]] | Type 1 | ✅ Complete | 🔲 Pending |
+| [[events/health/severe-pandemic]] | Type 1 | ✅ Complete | ✅ Complete |
 
 ### ✅ Energy Events (1/1)
 
@@ -244,10 +244,20 @@ Tracks event specification progress and methodology documentation status.
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 7 |
-| 🔲 Pending | 20 |
+| ✅ Complete | 15 |
+| 🔲 Pending | 12 |
 
-**Critical reviews completed**: AMOC Weakening, Chinese Political Crisis, Chinese Economic Crisis, Antimicrobial Platform, Energy Storage Breakthrough, Sahel Catastrophe, Saudi Nuclear Acquisition
+**Critical reviews completed**: 
+- Climate: AMOC Weakening, Amazon Tipping Point, Permafrost Methane Release
+- Geopolitical: Chinese Political Crisis, Sahel Catastrophe, Saudi Nuclear Acquisition, Pakistan State Failure, Taiwan Conflict, Egypt State Failure
+- Financial: Chinese Economic Crisis, Global Financial Crisis, Dollar Reserve Crisis
+- Health: Severe Pandemic
+- Breakthrough: Antimicrobial Platform, Energy Storage Breakthrough
+
+**Critical reviews pending** (12):
+- Geopolitical: Russia State Failure, Saudi Regime Instability, Iran Regime Change, Turkey Political Breakdown, EU Fragmentation, India-Pakistan Conflict, Korean Peninsula Crisis, US-China Rupture, Iran Nuclear Acquisition
+- Energy: Oil Supply Shock
+- Breakthrough: Fusion Commercialization, Agricultural Yield, Cancer Treatment
 
 ---
 
@@ -260,4 +270,4 @@ Tracks event specification progress and methodology documentation status.
 
 ---
 
-*Last updated: December 29, 2025*
+*Last updated: December 30, 2025*
