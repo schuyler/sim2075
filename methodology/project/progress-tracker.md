@@ -7,87 +7,9 @@ tags:
 - progress
 - tracking
 - status
+- phase-1-complete
 ---
 
-# Progress Tracker
-
-Tracks event specification progress and methodology documentation status.
-
----
-
-## Summary Statistics
-
-| Metric | Count |
-|--------|-------|
-| Priority events | 20 |
-| Level 1 complete (v2 format) | 2 |
-| Level 2 complete | 0 |
-| Level 3 complete | 0 |
-| **Remaining** | **18** |
-
-**Event Completion: 10%**
-
----
-
-## Methodology Status
-
-### Framework Documents
-
-| Document | Status | Notes |
-|----------|--------|-------|
-| [[methodology/00-start-here]] | ✅ Complete | Quick orientation - start here |
-| [[methodology/02-event-template]] | ✅ Complete | Includes causal types, impact vectors |
-| [[methodology/reference/impact-estimation]] | ✅ Complete | Durability types added |
-| [[methodology/03-quality-checklist]] | ✅ Complete | Causal type checks added |
-| [[methodology/01-level-1-workflow]] | ✅ Complete | Type-specific guidance |
-
-### Supporting Documents
-
-| Document | Status | Notes |
-|----------|--------|-------|
-| [[methodology/reference/probability-estimation]] | ⚠️ Needs update | Add Type-specific guidance |
-| [[methodology/reference/factor-loadings]] | ⚠️ Needs update | Factor→state interpretation |
-| [[methodology/reference/factor-correlation-matrix]] | ✅ Complete | 12×12 Ω matrix specified; validation deferred to Phase 3 |
-| [[methodology/reference/calibration-anchors]] | ⚠️ Needs update | Add causal type classification |
-| [[methodology/concepts/gaussian-copula]] | ✅ Complete | Conceptual foundation for correlated sampling |
-| [[methodology/concepts/factor-correlation-structure]] | ✅ Complete | Design rationale for Ω vs alternatives |
-| [[methodology/concepts/epistemology]] | ✅ Complete | No changes needed |
-| [[methodology/project/research-tiers]] | ✅ Complete | No changes needed |
-| [[methodology/project/validation]] | ✅ Complete | No changes needed |
-
----
-
-## Event Status
-
-### ✅ Complete (v2 Format)
-
-| Event | Type | File | Notes |
-|-------|------|------|-------|
-| AMOC Weakening | Type 2 | [[events/climate/amoc-weakening]] | Pressure function specified |
-| Pakistan State Failure | Type 2 | [[events/geopolitical/pakistan-state-failure]] | Pressure function specified |
-
-### 🔲 Not Started (by Causal Type)
-
-**Type 1 (Stochastic):** Severe Pandemic, Oil Supply Shock
-
-**Type 2 (Threshold):** Amazon, Permafrost, Egypt, Russia, Saudi, Iran, Turkey, Dollar Crisis, Chinese Economic Crisis, EU Fragmentation, US Constitutional Crisis, Chinese Political Crisis
-
-**Type 3 (Contingent):** Taiwan Conflict, US-China Trade War, India-Pakistan, Korean Peninsula
-
-**Hybrid:** Global Financial Crisis (Type 1/2)
-
----
-
-## Next Actions
-
-1. Update probability-estimation with Type-specific guidance
-2. Update factor-loadings with factor→state interpretation
-3. Update calibration-anchors with causal types
-4. Specify Taiwan Conflict (Type 3 example)
-5. Specify Severe Pandemic (Type 1 example)
-
-
-## Progress Tracker
 # Progress Tracker
 
 Tracks event specification progress and methodology documentation status.
@@ -108,6 +30,7 @@ Tracks event specification progress and methodology documentation status.
 | **Priority events remaining** | **0** |
 
 **Priority Event Completion: 100%**
+**Critical Review Completion: 100%** (Task 2.4 complete as of 2025-12-30)
 
 ---
 
@@ -115,15 +38,15 @@ Tracks event specification progress and methodology documentation status.
 
 ### By Domain
 
-| Domain | Complete | Remaining |
-|--------|----------|-----------|
-| Climate | 3 | 0 |
-| Geopolitical | 15 | 0 |
-| Financial | 3 | 0 |
-| Health | 1 | 0 |
-| Energy | 1 | 0 |
-| Breakthrough | 5 | 0 |
-| **Total** | **28** | **0** |
+| Domain | Complete | Critical Review |
+|--------|----------|-----------------|
+| Climate | 3 | 3/3 ✅ |
+| Geopolitical | 15 | 15/15 ✅ |
+| Financial | 3 | 3/3 ✅ |
+| Health | 1 | 1/1 ✅ |
+| Energy | 1 | 1/1 ✅ |
+| Breakthrough | 5 | 5/5 ✅ |
+| **Total** | **28** | **28/28 ✅** |
 
 ### By Causal Type
 
@@ -136,137 +59,138 @@ Tracks event specification progress and methodology documentation status.
 
 ---
 
-## Methodology Status
+## Methodology Documentation Status
 
-### Framework Documents
+### Framework Documents - All Complete
 
-| Document | Status | Notes |
-|----------|--------|-------|
-| [[methodology/00-start-here]] | ✅ Complete | Quick orientation - start here |
-| [[methodology/02-event-template]] | ✅ Complete | Includes causal types, impact vectors |
-| [[methodology/reference/impact-estimation]] | ✅ Complete | Durability types added |
-| [[methodology/03-critical-review]] | ✅ Complete | Five judgment questions |
-| [[methodology/04-format-checklist]] | ✅ Complete | Format verification |
-| [[methodology/01-level-1-workflow]] | ✅ Complete | Type-specific guidance |
+| Document | Status |
+|----------|--------|
+| [[methodology/00-start-here]] | ✅ Complete |
+| [[methodology/01-level-1-workflow]] | ✅ Complete |
+| [[methodology/02-event-template]] | ✅ Complete |
+| [[methodology/03-critical-review]] | ✅ Complete |
+| [[methodology/04-format-checklist]] | ✅ Complete |
 
-### Supporting Documents
+### Reference Documents - All Complete
 
-| Document | Status | Notes |
-|----------|--------|-------|
-| [[methodology/reference/probability-estimation]] | ✅ Complete | Type-specific guidance added |
-| [[methodology/reference/factor-loadings]] | ✅ Complete | Factor→state interpretation added |
-| [[methodology/reference/factor-correlation-matrix]] | ✅ Complete | 12×12 Ω matrix specified |
-| [[methodology/reference/calibration-anchors]] | ✅ Complete | Causal types added |
-| [[methodology/reference/type-3-calibration]] | ✅ Complete | Type 3 specification guidance |
-| [[methodology/concepts/gaussian-copula]] | ✅ Complete | Correlated sampling foundation |
-| [[methodology/concepts/factor-correlation-structure]] | ✅ Complete | Design rationale for Ω |
-| [[methodology/concepts/epistemology]] | ✅ Complete | Intellectual honesty framing |
-| [[methodology/project/research-tiers]] | ✅ Complete | Level 1/2/3 definitions |
-| [[methodology/project/validation]] | ✅ Complete | Validation approaches |
+| Document | Status |
+|----------|--------|
+| [[methodology/reference/probability-estimation]] | ✅ Complete |
+| [[methodology/reference/factor-loadings]] | ✅ Complete |
+| [[methodology/reference/factor-correlation-matrix]] | ✅ Complete |
+| [[methodology/reference/calibration-anchors]] | ✅ Complete |
+| [[methodology/reference/type-3-calibration]] | ✅ Complete |
+| [[methodology/reference/impact-estimation]] | ✅ Complete |
+| [[methodology/reference/durability-types]] | ✅ Complete |
+| [[methodology/reference/aftermath-branches]] | ✅ Complete |
+| [[methodology/reference/causal-types]] | ✅ Complete |
 
-### State Model Documents
+### State Model Documents - All Complete
 
-| Document | Status | Notes |
-|----------|--------|-------|
-| [[methodology/reference/state-overview]] | ✅ Complete | Entry point |
-| [[methodology/reference/state-entities]] | ✅ Complete | 40 countries + 12 aggregates |
-| [[methodology/reference/state-variables-country]] | ✅ Complete | 63 country variables |
-| [[methodology/reference/state-variables-global]] | ✅ Complete | 42 global variables |
-| [[methodology/reference/state-dynamics]] | ✅ Complete | Variable evolution |
-| [[methodology/reference/state-transmission]] | ✅ Complete | Cross-variable effects |
-| [[methodology/reference/state-outputs]] | ✅ Complete | Output specifications |
+| Document | Status |
+|----------|--------|
+| [[methodology/reference/state-overview]] | ✅ Complete |
+| [[methodology/reference/state-entities]] | ✅ Complete |
+| [[methodology/reference/state-variables-country]] | ✅ Complete |
+| [[methodology/reference/state-variables-global]] | ✅ Complete |
+| [[methodology/reference/state-dynamics]] | ✅ Complete |
+| [[methodology/reference/state-transmission]] | ✅ Complete |
+| [[methodology/reference/state-outputs]] | ✅ Complete |
 
----
+### Concepts Documents - All Complete
 
-## Event Status Detail
-
-### ✅ Climate Events (3/3)
-
-| Event | Type | Status | Critical Review |
-|-------|------|--------|-----------------|
-| [[events/climate/amoc-weakening]] | Type 2 | ✅ Complete | ✅ Complete |
-| [[events/climate/amazon-tipping-point]] | Type 2 | ✅ Complete | ✅ Complete |
-| [[events/climate/permafrost-methane-release]] | Type 2 | ✅ Complete | ✅ Complete |
-
-### ✅ Geopolitical Events (15/15)
-
-| Event | Type | Status | Critical Review |
-|-------|------|--------|-----------------|
-| [[events/geopolitical/pakistan-state-failure]] | Type 2 | ✅ Complete | ✅ Complete |
-| [[events/geopolitical/taiwan-conflict]] | Type 3 | ✅ Complete | ✅ Complete |
-| [[events/geopolitical/egypt-state-failure]] | Type 2 | ✅ Complete | ✅ Complete |
-| [[events/geopolitical/russia-state-failure]] | Type 2 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/saudi-regime-instability]] | Type 2 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/iran-regime-change]] | Type 2 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/turkey-political-breakdown]] | Type 2 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/chinese-political-crisis]] | Type 2/3 | ✅ Complete | ✅ Complete |
-| [[events/geopolitical/eu-fragmentation]] | Type 2 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/india-pakistan-military-conflict]] | Type 3 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/korean-peninsula-crisis]] | Type 3 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/us-china-economic-rupture]] | Type 3 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/iran-nuclear-acquisition]] | Type 2/3 | ✅ Complete | 🔲 Pending |
-| [[events/geopolitical/sahel-catastrophe]] | Type 2 | ✅ Complete | ✅ Complete |
-| [[events/geopolitical/saudi-nuclear-acquisition]] | Type 3 | ✅ Complete | ✅ Complete |
-
-### ✅ Financial Events (3/3)
-
-| Event | Type | Status | Critical Review |
-|-------|------|--------|-----------------|
-| [[events/financial/global-financial-crisis]] | Type 1/2 | ✅ Complete | ✅ Complete |
-| [[events/financial/dollar-reserve-crisis]] | Type 2 | ✅ Complete | ✅ Complete |
-| [[events/financial/chinese-economic-crisis]] | Type 2 | ✅ Complete | ✅ Complete |
-
-### ✅ Health Events (1/1)
-
-| Event | Type | Status | Critical Review |
-|-------|------|--------|-----------------|
-| [[events/health/severe-pandemic]] | Type 1 | ✅ Complete | ✅ Complete |
-
-### ✅ Energy Events (1/1)
-
-| Event | Type | Status | Critical Review |
-|-------|------|--------|-----------------|
-| [[events/energy/oil-supply-shock]] | Type 1 | ✅ Complete | 🔲 Pending |
-
-### ✅ Breakthrough Events (5/5)
-
-| Event | Type | Status | Critical Review |
-|-------|------|--------|-----------------|
-| [[events/breakthrough/fusion-commercialization]] | Type 1 | ✅ Complete | 🔲 Pending |
-| [[events/breakthrough/agricultural-yield-breakthrough]] | Type 1 | ✅ Complete | 🔲 Pending |
-| [[events/breakthrough/cancer-treatment-breakthrough]] | Type 1 | ✅ Complete | 🔲 Pending |
-| [[events/breakthrough/antimicrobial-platform]] | Type 1 | ✅ Complete | ✅ Complete |
-| [[events/breakthrough/energy-storage-breakthrough]] | Type 1 | ✅ Complete | ✅ Complete |
+| Document | Status |
+|----------|--------|
+| [[methodology/concepts/synthetic-variable-problem]] | ✅ Complete |
+| [[methodology/concepts/gaussian-copula]] | ✅ Complete |
+| [[methodology/concepts/factor-correlation-structure]] | ✅ Complete |
+| [[methodology/concepts/epistemology]] | ✅ Complete |
 
 ---
 
-## Critical Review Status
+## Event Status - All Complete with Critical Review
 
-| Status | Count |
-|--------|-------|
-| ✅ Complete | 15 |
-| 🔲 Pending | 12 |
+### Climate Events (3/3)
 
-**Critical reviews completed**: 
-- Climate: AMOC Weakening, Amazon Tipping Point, Permafrost Methane Release
-- Geopolitical: Chinese Political Crisis, Sahel Catastrophe, Saudi Nuclear Acquisition, Pakistan State Failure, Taiwan Conflict, Egypt State Failure
-- Financial: Chinese Economic Crisis, Global Financial Crisis, Dollar Reserve Crisis
-- Health: Severe Pandemic
-- Breakthrough: Antimicrobial Platform, Energy Storage Breakthrough
+| Event | Type | Critical Review |
+|-------|------|-----------------|
+| [[events/climate/amoc-weakening]] | Type 2 | ✅ Complete |
+| [[events/climate/amazon-tipping-point]] | Type 2 | ✅ Complete |
+| [[events/climate/permafrost-methane-release]] | Type 2 | ✅ Complete |
 
-**Critical reviews pending** (12):
-- Geopolitical: Russia State Failure, Saudi Regime Instability, Iran Regime Change, Turkey Political Breakdown, EU Fragmentation, India-Pakistan Conflict, Korean Peninsula Crisis, US-China Rupture, Iran Nuclear Acquisition
-- Energy: Oil Supply Shock
-- Breakthrough: Fusion Commercialization, Agricultural Yield, Cancer Treatment
+### Geopolitical Events (15/15)
+
+| Event | Type | Critical Review |
+|-------|------|-----------------|
+| [[events/geopolitical/pakistan-state-failure]] | Type 2 | ✅ Complete |
+| [[events/geopolitical/taiwan-conflict]] | Type 3 | ✅ Complete |
+| [[events/geopolitical/egypt-state-failure]] | Type 2 | ✅ Complete |
+| [[events/geopolitical/russia-state-failure]] | Type 2 | ✅ Complete |
+| [[events/geopolitical/saudi-regime-instability]] | Type 2 | ✅ Complete |
+| [[events/geopolitical/iran-regime-change]] | Type 2 | ✅ Complete |
+| [[events/geopolitical/turkey-political-breakdown]] | Type 2 | ✅ Complete |
+| [[events/geopolitical/chinese-political-crisis]] | Type 2/3 | ✅ Complete |
+| [[events/geopolitical/eu-fragmentation]] | Type 2 | ✅ Complete |
+| [[events/geopolitical/india-pakistan-military-conflict]] | Type 3 | ✅ Complete |
+| [[events/geopolitical/korean-peninsula-crisis]] | Type 3 | ✅ Complete |
+| [[events/geopolitical/us-china-economic-rupture]] | Type 3 | ✅ Complete |
+| [[events/geopolitical/iran-nuclear-acquisition]] | Type 2/3 | ✅ Complete |
+| [[events/geopolitical/sahel-catastrophe]] | Type 2 | ✅ Complete |
+| [[events/geopolitical/saudi-nuclear-acquisition]] | Type 3 | ✅ Complete |
+
+### Financial Events (3/3)
+
+| Event | Type | Critical Review |
+|-------|------|-----------------|
+| [[events/financial/global-financial-crisis]] | Type 1/2 | ✅ Complete |
+| [[events/financial/dollar-reserve-crisis]] | Type 2 | ✅ Complete |
+| [[events/financial/chinese-economic-crisis]] | Type 2 | ✅ Complete |
+
+### Health Events (1/1)
+
+| Event | Type | Critical Review |
+|-------|------|-----------------|
+| [[events/health/severe-pandemic]] | Type 1 | ✅ Complete |
+
+### Energy Events (1/1)
+
+| Event | Type | Critical Review |
+|-------|------|-----------------|
+| [[events/energy/oil-supply-shock]] | Type 1 | ✅ Complete |
+
+### Breakthrough Events (5/5)
+
+| Event | Type | Critical Review |
+|-------|------|-----------------|
+| [[events/breakthrough/fusion-commercialization]] | Type 1 | ✅ Complete |
+| [[events/breakthrough/agricultural-yield-breakthrough]] | Type 1 | ✅ Complete |
+| [[events/breakthrough/cancer-treatment-breakthrough]] | Type 1 | ✅ Complete |
+| [[events/breakthrough/antimicrobial-platform]] | Type 1 | ✅ Complete |
+| [[events/breakthrough/energy-storage-breakthrough]] | Type 1 | ✅ Complete |
 
 ---
 
-## Next Actions
+## Critical Review Standards Applied
 
-1. Complete critical review for remaining 20 events
-2. Apply Task 1.7 findings (Type 3 non-discontinuity resolutions) to Taiwan Conflict
-3. Begin Phase 2: Prototype Implementation
-4. Identify candidates for Level 2 upgrade based on sensitivity analysis
+All 28 events have been reviewed against:
+
+1. **Discontinuity verification**: Event represents genuine system break, not severe-but-recoverable stress
+2. **Probability-structure consistency**: Estimates match causal type and pressure dynamics
+3. **Resolution distinctiveness**: Branches produce qualitatively different outcomes
+4. **Case Against documentation**: Strongest objections stated with counterarguments
+5. **Probability Evolution**: Time-varying estimates across simulation horizon
+6. **Observable variables**: Synthetic variables replaced per [[methodology/concepts/synthetic-variable-problem]]
+
+---
+
+## Phase 1 Complete - Next Steps
+
+Phase 1 (Level 1 event specification) is complete. Next actions:
+
+1. **Phase 2: Prototype Implementation** - Build Monte Carlo framework
+2. **Sensitivity Analysis** - Identify which events drive tail outcomes
+3. **Level 2 Candidates** - Upgrade high-impact events based on analysis
+4. **Validation** - Compare aggregate trajectories against historical patterns
 
 ---
 
