@@ -126,6 +126,34 @@ This ranking seems appropriate—cancer treatment breakthrough is comparable to 
 - **Resistance mechanisms**: Will tumors evolve resistance to platform approaches as they do to targeted therapies?
 - **Competitive technologies**: Could radical life extension or senolytic therapies change the cancer mortality landscape through different mechanisms?
 
+### Case Against This Specification
+
+**Platform framing may be biologically implausible**: Cancer is fundamentally heterogeneous—each cancer type has distinct driver mutations, microenvironment, and resistance mechanisms. A "platform" that works across types may not exist. Checkpoint inhibitors were touted as a platform but work best only in specific contexts (high mutational burden). The same fate likely awaits mRNA vaccines and cell therapies. The 1.0%/year estimate may be optimistic for a true platform.
+
+**Reference class conflation**: The medical breakthrough reference class mixes single-disease solutions (polio vaccine, HIV antiretrovirals) with platform technologies (mRNA). These have different base rates. By counting both in the same reference class, the estimate may be inflated.
+
+**Manufacturing cost is structural, not temporary**: CAR-T remains $400K+ seven years after approval. mRNA cancer vaccines are individualized per patient—there may be no manufacturing learning curve because each "batch" is unique. The Economically Concentrated branch (20%) may be significantly understated; 35-50% may be more realistic.
+
+**Detection breakthrough may matter more**: Pan-cancer early detection (liquid biopsy) might achieve larger population health gains than treatment breakthrough because catching cancer early is more important than treating it late. By focusing on treatment, this specification may be modeling the less impactful pathway.
+
+**Counterargument**: The concerns are valid but the wide probability range (0.5-2.0%) accommodates them. If platform approaches prove less tractable, probability trends toward the low end. The specification explicitly acknowledges tumor heterogeneity challenges and cost barriers. Platform technology has precedent (mRNA demonstrated adaptability across COVID variants and is being tested for cancer, flu, and other applications). The estimate is a reasonable central case with appropriate uncertainty.
+
+### Probability Evolution
+
+As a Type 1 stochastic event, probability is relatively stable but influenced by clinical trial results and competitor technologies:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2035 | 0.9-1.5% | Active clinical trials (mRNA vaccines, next-gen CAR-T); results will validate or invalidate platform hypothesis |
+| 2035-2050 | 0.8-1.3% | Path-dependent on 2025-2035 trial results; either validated platform or pivot to incremental approaches |
+| 2050-2075 | 0.6-1.2% | If no breakthrough by 2050, either structural barriers exist or detection/prevention approaches dominate |
+
+**Key inflection points**:
+- mRNA cancer vaccine Phase III results (2025-2028): Success validates platform; failure redirects investment
+- CAR-T solid tumor breakthroughs: Would dramatically increase probability
+- Liquid biopsy pan-cancer screening approval: May reduce treatment breakthrough value/investment
+- Manufacturing cost breakthrough: Would increase probability of Accessible Deployment branch
+
 ---
 
 ## Factor Loadings
@@ -493,7 +521,8 @@ Both within stated range. Analysts would likely agree on:
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-26 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Specific mRNA cancer vaccine trial results; CAR-T solid tumor progress; detailed cost modeling for fiscal impacts |
 
@@ -524,6 +553,7 @@ Both within stated range. Analysts would likely agree on:
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Critical review: added Case Against and Probability Evolution sections | Task 2.4 systematic review |
 | 2025-12-26 | Initial Level 1 specification | Task 2.2.3 - third Type 1 breakthrough event |
 
 ---

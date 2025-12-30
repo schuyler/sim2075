@@ -392,6 +392,22 @@ long-term productivity improvement (20+ year lag)
 
 **Question 5 (Analyst agreement)**: ✅ Passed. Derivation is auditable; reasonable analysts could disagree by ~2× on probability, which is within stated range.
 
+### Probability Evolution
+
+As a Type 1 stochastic event, probability is relatively stable but influenced by research progress and climate urgency:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2035 | 1.2-1.8% | CRISPR maturation; multiple active research programs; climate urgency driving funding |
+| 2035-2050 | 1.0-1.5% | Either breakthrough occurred or research plateaued; depends on 2025-2035 progress |
+| 2050-2075 | 0.8-1.5% | Path-dependent; if no breakthrough by 2050, may indicate structural barriers |
+
+**Key inflection points**:
+- CRISPR regulatory decisions: Harmonization accelerates; fragmentation slows deployment
+- CGIAR/BMGF program results: Success validates approach; failure redirects research
+- Climate stress events: Major droughts accelerate urgency and funding
+- Private sector engagement: Seed company investment signals commercial viability
+
 ---
 
 ## Research Status
@@ -399,7 +415,8 @@ long-term productivity improvement (20+ year lag)
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-26 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | CGIAR drought tolerance program results; CRISPR crop development pipeline; specific pathway probability decomposition |
 
@@ -429,6 +446,7 @@ long-term productivity improvement (20+ year lag)
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Critical review: added Probability Evolution section | Task 2.4 systematic review |
 | 2025-12-26 | Initial Level 1 specification | Task 2.2.2 - second Type 1 breakthrough event |
 
 ---
