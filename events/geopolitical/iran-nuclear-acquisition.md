@@ -58,23 +58,29 @@ Iran is already a threshold state with substantial enrichment capability, stockp
 
 ### Pressure Function
 
+Per [[methodology/concepts/synthetic-variable-problem]], we use observable indicators. Iran nuclear decision is driven by security environment and regime calculus, proxied through:
+
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `iran.sanctions_level` | 0.30 | linear | Higher isolation reduces diplomatic alternatives; JCPOA collapse demonstrated |
-| `israel.external_conflict_involvement` | 0.25 | exponential | Proxy for strike threat; accelerates as Israel engages regionally |
-| `iran.regime_stability` | 0.20 | inverse | Lower stability → incentive for nuclear security guarantee ("rally" effect) |
-| `global.us_china_tension` | 0.15 | linear | Higher tension = US distracted, China provides diplomatic cover |
-| `saudi_arabia.military_spending` | 0.10 | linear | Saudi military buildup increases Iranian threat perception |
+| `irn.sanctions_level` | 0.30 | linear | Higher isolation reduces diplomatic alternatives; JCPOA collapse demonstrated |
+| `isr.external_conflict_involvement` | 0.25 | exponential | Proxy for strike threat; accelerates as Israel engages regionally |
+| `irn.protest_intensity_annual` | 0.15 | inverse | Lower protest = more stable regime with bandwidth for nuclear decision |
+| `irn.years_since_irregular_transition` | 0.10 | inverse | Aging regime may seek nuclear guarantee |
+| `sau.military_spending` | 0.10 | linear | Saudi military buildup increases Iranian threat perception |
+| `global_credit_spread` | 0.10 | linear | Proxy for US-China distraction; higher stress = less crisis management capacity |
 
 **Pressure calculation**:
 ```
 pressure = 0.30 × (sanctions_level / 100)
          + 0.25 × exp(israel_conflict / 2) / exp(2)  # accelerating
-         + 0.20 × (100 - regime_stability) / 100
-         + 0.15 × (us_china_tension / 100)
+         + 0.15 × (100 - protest_intensity_annual) / 100  # inverse: stability enables
+         + 0.10 × (years_since_irregular_transition / 50)  # 46 years since 1979
          + 0.10 × (saudi_military / baseline_military)
+         + 0.10 × (global_credit_spread / 300)
 ```
 *Normalized to 0-100 scale*
+
+**Proxy limitations**: True "regime security perception" and "weaponization intent" are unobservable. We proxy through sanctions (isolation), Israeli activity (threat), Saudi spending (regional competition), and domestic stability indicators. The key unobservables—Supreme Leader calculus, IRGC faction preferences—cannot be directly captured. Probability calibration relies on reference class reasoning from other proliferation cases (North Korea, Pakistan, Libya).
 
 ### Threshold
 
@@ -169,11 +175,12 @@ resolution_probability_rationale:
 ### Current Pressure Estimate
 
 Current pressure: ~50/100 (elevated but below threshold)
-- `iran.sanctions_level`: ~75 (comprehensive Western sanctions)
-- `israel.external_conflict_involvement`: ~2.0 (active regional operations)
-- `iran.regime_stability`: ~55 (stressed but functional)
-- `global.us_china_tension`: ~60 (elevated)
-- `saudi_arabia.military_spending`: ~6% GDP (elevated but stable)
+- `irn.sanctions_level`: ~80 (comprehensive Western sanctions)
+- `isr.external_conflict_involvement`: ~2.5 (active regional operations)
+- `irn.protest_intensity_annual`: ~40 (elevated post-2022; suppressed but present)
+- `irn.years_since_irregular_transition`: 46 years (since 1979 revolution)
+- `sau.military_spending`: ~6% GDP (elevated but stable)
+- `global_credit_spread`: ~120 bps (normal range)
 
 ### Derivation
 
@@ -204,6 +211,35 @@ Per [[methodology/reference/priority-event-ranking]]:
 - **Supreme Leader succession**: New leader may recalculate
 - **Regional normalization**: Abraham Accords expansion reduces or increases pressure?
 - **IRGC institutional interests**: Does IRGC benefit more from threshold or possession?
+
+### Case Against This Specification
+
+**Threshold status is optimal for Iran**: Iran currently enjoys the benefits of nuclear capability (leverage, deterrence perception) without the costs of possession (maximum isolation, regional cascade trigger). Rational actors should prefer this stable equilibrium. The 1.5%/year estimate may be too high for crossing a threshold that serves Iranian interests to preserve.
+
+**The fatwa is more binding than outsiders assume**: Supreme Leader Khamenei has issued a fatwa declaring nuclear weapons un-Islamic. Western analysts tend to dismiss this as tactical, but religious rulings carry weight in the Islamic Republic's legitimacy structure. Crossing this line would require theological reinterpretation that may be genuinely difficult.
+
+**International pressure has consistently delayed, not accelerated**: When pressure increases, Iran has accelerated enrichment but not weaponized. The pressure-to-weaponization link may be weaker than the pressure function assumes. Iran may absorb very high pressure while remaining at threshold.
+
+**Regional cascade fears are overstated**: Pakistan's 1998 tests didn't trigger regional cascade despite predictions. Saudi nuclear acquisition faces enormous obstacles (technical, political, international). The cascade effects may not materialize even with Iranian acquisition.
+
+**Counterargument**: North Korea demonstrates that threshold states do cross the Rubicon when incentives align. Iran's security environment has deteriorated since JCPOA collapse. The fatwa can be reinterpreted (defensive weapons, existential threat exception). The estimate acknowledges uncertainty in the 0.8-2.5% range.
+
+### Probability Evolution
+
+As a Type 2/3 hybrid, probability depends on pressure trajectory and decision windows:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2030 | 1.5-2.0% | JCPOA dead; enrichment advancing; succession approaching |
+| 2030-2040 | 1.2-2.0% | Post-succession period; depends on new leader's calculus |
+| 2040-2050 | 1.0-1.8% | Path-dependent on whether acquisition occurred or regional dynamics shifted |
+| 2050-2075 | 0.5-1.5% | If no acquisition by 2050, regional equilibrium may have stabilized |
+
+**Key inflection points**:
+- Supreme Leader succession (whenever it occurs): Window for policy recalculation
+- Israeli strike decision: Would accelerate timeline if program survives
+- Saudi nuclear pathway activation: Would increase pressure substantially
+- US-Iran diplomatic breakthrough: Would decrease pressure substantially
 
 ---
 
@@ -578,7 +614,8 @@ These events have complex bidirectional effects:
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-25 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | IAEA technical assessments; Israeli strike capability analysis; Saudi nuclear pathway investigation; Pakistan assistance history |
 
@@ -608,6 +645,7 @@ These events have complex bidirectional effects:
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Critical review: replaced synthetic variables (regime_stability, us_china_tension) with observables; added Case Against and Probability Evolution sections | Task 2.4 systematic review |
 | 2025-12-25 | Initial Level 1 specification | Task 2.1.20 |
 
 ---

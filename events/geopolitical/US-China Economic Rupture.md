@@ -523,6 +523,22 @@ aftermath_probability_rationale: |
 | Rapid supply chain diversification (5+ years) | ↓ | -30% impact severity |
 | Chinese financial/Treasury retaliation threat credible | ↓ | -25% probability given window |
 
+### Probability Evolution
+
+As a Type 3 event, probability evolution depends on structural factors affecting both window probability and discontinuity-given-window probability:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2030 | 1.5-2.0% | Elevated baseline; semiconductor controls expanding; supply chains still deeply integrated |
+| 2030-2040 | 1.2-1.8% | Gradual decoupling reduces stakes; but strategic competition intensifies |
+| 2040-2050 | 0.8-1.5% | More diversified supply chains reduce both likelihood and impact |
+| 2050-2075 | 0.5-1.2% | Depends heavily on whether bloc structure or integration prevails |
+
+**Key inflection points**:
+- Allied alignment crystallization (EU, Japan, Korea) affects scope and feasibility
+- Supply chain diversification progress affects both stakes and vulnerability
+- Taiwan status affects whether economic or military pathway dominates
+
 ---
 
 ## Sensitivity Analysis Notes
@@ -563,7 +579,8 @@ Key uncertainties for Phase 3 sensitivity testing:
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-22 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Supply chain adjustment timelines; pharmaceutical/rare earth vulnerability; Chinese retaliation capacity |
 
@@ -586,3 +603,12 @@ Key uncertainties for Phase 3 sensitivity testing:
 ---
 
 *See [[methodology/reference/type-3-calibration]] for methodology | [[events/geopolitical/taiwan-conflict]] for comparable Type 3 specification*
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Critical review complete; added changelog | Task 2.4 systematic review |
+| 2025-12-22 | Initial Level 1 specification | Type 3 contingent event |
