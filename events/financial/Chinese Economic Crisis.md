@@ -698,4 +698,13 @@ However, uncertainty is high because this depends heavily on leadership faction 
 
 ---
 
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Verified critical review complete | Task 2.4 systematic review |
+| 2025-12-29 | Full Level 1 specification with critical review | Task 2.1 financial crisis events |
+
+---
+
 *Cross-references*: [[methodology/reference/causal-types]], [[methodology/reference/probability-estimation]], [[methodology/reference/factor-loadings]], [[events/financial/global-financial-crisis]], [[events/financial/dollar-reserve-crisis]], [[events/geopolitical/taiwan-conflict]], [[research/21st-century-assessment]]

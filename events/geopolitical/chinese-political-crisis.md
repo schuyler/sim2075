@@ -53,15 +53,20 @@ Resolution sampled → Aftermath branches
 
 ### Pressure Function
 
+Per [[methodology/concepts/synthetic-variable-problem]], we use observable indicators rather than synthetic indices like `regime_stability` or `institutional_quality`. Chinese political crisis pressure is proxied through observable economic and political stress indicators:
+
 | State Variable | Weight | Transform | Rationale |
 |----------------|--------|-----------|-----------|
-| `chn.regime_stability` | 0.35 | inverse | Composite legitimacy metric |
-| `chn.gdp_growth` | 0.25 | deviation from 5% baseline | Performance legitimacy; social contract requires growth |
-| `chn.protest_activity` | 0.20 | linear | Observable unrest; cross-class coordination multiplies impact |
-| `chn.unemployment_rate` | 0.15 | linear | Economic stress; youth alienation |
-| `chn.institutional_quality` | 0.05 | inverse | Governance decay signal |
+| `chn.gdp_growth` | 0.30 | inverse (below 3% threshold) | Performance legitimacy; social contract requires growth; primary CCP legitimacy source |
+| `chn.unemployment_rate` | 0.20 | linear | Economic stress indicator; youth unemployment particularly destabilizing |
+| `chn.protest_intensity_annual` | 0.20 | linear | Observable unrest; cross-class coordination multiplies impact |
+| `chn.years_since_irregular_transition` | 0.15 | inverse | Proxy for succession risk; longer tenure creates succession uncertainty |
+| `chn.inflation_rate` | 0.10 | linear | Economic stress; affects popular grievance |
+| `chn.fdi_net` | 0.05 | inverse | Elite confidence proxy; capital flight signals loss of confidence |
 
-*Note: `chn.regime_stability` is affected by CHINESE_ECONOMIC_CRISIS through cascade (+2.0% probability modifier for 5 years).*
+**Proxy limitations**: True regime stability depends on unobservable factors: elite cohesion, military loyalty, internal party dynamics. These cannot be directly measured. We proxy through their downstream effects: economic performance (legitimacy), protest activity (popular discontent), and FDI flows (elite/business confidence). The pressure function captures stress symptoms rather than underlying political dynamics. Probability calibration relies primarily on reference class reasoning from other authoritarian regime transitions.
+
+*Note: CHINESE_ECONOMIC_CRISIS cascade adds +2.0% probability modifier for 5 years through its impact on multiple observable indicators.*
 
 ### Threshold Specification
 
@@ -149,6 +154,35 @@ This is low because we're modeling actual regime discontinuity — the CCP ceasi
 - More likely than: Permafrost Methane Release (~0.3% for severe)
 
 CCP is more stable than these other regimes. The comparison to climate tipping points reflects that we're modeling rare, high-consequence discontinuities.
+
+### Case Against This Specification
+
+**CCP has exceptional survival capacity**: The party has the most sophisticated surveillance apparatus in history, massive financial reserves, no organized opposition, and military thoroughly integrated with party leadership. Every prediction of CCP collapse since 1989 has been wrong. The 0.4%/year estimate may be too high for a regime with this much adaptive capacity.
+
+**The discontinuity definition may be too narrow**: If the only event that counts is complete regime change, we're modeling a tail so extreme it approaches zero probability. Meaningful political crises that the CCP survives through extraordinary measures (another Tiananmen, Xi removal by elite faction, etc.) are excluded. This may undercount politically significant events.
+
+**Reference class is weak**: Comparing CCP to USSR or single-party states generally conflates very different regimes. China has advantages the USSR lacked: market economy integration, national unity, no satellite empire to manage, and much greater surveillance technology. The reference class may not apply.
+
+**Post-Xi succession may be managed**: The assumption that Xi's power concentration creates succession fragility may be wrong. The party may have internal succession mechanisms that are not visible externally. Authoritarian succession in China (Mao → Deng → Jiang → Hu → Xi) has been orderly compared to other systems.
+
+**Counterargument**: The concerns are valid, which is why the estimate is low (0.4%, implying only ~10% cumulative probability over 25 years). The USSR also appeared impregnable in 1985. Regimes appear stable until they aren't—the threshold dynamics capture this discontinuity. We acknowledge low confidence and wide uncertainty range (0.2-0.8%).
+
+### Probability Evolution
+
+As a Type 2/3 hybrid, probability varies with pressure accumulation and succession dynamics:
+
+| Period | Annual Probability | Rationale |
+|--------|-------------------|-----------|
+| 2025-2030 | ~0.3-0.4% | Current leadership stable; succession deferred |
+| 2030-2040 | ~0.4-0.6% | Xi succession window; economic stress likely elevated |
+| 2040-2050 | ~0.3-0.5% | Depends on succession outcome and economic trajectory |
+| 2050-2075 | ~0.2-0.5% | Path-dependent on whether transition occurred or regime adapted |
+
+**Key inflection points**:
+- Xi succession: Major vulnerability window whenever it occurs
+- Economic crisis: CHINESE_ECONOMIC_CRISIS would add +2% for 5 years
+- Taiwan conflict outcome: Defeat would add +3%; victory would reduce probability
+- Generational elite turnover: Creates potential for factional conflict
 
 ---
 
@@ -492,10 +526,11 @@ Economic crisis does NOT automatically produce political crisis — regime may s
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-20 |
-| **Revision note** | Removed Stabilization resolution — if regime survives, threshold wasn't crossed. Event now models only genuine regime discontinuity. Probability lowered to 0.4% (from 0.8%). Tightened discontinuity requirement. |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
+| **Revision note** | Replaced synthetic variables (regime_stability, institutional_quality) with observables in pressure function. Added Case Against and Probability Evolution sections. |
 | **Upgrade candidate** | Yes |
-| **Upgrade rationale** | High-impact event; Level 2 could model succession scenarios and military loyalty |
+| **Upgrade rationale** | High-impact event; Level 2 could model succession scenarios and military loyalty. Impact vector synthetic variables (state_capacity, civil_liberties) need replacement in Level 2. |
 
 ## Sources
 
@@ -523,3 +558,13 @@ Economic crisis does NOT automatically produce political crisis — regime may s
 ---
 
 *Cross-references*: [[events/financial/chinese-economic-crisis]], [[events/geopolitical/taiwan-conflict]], [[methodology/reference/causal-types]], [[methodology/reference/type-3-calibration]], [[research/21st-century-assessment]]
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Critical review: replaced synthetic variables in pressure function with observables; added Case Against and Probability Evolution sections; noted impact vector synthetic variables for Level 2 | Task 2.4 systematic review |
+| 2025-12-20 | Removed Stabilization resolution; tightened discontinuity requirement; lowered probability to 0.4% | Consistency with "discontinuity means discontinuity" principle |
+| 2025-12-18 | Initial Level 1 specification | Task 2.1 geopolitical events |

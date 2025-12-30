@@ -567,3 +567,12 @@ This ordering suggests P(Bretton Woods III) < P(Managed) < P(Disorderly), with B
 ---
 
 *Cross-references*: [[methodology/reference/causal-types]], [[methodology/reference/probability-estimation]], [[methodology/reference/factor-loadings]], [[events/financial/global-financial-crisis]], [[research/brics-de-dollarization]]
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Verified critical review complete | Task 2.4 systematic review |
+| 2025-12-30 | Full Level 1 specification with critical review | Task 2.1 financial crisis events |

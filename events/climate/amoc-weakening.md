@@ -273,7 +273,8 @@ European agriculture severely disrupted:
 | Field | Value |
 |-------|-------|
 | **Tier** | Level 1 |
-| **Last updated** | 2025-12-17 |
+| **Last updated** | 2025-12-30 |
+| **Critical review** | Complete |
 | **Upgrade candidate** | Yes |
 | **Upgrade rationale** | Threshold location is load-bearing uncertainty; recent research suggests tipping may be closer than IPCC estimates |
 
@@ -290,3 +291,12 @@ European agriculture severely disrupted:
 - Will early warning signals provide advance notice?
 - How does AMOC interact with other tipping elements (cascading)?
 - What is realistic European adaptation capacity?
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-30 | Critical review complete; verified Case Against and Probability Evolution present | Task 2.4 systematic review |
+| 2025-12-17 | Initial Level 1 specification | Task 2.1 climate tipping point |
