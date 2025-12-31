@@ -23,8 +23,8 @@ Tracks event specification progress and methodology documentation status.
 | Priority events (original 20) | 20 |
 | Priority events Level 1 complete | 20 |
 | Breakthrough events Level 1 complete | 5 |
-| Additional events Level 1 complete | 2 |
-| **Total Level 1 complete** | **27** |
+| Additional events Level 1 complete | 4 |
+| **Total Level 1 complete** | **29** |
 | Level 2 complete | 0 |
 | Level 3 complete | 0 |
 | **Priority events remaining** | **0** |
@@ -41,12 +41,12 @@ Tracks event specification progress and methodology documentation status.
 | Domain | Complete | Critical Review |
 |--------|----------|-----------------|
 | Climate | 3 | 3/3 ✅ |
-| Geopolitical | 15 | 15/15 ✅ |
+| Geopolitical | 16 | 16/16 ✅ |
 | Financial | 3 | 3/3 ✅ |
 | Health | 1 | 1/1 ✅ |
 | Energy | 1 | 1/1 ✅ |
 | Breakthrough | 5 | 5/5 ✅ |
-| **Total** | **28** | **28/28 ✅** |
+| **Total** | **29** | **29/29 ✅** |
 
 ### By Causal Type
 
@@ -118,7 +118,7 @@ Tracks event specification progress and methodology documentation status.
 | [[events/climate/amazon-tipping-point]] | Type 2 | ✅ Complete |
 | [[events/climate/permafrost-methane-release]] | Type 2 | ✅ Complete |
 
-### Geopolitical Events (15/15)
+### Geopolitical Events (16/16)
 
 | Event | Type | Critical Review |
 |-------|------|-----------------|
@@ -137,6 +137,7 @@ Tracks event specification progress and methodology documentation status.
 | [[events/geopolitical/iran-nuclear-acquisition]] | Type 2/3 | ✅ Complete |
 | [[events/geopolitical/sahel-catastrophe]] | Type 2 | ✅ Complete |
 | [[events/geopolitical/saudi-nuclear-acquisition]] | Type 3 | ✅ Complete |
+| [[events/geopolitical/us-constitutional-crisis]] | Type 2/3 | ✅ Complete |
 
 ### Financial Events (3/3)
 
@@ -172,7 +173,7 @@ Tracks event specification progress and methodology documentation status.
 
 ## Critical Review Standards Applied
 
-All 28 events have been reviewed against:
+All 29 events have been reviewed against:
 
 1. **Discontinuity verification**: Event represents genuine system break, not severe-but-recoverable stress
 2. **Probability-structure consistency**: Estimates match causal type and pressure dynamics

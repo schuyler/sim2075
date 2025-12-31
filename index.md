@@ -160,6 +160,7 @@ Events organized by domain. Each specifies causal type, probability, factor load
 | [[events/geopolitical/iran-nuclear-acquisition]] | Type 2/3 | ~1.5% | Level 1 complete |
 | [[events/geopolitical/sahel-catastrophe]] | Type 2 | ~1.8% | Level 1 complete |
 | [[events/geopolitical/saudi-nuclear-acquisition]] | Type 3 | ~0.5% | Level 1 complete |
+| [[events/geopolitical/us-constitutional-crisis]] | Type 2/3 | ~0.5% | Level 1 complete |
 
 ### Financial Events
 

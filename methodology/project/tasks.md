@@ -41,7 +41,7 @@ Tasks required before or alongside Phase 2 implementation. See analysis in sessi
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
 | **4.1** | **Prototype scope decision**: Decide between (A) dynamics-free v0.1 that validates factor sampling and event firing, or (B) parameterization sprint before implementation. Document decision and rationale. | — | 🔲 |
-| **4.2** | **Event catalog compilation**: Extract 28 event specifications from markdown to machine-readable format (JSON/YAML). Include probabilities, factor loadings, impact vectors, cascade effects. | — | 🔲 |
+| **4.2** | **Event catalog compilation**: Extract 29 event specifications from markdown to machine-readable format (JSON/YAML). Include probabilities, factor loadings, impact vectors, cascade effects. | — | 🔲 |
 | **4.3** | **Initial conditions document**: Gather 2025 baseline values for prototype scope (15 countries × ~18 variables + ~22 global = ~300 values). Document sources. Placeholder values acceptable for v0.1. | 4.1 | 🔲 |
 | **4.4** | **Dynamics parameterization**: Specify parameters from [[methodology/reference/state-dynamics]] §10: country-specific equilibria, reversion speeds, tipping thresholds, policy reaction coefficients. Can use simplified defaults for v0.1. | 4.1, 4.3 | 🔲 |
 
@@ -68,7 +68,7 @@ Tasks required before or alongside Phase 2 implementation. See analysis in sessi
 
 ### Additional Events
 
-Candidates for expanding beyond 28 current events:
+Candidates for expanding beyond 29 current events:
 
 | Event | Type | Source | Notes |
 |-------|------|--------|-------|
