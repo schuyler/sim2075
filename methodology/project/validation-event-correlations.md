@@ -156,6 +156,8 @@ After implementing fixes, verify:
 
 ## Related Documents
 
+- [[methodology/project/validation-findings-report]] — Detailed analysis with recommendations
+- [[methodology/project/validation-correlation-matrix-data]] — Raw correlation matrices and loadings
 - [[methodology/reference/factor-correlation-matrix]] — Factor Ω specification
 - [[methodology/reference/factor-loadings]] — Factor loading guidance
 - [[methodology/project/tasks]] — Task tracking
