@@ -148,11 +148,13 @@ As a Type 1 stochastic event, probability is relatively stable but influenced by
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_TECH** | 0.70 | Primary driver: R&D investment, scientific progress, engineering breakthroughs cluster together; high F_TECH year means accelerated progress across frontier technologies |
-| **F_FIN** | 0.35 | Capital availability for long-horizon, capital-intensive development; private fusion ventures require sustained investment through long development cycles |
-| **F_GPT** | 0.20 | Great power tension affects technology sharing, international collaboration (ITER), and may accelerate national programs through competition |
+| **F_TECH** | 0.56 | Primary driver: R&D investment, scientific progress, engineering breakthroughs cluster together; high F_TECH year means accelerated progress across frontier technologies |
+| **F_FIN** | 0.28 | Capital availability for long-horizon, capital-intensive development; private fusion ventures require sustained investment through long development cycles |
+| **F_GPT** | 0.16 | Great power tension affects technology sharing, international collaboration (ITER), and may accelerate national programs through competition |
 | F_CLIM | 0.00 | Climate stress doesn't accelerate fusion timeline (unlike solar, which benefits from policy urgency) |
 | F_HLTH | 0.00 | No pathway |
 | F_FOOD | 0.00 | No pathway |
@@ -163,7 +165,7 @@ As a Type 1 stochastic event, probability is relatively stable but influenced by
 | F_SSA | 0.00 | No pathway |
 | F_LAM | 0.00 | No pathway |
 
-**Sum of squared loadings**: 0.49 + 0.12 + 0.04 = 0.65 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (breakthrough target); scale factor = 0.80 from original loadings
 
 ### Loading Interpretation (Type 1)
 

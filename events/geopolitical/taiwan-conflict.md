@@ -149,12 +149,14 @@ For Type 3 events, the relevant evolution question is how window probability cha
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 3 target (ΛΩΛᵀ)ᵢᵢ = 0.45*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_EAS** | 0.80 | Regional instability directly relevant |
-| **F_GPT** | 0.70 | Great power tension is primary driver |
-| **F_FIN** | 0.20 | Economic stress may affect calculus but secondary |
-| **F_TECH** | 0.15 | Semiconductor competition adds stakes |
+| **F_EAS** | 0.38 | Regional instability directly relevant |
+| **F_GPT** | 0.33 | Great power tension is primary driver |
+| **F_FIN** | 0.09 | Economic stress may affect calculus but secondary |
+| **F_TECH** | 0.07 | Semiconductor competition adds stakes |
 | F_CLIM | 0.00 | No direct pathway |
 | F_HLTH | 0.00 | No direct pathway |
 | F_FOOD | 0.00 | No direct pathway |
@@ -164,7 +166,7 @@ For Type 3 events, the relevant evolution question is how window probability cha
 | F_SSA | 0.00 | No direct pathway |
 | F_LAM | 0.00 | No direct pathway |
 
-**Sum of squared loadings**: 0.64 + 0.49 + 0.04 + 0.02 = 1.19 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.47 from original loadings
 
 ---
 
@@ -318,6 +320,7 @@ Conflict triggers capital flight, currency volatility, and risk repricing. `glob
 |------|--------|-----------|
 | 2025-12-22 | Initial Level 1 specification | Type 3 worked example |
 | 2025-12-22 | Revised resolution structure | Removed status quo as resolution; added great power settlement frame |
+| 2025-12-30 | Variance allocation: scaled loadings | Task 3.11 - Factor-explained variance reduced to Type 3 target (0.45) per variance allocation framework |
 | 2025-12-30 | Critical review complete | Task 2.4.3 - Fixed event/variable references; added formal Case Against and Window Evolution sections |
 
 ---

@@ -166,22 +166,24 @@ For Type 2 events, probability varies with pressure accumulation.
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_SAS** | 0.71 | This IS the South Asian anchor crisis; dominant regional loading |
-| **F_FOOD** | 0.42 | Indus water-agriculture nexus is core vulnerability |
-| **F_CLIM** | 0.38 | Glacial melt, monsoon variability, flood risk |
-| **F_FIN** | 0.29 | Chronic fiscal crisis; IMF dependency |
-| **F_GPT** | 0.21 | US-China competition affects aid flows |
-| **F_MENA** | 0.17 | Afghan border, Gulf remittances |
-| **F_HLTH** | 0.13 | Healthcare vulnerability, population density |
-| **F_EAS** | 0.08 | Via China relationship |
-| **F_TECH** | 0.04 | Marginal |
-| **F_EUR** | 0.04 | Diaspora link |
+| **F_SAS** | 0.43 | This IS the South Asian anchor crisis; dominant regional loading |
+| **F_FOOD** | 0.26 | Indus water-agriculture nexus is core vulnerability |
+| **F_CLIM** | 0.23 | Glacial melt, monsoon variability, flood risk |
+| **F_FIN** | 0.18 | Chronic fiscal crisis; IMF dependency |
+| **F_GPT** | 0.13 | US-China competition affects aid flows |
+| **F_MENA** | 0.10 | Afghan border, Gulf remittances |
+| **F_HLTH** | 0.08 | Healthcare vulnerability, population density |
+| **F_EAS** | 0.05 | Via China relationship |
+| **F_TECH** | 0.02 | Marginal |
+| **F_EUR** | 0.02 | Diaspora link |
 | F_SSA | 0.00 | No link |
 | F_LAM | 0.00 | No link |
 
-**Sum of squared loadings**: 0.94 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.61 from original loadings
 
 ---
 
@@ -346,6 +348,7 @@ For Type 2 events, probability varies with pressure accumulation.
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2025-12-17 | Initial Level 1 specification | Type 2 state failure template |
+| 2025-12-30 | Variance allocation: scaled loadings | Task 3.11 - Factor-explained variance reduced to Type 2 target (0.65) per variance allocation framework |
 | 2025-12-30 | Critical review complete | Task 2.4.8 - Added Case Against, Probability Evolution; replaced regime_stability with observable indicators; fixed event references |
 
 ---

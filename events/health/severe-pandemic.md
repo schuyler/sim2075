@@ -160,14 +160,16 @@ The trend is speculative. Treating the rate as stable at 2.0% is defensible give
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 1 target (ΛΩΛᵀ)ᵢᵢ = 0.75*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_CLIM** | 0.50 | Ecological disruption increases zoonotic spillover |
-| **F_HLTH** | 0.45 | Affects outbreak→pandemic escalation |
-| **F_FOOD** | 0.40 | Agricultural intensification, wet markets |
-| **F_FIN** | 0.20 | Economic stress reduces health investment |
-| **F_GPT** | 0.15 | Great power tension impedes cooperation |
-| **F_TECH** | 0.05 | Dual-use research risk (marginal) |
+| **F_CLIM** | 0.44 | Ecological disruption increases zoonotic spillover |
+| **F_HLTH** | 0.40 | Affects outbreak→pandemic escalation |
+| **F_FOOD** | 0.35 | Agricultural intensification, wet markets |
+| **F_FIN** | 0.18 | Economic stress reduces health investment |
+| **F_GPT** | 0.13 | Great power tension impedes cooperation |
+| **F_TECH** | 0.04 | Dual-use research risk (marginal) |
 | F_SAS | 0.00 | Regional instability ≠ emergence risk |
 | F_EAS | 0.00 | Regional instability ≠ emergence risk |
 | F_SSA | 0.00 | Regional instability ≠ emergence risk |
@@ -175,7 +177,7 @@ The trend is speculative. Treating the rate as stable at 2.0% is defensible give
 | F_EUR | 0.00 | No distinct pathway |
 | F_LAM | 0.00 | No distinct pathway |
 
-**Sum of squared loadings**: 0.68 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.75 (Type 1 target); scale factor = 0.89 from original loadings
 
 ---
 

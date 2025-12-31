@@ -122,16 +122,18 @@ As pressure accumulates, annual probability rises:
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| [[f-clim]] | 0.85 | This IS a climate system event; factors shock `global_temp_anomaly` |
-| [[f-food]] | 0.20 | Via agricultural impacts that feed back to policy (weak) |
-| [[f-eur]] | 0.15 | European emissions policy marginally affects forcing rate |
-| [[f-ssa]] | 0.10 | Sahel rainfall affected; minor feedback |
-| [[f-lam]] | 0.05 | Amazon affects Atlantic circulation patterns |
+| [[f-clim]] | 0.67 | This IS a climate system event; factors shock `global_temp_anomaly` |
+| [[f-food]] | 0.16 | Via agricultural impacts that feed back to policy (weak) |
+| [[f-eur]] | 0.12 | European emissions policy marginally affects forcing rate |
+| [[f-ssa]] | 0.08 | Sahel rainfall affected; minor feedback |
+| [[f-lam]] | 0.04 | Amazon affects Atlantic circulation patterns |
 | All others | 0.00 | No mechanism |
 
-**Sum of squared loadings**: 0.80 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.79 from original loadings
 
 ### Loading Interpretation (per Integrated Framework)
 
@@ -298,5 +300,6 @@ European agriculture severely disrupted:
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2025-12-30 | Variance allocation: scaled loadings | Task 3.11 - Factor-explained variance reduced to Type 2 target (0.65) per variance allocation framework |
 | 2025-12-30 | Critical review complete; verified Case Against and Probability Evolution present | Task 2.4 systematic review |
 | 2025-12-17 | Initial Level 1 specification | Task 2.1 climate tipping point |

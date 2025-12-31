@@ -145,22 +145,24 @@ For Type 2 events, probability varies with pressure.
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 1/2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_FIN** | 0.80 | Dominant: this IS the financial instability factor |
-| **F_GPT** | 0.30 | Great power tension → sanctions, capital flow disruption |
-| **F_EAS** | 0.25 | China financial stress is major global risk |
-| **F_EUR** | 0.20 | Eurozone fragmentation risk; banking vulnerabilities |
-| **F_CLIM** | 0.15 | Climate risks → stranded assets, insurance losses |
-| **F_MENA** | 0.12 | Oil shock → inflation → tightening → stress |
-| **F_TECH** | 0.10 | Tech bubble dynamics; algorithmic amplification |
+| **F_FIN** | 0.53 | Dominant: this IS the financial instability factor |
+| **F_GPT** | 0.20 | Great power tension → sanctions, capital flow disruption |
+| **F_EAS** | 0.17 | China financial stress is major global risk |
+| **F_EUR** | 0.13 | Eurozone fragmentation risk; banking vulnerabilities |
+| **F_CLIM** | 0.10 | Climate risks → stranded assets, insurance losses |
+| **F_MENA** | 0.08 | Oil shock → inflation → tightening → stress |
+| **F_TECH** | 0.07 | Tech bubble dynamics; algorithmic amplification |
 | F_HLTH | 0.00 | Pandemic trigger in Type 1 floor |
 | F_FOOD | 0.00 | Indirect via inflation |
 | F_SAS | 0.00 | Marginal to global financial system |
 | F_SSA | 0.00 | Marginal to global financial system |
 | F_LAM | 0.00 | Lower contagion risk post-1990s |
 
-**Sum of squared loadings**: 0.88 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 1/2 target); scale factor = 0.66 from original loadings
 
 ---
 
@@ -275,6 +277,7 @@ For Type 2 events, probability varies with pressure.
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2025-12-18 | Initial Level 1 specification | Hybrid Type 1/2 event |
+| 2025-12-30 | Variance allocation: scaled loadings | Task 3.11 - Factor-explained variance reduced to Type 1/2 target (0.65) per variance allocation framework |
 | 2025-12-30 | Critical review complete | Task 2.4.5 - Added Case Against, Probability Evolution; fixed variable/event references |
 
 ---
