@@ -103,6 +103,8 @@ Factors operate at step 1-2. State variable changes happen at step 4-5.
 
 ## Loading Scale
 
+> **Note**: This scale describes *relative* loading strength before variance scaling. After applying the variance allocation framework, absolute values will be lower. A "dominant" relationship for a Type 3 event might have a final loading of ~0.35 rather than 0.85. See [[methodology/reference/variance-allocation]].
+
 | Loading | Meaning |
 |---------|---------|
 | 0.0 | No meaningful relationship to this factor |
@@ -504,34 +506,19 @@ Assign secondary loadings only where genuine linkage exists. **Zero is a valid l
 
 ### Step 4: Check the Variance Constraint
 
-**The correct constraint** is based on factor-explained variance including factor correlations:
+Factor loadings must satisfy a variance constraint based on causal type:
 
 ```
 (ΛΩΛᵀ)ᵢᵢ = target for event's causal type
 ```
 
-Where target depends on causal type (see [[methodology/reference/variance-allocation]]):
-- Type 1: 0.70 – 0.80
-- Type 2: 0.60 – 0.70
-- Type 3: 0.40 – 0.50
-- Type 4: 0.50 – 0.60
+**See [[methodology/reference/variance-allocation]]** for type-specific targets, the mathematical derivation, and worked examples.
 
-**Why simple sum-of-squared-loadings is insufficient**: When factors are correlated, factor-explained variance includes cross-terms:
-
-```
-(ΛΩΛᵀ)ᵢᵢ = Σⱼλᵢⱼ² + 2·Σⱼ<ₖ λᵢⱼ·λᵢₖ·Ωⱼₖ
-```
-
-The cross-terms add variance when an event loads on multiple correlated factors. An event with simple Σλ² = 0.80 might have true (ΛΩΛᵀ)ᵢᵢ = 1.20 after accounting for factor correlations.
-
-**The workflow**:
-1. Specify *relative* loadings (which factors, relative magnitudes)
-2. Compute (ΛΩΛᵀ)ᵢᵢ for those loadings using the factor correlation matrix Ω
-3. Compute scale factor: s = √(target / current)
-4. Scale all loadings: λ'ᵢⱼ = s × λᵢⱼ
-5. Verify scaled loadings achieve target
-
-**Interpretation**: The scaled loadings represent factor *correlations*, not causal strengths. A Type 3 event with F_EAS = 0.38 (after scaling) says "this event correlates moderately with East Asian tension, but factors only explain ~45% of its occurrence—the rest is irreducibly uncertain."
+**Key points:**
+- Simple sum-of-squared-loadings (Σλ²) is insufficient when factors are correlated
+- Cross-terms from factor correlations add variance
+- Type 3 events get lowest targets (~0.45) because resolution is intractable
+- Workflow: specify relative loadings → compute current variance → scale to target
 
 ### Step 5: Cross-Validate
 
@@ -544,6 +531,8 @@ Compare loading patterns across similar events:
 ---
 
 ## Common Patterns by Causal Type
+
+> **Note**: The loading values below are *relative* patterns before variance scaling. After applying the variance allocation framework ([[methodology/reference/variance-allocation]]), absolute values will be lower—especially for Type 3 events. The patterns show which factors dominate, not final loading magnitudes.
 
 ### Type 1 Patterns
 

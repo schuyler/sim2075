@@ -42,6 +42,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/reference/durability-types]] | The five durability models |
 | [[methodology/reference/aftermath-branches]] | Post-event trajectory modeling |
 | [[methodology/reference/factor-loadings]] | Factor loading guidance |
+| [[methodology/reference/variance-allocation]] | Type-based variance targets for factor model |
 | [[methodology/reference/factor-correlation-matrix]] | Inter-factor correlation matrix (Ω) |
 | [[methodology/reference/calibration-anchors]] | Reference events for comparison |
 | [[methodology/reference/priority-event-ranking]] | Cross-check probability estimates |
