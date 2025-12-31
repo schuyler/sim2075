@@ -47,16 +47,15 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 | **4.2** | **Event catalog compilation**: Extract 29 event specifications to machine-readable format (YAML). Include probabilities, factor loadings (raw + scaled), resolution branches, impact vectors, cascade triggers. | — | 🔲 |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~200 parameters. | 4.1 | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.1, 4.3 | 🔲 |
-| **4.5** | **Transmission simplifications**: Document v0.1 transmission scope. Include: oil→inflation, food→inflation (single global passthrough scaled by import dependence). Defer: financial contagion, trade transmission, climate damage functions, policy reaction functions. | 4.1 | 🔲 |
-
 **Dependency graph:**
 ```
 4.1 MVP Dynamics Scope
  ├── 4.2 Event Catalog (parallel, no dependency)
- ├── 4.3 Initial Conditions + Trends
- │    └── 4.4 Dynamics Defaults
- └── 4.5 Transmission Simplifications
+ └── 4.3 Initial Conditions + Trends
+      └── 4.4 Dynamics Defaults
 ```
+
+**Completed:** Task 4.5 (Transmission Simplifications) — see [[methodology/project/tasks-completed]]
 
 ### Validation
 

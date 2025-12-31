@@ -192,6 +192,16 @@ See [[methodology/project/progress-tracker]] for full event list.
 
 ---
 
+## 4. Pre-Implementation Preparation
+
+Tasks preparing for Phase 2 prototype implementation.
+
+| Task | Completion Date | Deliverable | Notes |
+|------|-----------------|-------------|-------|
+| **4.5** Transmission simplifications | Dec 31, 2025 | Existing docs | Documentation requirements satisfied by [[methodology/reference/mvp-dynamics-scope]] §4.1 (deferred mechanisms), §5.1 (implementation pseudocode), and [[methodology/reference/state-transmission]] §3.1 (oil/food→inflation formulas). No additional document needed. |
+
+---
+
 ## Summary Statistics
 
 **Completion as of December 31, 2025:**
