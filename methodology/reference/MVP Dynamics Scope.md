@@ -280,6 +280,12 @@ For each year t from 2025 to 2075:
 - Life expectancy improvement is additive (years gained)
 - Climate variables are additive (temperature anomaly, CO2 ppm)
 
+**Implementation note:** The pseudocode above is simplified for clarity. In actual implementation, `gdp_growth` (mean-reverting flow variable) should be updated first, then GDP stock grows by the actual `gdp_growth` rate rather than the trend directly. That is:
+1. `gdp_growth(t)` mean-reverts toward `trend_growth_rate` (equilibrium)
+2. `gdp_per_capita(t) = gdp_per_capita(t-1) × (1 + gdp_growth(t))`
+
+This allows GDP growth to deviate from trend (due to shocks) and recover gradually.
+
 ### 5.2 What v0.1 Validates
 
 With Tier 1 + Tier 2 parameters, the prototype can validate:
