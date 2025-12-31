@@ -51,7 +51,7 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 | Task | Description | Priority | Status |
 |------|-------------|----------|--------|
 | **3.15** | **Vestigial Type 4**: Evaluate whether Type 4 variance targets are needed—we classified Type 4 as "not events, move to baseline." If no Type 4 events exist, remove from framework. | Low | 🔲 Deferred |
-| **3.16** | **Validation notes cleanup**: Delete stale validation working documents (validation-event-correlations, validation-findings-report, validation-correlation-matrix-data). Essential findings captured in [[methodology/reference/variance-allocation]]. | Low | 🔲 |
+| **3.16** | **Validation notes cleanup**: Deleted stale validation working documents. Essential findings captured in [[methodology/reference/variance-allocation]]. | Low | ✅ |
 
 ### Additional Events
 
