@@ -76,7 +76,6 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/concepts/causal-chain-decomposition]] | Events as multi-stage causal chains with different types per stage |
 | [[methodology/concepts/synthetic-variable-problem]] | Why synthetic indices undermine validity; observable decomposition approach |
 | [[methodology/concepts/displacement-variables-design]] | IDP/refugee variable design (pending implementation) |
-| [[methodology/concepts/displacement-variables-design]] | IDP/refugee variable design (pending implementation) |
 
 ### Computational Tools
 
@@ -97,7 +96,6 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/project/development-roadmap]] | Overall development plan |
 | [[methodology/project/simulation-project-overview]] | Project context |
 | [[methodology/project/validation]] | Validation approaches |
-| [[methodology/project/validation-event-correlations]] | **Task 3.1-3.2 results** — Phase 2 blocker |
 
 ---
 
@@ -250,11 +248,11 @@ Foundational analysis informing the simulation's worldview and parameters.
 
 ## Next Steps
 
-1. Complete Level 1 for remaining 18 priority events
+1. ~~Complete Level 1 for all priority events~~ ✓ Phase 1 complete
 2. Build prototype simulation (Phase 2)
 3. Sensitivity analysis (Phase 3)
 4. Level 2 upgrades for high-impact events
 
 ---
 
-*Last updated: December 2025*
+*Last updated: December 31, 2025*

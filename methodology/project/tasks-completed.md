@@ -135,22 +135,79 @@ Applied [[methodology/03-critical-review]] rubric to completed events, adding "P
 
 ---
 
+## 3. Validation & Variance Framework
+
+Tasks addressing factor model misspecification discovered during validation analysis.
+
+### Problem Identification (Tasks 3.1-3.2)
+
+| Task | Completion Date | Deliverable | Notes |
+|------|-----------------|-------------|-------|
+| **3.1** Compute implied event correlations | Dec 30, 2025 | Analysis results | Found correlations up to 0.98; identified cross-term inflation from factor correlations |
+| **3.2** Check double-counting inflation | Dec 30, 2025 | Analysis results | Confirmed 8 of 11 events exceeded unit variance due to (ΛΩΛᵀ)ᵢᵢ cross-terms |
+
+### Variance Allocation Framework (Tasks 3.6-3.10)
+
+| Task | Completion Date | Deliverable | Notes |
+|------|-----------------|-------------|-------|
+| **3.6** Create variance-allocation reference | Dec 2025 | [[methodology/reference/variance-allocation]] | Core framework: type-specific targets, epistemological foundation, worked examples |
+| **3.7** Update causal-types reference | Dec 2025 | [[methodology/reference/causal-types]] | Added variance implications section |
+| **3.8** Update factor-loadings reference | Dec 2025 | [[methodology/reference/factor-loadings]] | Added variance constraint requirement and scaling workflow |
+| **3.9** Update type-3-calibration reference | Dec 2025 | [[methodology/reference/type-3-calibration]] | Cross-referenced variance allocation for resolution intractability |
+| **3.10** Revise validation notes | Dec 2025 | Working documents | Superseded by variance-allocation; documents deleted |
+
+### Implementation & Verification (Tasks 3.11-3.17)
+
+| Task | Completion Date | Deliverable | Notes |
+|------|-----------------|-------------|-------|
+| **3.11** Implement variance allocation | Dec 31, 2025 | All 29 events scaled | Commits: 99e55e5a, 061d516, a126d92, e243def |
+| **3.12** DRY violation cleanup | Dec 2025 | Methodology docs | Removed redundant variance tables; replaced with cross-references |
+| **3.13** Stale guidance cleanup | Dec 2025 | factor-loadings | Updated loading scale guidance for post-scaling reality |
+| **3.14** Index update | Dec 2025 | [[index]] | Added variance-allocation to methodology index |
+| **3.17** Verify math | Dec 31, 2025 | Verification complete | All 29 events within ±0.02 of target variance |
+
+### Methodology Refinements (Task 1.7)
+
+| Task | Completion Date | Deliverable | Notes |
+|------|-----------------|-------------|-------|
+| **1.7** Type 3 non-discontinuity resolutions | Dec 30, 2025 | [[methodology/reference/type-3-calibration]], [[methodology/reference/causal-types]] | Resolved structural inconsistency: resolutions are discontinuity types, not all possible outcomes |
+
+---
+
+## 4. Critical Review Campaign (Task 2.4)
+
+All 28 events received critical review applying [[methodology/03-critical-review]] rubric.
+
+**Completion Date**: December 30-31, 2025
+
+**Scope**: Every event specification updated with:
+- Case Against section (strongest objections + counterarguments)
+- Probability Evolution section (time-varying estimates)
+- Observable variables in pressure functions (synthetic variables remediated)
+- Changelog entry documenting review
+- Research status: "Critical review: Complete"
+
+See [[methodology/project/progress-tracker]] for full event list.
+
+---
+
 ## Summary Statistics
 
-**Completion as of December 2025:**
+**Completion as of December 31, 2025:**
 
 - **Methodology Documents:** 10 core documents complete, 7 state model documents created
 - **Priority Events:** 20/20 complete (100%)
 - **Breakthrough Events:** 5/5 complete (100%)
-- **Additional Events:** 2 complete (Saudi Nuclear, Sahel)
-- **Critical Reviews:** 3/27 complete (~11%)
-- **Total Events Specified:** 27 at Level 1
+- **Additional Events:** 4 complete (Saudi Nuclear, Sahel, US Constitutional Crisis, Iran Nuclear)
+- **Critical Reviews:** 28/28 complete (100%)
+- **Variance Allocation:** 29/29 events scaled and verified
+- **Total Events Specified:** 29 at Level 1
 
 **Phase Status:**
-- Phase 1 (Event Specification): ~90% complete
+- Phase 1 (Event Specification): **100% complete**
 - Phase 2 (Implementation): Not started
 - Phase 3 (Sensitivity Analysis): Not started
 
 ---
 
-*Archive created: December 30, 2025*
+*Archive updated: December 31, 2025*
