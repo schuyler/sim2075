@@ -15,6 +15,8 @@ tags:
 
 Not all events deserve equal research investment. Use tiered approach: start shallow, deepen where it matters.
 
+**Documentation standards:** [[methodology/reference/research-documentation-standards]]
+
 ---
 
 ## Level 1: Prior Knowledge Skeleton

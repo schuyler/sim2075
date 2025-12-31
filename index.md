@@ -30,6 +30,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/02-event-template]] | Template to copy for new events |
 | [[methodology/03-critical-review]] | Five judgment questions before format checks |
 | [[methodology/04-format-checklist]] | Format verification before saving |
+| [[methodology/05-source-template]] | Template for source registry notes |
 
 ### Reference Material
 
@@ -46,6 +47,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/reference/factor-correlation-matrix]] | Inter-factor correlation matrix (Ω) |
 | [[methodology/reference/calibration-anchors]] | Reference events for comparison |
 | [[methodology/reference/priority-event-ranking]] | Cross-check probability estimates |
+| [[methodology/reference/research-documentation-standards]] | Source registry and citation conventions |
 
 ### State Model Reference
 
@@ -207,6 +209,26 @@ Foundational analysis informing the simulation's worldview and parameters.
 | [[research/brics-de-dollarization]] | Financial system analysis — reserve currency dynamics |
 | [[research/positive-discontinuities-historical]] | Historical positive discontinuities for calibration |
 | [[research/positive-negative-asymmetry-analysis]] | Analysis of asymmetries between positive and negative events |
+
+---
+
+## Sources
+
+Evidence library supporting parameter choices. Sources are archived and cross-referenced to events.
+
+**Index:** [[sources/index]]
+
+**Standards:** [[methodology/reference/research-documentation-standards]]
+
+**Template:** [[methodology/05-source-template]]
+
+| Directory | Contents |
+|-----------|----------|
+| `sources/articles/` | News, magazine, opinion pieces |
+| `sources/papers/` | Academic/peer-reviewed |
+| `sources/reports/` | Think tanks, IGOs, NGOs, government |
+| `sources/data/` | Datasets, statistical releases |
+| `sources/books/` | Book chapters, excerpts |
 
 ---
 
