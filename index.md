@@ -78,6 +78,13 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/concepts/displacement-variables-design]] | IDP/refugee variable design (pending implementation) |
 | [[methodology/concepts/displacement-variables-design]] | IDP/refugee variable design (pending implementation) |
 
+### Computational Tools
+
+| Document | Purpose |
+|----------|---------|
+| [[methodology/tools/compute-scaled-loadings]] | Python script to compute correctly scaled factor loadings |
+| [[methodology/tools/variance-verification-script]] | Python script to verify variance allocation calculations |
+
 ### Project Management
 
 | Document | Purpose |
