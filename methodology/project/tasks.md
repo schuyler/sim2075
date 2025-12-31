@@ -26,15 +26,21 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 **Variance allocation framework complete** (Tasks 3.6-3.10).
 
-**Next**: Task 3.11 — Implement variance allocation across all 28 events.
+**Current**: Task 3.11 — Implement variance allocation across all 28 events (🟡 12/28 complete).
 
-This involves:
-1. Determine causal type for each event
-2. Compute current (ΛΩΛᵀ)ᵢᵢ
-3. Compute scale factor: √(target / current)
-4. Update event files with scaled loadings
-5. Re-run validation
-6. Document in changelogs
+Commit `061d516` applied variance allocation to 12 events:
+- **Type 2** (9): Amazon Tipping Point, Permafrost Methane, Chinese Economic Crisis, Dollar Reserve Crisis, Egypt State Failure, EU Fragmentation, Russia State Failure, Sahel Catastrophe, Turkey Political Breakdown
+- **Type 3** (3): US-China Economic Rupture, Chinese Political Crisis, Korean Peninsula Crisis
+
+**Remaining** (16 events):
+- Climate: AMOC Weakening
+- Geopolitical: Taiwan Conflict, Pakistan State Failure, Saudi Regime Instability, Iran Regime Change, India-Pakistan Military Conflict, Iran Nuclear Acquisition, Saudi Nuclear Acquisition
+- Financial: Global Financial Crisis
+- Health: Severe Pandemic
+- Energy: Oil Supply Shock
+- Breakthrough (5): Fusion, Agricultural Yield, Cancer Treatment, Antimicrobial Platform, Energy Storage
+
+**Task 3.17** (verify math) was completed concurrently — all 12 events verified within ±0.01 of target variance.
 
 ---
 
@@ -142,7 +148,7 @@ Implements type-based variance allocation to resolve factor model misspecificati
 | **3.8** Update `methodology/reference/factor-loadings` | Add variance constraint requirement: (ΛΩΛᵀ)ᵢᵢ must equal target for event's causal type; add workflow for specifying relative loadings then scaling to target | ✅ |
 | **3.9** Update `methodology/reference/type-3-calibration` | Add cross-reference connecting "resolution intractability" discussion to variance allocation operationalization; explain why Type 3 gets lowest factor-explained variance | ✅ |
 | **3.10** Revise validation notes | Update `validation-event-correlations` and `validation-findings-report` with correct framing (type-based targets, not uniform); remove outdated recommendations | ✅ |
-| **3.11** Implement variance allocation across all events | Compute scale factors for all 28 events by causal type; update event specifications with scaled loadings; re-run validation to confirm (ΛΩΛᵀ)ᵢᵢ ≤ target; document changes in event changelogs | 🔲 |
+| **3.11** Implement variance allocation across all events | Compute scale factors for all 28 events by causal type; update event specifications with scaled loadings; re-run validation to confirm (ΛΩΛᵀ)ᵢᵢ ≤ target; document changes in event changelogs | 🟡 12/28 |
 
 **Dependencies**: 3.6 → 3.7, 3.8, 3.9, 3.10 → 3.11
 
@@ -157,7 +163,7 @@ Documentation cleanup identified during Task 3.6-3.10 implementation.
 | **3.14** | **Index update**: Add variance-allocation to methodology index for discoverability. | Low | ✅ |
 | **3.15** | **Vestigial Type 4**: Evaluate whether Type 4 variance targets are needed—we classified Type 4 as "not events, move to baseline." If no Type 4 events exist, remove from framework. | Low | 🔲 Deferred |
 | **3.16** | **Validation notes cleanup**: Either (a) rewrite validation-event-correlations and validation-findings-report as clean documents, or (b) archive/delete them since essential findings are captured in variance-allocation. Currently archaeological mess. | Low | 🔲 Deferred (delete after 3.11) |
-| **3.17** | **Verify math**: Run actual computation to verify worked examples—confirm scaled loadings produce target variance after all cross-terms. | Medium | 🔲 (with 3.11) |
+| **3.17** | **Verify math**: Run actual computation to verify worked examples—confirm scaled loadings produce target variance after all cross-terms. | Medium | 🟡 12/28 verified |
 
 **Note**: Task 3.16 may be moot if validation notes are treated as scratch/working documents to discard after Task 3.11 implementation validates the framework.
 
