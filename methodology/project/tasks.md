@@ -24,9 +24,17 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 ## Active Work
 
-**Task 3.10**: Revise validation notes with correct framing
+**Variance allocation framework complete** (Tasks 3.6-3.10).
 
-Update `validation-event-correlations` and `validation-findings-report` to replace outdated "uniform 0.70 target" with type-based targets.
+**Next**: Task 3.11 — Implement variance allocation across all 28 events.
+
+This involves:
+1. Determine causal type for each event
+2. Compute current (ΛΩΛᵀ)ᵢᵢ
+3. Compute scale factor: √(target / current)
+4. Update event files with scaled loadings
+5. Re-run validation
+6. Document in changelogs
 
 ---
 
@@ -133,7 +141,7 @@ Implements type-based variance allocation to resolve factor model misspecificati
 | **3.7** Update `methodology/reference/causal-types` | Add variance implications section linking each causal type to its factor-explained variance target and epistemological rationale | ✅ |
 | **3.8** Update `methodology/reference/factor-loadings` | Add variance constraint requirement: (ΛΩΛᵀ)ᵢᵢ must equal target for event's causal type; add workflow for specifying relative loadings then scaling to target | ✅ |
 | **3.9** Update `methodology/reference/type-3-calibration` | Add cross-reference connecting "resolution intractability" discussion to variance allocation operationalization; explain why Type 3 gets lowest factor-explained variance | ✅ |
-| **3.10** Revise validation notes | Update `validation-event-correlations` and `validation-findings-report` with correct framing (type-based targets, not uniform); remove outdated recommendations | 🔲 |
+| **3.10** Revise validation notes | Update `validation-event-correlations` and `validation-findings-report` with correct framing (type-based targets, not uniform); remove outdated recommendations | ✅ |
 | **3.11** Implement variance allocation across all events | Compute scale factors for all 28 events by causal type; update event specifications with scaled loadings; re-run validation to confirm (ΛΩΛᵀ)ᵢᵢ ≤ target; document changes in event changelogs | 🔲 |
 
 **Dependencies**: 3.6 → 3.7, 3.8, 3.9, 3.10 → 3.11
