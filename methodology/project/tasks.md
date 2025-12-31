@@ -24,7 +24,13 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 ## Active Work
 
-*No active tasks — all methodology foundations complete.*
+**Task 3.6**: Create variance allocation framework (`methodology/reference/variance-allocation`)
+
+Core methodological document establishing type-based variance allocation. This is a key insight that idiosyncratic variance should vary by causal type based on what factors *can* explain:
+- Type 3 events have intractable resolution → high idiosyncratic variance
+- Type 1 events average across large-N → low idiosyncratic variance
+
+See [[methodology/project/validation-event-correlations]] for problem background.
 
 ---
 
@@ -95,12 +101,46 @@ Apply [[methodology/03-critical-review]] to all Level 1 events (24 remaining). A
 | **3.4** Sensitivity analysis: factor correlations | Phase 2 complete | ⏸️ Blocked on resolution of 3.1/3.2 findings |
 | **3.5** Audit Type 3 resolution branch completeness | Type 3 events specified ✓ | Ensure favorable branches exist per positive-discontinuity resolution |
 
-**⚠️ Validation Issue Summary**: Tasks 3.1-3.2 identified structural problems requiring resolution before Phase 2:
-1. Multiple event pairs with ρ > 0.95 (near-redundancy)
-2. Two events exceed sum-of-squared-loadings constraint (Taiwan: 1.19, Pakistan: 1.01)
-3. Mean correlation 0.52 is too high (target: 0.25-0.35)
+**⚠️ Validation Issue Summary (Updated Dec 30)**: Tasks 3.1-3.2 revealed a fundamental misspecification:
 
-**Proposed solutions**: (a) reduce factor loadings ~30%, (b) reduce Ω correlations, (c) add residual variance, (d) consolidate near-redundant events. Decision pending.
+**Problem**: When factors are correlated, the true factor-explained variance is (ΛΩΛᵀ)ᵢᵢ, not simple Σⱼλᵢⱼ². The cross-terms from factor correlations inflate variance. Result: **8 of 11 analyzed events exceed unit variance**:
+
+| Event | True (ΛΩΛᵀ)ᵢᵢ | Status |
+|-------|--------------|--------|
+| Taiwan Conflict | 2.04 | Severe |
+| Pakistan State Failure | 1.74 | Severe |
+| Global Financial Crisis | 1.48 | Severe |
+| Dollar Reserve Crisis | 1.39 | Severe |
+| Chinese Economic Crisis | 1.20 | Violation |
+| Amazon Tipping Point | 1.11 | Violation |
+| Oil Supply Shock | 1.07 | Violation |
+| AMOC Weakening | 1.05 | Violation |
+
+**Solution**: Variance allocation framework based on causal type epistemology. Key insight: idiosyncratic variance should reflect what factors *can* explain for each event type:
+
+- **Type 1** (Stochastic): Large-N averaging → factors explain most variance (target ~0.70-0.80)
+- **Type 2** (Threshold): Observable pressure, uncertain threshold → moderate-high (target ~0.60-0.70)
+- **Type 3** (Contingent): Factors explain windows, resolution intractable → moderate-low (target ~0.40-0.50)
+- **Type 4** (Breakthrough): Partly structural, partly serendipitous → moderate (target ~0.50-0.60)
+
+This means Type 3 events (Taiwan, India-Pakistan) get scaled down more than Type 2 events (AMOC, Pakistan)—which is epistemically correct.
+
+**Implementation**: Tasks 3.6–3.11 below.
+
+### Variance Allocation Framework
+
+Implements type-based variance allocation to resolve factor model misspecification. See [[methodology/project/validation-event-correlations]] for problem identification.
+
+| Task | Description | Status |
+|------|-------------|--------|
+| **3.6** Create `methodology/reference/variance-allocation` | Core framework document: theoretical foundation, type-specific targets (0.70-0.80 for Type 1, 0.60-0.70 for Type 2, 0.40-0.50 for Type 3, 0.50-0.60 for Type 4), computation method for scale factors, worked examples | 🔲 |
+| **3.7** Update `methodology/reference/causal-types` | Add variance implications section linking each causal type to its factor-explained variance target and epistemological rationale | 🔲 |
+| **3.8** Update `methodology/reference/factor-loadings` | Add variance constraint requirement: (ΛΩΛᵀ)ᵢᵢ must equal target for event's causal type; add workflow for specifying relative loadings then scaling to target | 🔲 |
+| **3.9** Update `methodology/reference/type-3-calibration` | Add cross-reference connecting "resolution intractability" discussion to variance allocation operationalization; explain why Type 3 gets lowest factor-explained variance | 🔲 |
+| **3.10** Revise validation notes | Update `validation-event-correlations` and `validation-findings-report` with correct framing (type-based targets, not uniform); remove outdated recommendations | 🔲 |
+| **3.11** Implement variance allocation across all events | Compute scale factors for all 28 events by causal type; update event specifications with scaled loadings; re-run validation to confirm (ΛΩΛᵀ)ᵢᵢ ≤ target; document changes in event changelogs | 🔲 |
+
+**Dependencies**: 3.6 → 3.7, 3.8, 3.9, 3.10 → 3.11
 
 ### Additional Events
 
