@@ -45,12 +45,6 @@ Tasks required before or alongside Phase 2 implementation. See analysis in sessi
 | **4.3** | **Initial conditions document**: Gather 2025 baseline values for prototype scope (15 countries × ~18 variables + ~22 global = ~300 values). Document sources. Placeholder values acceptable for v0.1. | 4.1 | 🔲 |
 | **4.4** | **Dynamics parameterization**: Specify parameters from [[methodology/reference/state-dynamics]] §10: country-specific equilibria, reversion speeds, tipping thresholds, policy reaction coefficients. Can use simplified defaults for v0.1. | 4.1, 4.3 | 🔲 |
 
-### Methodology
-
-| Task | Dependencies | Notes |
-|------|--------------|-------|
-| **1.6** Establish research documentation standards | — | Define schemas for source documentation, synthesis structure, citation conventions. Events and entities become ongoing research projects; need norms for how research accumulates and traces to parameter choices. Includes templates for Level 1/2/3 deliverables. |
-
 ### Validation
 
 | Task | Dependencies | Notes |

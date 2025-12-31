@@ -23,6 +23,7 @@ Tasks that defined *how* to specify events—completed to establish methodologic
 | **1.3** Update probability-estimation reference | Dec 2025 | [[methodology/reference/probability-estimation]] | Type-specific guidance added for Type 1, Type 2, Type 3 |
 | **1.4** Update calibration-anchors reference | Dec 2025 | [[methodology/reference/calibration-anchors]] | Historical reference events typed; new anchors added (Oil Shock, Volcanic, Breakthrough) |
 | **1.5** Update factor-loadings reference | Dec 2025 | [[methodology/reference/factor-loadings]] | Complete (commit 359ec14). See revisions 1.5.1-1.5.5 below |
+| **1.6** Establish research documentation standards | Dec 31, 2025 | [[methodology/reference/research-documentation-standards]] | Source registry architecture, archival workflow (archive.ph), citation conventions, tier deliverables. Also: [[methodology/05-source-template]], [[sources/index]] |
 
 ### Task 1.5 Revisions (Factor-State Relationship)
 
@@ -195,7 +196,7 @@ See [[methodology/project/progress-tracker]] for full event list.
 
 **Completion as of December 31, 2025:**
 
-- **Methodology Documents:** 10 core documents complete, 7 state model documents created
+- **Methodology Documents:** 11 core documents complete, 7 state model documents created
 - **Priority Events:** 20/20 complete (100%)
 - **Breakthrough Events:** 5/5 complete (100%)
 - **Additional Events:** 4 complete (Saudi Nuclear, Sahel, US Constitutional Crisis, Iran Nuclear)
