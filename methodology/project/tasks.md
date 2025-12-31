@@ -24,17 +24,13 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 ## Active Work
 
-**Variance allocation framework complete** (Tasks 3.6-3.17).
+**Phase 1 Complete** — All Level 1 event specifications and critical reviews finished.
 
-Task 3.11 completed — variance allocation implemented across all 29 events.
+- Task 2.4 (critical reviews): All 28 events complete (Dec 30-31, 2025)
+- Task 3.11 (variance allocation): All 29 events scaled and verified
+- All events have: Case Against, Probability Evolution, observable variables, changelogs
 
-Commits:
-- `99e55e5a` — 6 events (Taiwan, AMOC, Pakistan, GFC, Pandemic, Fusion)
-- `061d516` — 12 events (Amazon, Permafrost, Chinese Economic, Dollar, Egypt, EU, Russia, Sahel, Turkey, US-China, Chinese Political, Korean)
-- `a126d92` — 10 events (Saudi Regime, Iran Regime, India-Pakistan, Iran Nuclear, Saudi Nuclear, Oil Shock, Ag Yield, Cancer, Antimicrobial, Energy Storage)
-- `e243def` — 1 event (US Constitutional Crisis)
-
-All 29 events verified within ±0.02 of target variance using (ΛΩΛᵀ)ᵢᵢ formula.
+**Next: Phase 2 (Prototype Implementation)**
 
 ---
 
@@ -42,11 +38,11 @@ All 29 events verified within ±0.02 of target variance using (ΛΩΛᵀ)ᵢᵢ 
 
 | Task | Completion Date | Notes |
 |------|-----------------|-------|
+| **2.4** Critical review (all 28 events) | Dec 30-31, 2025 | Case Against, Probability Evolution, observable variables, changelog entries for all events |
 | **3.11** Variance allocation implementation | Dec 31, 2025 | All 29 events scaled; 4 commits (99e55e5a, 061d516, a126d92, e243def) |
 | **3.17** Verify math | Dec 31, 2025 | All 29 events verified within ±0.02 of target variance |
 | **1.7** Type 3 non-discontinuity resolutions | Dec 30, 2025 | Resolved structural inconsistency: resolutions are discontinuity types, not all possible outcomes. Updated type-3-calibration.md and causal-types.md. India-Pakistan is primary example. |
 | Energy Storage Breakthrough critical review | Dec 2025 | 0.8% annual probability; differential impacts on oil exporters |
-| Cancer Treatment Breakthrough critical review | Dec 2025 | Platform technology; age-structure sensitive impacts |
 
 See [[methodology/project/tasks-completed]] for full completion history.
 
@@ -54,46 +50,28 @@ See [[methodology/project/tasks-completed]] for full completion history.
 
 ## Upcoming Priorities
 
+### Phase 1 Complete
+
+All methodology documentation and event specifications complete. Task 2.4 (critical reviews) finished Dec 30-31, 2025.
+
 ### Methodology
 
 | Task | Dependencies | Notes |
 |------|--------------|-------|
 | **1.6** Establish research documentation standards | — | Define schemas for source documentation, synthesis structure, citation conventions. Events and entities become ongoing research projects; need norms for how research accumulates and traces to parameter choices. Includes templates for Level 1/2/3 deliverables. |
 
-### Critical Reviews
+### Validation
 
-Apply [[methodology/03-critical-review]] to all Level 1 events (24 remaining). Adds "Probability Evolution" (Type 2) and "Case Against" sections.
+**✅ TASK 2.4 COMPLETE** (Dec 30-31, 2025)
 
-**Completed:** 2.4.1 (AMOC), 2.4.2 (Chinese Political), 2.4.15 (Chinese Economic) — 3/27
+All 28 events have completed critical review with:
+- Case Against sections (strongest objections + counterarguments)
+- Probability Evolution sections (time-varying estimates)
+- Observable variables in pressure functions (synthetic variables remediated)
+- Changelog entries documenting review
+- Research status updated to "Critical review: Complete"
 
-**Remaining:**
-
-| Task | Event | Type | Status |
-|------|-------|------|--------|
-| **2.4.3** | Taiwan Conflict | Type 3 | 🔲 |
-| **2.4.4** | Severe Pandemic | Type 1 | 🔲 |
-| **2.4.5** | Global Financial Crisis | Type 1/2 | 🔲 |
-| **2.4.6** | Amazon Tipping Point | Type 2 | 🔲 |
-| **2.4.7** | Permafrost Methane Release | Type 2 | 🔲 |
-| **2.4.8** | Pakistan State Failure | Type 2 | 🔲 |
-| **2.4.9** | Egypt State Failure | Type 2 | 🔲 |
-| **2.4.10** | Russia State Failure | Type 2 | 🔲 |
-| **2.4.11** | Saudi Regime Instability | Type 2 | 🔲 |
-| **2.4.12** | Iran Regime Change | Type 2 | 🔲 |
-| **2.4.13** | Turkey Political Crisis | Type 2 | 🔲 |
-| **2.4.14** | Dollar Reserve Crisis | Type 2 | 🔲 |
-| **2.4.16** | EU Fragmentation | Type 2 | 🔲 |
-| **2.4.17** | US Constitutional Crisis | Type 2/3 | 🔲 |
-| **2.4.18** | India-Pakistan Military Conflict | Type 3 | 🔲 |
-| **2.4.19** | Korean Peninsula Crisis | Type 3 | 🔲 |
-| **2.4.20** | US-China Economic Rupture | Type 3 | 🔲 |
-| **2.4.21** | Oil Supply Shock | Type 1 | 🔲 |
-| **2.4.22** | Iran Nuclear Acquisition | Type 2/3 | 🔲 |
-| **2.4.23** | Fusion Commercialization | Type 1 | 🔲 |
-| **2.4.24** | Agricultural Yield Breakthrough | Type 1 | 🔲 |
-| **2.4.25** | Antimicrobial Platform | Type 1 | 🔲 |
-| **2.4.26** | Sahel Catastrophe | Type 2 | 🔲 |
-| **2.4.27** | Saudi Nuclear Acquisition | Type 3 | 🔲 |
+See [[methodology/project/progress-tracker]] for full event status.
 
 ### Validation
 
@@ -224,4 +202,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: December 31, 2025*
+*Last updated: December 31, 2025 — Phase 1 complete*
