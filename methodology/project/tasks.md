@@ -23,27 +23,40 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 ---
 
 ## Active Work
-
 **Phase 1 Complete** — All Level 1 event specifications, critical reviews, and variance allocation finished (Dec 31, 2025).
 
 **Next: Pre-Implementation Preparation (Section 4)**
 
-Start with **Task 4.1** (prototype scope decision) to determine sequencing of remaining preparation tasks. Key decision: dynamics-free v0.1 vs. parameterization sprint.
+Key insight driving Section 4: **progress is continuous, catastrophe is discontinuous**. Without baseline dynamics capturing gradual improvement (GDP growth, life expectancy gains, technology cost declines), the simulation produces only decline. The "progress engine" is essential, not optional.
 
----
-
+Start with **Task 4.1** to document MVP dynamics scope, then proceed with parallel work on 4.2 (event extraction) and 4.3 (initial conditions).
 ## Upcoming Priorities
 
 ### Pre-Implementation Preparation (Section 4)
 
-Tasks required before or alongside Phase 2 implementation. See analysis in session 2025-12-31.
+Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "minimum viable dynamics" approach.
+
+**Tier structure:**
+- **Tier 1 (Essential):** Parameters that carry the positive side of the ledger — baseline growth, life expectancy trends, technology costs
+- **Tier 2 (Defaults):** Mean-reversion parameters using literature defaults — half-lives, volatilities
+- **Tier 3 (Deferred):** Complex transmission, country-specific calibration — addressed post-sensitivity analysis
 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
-| **4.1** | **Prototype scope decision**: Decide between (A) dynamics-free v0.1 that validates factor sampling and event firing, or (B) parameterization sprint before implementation. Document decision and rationale. | — | 🔲 |
-| **4.2** | **Event catalog compilation**: Extract 29 event specifications from markdown to machine-readable format (JSON/YAML). Include probabilities, factor loadings, impact vectors, cascade effects. | — | 🔲 |
-| **4.3** | **Initial conditions document**: Gather 2025 baseline values for prototype scope (15 countries × ~18 variables + ~22 global = ~300 values). Document sources. Placeholder values acceptable for v0.1. | 4.1 | 🔲 |
-| **4.4** | **Dynamics parameterization**: Specify parameters from [[methodology/reference/state-dynamics]] §10: country-specific equilibria, reversion speeds, tipping thresholds, policy reaction coefficients. Can use simplified defaults for v0.1. | 4.1, 4.3 | 🔲 |
+| **4.1** | **MVP dynamics scope**: Document minimum viable dynamics framework. Define three tiers (Essential/Defaults/Deferred). List parameters per tier. Document simplifications. Create [[methodology/reference/mvp-dynamics-scope]]. | — | 🔲 |
+| **4.2** | **Event catalog compilation**: Extract 29 event specifications to machine-readable format (YAML). Include probabilities, factor loadings (raw + scaled), resolution branches, impact vectors, cascade triggers. | — | 🔲 |
+| **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (40 countries), life expectancy (40 countries), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~100 parameters. | 4.1 | 🔲 |
+| **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.1, 4.3 | 🔲 |
+| **4.5** | **Transmission simplifications**: Document v0.1 transmission scope. Include: oil→inflation, food→inflation (single global passthrough scaled by import dependence). Defer: financial contagion, trade transmission, climate damage functions, policy reaction functions. | 4.1 | 🔲 |
+
+**Dependency graph:**
+```
+4.1 MVP Dynamics Scope
+ ├── 4.2 Event Catalog (parallel, no dependency)
+ ├── 4.3 Initial Conditions + Trends
+ │    └── 4.4 Dynamics Defaults
+ └── 4.5 Transmission Simplifications
+```
 
 ### Validation
 
@@ -93,7 +106,7 @@ Build simulation prototype. See [[methodology/project/development-roadmap]] for 
 | **5.10** | Create prototype run notebook | ⏸️ | 5.8, 5.9 |
 | **5.11** | Validate prototype produces sensible output | ⏸️ | 5.10 |
 
-**Note:** If Task 4.1 chooses dynamics-free v0.1 (Option A), tasks 5.7 and 4.4 are deferred. Core loop (5.3–5.6, 5.8) can proceed with 4.2 and 4.3 only.
+**Note:** Section 4 uses "minimum viable dynamics" approach — baseline drift (progress engine) is essential; mean-reversion uses defaults; complex transmission is deferred. All Section 5 tasks proceed with this scope.
 
 ### Phase 3+ (Sensitivity-Driven)
 
@@ -124,4 +137,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: December 31, 2025 — Pre-implementation preparation tasks added (Section 4); Implementation renumbered to Section 5*
+*Last updated: December 31, 2025 — Task 4 series revised to "minimum viable dynamics" approach; added Task 4.5 (transmission simplifications)*
