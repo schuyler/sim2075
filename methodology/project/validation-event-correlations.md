@@ -81,66 +81,34 @@ Expected for distinct events: mean 0.15-0.25, most pairs <0.3.
 
 ## Proposed Solutions
 
-### Solution A: Reduce Factor Loadings (Recommended)
+> **Note**: The original proposed solutions (A: reduce loadings uniformly, B: reduce Ω correlations, C: add residual variance, D: event consolidation) were superseded by a principled framework. See **Critical Correction** section below and [[methodology/reference/variance-allocation]] for the final approach.
 
-Rescale loadings so sum-of-squared-loadings ≤0.70:
-- Taiwan Conflict: Scale all loadings by 0.7× → SSL = 0.58
-- All climate events: Cap F_CLIM loading at 0.50
-- All financial events: Cap F_FIN loading at 0.50
-
-### Solution B: Reduce Factor Correlations
-
-Lower Ω values for problematic pairs:
-- F_CLIM↔F_FOOD: 0.50 → 0.30
-- F_GPT↔F_EAS: 0.55 → 0.35
-- F_FIN↔F_EUR: 0.40 → 0.25
-
-### Solution C: Introduce Residual Variance
-
-Add diagonal Ψ to correlation model:
-```
-Σ = ΛΩΛᵀ + Ψ
-```
-Where ψᵢᵢ = 1 - Σⱼλᵢⱼ² ensures events retain independent variation.
-
-### Solution D: Event Consolidation
-
-Consider merging highly-correlated events:
-- Climate tipping points → single "Climate Cascade" event with branches
-- Financial crises → retain separate but reduce correlation through loading rescaling
+The key insight was that idiosyncratic variance should vary by causal type, not be uniform across all events. Type 3 events (like Taiwan) should have *higher* idiosyncratic variance than Type 2 events (like AMOC) because Type 3 resolution depends on intractable small-N actor decisions.
 
 ---
 
 ## Specific Recommendations
 
-### Climate Tipping Points
+> **Superseded**: See [[methodology/reference/variance-allocation]] for type-based recommendations.
 
-**Recommended**: Model as single "Climate Tipping Cascade" event OR reduce F_CLIM loadings to ≤0.50
-
-**Rationale**: Events ARE genuinely correlated through shared climate forcing, but modeling three near-redundant events inflates climate importance unrealistically.
-
-### Financial Events
-
-**Recommended**: Reduce all F_FIN loadings by 30% and reduce F_FIN correlations with other factors
-
-**Rationale**: Events are conceptually distinct (global credit vs. reserve currency vs. China-specific). Excessive correlation is methodological artifact.
-
-### Taiwan Conflict
-
-**Recommended**: Reduce F_EAS 0.80→0.60, F_GPT 0.70→0.50
-- New SSL: 0.67 (acceptable)
+The original specific recommendations for climate tipping points, financial events, and Taiwan were superseded by the variance allocation framework which provides principled, type-specific guidance rather than ad-hoc adjustments.
 
 ---
 
 ## Validation Targets
 
-After implementing fixes, verify:
+After implementing type-based variance allocation, verify:
 
-1. All sum-of-squared-loadings < 1.0 (preferably <0.8)
-2. Mean correlation 0.25-0.35
-3. Maximum correlation <0.75 except genuinely coupled events
-4. Ω remains positive semi-definite
-5. Factor structure still captures intended relationships
+1. All (ΛΩΛᵀ)ᵢᵢ ≤ 1.0 (no negative idiosyncratic variance)
+2. All (ΛΩΛᵀ)ᵢᵢ ≈ type-specific target (within ±0.05):
+   - Type 1: 0.70–0.80
+   - Type 2: 0.60–0.70
+   - Type 3: 0.40–0.50
+   - Type 4: 0.50–0.60
+3. Type 3 events have lower factor-explained variance than Type 1/2
+4. Resulting correlation matrix is positive semi-definite
+5. No event pairs have correlation > 0.80 unless genuinely coupled
+6. Mean correlation 0.15–0.35 (reasonable differentiation)
 
 ---
 
@@ -149,8 +117,11 @@ After implementing fixes, verify:
 - [x] Task 3.1: Compute implied correlations — **Complete**
 - [x] Task 3.2: Identify double-counting — **Complete**
 - [ ] Task 3.3: Historical proxy analysis — **Deferred** (requires observable proxy data)
-- [ ] Implement solutions — **Pending decision**
-- [ ] Re-validate — **Blocked on implementation**
+- [x] Task 3.6: Create variance allocation framework — **Complete** ([[methodology/reference/variance-allocation]])
+- [x] Task 3.7-3.9: Update methodology docs with framework — **Complete**
+- [x] Task 3.10: Revise validation notes — **Complete** (this document)
+- [ ] Task 3.11: Implement across all events — **Pending**
+- [ ] Re-validate — **Blocked on 3.11**
 
 ---
 
@@ -295,44 +266,51 @@ The combination of:
 
 The cross-terms (λᵢₖ × λᵢₗ × Ωₖₗ for k≠l) accumulate and push total factor-explained variance above 1.
 
-### Corrected Recommendation
+### Corrected Recommendation: Type-Based Variance Allocation
 
-**Option A: Per-Event Scaling (Recommended)**
+The earlier recommendations (uniform scaling to 1.0, or to 0.70) were superseded by a principled framework based on causal type epistemology.
 
-Scale each event's loadings by 1/√(ΛΩΛᵀ)ᵢᵢ to achieve unit factor-explained variance:
+**Key Insight**: Different causal types have different epistemologies. Idiosyncratic variance should reflect what factors *can* explain for each type:
 
-| Event | Current (ΛΩΛᵀ)ᵢᵢ | Scale Factor | Result |
-|-------|-----------------|--------------|--------|
-| Taiwan | 2.04 | 0.70 | 1.00 |
-| Pakistan | 1.74 | 0.76 | 1.00 |
-| GFC | 1.48 | 0.82 | 1.00 |
-| Dollar | 1.39 | 0.85 | 1.00 |
-| China | 1.20 | 0.91 | 1.00 |
-| Amazon | 1.11 | 0.95 | 1.00 |
-| Oil | 1.07 | 0.97 | 1.00 |
-| AMOC | 1.05 | 0.98 | 1.00 |
+| Type | Target (ΛΩΛᵀ)ᵢᵢ | Idiosyncratic | Rationale |
+|------|-----------------|---------------|-----------|
+| Type 1 | 0.70–0.80 | 0.20–0.30 | Large-N averaging; base rates meaningful |
+| Type 2 | 0.60–0.70 | 0.30–0.40 | Observable pressure; threshold uncertainty |
+| Type 3 | 0.40–0.50 | 0.50–0.60 | Factors explain windows; resolution intractable |
+| Type 4 | 0.50–0.60 | 0.40–0.50 | Partly structural, partly serendipitous |
 
-This preserves the relative loading structure within each event while ensuring mathematical validity.
+**Why Type 3 gets lowest factor-explained variance**: The [[methodology/concepts/small-n-actor-problem]] established that Type 3 resolution probabilities are epistemically intractable—small-N actor decisions cannot be estimated from historical data or structural reasoning. This intractability means factors can explain *why crisis windows open*, but not *how resolutions occur*. The 50-60% idiosyncratic variance represents "the part we can't predict."
 
-**Option B: Reduce Factor Correlations**
+**Example**: Taiwan Conflict (Type 3)
+- Current (ΛΩΛᵀ)ᵢᵢ = 2.04
+- Target = 0.45 (Type 3 midpoint)
+- Scale factor = √(0.45 / 2.04) = 0.47
+- Scaled loadings: F_EAS 0.38, F_GPT 0.33, F_FIN 0.09, F_TECH 0.07
+- Interpretation: "East Asian dynamics and great power tension explain ~45% of Taiwan conflict probability; the other 55% is Xi's specific decision calculus—irreducibly uncertain."
 
-Lower Ω entries to reduce cross-term amplification:
-- F_GPT↔F_EAS: 0.55 → 0.35
-- F_CLIM↔F_FOOD: 0.50 → 0.30
-- F_FIN↔F_EUR: 0.40 → 0.25
+**Contrast**: AMOC Weakening (Type 2)
+- Current (ΛΩΛᵀ)ᵢᵢ = 1.05
+- Target = 0.65 (Type 2 midpoint)
+- Scale factor = √(0.65 / 1.05) = 0.79
+- Scaled loadings: F_CLIM 0.67, F_FOOD 0.16, F_EUR 0.12, F_SSA 0.08, F_LAM 0.04
+- Interpretation: "Climate stress explains ~65% of AMOC collapse probability; the other 35% is threshold uncertainty—we don't know exactly where the tipping point is."
 
-Would require re-justifying the reduced correlations.
+AMOC retains higher loadings than Taiwan because factors genuinely explain more for Type 2 events.
 
-**Option C: Combination**
-
-Modest reduction in both loadings and Ω values. May be most defensible—acknowledges uncertainty in both.
+**Full Framework**: See [[methodology/reference/variance-allocation]] for:
+- Detailed epistemological justification
+- Mathematical derivation
+- Complete worked examples
+- Implementation workflow
+- Validation checks
 
 ### Implementation Priority
 
 This is a **Phase 2 blocker**. The current factor structure cannot produce valid correlation matrices. Before any simulation code:
 
-1. Choose solution approach (A, B, or C)
-2. Compute revised loadings or Ω values
-3. Verify (ΛΩΛᵀ)ᵢᵢ ≤ 1.0 for all events
-4. Verify resulting correlation matrix is positive semi-definite
-5. Update event specifications with corrected loadings
+1. ~~Choose solution approach~~ → **Resolved**: Type-based variance allocation
+2. Compute scale factors for all 28 events by causal type (Task 3.11)
+3. Update event specifications with scaled loadings
+4. Re-run validation to confirm (ΛΩΛᵀ)ᵢᵢ ≤ target for all events
+5. Verify resulting correlation matrix is positive semi-definite
+6. Document changes in event changelogs

@@ -24,9 +24,9 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 ## Active Work
 
-**Task 3.7**: Update `methodology/reference/causal-types` with variance implications
+**Task 3.10**: Revise validation notes with correct framing
 
-Add section linking each causal type to its factor-explained variance target and epistemological rationale. Cross-reference to [[methodology/reference/variance-allocation]].
+Update `validation-event-correlations` and `validation-findings-report` to replace outdated "uniform 0.70 target" with type-based targets.
 
 ---
 
@@ -130,9 +130,9 @@ Implements type-based variance allocation to resolve factor model misspecificati
 | Task | Description | Status |
 |------|-------------|--------|
 | **3.6** Create `methodology/reference/variance-allocation` | Core framework document: theoretical foundation, type-specific targets (0.70-0.80 for Type 1, 0.60-0.70 for Type 2, 0.40-0.50 for Type 3, 0.50-0.60 for Type 4), computation method for scale factors, worked examples | ✅ |
-| **3.7** Update `methodology/reference/causal-types` | Add variance implications section linking each causal type to its factor-explained variance target and epistemological rationale | 🔲 |
-| **3.8** Update `methodology/reference/factor-loadings` | Add variance constraint requirement: (ΛΩΛᵀ)ᵢᵢ must equal target for event's causal type; add workflow for specifying relative loadings then scaling to target | 🔲 |
-| **3.9** Update `methodology/reference/type-3-calibration` | Add cross-reference connecting "resolution intractability" discussion to variance allocation operationalization; explain why Type 3 gets lowest factor-explained variance | 🔲 |
+| **3.7** Update `methodology/reference/causal-types` | Add variance implications section linking each causal type to its factor-explained variance target and epistemological rationale | ✅ |
+| **3.8** Update `methodology/reference/factor-loadings` | Add variance constraint requirement: (ΛΩΛᵀ)ᵢᵢ must equal target for event's causal type; add workflow for specifying relative loadings then scaling to target | ✅ |
+| **3.9** Update `methodology/reference/type-3-calibration` | Add cross-reference connecting "resolution intractability" discussion to variance allocation operationalization; explain why Type 3 gets lowest factor-explained variance | ✅ |
 | **3.10** Revise validation notes | Update `validation-event-correlations` and `validation-findings-report` with correct framing (type-based targets, not uniform); remove outdated recommendations | 🔲 |
 | **3.11** Implement variance allocation across all events | Compute scale factors for all 28 events by causal type; update event specifications with scaled loadings; re-run validation to confirm (ΛΩΛᵀ)ᵢᵢ ≤ target; document changes in event changelogs | 🔲 |
 

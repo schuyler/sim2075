@@ -11,8 +11,10 @@ tags:
 
 # Event Correlation Validation: Detailed Findings Report
 
+> ⚠️ **Partially Superseded**: The problem identification in this document remains valid, but the "Proposed Solutions" and "Specific Recommendations" sections have been superseded by the [[methodology/reference/variance-allocation]] framework. The key insight: idiosyncratic variance should vary by causal type, not be uniform. See [[methodology/project/validation-event-correlations]] for the corrected recommendations.
+
 **Date**: December 30, 2025
-**Status**: Draft for review
+**Status**: Problem identification valid; recommendations superseded
 **Tasks**: 3.1, 3.2 (complete), 3.3 (partial)
 
 ---
@@ -241,12 +243,16 @@ After implementing solutions, verify:
 
 ## Next Steps
 
-1. **Review findings with stakeholder** — Confirm interpretation of issues
-2. **Select solution approach** — A, B, C, D or combination
-3. **Implement fixes** — Update event specifications and/or factor correlation matrix
-4. **Re-run validation** — Confirm issues resolved
-5. **Document rationale** — Update methodology reference documents
-6. **Proceed to Phase 2** — With validated correlation structure
+> **Status**: Steps 1-5 complete; Step 6 pending Task 3.11.
+
+1. ~~Review findings with stakeholder~~ — **Complete**
+2. ~~Select solution approach~~ — **Complete**: Type-based variance allocation framework
+3. ~~Implement fixes to methodology docs~~ — **Complete**: Tasks 3.6-3.10
+4. Implement variance allocation across all 28 events — **Pending** (Task 3.11)
+5. Re-run validation — **Blocked on Task 3.11**
+6. Proceed to Phase 2 — **Blocked on validation**
+
+See [[methodology/reference/variance-allocation]] for the resolution framework.
 
 ---
 
