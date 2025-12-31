@@ -24,23 +24,17 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 ## Active Work
 
-**Variance allocation framework complete** (Tasks 3.6-3.10).
+**Variance allocation framework complete** (Tasks 3.6-3.17).
 
-**Current**: Task 3.11 — Implement variance allocation across all 28 events (🟡 12/28 complete).
+Task 3.11 completed — variance allocation implemented across all 29 events.
 
-Commit `061d516` applied variance allocation to 12 events:
-- **Type 2** (9): Amazon Tipping Point, Permafrost Methane, Chinese Economic Crisis, Dollar Reserve Crisis, Egypt State Failure, EU Fragmentation, Russia State Failure, Sahel Catastrophe, Turkey Political Breakdown
-- **Type 3** (3): US-China Economic Rupture, Chinese Political Crisis, Korean Peninsula Crisis
+Commits:
+- `99e55e5a` — 6 events (Taiwan, AMOC, Pakistan, GFC, Pandemic, Fusion)
+- `061d516` — 12 events (Amazon, Permafrost, Chinese Economic, Dollar, Egypt, EU, Russia, Sahel, Turkey, US-China, Chinese Political, Korean)
+- `a126d92` — 10 events (Saudi Regime, Iran Regime, India-Pakistan, Iran Nuclear, Saudi Nuclear, Oil Shock, Ag Yield, Cancer, Antimicrobial, Energy Storage)
+- `e243def` — 1 event (US Constitutional Crisis)
 
-**Remaining** (16 events):
-- Climate: AMOC Weakening
-- Geopolitical: Taiwan Conflict, Pakistan State Failure, Saudi Regime Instability, Iran Regime Change, India-Pakistan Military Conflict, Iran Nuclear Acquisition, Saudi Nuclear Acquisition
-- Financial: Global Financial Crisis
-- Health: Severe Pandemic
-- Energy: Oil Supply Shock
-- Breakthrough (5): Fusion, Agricultural Yield, Cancer Treatment, Antimicrobial Platform, Energy Storage
-
-**Task 3.17** (verify math) was completed concurrently — all 12 events verified within ±0.01 of target variance.
+All 29 events verified within ±0.02 of target variance using (ΛΩΛᵀ)ᵢᵢ formula.
 
 ---
 
@@ -48,11 +42,11 @@ Commit `061d516` applied variance allocation to 12 events:
 
 | Task | Completion Date | Notes |
 |------|-----------------|-------|
+| **3.11** Variance allocation implementation | Dec 31, 2025 | All 29 events scaled; 4 commits (99e55e5a, 061d516, a126d92, e243def) |
+| **3.17** Verify math | Dec 31, 2025 | All 29 events verified within ±0.02 of target variance |
 | **1.7** Type 3 non-discontinuity resolutions | Dec 30, 2025 | Resolved structural inconsistency: resolutions are discontinuity types, not all possible outcomes. Updated type-3-calibration.md and causal-types.md. India-Pakistan is primary example. |
 | Energy Storage Breakthrough critical review | Dec 2025 | 0.8% annual probability; differential impacts on oil exporters |
 | Cancer Treatment Breakthrough critical review | Dec 2025 | Platform technology; age-structure sensitive impacts |
-| Saudi Nuclear Acquisition critical review | Dec 2025 | Cascade event; 70-85% conditional probability |
-| Sahel Catastrophe critical review | Dec 2025 | Regional crisis; factor loadings rescaled |
 
 See [[methodology/project/tasks-completed]] for full completion history.
 
@@ -148,7 +142,7 @@ Implements type-based variance allocation to resolve factor model misspecificati
 | **3.8** Update `methodology/reference/factor-loadings` | Add variance constraint requirement: (ΛΩΛᵀ)ᵢᵢ must equal target for event's causal type; add workflow for specifying relative loadings then scaling to target | ✅ |
 | **3.9** Update `methodology/reference/type-3-calibration` | Add cross-reference connecting "resolution intractability" discussion to variance allocation operationalization; explain why Type 3 gets lowest factor-explained variance | ✅ |
 | **3.10** Revise validation notes | Update `validation-event-correlations` and `validation-findings-report` with correct framing (type-based targets, not uniform); remove outdated recommendations | ✅ |
-| **3.11** Implement variance allocation across all events | Compute scale factors for all 28 events by causal type; update event specifications with scaled loadings; re-run validation to confirm (ΛΩΛᵀ)ᵢᵢ ≤ target; document changes in event changelogs | 🟡 12/28 |
+| **3.11** Implement variance allocation across all events | Compute scale factors for all 29 events by causal type; update event specifications with scaled loadings; re-run validation to confirm (ΛΩΛᵀ)ᵢᵢ ≤ target; document changes in event changelogs | ✅ |
 
 **Dependencies**: 3.6 → 3.7, 3.8, 3.9, 3.10 → 3.11
 
@@ -163,7 +157,7 @@ Documentation cleanup identified during Task 3.6-3.10 implementation.
 | **3.14** | **Index update**: Add variance-allocation to methodology index for discoverability. | Low | ✅ |
 | **3.15** | **Vestigial Type 4**: Evaluate whether Type 4 variance targets are needed—we classified Type 4 as "not events, move to baseline." If no Type 4 events exist, remove from framework. | Low | 🔲 Deferred |
 | **3.16** | **Validation notes cleanup**: Either (a) rewrite validation-event-correlations and validation-findings-report as clean documents, or (b) archive/delete them since essential findings are captured in variance-allocation. Currently archaeological mess. | Low | 🔲 Deferred (delete after 3.11) |
-| **3.17** | **Verify math**: Run actual computation to verify worked examples—confirm scaled loadings produce target variance after all cross-terms. | Medium | 🟡 12/28 verified |
+| **3.17** | **Verify math**: Run actual computation to verify worked examples—confirm scaled loadings produce target variance after all cross-terms. | Medium | ✅ |
 
 **Note**: Task 3.16 may be moot if validation notes are treated as scratch/working documents to discard after Task 3.11 implementation validates the framework.
 
@@ -230,4 +224,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: December 30, 2025*
+*Last updated: December 31, 2025*
