@@ -251,22 +251,24 @@ Historical models: South Africa 1990-1994 (successful transition), France 1958 (
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2/3 Hybrid target (ΛΩΛᵀ)ᵢᵢ = 0.55*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| F_CLIM | 0.05 | Climate stress may exacerbate regional tensions; limited direct impact |
-| F_FIN | 0.40 | **Primary**: Economic crises historically correlate with political instability |
-| F_HLTH | 0.05 | Pandemic management became politically polarized; limited ongoing impact |
-| F_GPT | 0.25 | **Secondary**: External pressure could unite or divide; historically unifying |
-| F_FOOD | 0.05 | Food security not a major US vulnerability |
-| F_TECH | 0.10 | Technology platforms affect information environment; polarization channel |
-| F_EUR | 0.10 | European instability affects transatlantic alliance; modest feedback |
-| F_MENA | 0.05 | Limited direct impact |
-| F_SAS | 0.0 | No direct linkage |
-| F_EAS | 0.15 | China tensions affect domestic politics; rally/polarize effects |
-| F_SSA | 0.0 | No direct linkage |
-| F_LAM | 0.05 | Migration politics create pressure; limited magnitude |
+| **F_FIN** | 0.36 | **Primary**: Economic crises historically correlate with political instability |
+| **F_GPT** | 0.22 | **Secondary**: External pressure could unite or divide; historically unifying |
+| F_EAS | 0.13 | China tensions affect domestic politics; rally/polarize effects |
+| F_TECH | 0.09 | Technology platforms affect information environment; polarization channel |
+| F_EUR | 0.09 | European instability affects transatlantic alliance; modest feedback |
+| F_CLIM | 0.04 | Climate stress may exacerbate regional tensions; limited direct impact |
+| F_HLTH | 0.04 | Pandemic management became politically polarized; limited ongoing impact |
+| F_FOOD | 0.04 | Food security not a major US vulnerability |
+| F_MENA | 0.04 | Limited direct impact |
+| F_LAM | 0.04 | Migration politics create pressure; limited magnitude |
+| F_SAS | 0.00 | No direct linkage |
+| F_SSA | 0.00 | No direct linkage |
 
-**Sum of squared loadings**: 0.28 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Type 2/3 Hybrid target); scale factor = 0.89 from original loadings
 
 Lower loading sum reflects that US constitutional crisis is primarily domestically driven. External factors operate through domestic political channels rather than directly.
 
