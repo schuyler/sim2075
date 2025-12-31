@@ -256,15 +256,16 @@ For each year t from 2025 to 2075:
     
     4. BASELINE DRIFT (Tier 1)
        For each entity:
-           gdp_per_capita(t) = shocked_state.gdp_pc + trend_growth
+           gdp_per_capita(t) = shocked_state.gdp_pc × (1 + trend_growth_rate)
            life_expectancy(t) = shocked_state.le + trend_improvement
        For global variables:
-           Apply trend rates (temperature, CO2, tech costs, etc.)
+           temp(t) = temp(t-1) + trend_rate              # additive
+           tech_cost(t) = tech_cost(t-1) × (1 - decline_rate)  # multiplicative
     
     5. MEAN REVERSION (Tier 2)
        For mean-reverting variables:
-           X(t) = X(t) + θ × (μ - X(t)) + ε
-           where θ from half-life, μ from equilibrium, ε from volatility
+           X(t) = X_shocked(t) + θ × (μ - X_shocked(t)) + ε
+           where θ = ln(2)/half_life, μ = equilibrium, ε ~ N(0, σ²)
     
     6. TRANSMISSION (Simplified)
        inflation(t) = f(oil_price, food_price, import_dependence)
@@ -272,6 +273,12 @@ For each year t from 2025 to 2075:
     7. RECORD STATE
        Store state(t) for trajectory output
 ```
+
+**Note on growth dynamics:**
+- GDP growth is multiplicative (compound growth)
+- Technology cost decline is multiplicative (learning curves)
+- Life expectancy improvement is additive (years gained)
+- Climate variables are additive (temperature anomaly, CO2 ppm)
 
 ### 5.2 What v0.1 Validates
 
