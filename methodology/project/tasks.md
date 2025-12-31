@@ -89,11 +89,18 @@ Apply [[methodology/03-critical-review]] to all Level 1 events (24 remaining). A
 
 | Task | Dependencies | Notes |
 |------|--------------|-------|
-| **3.1** Compute implied event correlations | 10+ events specified ✓ | Use Σ = ΛΩΛ' + Ψ; verify correlations are sensible |
-| **3.2** Check double-counting inflation | 3.1 | Events loading on correlated factors may have inflated correlations |
-| **3.3** Historical proxy analysis | Phase 2 complete | Compare factor correlations to observable proxy correlations |
-| **3.4** Sensitivity analysis: factor correlations | Phase 2 complete | Test F_CLIM↔F_FOOD, F_GPT↔F_EAS at low/baseline/high |
+| **3.1** Compute implied event correlations | 10+ events specified ✓ | ✅ **COMPLETE** — See [[methodology/project/validation-event-correlations]]. Found significant issues: correlations up to 0.98 between event pairs. |
+| **3.2** Check double-counting inflation | 3.1 | ✅ **COMPLETE** — Confirmed double-counting through shared factors + correlated factor paths. Climate events (ρ=0.93-0.98), financial events (ρ=0.96-0.98) form near-redundant clusters. |
+| **3.3** Historical proxy analysis | Phase 2 complete | 🟡 **Deferred** — Requires observable proxy data; partially addressed in validation |
+| **3.4** Sensitivity analysis: factor correlations | Phase 2 complete | ⏸️ Blocked on resolution of 3.1/3.2 findings |
 | **3.5** Audit Type 3 resolution branch completeness | Type 3 events specified ✓ | Ensure favorable branches exist per positive-discontinuity resolution |
+
+**⚠️ Validation Issue Summary**: Tasks 3.1-3.2 identified structural problems requiring resolution before Phase 2:
+1. Multiple event pairs with ρ > 0.95 (near-redundancy)
+2. Two events exceed sum-of-squared-loadings constraint (Taiwan: 1.19, Pakistan: 1.01)
+3. Mean correlation 0.52 is too high (target: 0.25-0.35)
+
+**Proposed solutions**: (a) reduce factor loadings ~30%, (b) reduce Ω correlations, (c) add residual variance, (d) consolidate near-redundant events. Decision pending.
 
 ### Additional Events
 

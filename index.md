@@ -89,6 +89,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/project/development-roadmap]] | Overall development plan |
 | [[methodology/project/simulation-project-overview]] | Project context |
 | [[methodology/project/validation]] | Validation approaches |
+| [[methodology/project/validation-event-correlations]] | **Task 3.1-3.2 results** — Phase 2 blocker |
 
 ---
 
