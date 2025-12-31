@@ -264,6 +264,38 @@ For hybrids, model the dominant mechanism and note the secondary.
 
 ---
 
+## Variance Allocation by Causal Type
+
+**Key insight**: Different causal types have different epistemologies. The factor-explained variance should reflect what factors *can* explain for each type.
+
+See [[methodology/reference/variance-allocation]] for the full framework. Summary:
+
+| Type | Factor-Explained Variance | Idiosyncratic Variance | Why |
+|------|---------------------------|------------------------|-----|
+| **Type 1** | 0.70 – 0.80 | 0.20 – 0.30 | Large-N processes; historical base rates meaningful; individual idiosyncrasies average out |
+| **Type 2** | 0.60 – 0.70 | 0.30 – 0.40 | Pressure accumulation is observable or structurally constrained; threshold uncertainty adds some randomness |
+| **Type 3** | 0.40 – 0.50 | 0.50 – 0.60 | Factors explain *window opening*, but resolution depends on intractable small-N actor decisions |
+| **Type 4** | 0.50 – 0.60 | 0.40 – 0.50 | Enabling conditions are structural, but specific breakthroughs involve serendipity |
+
+### Implications for Factor Loadings
+
+When specifying factor loadings for an event:
+
+1. Determine causal type
+2. Loadings must satisfy: **(ΛΩΛᵀ)ᵢᵢ = target** for that type
+3. Specify *relative* loadings first (which factors, relative magnitudes)
+4. Scale to achieve target factor-explained variance
+
+Type 3 events will have lower absolute loadings than Type 1 events—this is correct. It reflects that factors explain less of Type 3 occurrence.
+
+**Example**: A Type 3 event (Taiwan) might have F_EAS = 0.38, F_GPT = 0.33 after scaling. This says "East Asian dynamics and great power tension explain ~45% of Taiwan conflict probability; the other 55% is irreducibly uncertain (Xi's specific decision calculus)."
+
+A Type 2 event (AMOC) might have F_CLIM = 0.67 after scaling. This says "Climate stress explains ~65% of AMOC collapse probability; the other 35% is threshold uncertainty."
+
+The absolute numbers differ, but the *relative* structure within each event is preserved.
+
+---
+
 ## Related Documents
 
 ### Operational Guidance

@@ -13,6 +13,8 @@ tags:
 
 # Factor Loadings
 
+> **Important**: Factor loadings must satisfy a variance constraint based on causal type. See [[methodology/reference/variance-allocation]] before specifying loadings.
+
 ## What Factor Loadings Represent
 
 Factor loadings quantify **how strongly an event correlates with latent risk factors**. They are not causal claims—they capture "when this factor is elevated, this event is more likely" without specifying direction of causation.
@@ -500,15 +502,36 @@ For Type 2, also ask:
 
 Assign secondary loadings only where genuine linkage exists. **Zero is a valid loading.**
 
-### Step 4: Check the Constraint
+### Step 4: Check the Variance Constraint
 
-Sum of squared loadings must be ≤ 1.0 for mathematical validity.
+**The correct constraint** is based on factor-explained variance including factor correlations:
 
 ```
-Σ(loading²) ≤ 1.0
+(ΛΩΛᵀ)ᵢᵢ = target for event's causal type
 ```
 
-If over 1.0, you've overestimated some loadings.
+Where target depends on causal type (see [[methodology/reference/variance-allocation]]):
+- Type 1: 0.70 – 0.80
+- Type 2: 0.60 – 0.70
+- Type 3: 0.40 – 0.50
+- Type 4: 0.50 – 0.60
+
+**Why simple sum-of-squared-loadings is insufficient**: When factors are correlated, factor-explained variance includes cross-terms:
+
+```
+(ΛΩΛᵀ)ᵢᵢ = Σⱼλᵢⱼ² + 2·Σⱼ<ₖ λᵢⱼ·λᵢₖ·Ωⱼₖ
+```
+
+The cross-terms add variance when an event loads on multiple correlated factors. An event with simple Σλ² = 0.80 might have true (ΛΩΛᵀ)ᵢᵢ = 1.20 after accounting for factor correlations.
+
+**The workflow**:
+1. Specify *relative* loadings (which factors, relative magnitudes)
+2. Compute (ΛΩΛᵀ)ᵢᵢ for those loadings using the factor correlation matrix Ω
+3. Compute scale factor: s = √(target / current)
+4. Scale all loadings: λ'ᵢⱼ = s × λᵢⱼ
+5. Verify scaled loadings achieve target
+
+**Interpretation**: The scaled loadings represent factor *correlations*, not causal strengths. A Type 3 event with F_EAS = 0.38 (after scaling) says "this event correlates moderately with East Asian tension, but factors only explain ~45% of its occurrence—the rest is irreducibly uncertain."
 
 ### Step 5: Cross-Validate
 

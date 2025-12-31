@@ -22,6 +22,16 @@ Operational guidance for specifying Type 3 (Contingent) events. Synthesizes the 
 
 "What happens if conflict occurs" is more answerable than "will conflict occur."
 
+### Variance Allocation Implication
+
+This intractability has a concrete consequence for factor loadings: **Type 3 events should have lower factor-explained variance than Type 1 or Type 2 events**.
+
+Factors explain *why crisis windows open* (great power tension elevates Taiwan crisis probability). But they cannot explain *how small-N actor decisions resolve*. The resolution is irreducibly uncertain from our epistemic standpoint.
+
+**Target**: Type 3 events should have factor-explained variance of 0.40–0.50, leaving 0.50–0.60 as idiosyncratic variance. This is lower than Type 1 (0.70–0.80) or Type 2 (0.60–0.70).
+
+See [[methodology/reference/variance-allocation]] for the full framework and computation method.
+
 | Component | Tractability | Treatment |
 |-----------|--------------|-----------|
 | Window preconditions | Moderate | Structural reasoning about tension escalation |

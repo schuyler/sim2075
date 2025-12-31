@@ -24,13 +24,9 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 ## Active Work
 
-**Task 3.6**: Create variance allocation framework (`methodology/reference/variance-allocation`)
+**Task 3.7**: Update `methodology/reference/causal-types` with variance implications
 
-Core methodological document establishing type-based variance allocation. This is a key insight that idiosyncratic variance should vary by causal type based on what factors *can* explain:
-- Type 3 events have intractable resolution → high idiosyncratic variance
-- Type 1 events average across large-N → low idiosyncratic variance
-
-See [[methodology/project/validation-event-correlations]] for problem background.
+Add section linking each causal type to its factor-explained variance target and epistemological rationale. Cross-reference to [[methodology/reference/variance-allocation]].
 
 ---
 
@@ -133,7 +129,7 @@ Implements type-based variance allocation to resolve factor model misspecificati
 
 | Task | Description | Status |
 |------|-------------|--------|
-| **3.6** Create `methodology/reference/variance-allocation` | Core framework document: theoretical foundation, type-specific targets (0.70-0.80 for Type 1, 0.60-0.70 for Type 2, 0.40-0.50 for Type 3, 0.50-0.60 for Type 4), computation method for scale factors, worked examples | 🔲 |
+| **3.6** Create `methodology/reference/variance-allocation` | Core framework document: theoretical foundation, type-specific targets (0.70-0.80 for Type 1, 0.60-0.70 for Type 2, 0.40-0.50 for Type 3, 0.50-0.60 for Type 4), computation method for scale factors, worked examples | ✅ |
 | **3.7** Update `methodology/reference/causal-types` | Add variance implications section linking each causal type to its factor-explained variance target and epistemological rationale | 🔲 |
 | **3.8** Update `methodology/reference/factor-loadings` | Add variance constraint requirement: (ΛΩΛᵀ)ᵢᵢ must equal target for event's causal type; add workflow for specifying relative loadings then scaling to target | 🔲 |
 | **3.9** Update `methodology/reference/type-3-calibration` | Add cross-reference connecting "resolution intractability" discussion to variance allocation operationalization; explain why Type 3 gets lowest factor-explained variance | 🔲 |
