@@ -197,22 +197,24 @@ As a Type 2 event, probability depends on pressure trajectory, primarily driven 
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_MENA** | 0.70 | Core MENA state; regional instability is contagious |
-| **F_FIN** | 0.45 | Oil prices, global energy markets, sovereign wealth |
-| **F_CLIM** | 0.35 | Extreme heat stress; habitability approaching limits |
-| **F_GPT** | 0.25 | US-Saudi relationship; China competition for influence |
-| F_TECH | 0.20 | Energy transition; solar, EVs, battery storage disrupt oil demand |
-| F_FOOD | 0.10 | Food import dependence; but can afford imports indefinitely if solvent |
-| F_EUR | 0.05 | European energy policy affects oil demand |
+| **F_MENA** | 0.46 | Core MENA state; regional instability is contagious |
+| **F_FIN** | 0.30 | Oil prices, global energy markets, sovereign wealth |
+| **F_CLIM** | 0.23 | Extreme heat stress; habitability approaching limits |
+| F_GPT | 0.17 | US-Saudi relationship; China competition for influence |
+| F_TECH | 0.13 | Energy transition; solar, EVs, battery storage disrupt oil demand |
+| F_FOOD | 0.07 | Food import dependence; but can afford imports indefinitely if solvent |
+| F_EUR | 0.03 | European energy policy affects oil demand |
 | F_HLTH | 0.00 | No distinct pathway |
 | F_SAS | 0.00 | Limited direct linkage |
-| F_EAS | 0.05 | China energy demand; Asian economic growth |
+| F_EAS | 0.03 | China energy demand; Asian economic growth |
 | F_SSA | 0.00 | No significant pathway |
 | F_LAM | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.92 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings
 
 ### Loading Interpretation (Type 2)
 

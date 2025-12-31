@@ -143,22 +143,24 @@ Regional conflict spreading across multiple producers simultaneously — lower p
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 1 target (ΛΩΛᵀ)ᵢᵢ = 0.75*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
+| **F_MENA** | 0.46 | Primary production region; regional instability directly threatens supply |
+| **F_GPT** | 0.34 | Great power tension increases conflict probability in oil-producing regions |
+| **F_FIN** | 0.29 | Financial stress correlates with geopolitical risk-taking; oil shocks stress financial systems |
+| F_EUR | 0.13 | European energy dependence creates exposure; Russia-Europe dynamics |
+| F_EAS | 0.08 | Major demand region; supply competition dynamics |
+| F_LAM | 0.08 | Venezuela instability; regional production |
+| F_FOOD | 0.08 | Oil-intensive agriculture; food price correlation with energy prices |
+| F_SSA | 0.04 | Minor production (Nigeria, Angola) |
 | F_CLIM | 0.00 | No direct pathway |
-| F_FIN | 0.35 | Financial stress correlates with geopolitical risk-taking; oil shocks stress financial systems |
 | F_HLTH | 0.00 | No direct pathway |
-| F_GPT | 0.40 | Great power tension increases conflict probability in oil-producing regions |
-| F_FOOD | 0.10 | Oil-intensive agriculture; food price correlation with energy prices |
-| F_TECH | 0.00 | No direct pathway |
-| F_EUR | 0.15 | European energy dependence creates exposure; Russia-Europe dynamics |
-| F_MENA | 0.55 | Primary production region; regional instability directly threatens supply |
 | F_SAS | 0.00 | No direct pathway |
-| F_EAS | 0.10 | Major demand region; supply competition dynamics |
-| F_SSA | 0.05 | Minor production (Nigeria, Angola) |
-| F_LAM | 0.10 | Venezuela instability; regional production |
+| F_TECH | 0.00 | No direct pathway |
 
-**Sum of squared loadings**: 0.55² + 0.40² + 0.35² + 0.15² + 0.10² + 0.10² + 0.10² + 0.05² = 0.30 + 0.16 + 0.12 + 0.02 + 0.01 + 0.01 + 0.01 + 0.00 = **0.63** ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.75 (Type 1 target); scale factor = 0.84 from original loadings
 
 ### Loading Rationale
 

@@ -112,22 +112,24 @@ Of the ~7 acute crises since 1965, 4-5 involved actual military operations (1965
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 3 target (ΛΩΛᵀ)ᵢᵢ = 0.45*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| F_CLIM | 0.20 | Water stress amplifies tensions; Indus basin vulnerability |
-| F_FIN | 0.10 | Economic stress amplifies domestic pressure |
+| **F_SAS** | 0.54 | Primary driver: regional stress conditions crises |
+| F_GPT | 0.17 | Great power dynamics affect crisis management |
+| F_CLIM | 0.13 | Water stress amplifies tensions; Indus basin vulnerability |
+| F_MENA | 0.07 | Pakistan's western border competing for attention |
+| F_FOOD | 0.07 | Food security stress overlaps with water/climate |
+| F_FIN | 0.07 | Economic stress amplifies domestic pressure |
+| F_TECH | 0.03 | Cyber capabilities matter but marginal |
+| F_EAS | 0.03 | China-India tensions create secondary pressure |
 | F_HLTH | 0.00 | No direct pathway |
-| F_GPT | 0.25 | Great power dynamics affect crisis management |
-| F_FOOD | 0.10 | Food security stress overlaps with water/climate |
-| F_TECH | 0.05 | Cyber capabilities matter but marginal |
 | F_EUR | 0.00 | No direct pathway |
-| F_MENA | 0.10 | Pakistan's western border competing for attention |
-| F_SAS | 0.80 | Primary driver: regional stress conditions crises |
-| F_EAS | 0.05 | China-India tensions create secondary pressure |
 | F_SSA | 0.00 | No direct pathway |
 | F_LAM | 0.00 | No direct pathway |
 
-**Sum of squared loadings**: 0.78 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.67 from original loadings
 
 ### Loading Rationale
 

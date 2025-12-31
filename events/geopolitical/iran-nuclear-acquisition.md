@@ -245,14 +245,16 @@ As a Type 2/3 hybrid, probability depends on pressure trajectory and decision wi
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2/3 Hybrid target (ΛΩΛᵀ)ᵢᵢ = 0.55*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_MENA** | 0.70 | Regional threat environment; Saudi/Israel tensions drive pressure |
-| **F_GPT** | 0.55 | US-Iran confrontation; great power competition affects enforcement |
-| F_EAS | 0.20 | China relationship; alternative economic/diplomatic partner |
-| F_FIN | 0.15 | Sanctions effectiveness depends on global financial system |
-| F_EUR | 0.10 | European role in diplomacy and sanctions |
-| F_TECH | 0.05 | Marginal; technical capability already sufficient |
+| **F_MENA** | 0.48 | Regional threat environment; Saudi/Israel tensions drive pressure |
+| **F_GPT** | 0.37 | US-Iran confrontation; great power competition affects enforcement |
+| F_EAS | 0.14 | China relationship; alternative economic/diplomatic partner |
+| F_FIN | 0.10 | Sanctions effectiveness depends on global financial system |
+| F_EUR | 0.07 | European role in diplomacy and sanctions |
+| F_TECH | 0.03 | Marginal; technical capability already sufficient |
 | F_CLIM | 0.00 | No significant pathway |
 | F_HLTH | 0.00 | No significant pathway |
 | F_SAS | 0.00 | Limited direct linkage |
@@ -260,7 +262,7 @@ As a Type 2/3 hybrid, probability depends on pressure trajectory and decision wi
 | F_LAM | 0.00 | No significant pathway |
 | F_FOOD | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.84 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Type 2/3 Hybrid target); scale factor = 0.68 from original loadings
 
 ### Loading Interpretation (Type 2/3)
 

@@ -158,13 +158,15 @@ As a Type 1 stochastic event, probability is relatively stable but influenced by
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_TECH** | 0.70 | Primary driver: Biotechnology, AI/ML, and pharmaceutical R&D cluster together; high F_TECH year means accelerated progress across frontier technologies including oncology |
-| **F_HLTH** | 0.30 | Health system stress and pandemic experience accelerate medical research (COVID accelerated mRNA); health crises increase research funding and regulatory flexibility |
-| **F_FIN** | 0.20 | Capital availability for expensive clinical development and manufacturing scale-up; biotech investment correlates with breakthrough probability |
+| **F_TECH** | 0.60 | Primary driver: Biotechnology, AI/ML, and pharmaceutical R&D cluster together; high F_TECH year means accelerated progress across frontier technologies including oncology |
+| **F_HLTH** | 0.26 | Health system stress and pandemic experience accelerate medical research (COVID accelerated mRNA); health crises increase research funding and regulatory flexibility |
+| F_FIN | 0.17 | Capital availability for expensive clinical development and manufacturing scale-up; biotech investment correlates with breakthrough probability |
+| F_GPT | 0.04 | Minor: Great power competition may drive national health security research (biosecurity framing) |
 | F_CLIM | 0.00 | No pathway |
-| F_GPT | 0.05 | Minor: Great power competition may drive national health security research (biosecurity framing) |
 | F_FOOD | 0.00 | No pathway |
 | F_EUR | 0.00 | Regional stress doesn't affect breakthrough probability |
 | F_MENA | 0.00 | No pathway |
@@ -173,7 +175,7 @@ As a Type 1 stochastic event, probability is relatively stable but influenced by
 | F_SSA | 0.00 | No pathway |
 | F_LAM | 0.00 | No pathway |
 
-**Sum of squared loadings**: 0.49 + 0.09 + 0.04 + 0.0025 = 0.62 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.86 from original loadings
 
 ### Loading Interpretation (Type 1)
 

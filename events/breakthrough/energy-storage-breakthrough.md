@@ -163,22 +163,24 @@ This ranking reflects that battery storage has fewer scientific unknowns but fac
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_TECH** | 0.70 | Primary driver: Battery technology clusters with broader materials science, manufacturing innovation, and technology R&D; high F_TECH year accelerates all frontier technologies |
-| **F_CLIM** | 0.35 | Climate policy urgency drives investment and regulatory support for storage; high climate stress increases political will for energy transition acceleration |
-| **F_FIN** | 0.25 | Capital availability for expensive manufacturing scale-up; clean energy investment cycles affect breakthrough probability |
+| **F_TECH** | 0.57 | Primary driver: Battery technology clusters with broader materials science, manufacturing innovation, and technology R&D; high F_TECH year accelerates all frontier technologies |
+| **F_CLIM** | 0.29 | Climate policy urgency drives investment and regulatory support for storage; high climate stress increases political will for energy transition acceleration |
+| **F_FIN** | 0.20 | Capital availability for expensive manufacturing scale-up; clean energy investment cycles affect breakthrough probability |
+| F_EAS | 0.12 | China dominates battery manufacturing; East Asian industrial policy drives technology development |
+| F_EUR | 0.08 | EU Battery Alliance, European manufacturing ambitions; European stress could slow investment |
 | F_GPT | 0.00 | No direct pathway |
 | F_HLTH | 0.00 | No pathway |
 | F_FOOD | 0.00 | No pathway |
-| F_EUR | 0.10 | EU Battery Alliance, European manufacturing ambitions; European stress could slow investment |
 | F_MENA | 0.00 | No pathway |
 | F_SAS | 0.00 | No pathway |
-| F_EAS | 0.15 | China dominates battery manufacturing; East Asian industrial policy drives technology development |
 | F_SSA | 0.00 | No pathway |
 | F_LAM | 0.00 | No pathway (Chile lithium doesn't affect breakthrough probability) |
 
-**Sum of squared loadings**: 0.49 + 0.12 + 0.06 + 0.01 + 0.02 = 0.70 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.82 from original loadings
 
 ### Loading Interpretation (Type 1)
 

@@ -176,14 +176,16 @@ resolution_probability_rationale: |
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 3 target (ΛΩΛᵀ)ᵢᵢ = 0.45*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_MENA** | 0.75 | Regional dynamics; Iran-Saudi competition; Gulf security architecture |
-| **F_GPT** | 0.50 | US security commitment credibility; great power competition affects alternatives |
-| **F_SAS** | 0.30 | Pakistan's decision is critical; South Asian stability affects willingness to assist |
-| F_FIN | 0.15 | Saudi fiscal capacity for program; sanctions risk calculation |
-| F_EUR | 0.10 | European role in nonproliferation pressure; alternative security architecture |
-| F_EAS | 0.05 | Minor; China role in any alternative arrangements |
+| **F_MENA** | 0.47 | Regional dynamics; Iran-Saudi competition; Gulf security architecture |
+| **F_GPT** | 0.31 | US security commitment credibility; great power competition affects alternatives |
+| F_SAS | 0.19 | Pakistan's decision is critical; South Asian stability affects willingness to assist |
+| F_FIN | 0.09 | Saudi fiscal capacity for program; sanctions risk calculation |
+| F_EUR | 0.06 | European role in nonproliferation pressure; alternative security architecture |
+| F_EAS | 0.03 | Minor; China role in any alternative arrangements |
 | F_CLIM | 0.00 | No pathway |
 | F_HLTH | 0.00 | No pathway |
 | F_SSA | 0.00 | No pathway |
@@ -191,7 +193,7 @@ resolution_probability_rationale: |
 | F_TECH | 0.00 | Capability comes from Pakistan, not indigenous development |
 | F_FOOD | 0.00 | No pathway |
 
-**Sum of squared loadings**: 0.56 + 0.25 + 0.09 + 0.02 + 0.01 + 0.003 = 0.93 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.63 from original loadings
 
 ### Loading Interpretation (Type 3)
 

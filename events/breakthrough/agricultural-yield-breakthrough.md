@@ -126,14 +126,16 @@ This ranking seems appropriate—agricultural breakthroughs have stronger recent
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_TECH** | 0.65 | Primary driver: Gene editing advances, computational biology, and agricultural R&D cluster together; high F_TECH year means accelerated progress across frontier technologies |
-| **F_FOOD** | 0.40 | Food system stress drives urgency and funding for yield improvement; high F_FOOD correlates with increased research investment |
-| **F_CLIM** | 0.25 | Climate stress creates demand signal for heat/drought tolerance; elevated climate pressure accelerates prioritization |
-| F_FIN | 0.15 | Capital availability affects private sector research investment and deployment capacity |
+| **F_TECH** | 0.52 | Primary driver: Gene editing advances, computational biology, and agricultural R&D cluster together; high F_TECH year means accelerated progress across frontier technologies |
+| **F_FOOD** | 0.32 | Food system stress drives urgency and funding for yield improvement; high F_FOOD correlates with increased research investment |
+| **F_CLIM** | 0.20 | Climate stress creates demand signal for heat/drought tolerance; elevated climate pressure accelerates prioritization |
+| F_FIN | 0.12 | Capital availability affects private sector research investment and deployment capacity |
+| F_GPT | 0.08 | Great power competition may drive national food security research programs |
 | F_HLTH | 0.00 | No pathway |
-| F_GPT | 0.10 | Great power competition may drive national food security research programs |
 | F_EUR | 0.00 | Regional stress doesn't affect breakthrough probability |
 | F_MENA | 0.00 | No pathway (affects impact, not probability) |
 | F_SAS | 0.00 | No pathway (affects impact, not probability) |
@@ -141,7 +143,7 @@ This ranking seems appropriate—agricultural breakthroughs have stronger recent
 | F_SSA | 0.00 | No pathway (affects impact, not probability) |
 | F_LAM | 0.00 | No pathway |
 
-**Sum of squared loadings**: 0.42 + 0.16 + 0.06 + 0.02 + 0.01 = 0.67 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.80 from original loadings
 
 ### Loading Interpretation (Type 1)
 

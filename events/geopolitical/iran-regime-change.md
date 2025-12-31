@@ -208,22 +208,24 @@ As a Type 2 event, probability depends on pressure trajectory:
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_MENA** | 0.65 | Core MENA power; instability would transform regional dynamics |
-| **F_GPT** | 0.45 | US sanctions regime, great power competition, nuclear negotiations |
-| **F_CLIM** | 0.35 | Water crisis is existential; affects agricultural base and habitability |
-| **F_FIN** | 0.30 | Oil prices, sanctions effects, global finance exclusion |
-| F_EAS | 0.15 | China relationship; alternative economic partner |
-| F_TECH | 0.10 | Information control challenges; nuclear program trajectory |
-| F_FOOD | 0.10 | Agricultural stress from water; food import dependence |
-| F_EUR | 0.10 | European policy on sanctions, nuclear deal |
-| F_SAS | 0.05 | Limited direct linkage; some Afghanistan spillover |
+| **F_MENA** | 0.43 | Core MENA power; instability would transform regional dynamics |
+| **F_GPT** | 0.30 | US sanctions regime, great power competition, nuclear negotiations |
+| **F_CLIM** | 0.23 | Water crisis is existential; affects agricultural base and habitability |
+| **F_FIN** | 0.20 | Oil prices, sanctions effects, global finance exclusion |
+| F_EAS | 0.10 | China relationship; alternative economic partner |
+| F_TECH | 0.07 | Information control challenges; nuclear program trajectory |
+| F_FOOD | 0.07 | Agricultural stress from water; food import dependence |
+| F_EUR | 0.07 | European policy on sanctions, nuclear deal |
+| F_SAS | 0.03 | Limited direct linkage; some Afghanistan spillover |
 | F_HLTH | 0.00 | No distinct pathway |
 | F_SSA | 0.00 | No significant pathway |
 | F_LAM | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.88 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings
 
 ### Loading Interpretation (Type 2)
 

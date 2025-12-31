@@ -155,14 +155,16 @@ This ranking reflects that antimicrobial platform has fewer scientific barriers 
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_TECH** | 0.60 | Primary driver: Biotechnology R&D, AI drug discovery, synthetic biology cluster together; high F_TECH year means accelerated progress across frontier technologies including antimicrobial platforms |
-| **F_HLTH** | 0.45 | Health system stress from resistance, pandemic experience with novel platforms (mRNA), regulatory adaptation precedent; health crises increase urgency and flexibility |
-| **F_FIN** | 0.25 | Capital availability for expensive clinical development; biotech investment cycles affect breakthrough probability |
-| F_GPT | 0.10 | Minor: Biodefense framing may drive government investment in antimicrobial platforms as strategic capability |
+| **F_TECH** | 0.50 | Primary driver: Biotechnology R&D, AI drug discovery, synthetic biology cluster together; high F_TECH year means accelerated progress across frontier technologies including antimicrobial platforms |
+| **F_HLTH** | 0.37 | Health system stress from resistance, pandemic experience with novel platforms (mRNA), regulatory adaptation precedent; health crises increase urgency and flexibility |
+| **F_FIN** | 0.21 | Capital availability for expensive clinical development; biotech investment cycles affect breakthrough probability |
+| F_GPT | 0.08 | Minor: Biodefense framing may drive government investment in antimicrobial platforms as strategic capability |
+| F_FOOD | 0.04 | Minor: Agricultural antibiotic pressure creates some urgency for human alternatives |
 | F_CLIM | 0.00 | No pathway |
-| F_FOOD | 0.05 | Minor: Agricultural antibiotic pressure creates some urgency for human alternatives |
 | F_EUR | 0.00 | Regional stress doesn't affect breakthrough probability |
 | F_MENA | 0.00 | No pathway |
 | F_SAS | 0.00 | No pathway (high resistance burden doesn't affect breakthrough probability, only impact) |
@@ -170,7 +172,7 @@ This ranking reflects that antimicrobial platform has fewer scientific barriers 
 | F_SSA | 0.00 | No pathway |
 | F_LAM | 0.00 | No pathway |
 
-**Sum of squared loadings**: 0.36 + 0.20 + 0.06 + 0.01 + 0.0025 = 0.63 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.83 from original loadings
 
 ### Loading Interpretation (Type 1)
 
