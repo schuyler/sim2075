@@ -146,6 +146,21 @@ Implements type-based variance allocation to resolve factor model misspecificati
 
 **Dependencies**: 3.6 → 3.7, 3.8, 3.9, 3.10 → 3.11
 
+### Cleanup Tasks (Post-Variance Framework)
+
+Documentation cleanup identified during Task 3.6-3.10 implementation.
+
+| Task | Description | Priority | Status |
+|------|-------------|----------|--------|
+| **3.12** | **DRY violation**: Remove redundant variance target tables from causal-types, factor-loadings, type-3-calibration. Replace with single-line cross-references to variance-allocation. | Medium | 🔲 |
+| **3.13** | **Stale guidance**: Update or remove "Common Patterns by Causal Type" and "Loading Scale" sections in factor-loadings—values (0.60-0.85) are inconsistent with post-scaling reality (~0.30-0.50 for Type 3). | Medium | 🔲 |
+| **3.14** | **Index update**: Add variance-allocation to methodology index for discoverability. | Low | 🔲 |
+| **3.15** | **Vestigial Type 4**: Evaluate whether Type 4 variance targets are needed—we classified Type 4 as "not events, move to baseline." If no Type 4 events exist, remove from framework. | Low | 🔲 |
+| **3.16** | **Validation notes cleanup**: Either (a) rewrite validation-event-correlations and validation-findings-report as clean documents, or (b) archive/delete them since essential findings are captured in variance-allocation. Currently archaeological mess. | Low | 🔲 |
+| **3.17** | **Verify math**: Run actual computation to verify worked examples—confirm scaled loadings produce target variance after all cross-terms. | Medium | 🔲 |
+
+**Note**: Task 3.16 may be moot if validation notes are treated as scratch/working documents to discard after Task 3.11 implementation validates the framework.
+
 ### Additional Events
 
 Candidates for expanding beyond 27 current events:
