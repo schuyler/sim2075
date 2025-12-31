@@ -186,11 +186,13 @@ For Type 2 events, probability varies with pressure accumulation.
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_CLIM** | 0.85 | Dominant: warming is the direct driver |
-| **F_FOOD** | 0.15 | Agricultural emissions contribute to warming; minor pathway |
-| **F_GPT** | 0.10 | Geopolitical factors affect climate policy ambition |
+| **F_CLIM** | 0.73 | Dominant: warming is the direct driver |
+| **F_FOOD** | 0.13 | Agricultural emissions contribute to warming; minor pathway |
+| **F_GPT** | 0.09 | Geopolitical factors affect climate policy ambition |
 | F_FIN | 0.00 | No direct pathway |
 | F_TECH | 0.00 | No direct pathway |
 | F_HLTH | 0.00 | No significant pathway |
@@ -201,7 +203,7 @@ For Type 2 events, probability varies with pressure accumulation.
 | F_SSA | 0.00 | No significant pathway |
 | F_LAM | 0.00 | Amazon feedback captured in cascade |
 
-**Sum of squared loadings**: 0.72 + 0.02 + 0.01 = 0.75 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.86 from original loadings
 
 ---
 

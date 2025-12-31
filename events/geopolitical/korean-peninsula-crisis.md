@@ -125,22 +125,24 @@ This is lower than India-Pakistan (35%) because:
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 3 target (ΛΩΛᵀ)ᵢᵢ = 0.45*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| F_CLIM | 0.05 | Marginal — food security stress could add to DPRK pressure |
-| F_FIN | 0.15 | Sanctions pressure, DPRK economic stress affects regime calculus |
+| F_CLIM | 0.03 | Marginal — food security stress could add to DPRK pressure |
+| F_FIN | 0.08 | Sanctions pressure, DPRK economic stress affects regime calculus |
 | F_HLTH | 0.00 | No direct pathway |
-| F_GPT | 0.40 | Great power dynamics affect crisis management, US-China coordination |
-| F_FOOD | 0.10 | DPRK food insecurity creates regime stress |
-| F_TECH | 0.05 | Marginal — missile/nuclear technology affects capability |
+| **F_GPT** | 0.23 | Great power dynamics affect crisis management, US-China coordination |
+| F_FOOD | 0.06 | DPRK food insecurity creates regime stress |
+| F_TECH | 0.03 | Marginal — missile/nuclear technology affects capability |
 | F_EUR | 0.00 | No direct pathway |
 | F_MENA | 0.00 | No direct pathway |
 | F_SAS | 0.00 | No direct pathway |
-| F_EAS | 0.85 | Primary driver: regional tension directly conditions crisis probability |
+| **F_EAS** | 0.48 | Primary driver: regional tension directly conditions crisis probability |
 | F_SSA | 0.00 | No direct pathway |
 | F_LAM | 0.00 | No direct pathway |
 
-**Sum of squared loadings**: 0.92 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.56 from original loadings
 
 ### Loading Rationale
 

@@ -164,14 +164,16 @@ For Type 2 events, probability varies with pressure accumulation.
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_MENA** | 0.70 | Regional instability is primary driver; Egypt is MENA anchor |
-| **F_FOOD** | 0.50 | World's largest wheat importer; bread subsidies are social contract |
-| **F_CLIM** | 0.40 | Nile flow depends on Ethiopian rainfall; heat stress |
-| **F_FIN** | 0.30 | Chronic fiscal crisis; IMF dependency |
-| **F_GPT** | 0.15 | Great power competition affects aid flows |
-| **F_SSA** | 0.12 | Ethiopia (GERD), Sudan instability affect Egypt |
+| **F_MENA** | 0.41 | Regional instability is primary driver; Egypt is MENA anchor |
+| **F_FOOD** | 0.29 | World's largest wheat importer; bread subsidies are social contract |
+| **F_CLIM** | 0.23 | Nile flow depends on Ethiopian rainfall; heat stress |
+| **F_FIN** | 0.18 | Chronic fiscal crisis; IMF dependency |
+| F_GPT | 0.09 | Great power competition affects aid flows |
+| F_SSA | 0.07 | Ethiopia (GERD), Sudan instability affect Egypt |
 | F_HLTH | 0.00 | No distinct pathway |
 | F_TECH | 0.00 | No significant pathway |
 | F_EUR | 0.00 | Migration is consequence, not driver |
@@ -179,7 +181,7 @@ For Type 2 events, probability varies with pressure accumulation.
 | F_SAS | 0.00 | No significant pathway |
 | F_LAM | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.97 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.58 from original loadings
 
 ---
 

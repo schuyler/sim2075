@@ -243,22 +243,24 @@ As a Type 2 event, probability depends on pressure trajectory:
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_MENA** | 0.50 | Regional spillover, Kurdish dimension spans Syria/Iraq, refugee source |
-| **F_FIN** | 0.45 | Currency vulnerability, external financing needs, EM contagion |
-| **F_EUR** | 0.40 | NATO member, EU candidate, migration route, democratic standards |
-| **F_GPT** | 0.35 | Russia-West balancing, sanctions risk, strategic positioning |
-| F_CLIM | 0.15 | Heat stress, agricultural impacts, water management (as upstream power) |
-| F_FOOD | 0.10 | Agricultural exporter but inflation affects food access domestically |
-| F_SAS | 0.05 | Limited; some Afghanistan refugee pathway |
+| **F_MENA** | 0.34 | Regional spillover, Kurdish dimension spans Syria/Iraq, refugee source |
+| **F_FIN** | 0.31 | Currency vulnerability, external financing needs, EM contagion |
+| **F_EUR** | 0.27 | NATO member, EU candidate, migration route, democratic standards |
+| **F_GPT** | 0.24 | Russia-West balancing, sanctions risk, strategic positioning |
+| F_CLIM | 0.10 | Heat stress, agricultural impacts, water management (as upstream power) |
+| F_FOOD | 0.07 | Agricultural exporter but inflation affects food access domestically |
+| F_SAS | 0.03 | Limited; some Afghanistan refugee pathway |
 | F_EAS | 0.00 | No significant pathway |
 | F_SSA | 0.00 | No significant pathway |
 | F_LAM | 0.00 | No significant pathway |
 | F_HLTH | 0.00 | No distinct pathway beyond general state capacity |
 | F_TECH | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.73 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.68 from original loadings
 
 ### Loading Interpretation (Type 2)
 

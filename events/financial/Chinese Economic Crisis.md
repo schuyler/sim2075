@@ -217,22 +217,24 @@ For Type 2 events, probability varies with pressure accumulation over the simula
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| F_CLIM | 0.10 | Climate stress affects agricultural output, infrastructure costs, regional development |
-| F_FIN | 0.55 | **Primary**: Global financial conditions affect capital flows, contagion risk, investor sentiment; truly exogenous to China |
-| F_HLTH | 0.05 | Pandemic aftermath affects consumer confidence, services sector |
-| F_GPT | 0.30 | **Secondary**: Trade tensions, tech restrictions, geopolitical risk premium |
-| F_FOOD | 0.05 | Food security concerns add fiscal pressure, affect rural stability |
-| F_TECH | 0.20 | Semiconductor restrictions, tech war affects growth sectors, investment |
-| F_EUR | 0.10 | European demand affects exports; European financial stress affects global sentiment |
+| **F_CLIM** | 0.07 | Climate stress affects agricultural output, infrastructure costs, regional development |
+| **F_FIN** | 0.40 | **Primary**: Global financial conditions affect capital flows, contagion risk, investor sentiment; truly exogenous to China |
+| **F_HLTH** | 0.04 | Pandemic aftermath affects consumer confidence, services sector |
+| **F_GPT** | 0.22 | **Secondary**: Trade tensions, tech restrictions, geopolitical risk premium |
+| **F_FOOD** | 0.04 | Food security concerns add fiscal pressure, affect rural stability |
+| **F_TECH** | 0.15 | Semiconductor restrictions, tech war affects growth sectors, investment |
+| **F_EUR** | 0.07 | European demand affects exports; European financial stress affects global sentiment |
 | F_MENA | 0.0 | Minimal direct linkage |
-| F_SAS | 0.05 | Regional trade linkages |
-| F_EAS | 0.45 | **Secondary**: Regional dynamics (Korea, Japan, Taiwan stress) that transmit to China through trade/investment; excludes China-driven component to avoid circularity |
+| **F_SAS** | 0.04 | Regional trade linkages |
+| **F_EAS** | 0.33 | **Secondary**: Regional dynamics (Korea, Japan, Taiwan stress) that transmit to China through trade/investment; excludes China-driven component to avoid circularity |
 | F_SSA | 0.0 | Minimal direct linkage (China is creditor, not affected) |
 | F_LAM | 0.0 | Minimal direct linkage |
 
-**Sum of squared loadings**: 0.3025 + 0.2025 + 0.09 + 0.04 + 0.01 + 0.01 + 0.0025 + 0.0025 + 0.0025 = **0.66** ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.74 from original loadings
 
 ### Loading Rationale
 

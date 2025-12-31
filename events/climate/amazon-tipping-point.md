@@ -191,13 +191,15 @@ For Type 2 events, probability varies with pressure accumulation over the simula
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_CLIM** | 0.70 | Dominant: warming, drought, precipitation changes are primary drivers |
-| **F_FOOD** | 0.45 | Agricultural expansion (soy, cattle) drives deforestation |
-| **F_LAM** | 0.20 | Regional instability affects governance capacity; imperfect proxy for environmental policy |
-| **F_FIN** | 0.15 | Commodity prices affect deforestation economics |
-| **F_GPT** | 0.10 | International pressure/trade policy affects deforestation incentives |
+| **F_CLIM** | 0.54 | Dominant: warming, drought, precipitation changes are primary drivers |
+| **F_FOOD** | 0.34 | Agricultural expansion (soy, cattle) drives deforestation |
+| **F_LAM** | 0.15 | Regional instability affects governance capacity; imperfect proxy for environmental policy |
+| **F_FIN** | 0.11 | Commodity prices affect deforestation economics |
+| **F_GPT** | 0.08 | International pressure/trade policy affects deforestation incentives |
 | F_TECH | 0.00 | No significant pathway |
 | F_HLTH | 0.00 | No significant pathway |
 | F_EUR | 0.00 | No direct pathway (EU deforestation regulation effect is via F_GPT/F_FIN) |
@@ -206,7 +208,7 @@ For Type 2 events, probability varies with pressure accumulation over the simula
 | F_MENA | 0.00 | No significant pathway |
 | F_SSA | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.49 + 0.20 + 0.04 + 0.02 + 0.01 = 0.76 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.77 from original loadings
 
 ### Loading Interpretation (Type 2)
 

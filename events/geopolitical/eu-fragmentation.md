@@ -219,24 +219,24 @@ As a Type 2 event, probability depends on pressure trajectory, primarily Italian
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| F_CLIM | 0.15 | Climate stress drives migration pressure, agricultural disruption |
-| F_FIN | 0.40 | **Secondary**: Financial stress is primary transmission mechanism |
-| F_HLTH | 0.05 | Pandemic stress tests coordination capacity |
-| F_GPT | 0.25 | Great power tension affects transatlantic relations, defense burden |
-| F_FOOD | 0.10 | Food price spikes stress periphery budgets |
-| F_TECH | 0.0 | Limited direct relevance |
-| F_EUR | 0.65 | **Primary**: European stress is definitional |
-| F_MENA | 0.20 | MENA instability drives migration pressure |
-| F_SAS | 0.0 | No direct linkage |
-| F_EAS | 0.05 | China trade relations, Taiwan scenario implications |
-| F_SSA | 0.10 | African instability drives migration |
-| F_LAM | 0.0 | No direct linkage |
+| F_CLIM | 0.10 | Climate stress drives migration pressure, agricultural disruption |
+| **F_FIN** | 0.28 | **Secondary**: Financial stress is primary transmission mechanism |
+| F_HLTH | 0.03 | Pandemic stress tests coordination capacity |
+| F_GPT | 0.17 | Great power tension affects transatlantic relations, defense burden |
+| F_FOOD | 0.07 | Food price spikes stress periphery budgets |
+| F_TECH | 0.00 | Limited direct relevance |
+| **F_EUR** | 0.45 | **Primary**: European stress is definitional |
+| F_MENA | 0.14 | MENA instability drives migration pressure |
+| F_SAS | 0.00 | No direct linkage |
+| F_EAS | 0.03 | China trade relations, Taiwan scenario implications |
+| F_SSA | 0.07 | African instability drives migration |
+| F_LAM | 0.00 | No direct linkage |
 
-**Sum of squared loadings**: 0.65² + 0.40² + 0.25² + 0.20² + 0.15² + 0.10² + 0.10² + 0.05² + 0.05² = 0.42 + 0.16 + 0.06 + 0.04 + 0.02 + 0.01 + 0.01 + 0.003 + 0.003 ≈ **0.73** ✓
-
-High loading sum reflects that EU fragmentation is influenced by multiple external pressures (migration, finance, geopolitics) channeled through the F_EUR factor.
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.70 from original loadings
 
 ### Loading Rationale
 

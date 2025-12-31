@@ -134,22 +134,24 @@ The 30% non-event probability reflects:
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 3 target (ΛΩΛᵀ)ᵢᵢ = 0.45*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
 | F_CLIM | 0.00 | No direct pathway |
-| F_FIN | 0.30 | Financial stress may precipitate crisis or amplify effects |
-| F_HLTH | 0.05 | Pandemic-related supply chain stress could contribute |
-| F_GPT | 0.75 | Great power tension is primary driver |
+| **F_FIN** | 0.16 | Financial stress may precipitate crisis or amplify effects |
+| F_HLTH | 0.03 | Pandemic-related supply chain stress could contribute |
+| **F_GPT** | 0.39 | Great power tension is primary driver |
 | F_FOOD | 0.00 | No direct pathway |
-| F_TECH | 0.25 | Technology competition fuels tensions |
-| F_EUR | 0.15 | European alignment affects scope and impact |
+| F_TECH | 0.13 | Technology competition fuels tensions |
+| F_EUR | 0.08 | European alignment affects scope and impact |
 | F_MENA | 0.00 | No direct pathway |
 | F_SAS | 0.00 | No direct pathway |
-| F_EAS | 0.40 | Regional dynamics contribute to tension |
+| **F_EAS** | 0.21 | Regional dynamics contribute to tension |
 | F_SSA | 0.00 | No direct pathway |
 | F_LAM | 0.00 | No direct pathway |
 
-**Sum of squared loadings**: 0.87 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.52 from original loadings
 
 ### Loading Rationale
 

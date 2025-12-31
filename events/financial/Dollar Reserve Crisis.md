@@ -178,22 +178,24 @@ For Type 2 events, probability varies with pressure accumulation.
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| F_CLIM | 0.0 | No direct climate linkage |
-| F_FIN | 0.7 | **Primary driver**: Financial fragility directly affects Treasury market stress, yield dynamics, reserve demand |
-| F_HLTH | 0.0 | No direct health linkage |
-| F_GPT | 0.4 | **Secondary**: Geopolitical tensions accelerate reserve diversification, sanctions concerns |
-| F_FOOD | 0.0 | No direct food system linkage |
-| F_TECH | 0.2 | **Tertiary**: Alternative payment infrastructure (mBridge, CBDC) maturity |
-| F_EUR | 0.2 | European stress affects euro as alternative; European positioning matters |
-| F_MENA | 0.1 | Petrodollar dynamics; Gulf state positioning |
-| F_SAS | 0.0 | Minimal direct linkage |
-| F_EAS | 0.2 | Chinese infrastructure development; yuan internationalization pace |
-| F_SSA | 0.0 | Minimal direct linkage |
-| F_LAM | 0.0 | Minimal direct linkage |
+| F_CLIM | 0.00 | No direct climate linkage |
+| **F_FIN** | 0.48 | **Primary driver**: Financial fragility directly affects Treasury market stress, yield dynamics, reserve demand |
+| F_HLTH | 0.00 | No direct health linkage |
+| **F_GPT** | 0.27 | **Secondary**: Geopolitical tensions accelerate reserve diversification, sanctions concerns |
+| F_FOOD | 0.00 | No direct food system linkage |
+| **F_TECH** | 0.14 | **Tertiary**: Alternative payment infrastructure (mBridge, CBDC) maturity |
+| **F_EUR** | 0.14 | European stress affects euro as alternative; European positioning matters |
+| **F_MENA** | 0.07 | Petrodollar dynamics; Gulf state positioning |
+| F_SAS | 0.00 | Minimal direct linkage |
+| **F_EAS** | 0.14 | Chinese infrastructure development; yuan internationalization pace |
+| F_SSA | 0.00 | Minimal direct linkage |
+| F_LAM | 0.00 | Minimal direct linkage |
 
-**Sum of squared loadings**: 0.49 + 0.16 + 0.04 + 0.04 + 0.01 + 0.04 = **0.78** ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.68 from original loadings
 
 ### Loading Rationale
 

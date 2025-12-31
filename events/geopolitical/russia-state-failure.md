@@ -184,22 +184,24 @@ As a Type 2 event, probability depends on pressure trajectory:
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_GPT** | 0.75 | Great power competition is existential; Ukraine war is US/NATO proxy conflict |
-| **F_EUR** | 0.50 | European regional dynamics; Ukraine, NATO expansion, energy relationship |
-| **F_FIN** | 0.30 | Sanctions, SWIFT exclusion, reserve seizure, trade disruption |
-| F_CLIM | 0.15 | Permafrost infrastructure degradation; Arctic access; agricultural shifts |
-| F_TECH | 0.10 | Technology sanctions; semiconductor access; military modernization blocked |
-| F_FOOD | 0.05 | Russia is net food exporter; minimal vulnerability |
+| **F_GPT** | 0.49 | Great power competition is existential; Ukraine war is US/NATO proxy conflict |
+| **F_EUR** | 0.33 | European regional dynamics; Ukraine, NATO expansion, energy relationship |
+| **F_FIN** | 0.20 | Sanctions, SWIFT exclusion, reserve seizure, trade disruption |
+| F_CLIM | 0.10 | Permafrost infrastructure degradation; Arctic access; agricultural shifts |
+| F_TECH | 0.07 | Technology sanctions; semiconductor access; military modernization blocked |
+| F_FOOD | 0.03 | Russia is net food exporter; minimal vulnerability |
 | F_HLTH | 0.00 | No distinct pathway |
 | F_MENA | 0.00 | Limited direct linkage |
 | F_SAS | 0.00 | No significant pathway |
-| F_EAS | 0.05 | China relationship provides economic/diplomatic buffer |
+| F_EAS | 0.03 | China relationship provides economic/diplomatic buffer |
 | F_SSA | 0.00 | Wagner presence but not state-stability relevant |
 | F_LAM | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.93 ✓
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings
 
 ### Loading Interpretation (Type 2)
 

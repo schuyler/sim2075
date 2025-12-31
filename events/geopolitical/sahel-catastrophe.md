@@ -155,22 +155,24 @@ This is a Type 2 event where probability is rising over the simulation period:
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_SSA** | 0.72 | Primary regional factor; Sahel is core of Sub-Saharan stress |
-| **F_CLIM** | 0.48 | Climate is existential for Sahel; rainfall determines food production |
-| **F_FOOD** | 0.43 | Global food prices affect import-dependent urban populations; regional production critical |
-| **F_GPT** | 0.19 | Great power competition affects intervention, support; Russia/Wagner presence |
-| **F_HLTH** | 0.14 | Health system collapse amplifies mortality; disease outbreaks in displacement settings |
-| **F_FIN** | 0.10 | Aid flows depend on donor fiscal space |
-| F_MENA | 0.10 | Libya instability affects northern Mali; weapons flows |
-| F_EUR | 0.05 | European migration concern drives some engagement |
+| **F_SSA** | 0.43 | Primary regional factor; Sahel is core of Sub-Saharan stress |
+| **F_CLIM** | 0.28 | Climate is existential for Sahel; rainfall determines food production |
+| **F_FOOD** | 0.25 | Global food prices affect import-dependent urban populations; regional production critical |
+| F_GPT | 0.11 | Great power competition affects intervention, support; Russia/Wagner presence |
+| F_HLTH | 0.08 | Health system collapse amplifies mortality; disease outbreaks in displacement settings |
+| F_FIN | 0.06 | Aid flows depend on donor fiscal space |
+| F_MENA | 0.06 | Libya instability affects northern Mali; weapons flows |
+| F_EUR | 0.03 | European migration concern drives some engagement |
 | F_TECH | 0.00 | No significant pathway |
 | F_EAS | 0.00 | No significant pathway |
 | F_SAS | 0.00 | No significant pathway |
 | F_LAM | 0.00 | No significant pathway |
 
-**Sum of squared loadings**: 0.52 + 0.23 + 0.18 + 0.04 + 0.02 + 0.01 + 0.01 + 0.003 ≈ 1.01
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.59 from original loadings
 
 ### Loading Interpretation (Type 2)
 

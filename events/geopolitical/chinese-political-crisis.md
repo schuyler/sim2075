@@ -232,24 +232,24 @@ Collapse doesn't mean China disappears — successor regime(s) emerge with uncer
 
 ## Factor Loadings
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 3 target (ΛΩΛᵀ)ᵢᵢ = 0.45*
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| F_CLIM | 0.10 | Climate stress affects rural stability, food security |
-| F_FIN | 0.40 | **Primary**: Economic conditions are core legitimacy input |
-| F_HLTH | 0.10 | Pandemic management affects governance perceptions |
-| F_GPT | 0.35 | **Secondary**: Great power tension affects legitimacy and elite cohesion |
-| F_FOOD | 0.15 | Food security affects rural stability |
-| F_TECH | 0.10 | Technology competition affects development narrative |
-| F_EUR | 0.05 | Limited direct impact |
-| F_MENA | 0.0 | No direct linkage |
-| F_SAS | 0.05 | Border tensions create external pressure |
-| F_EAS | 0.30 | Regional dynamics affect legitimacy |
-| F_SSA | 0.0 | No direct linkage |
-| F_LAM | 0.0 | No direct linkage |
+| F_CLIM | 0.08 | Climate stress affects rural stability, food security |
+| **F_FIN** | 0.30 | **Primary**: Economic conditions are core legitimacy input |
+| F_HLTH | 0.08 | Pandemic management affects governance perceptions |
+| **F_GPT** | 0.26 | **Secondary**: Great power tension affects legitimacy and elite cohesion |
+| F_FOOD | 0.11 | Food security affects rural stability |
+| F_TECH | 0.08 | Technology competition affects development narrative |
+| F_EUR | 0.04 | Limited direct impact |
+| F_MENA | 0.00 | No direct linkage |
+| F_SAS | 0.04 | Border tensions create external pressure |
+| **F_EAS** | 0.23 | Regional dynamics affect legitimacy |
+| F_SSA | 0.00 | No direct linkage |
+| F_LAM | 0.00 | No direct linkage |
 
-**Sum of squared loadings**: 0.43 ✓
-
-Lower loading sum reflects that Chinese regime change is primarily domestically-driven.
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.75 from original loadings
 
 ---
 
