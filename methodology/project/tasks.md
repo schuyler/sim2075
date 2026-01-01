@@ -43,7 +43,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
-| **4.2** | **Event specification migration**: Convert 29 event specifications from markdown tables to embedded YAML blocks. Engine parses YAML directly from markdown—no separate catalog file. See [[methodology/02-event-template]] for target format. | — | 🔲 |
+| **4.2** | **Event specification migration** (1/29): Convert event specifications from markdown tables to embedded YAML blocks. Engine parses YAML directly from markdown—no separate catalog file. **Worked example**: [[events/geopolitical/taiwan-conflict]]. Template: [[methodology/02-event-template]]. | — | 🟡 |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~200 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.3 | 🔲 |
 
