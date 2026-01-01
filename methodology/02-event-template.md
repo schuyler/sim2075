@@ -1,271 +1,287 @@
 ---
-title: event-template-v2
+title: 02-event-template
 type: note
-permalink: methodology/event-template-v2
+permalink: methodology/02-event-template
 tags:
 - methodology
 - template
 - events
-- causal-types
-- impact-vectors
+- yaml
+- machine-readable
 ---
 
-# Event Template v2
-
-**Updated per [[methodology/integrated-event-state-framework]]**
+# Event Template
 
 Canonical template for event specifications. Copy this when creating new events.
 
-**Reference**: For valid variable IDs, see [[methodology/reference/state-specification]] Appendix A.
+**Design principle**: YAML blocks are the machine-readable specification. Prose sections provide rationale and context. The simulation engine parses YAML directly from these markdown files—no separate catalog needed.
+
+**References**:
+- [[methodology/reference/state-variables-country]] — Valid country variable IDs
+- [[methodology/reference/state-variables-global]] — Valid global variable IDs
+- [[methodology/reference/variance-allocation]] — Factor loading targets by type
+- [[methodology/reference/causal-types]] — Type 1/2/3 definitions
 
 ---
 
 ## Template (Copy Below This Line)
 
 ```markdown
+---
+title: [event-name]
+type: event
+permalink: events/[domain]/[event-name]
+tags:
+  - event
+  - [type-1|type-2|type-3]
+  - [domain]
+  - [region]
+  - level-1
+---
+
 # [Event Name]
 
-## Event Classification
-
-| Attribute | Value |
-|-----------|-------|
-| **ID** | [UPPERCASE_SNAKE_CASE] |
-| **Scale** | [Global / Regional / National] |
-| **Domain** | [Environmental / Political / Economic / Health / Technological] |
-| **Causal Type** | [Type 1: Stochastic / Type 2: Threshold / Type 3: Contingent] |
-| **Onset Speed** | [Sudden (<1yr) / Rapid (1-5yr) / Gradual (5-20yr)] |
-| **Reversibility** | [Reversible / Partial / Irreversible] |
+**Type [N] ([Stochastic|Threshold|Contingent]) Event** — [One-line summary]
 
 ## Description
 
-[2-3 sentences: What state transition does this event represent? What marks occurrence?]
+[2-3 paragraphs: What state transition does this represent? What distinguishes occurrence from non-occurrence? What is the discontinuity?]
+
+---
+
+## Specification
+
+```yaml
+id: EVENT_ID
+scale: global | regional | national
+domain: environmental | political | economic | health | technological
+causal_type: 1 | 2 | 3
+onset: sudden | rapid | gradual
+reversibility: reversible | partial | irreversible
+```
 
 ---
 
 ## Causal Type Specification
 
-### For Type 1 (Stochastic) Events:
+[Prose section explaining the causal logic. Content varies by type:]
 
-**Base rate derivation**: [Historical frequency in reference class]
+**Type 1**: Base rate derivation, reference class, condition adjustments
 
-**Condition adjustments**: [What current conditions modify the base rate?]
+**Type 2**: Pressure accumulation mechanism, threshold dynamics, historical calibration
 
-### For Type 2 (Threshold) Events:
+**Type 3**: Window preconditions, resolution logic, historical basis for probabilities
 
-**Pressure Function**:
+### Case Against This Specification
 
-| State Variable | Weight | Transform |
-|----------------|--------|-----------|
-| [variable_id] | [0.0-1.0] | [linear / inverse / exponential / threshold(X)] |
-| [variable_id] | [0.0-1.0] | |
-
-**Threshold**:
-| Parameter | Value |
-|-----------|-------|
-| **Estimate** | [X on 0-100 pressure scale] |
-| **Uncertainty** | [±Y or distribution] |
-| **Sharpness (k)** | [Higher = sharper transition] |
-| **Historical calibration** | [What analogous thresholds inform this?] |
-
-**Minimum probability**: [Floor even at low pressure]
-
-### For Type 3 (Contingent) Events:
-
-**Window Preconditions**:
-
-| Condition | Threshold |
-|-----------|-----------|
-| [state_variable] | [> X / < X / in [X,Y]] |
-| [state_variable] | |
-
-**Annual probability given conditions met**: [X%]
-
-**Resolutions**:
-
-| Resolution | Probability | Impact Vector Section |
-|------------|-------------|----------------------|
-| [resolution_1_id] | [X%] | See below |
-| [resolution_2_id] | [X%] | See below |
-| [status_quo] | [X%] | No impact |
-
-*Probabilities must sum to 100%*
+[Per [[methodology/03-critical-review]] Q4 — strongest arguments against your probability estimate or structure]
 
 ---
 
-## Probability (Type 1) or Base Parameters (Type 2/3)
+## Probability
 
-| Metric | Value |
-|--------|-------|
-| **Annual probability** | [X%] |
-| **Low bound** | [X%] |
-| **High bound** | [X%] |
-| **Confidence** | [Low / Medium / High] |
-| **25-year cumulative** | [~X% at point estimate] |
+```yaml
+probability:
+  annual: 0.020       # Point estimate
+  low: 0.010          # Low bound
+  high: 0.035         # High bound  
+  confidence: medium  # low | medium | high
+```
+
+For **Type 2**, add pressure function:
+
+```yaml
+pressure_function:
+  variables:
+    - id: state_variable_id
+      weight: 0.4
+      transform: linear | inverse | exponential | threshold
+    - id: another_variable
+      weight: 0.3
+      transform: linear
+  threshold:
+    estimate: 65      # 0-100 pressure scale
+    uncertainty: 10
+    sharpness: 8      # Higher = sharper transition
+  minimum_probability: 0.005
+```
+
+For **Type 3**, add window structure:
+
+```yaml
+window:
+  annual_probability: 0.03    # P(window opens)
+  preconditions:
+    - variable: F_GPT
+      condition: "> 1.5 for 2+ years"
+    - variable: some.state_var
+      condition: "< threshold"
+resolution_given_window: 0.65   # P(discontinuity | window)
+# Note: annual probability = window.annual_probability × resolution_given_window
+```
 
 ### Derivation
 
-[Step-by-step reasoning. Include:]
-- Base rate or reference class (if historical method)
-- Expert estimates consulted
-- Structural reasoning
-- Adjustments made and why
+[Step-by-step reasoning: base rates, expert estimates, structural reasoning, adjustments]
 
 ### Comparative Ranking
 
-[How does this compare to similar events? Reference [[methodology/priority-event-ranking]]]
+[How does this compare to similar events? Higher/lower than X because...]
 
 ### Key Uncertainties
 
-- [What could make probability much higher or lower?]
+- [What could make probability much higher?]
+- [What could make it much lower?]
 
 ---
 
 ## Factor Loadings
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| F_CLIM | 0.0 | [one-line reason] |
-| F_FIN | 0.0 | |
-| F_HLTH | 0.0 | |
-| F_GPT | 0.0 | |
-| F_FOOD | 0.0 | |
-| F_TECH | 0.0 | |
-| F_EUR | 0.0 | |
-| F_MENA | 0.0 | |
-| F_SAS | 0.0 | |
-| F_EAS | 0.0 | |
-| F_SSA | 0.0 | |
-| F_LAM | 0.0 | |
+*Scaled per [[methodology/reference/variance-allocation]] for Type [N] target.*
 
-**Sum of squared loadings**: [X.XX] ✓ [must be ≤ 1.0]
+```yaml
+factor_loadings:
+  F_EAS: 0.38   # Dominant factor - rationale
+  F_GPT: 0.33   # Secondary factor - rationale
+  F_FIN: 0.09   # Tertiary - rationale
+# Omit factors with zero loading
+variance_explained: 0.45  # Type-specific target
+scale_factor: 0.47        # From scaling calculation
+```
 
-### Loading Rationale
-
-[For Type 2/3: Factors primarily shock state variables, which then affect pressure/preconditions]
+[Brief prose on loading rationale if needed beyond inline comments]
 
 ---
 
-## Impact Vector
+## Resolutions
 
-**Valid variable IDs**: See [[methodology/reference/state-specification]] Appendix A (country-level) and Appendix A.2 (global).
+[Prose explaining resolution structure — why these branches exist, probability rationale]
 
-### Global Impacts
+```yaml
+resolutions:
+  - id: resolution_one
+    probability: 0.65
+    branches:
+      - id: branch_a
+        probability: 0.55
+      - id: branch_b
+        probability: 0.30
+      - id: branch_c
+        probability: 0.15
+  - id: resolution_two
+    probability: 0.35
+    branches:
+      - id: branch_d
+        probability: 0.40
+      - id: branch_e
+        probability: 0.60
+```
 
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| [variable_id] | ↑/↓ | [X ± Y] | [immediate/delayed(N)/gradual(N)] | [type + params] |
-| | | | | |
+*Resolution probabilities must sum to 1.0. Branch probabilities within each resolution must sum to 1.0.*
 
-### Regional/Country Impacts
+---
 
-**[Region/Country]:**
+## Impact Vectors
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| [variable_id] | ↑/↓ | [X ± Y] | | |
+[Prose on transmission channels, differential exposure, derivation methodology]
 
-### Differential Impacts
+```yaml
+impacts:
+  # Key format: resolution_id.branch_id (or just resolution_id if no branches)
+  resolution_one.branch_a:
+    global:
+      - var: global_variable_id
+        dir: -1                    # -1 = decrease, +1 = increase
+        mag: [0.15, 0.05]          # [mean, std]
+        onset: immediate           # immediate | delayed(years) | gradual(years)
+        durability:
+          type: decaying           # permanent | decaying | maintenance_required | shock_vulnerable | regime_dependent
+          half_life: 3
+      - var: another_global_var
+        dir: +1
+        mag: [200, 80]
+        onset: immediate
+        durability:
+          type: permanent
+    
+    # Country-specific impacts use ISO3 codes
+    chn:
+      - var: gdp_real
+        dir: -1
+        mag: [0.15, 0.08]
+        onset: immediate
+        durability:
+          type: decaying
+          half_life: 3
+      - var: sanctions_level
+        dir: +1
+        mag: [50, 20]
+        onset: immediate
+        durability:
+          type: permanent
 
-**Exposure variable**: [state_variable_id]
-**Function**: [linear / threshold / custom]
-**Effect**: [Higher X → larger/smaller impact because...]
+  resolution_one.branch_b:
+    # Can use multiplier for scaled variants
+    _base: resolution_one.branch_a
+    _multiplier: 1.5
+```
 
-### Durability Specifications
+### Durability Types
 
-For each impact, specify durability type:
-
-| Durability Type | Parameters | Used For |
-|-----------------|------------|----------|
-| **permanent** | N/A | [which impacts] |
-| **decaying** | half_life: [N years], floor: [X] | [which impacts] |
-| **maintenance_required** | annual_failure_prob: [X%], failure_conditions: [...] | [which impacts] |
-| **shock_vulnerable** | vulnerable_to: [...], reversal_fraction: [X] | [which impacts] |
-| **regime_dependent** | persists_in: [...] | [which impacts] |
-
-### Impact Derivation
-
-[How were impacts estimated? Which method—analog, transmission, scaling?]
+| Type | Parameters | Use For |
+|------|------------|---------|
+| `permanent` | none | Deaths, resource depletion, knowledge |
+| `decaying` | `half_life`, optional `floor` | Financial shocks, reputational damage |
+| `maintenance_required` | `annual_failure_prob` | Treaties, alliances |
+| `shock_vulnerable` | `vulnerable_to: [EVENT_IDS]` | Development gains |
+| `regime_dependent` | `persists_in: [conditions]` | Political achievements |
 
 ---
 
 ## Cascade Effects
 
-### State → Probability Cascades
-
-| Pathway | Target Event | Probability Change | Duration |
-|---------|--------------|-------------------|----------|
-| [describe mechanism] | [EVENT_ID] | [+X% or ×Y] | [N years] |
-
-### Impact Chains
-
-**Pathway 1**: [Event] → [Impact 1] → [Impact 2] → [P(Event B) changes]
-
-[Describe the causal chain]
-
----
-
-## Transmission Channels
-
-### [Channel Name]
-
-**Mechanism**: [How does event affect outcomes through this channel?]
-**Affected regions**: [List]
-**Affected variables**: [List]
+```yaml
+cascades:
+  triggers:  # This event increases probability of other events
+    - target: TARGET_EVENT_ID
+      delta: +0.015          # Additive change to annual probability
+      duration: 3            # Years the effect persists
+      mechanism: "Brief explanation"
+    - target: ANOTHER_EVENT
+      delta: +0.020
+      duration: 5
+      mechanism: "Causal pathway"
+  
+  triggered_by:  # Other events increase this event's probability
+    - source: SOURCE_EVENT_ID
+      delta: +0.005
+      mechanism: "Why this increases probability"
+```
 
 ---
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 / Level 2 / Level 3 |
-| **Last updated** | [YYYY-MM-DD] |
-| **Upgrade candidate** | Yes / No |
-| **Upgrade rationale** | [If yes, why] |
-
-## Sources
-
-- [Source 1]
+```yaml
+research:
+  tier: 1                    # 1 | 2 | 3
+  updated: 2025-12-31
+  critical_review: complete  # pending | complete
+  upgrade_candidate: true
+  upgrade_rationale: "What would Level 2 research improve?"
+```
 
 ## Open Questions
 
 - [What don't we know?]
+- [What assumptions are most uncertain?]
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| YYYY-MM-DD | Initial specification | Level 1 |
 ```
-
----
-
-## Field Definitions
-
-### Causal Type
-
-| Type | When to Use | Key Specification Required |
-|------|-------------|---------------------------|
-| **Type 1** | Stable base rate, limited predictability, approximately Poisson | Base rate derivation |
-| **Type 2** | Probability increases as pressure accumulates; threshold dynamics | Pressure function, threshold estimate |
-| **Type 3** | Outcome depends on negotiations/decisions; preconditions create windows | Window conditions, resolution probabilities |
-
-**Note**: Type 4 (S-curve) dynamics are NOT events. Model as baseline trajectory parameters.
-
-### Durability Types
-
-| Type | Meaning | Example |
-|------|---------|---------|
-| **permanent** | Impact never reverses | Deaths, resource depletion, knowledge gains |
-| **decaying** | Impact fades with half-life | Reputational damage, financial shocks |
-| **maintenance_required** | Persists only with ongoing effort; can fail | Treaties, alliances, policy achievements |
-| **shock_vulnerable** | Can be reversed by other events | Development gains, living standards |
-| **regime_dependent** | Persists only in certain system states | Political achievements tied to regime |
-
-### Impact Vector vs. Valence
-
-Events do NOT have positive/negative valence. The impact vector specifies:
-- **Which variables** are affected
-- **Direction** (increase/decrease)
-- **Magnitude** (with uncertainty)
-- **Who** is affected differently
-- **How long** it lasts
-
-Whether this is "good" or "bad" depends on whose welfare function you apply.
 
 ---
 
@@ -273,33 +289,49 @@ Whether this is "good" or "bad" depends on whose welfare function you apply.
 
 ### Classification
 - [ ] Causal type selected with rationale
-- [ ] All classification fields populated
+- [ ] Specification YAML block complete
 
 ### Type-Specific
-- [ ] **Type 1**: Base rate derivation complete
-- [ ] **Type 2**: Pressure function specified, threshold estimated
-- [ ] **Type 3**: Window conditions specified, resolutions defined with probabilities summing to 100%
+- [ ] **Type 1**: Base rate derivation in prose
+- [ ] **Type 2**: `pressure_function` YAML complete
+- [ ] **Type 3**: `window` YAML complete, resolution probabilities sum to 1.0
 
 ### Probability
-- [ ] Probability has derivation (not just numbers)
+- [ ] `probability` YAML block complete
+- [ ] Derivation prose explains reasoning
 - [ ] Comparative ranking completed
-- [ ] Key uncertainties listed
+- [ ] Case Against section populated
 
 ### Factor Loadings
-- [ ] Sum of squared loadings ≤ 1.0
-- [ ] Primary factor identified with rationale
-- [ ] For Type 2/3: loadings describe factor→state relationship
+- [ ] `factor_loadings` YAML with non-zero factors only
+- [ ] `variance_explained` matches type target
+- [ ] `scale_factor` documented
 
-### Impact Vector
-- [ ] All significant impacts listed with variables
-- [ ] Durability type specified for each impact
-- [ ] Differential impacts documented if relevant
-- [ ] Impact derivation method cited
+### Resolutions & Impacts
+- [ ] `resolutions` YAML with probabilities summing to 1.0
+- [ ] `impacts` YAML keyed by resolution.branch
+- [ ] Durability specified for each impact
 
 ### Cascades
-- [ ] Cascade pathways documented
-- [ ] Target events identified where relevant
+- [ ] `cascades` YAML documents trigger relationships
+- [ ] Mechanisms briefly explained
 
 ### Metadata
-- [ ] Research tier marked
+- [ ] `research` YAML block complete
 - [ ] Open questions listed
+
+---
+
+## Parser Notes
+
+The simulation engine extracts YAML blocks from markdown using fenced code blocks. Requirements:
+
+1. YAML blocks must use triple-backtick fencing with `yaml` language identifier
+2. Each conceptual section (specification, probability, factor_loadings, etc.) is a separate block
+3. The parser merges all YAML blocks into a single event object
+4. Missing factors default to 0.0
+5. Comments are preserved for documentation but ignored by parser
+
+---
+
+*See [[methodology/01-level-1-workflow]] for production workflow | [[events/geopolitical/taiwan-conflict]] for worked example*
