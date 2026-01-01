@@ -198,6 +198,7 @@ Tasks preparing for Phase 2 prototype implementation.
 
 | Task | Completion Date | Deliverable | Notes |
 |------|-----------------|-------------|-------|
+| **4.1** MVP dynamics scope | Dec 2025 | [[methodology/reference/mvp-dynamics-scope]] | Three-tier framework (Essential/Defaults/Deferred), ~196 Tier 1 parameters, ~22 Tier 2 rules, simplifications register |
 | **4.5** Transmission simplifications | Dec 31, 2025 | Existing docs | Documentation requirements satisfied by [[methodology/reference/mvp-dynamics-scope]] §4.1 (deferred mechanisms), §5.1 (implementation pseudocode), and [[methodology/reference/state-transmission]] §3.1 (oil/food→inflation formulas). No additional document needed. |
 
 ---
