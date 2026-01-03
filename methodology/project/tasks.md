@@ -43,7 +43,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
-| **4.2** | **Event specification migration** (1/29): Convert event specifications from markdown tables to embedded YAML blocks. Engine parses YAML directly from markdown—no separate catalog file. **Worked example**: [[events/geopolitical/taiwan-conflict]]. Template: [[methodology/02-event-template]]. | — | 🟡 |
+| **4.2** | **Event specification migration** (6/29): See detailed instructions below. | — | 🟡 |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~200 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.3 | 🔲 |
 
@@ -53,6 +53,63 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 4.3 Initial Conditions + Trends (ready to start)
  └── 4.4 Dynamics Defaults
 ```
+
+#### Task 4.2 Detailed Instructions
+
+**Objective**: Convert event specification **tables** to embedded **YAML blocks** while **preserving all prose**.
+
+**Reference documents**:
+- Schema: [[methodology/reference/event-yaml-schema]]
+- Template: [[methodology/02-event-template]]
+- Worked example: [[events/geopolitical/taiwan-conflict]]
+
+**What to convert (tables → YAML)**:
+- Classification table → `specification:` block
+- Probability table → `probability:` block
+- Pressure function table (Type 2) → `pressure:` expression in probability block
+- Preconditions table (Type 3) → `preconditions:` in probability block
+- Factor loadings table → `factors:` block
+- Severity/resolution branches table → `branches:` or `resolutions:` block
+- Impact tables → `impacts:` block (keyed by branch)
+- Cascade tables → `cascades:` block
+- Research status table → `research:` block
+
+**What to preserve (all prose)**:
+- Description and "what marks occurrence"
+- Causal type rationale ("Why Type N?")
+- Base rate derivation and calculation walkthrough
+- Condition adjustments with rationales
+- Probability evolution discussion
+- Case Against section with counterarguments
+- Key uncertainties
+- Threshold specification rationale and historical calibration
+- Branch probability rationale
+- Impact derivation methodology
+- Transmission channel explanations
+- Cascade pathway diagrams and explanations
+- Durability rationale
+- Historical analogues
+- Comparative ranking
+- Sources
+- Open questions
+
+**Validation requirements**:
+1. **Factors**: Every factor ID in `factors:` block must exist in [[factors/]] catalog (e.g., `F_GPT`, `F_SAS`)
+2. **Events**: Every event ID in `cascades:` block must exist in [[events/]] catalog (e.g., `TAIWAN_CONFLICT`, `SEVERE_PANDEMIC`)
+3. **State variables**: Every variable in `probability.pressure`, `probability.preconditions`, and `impacts:` must exist in [[methodology/reference/state-variables-global]] or [[methodology/reference/state-variables-country]] using correct entity.variable syntax
+4. **Probabilities**: Resolution probabilities sum to 1.0; branch probabilities within each resolution sum to 1.0
+5. **Variance**: Factor loadings should achieve type-appropriate variance target (Type 1: 0.75, Type 2: 0.65, Type 3: 0.45)
+
+**Process per event**:
+1. Read current specification
+2. Identify all tables to convert
+3. Convert tables to YAML per schema
+4. Verify all prose sections remain intact
+5. Validate factor/event/variable references against catalogs
+6. Add changelog entry
+7. Commit atomically
+
+**Progress**: 6/29 complete (Taiwan, AMOC, Fusion, Severe Pandemic, Pakistan — note: early migrations lost prose and require remediation)
 
 **Completed:** Tasks 4.1, 4.5 — see [[methodology/project/tasks-completed]]
 
@@ -135,4 +192,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: December 31, 2025 — Task 4 series revised to "minimum viable dynamics" approach; added Task 4.5 (transmission simplifications)*
+*Last updated: January 3, 2026 — Task 4.2 detailed instructions added; noted early migrations require prose remediation*
