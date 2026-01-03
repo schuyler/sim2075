@@ -101,15 +101,20 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 5. **Variance**: Factor loadings should achieve type-appropriate variance target (Type 1: 0.75, Type 2: 0.65, Type 3: 0.45)
 
 **Process per event**:
-1. **Read entire git history** for this event file using `git log` and `git show` to understand all changes since creation; identify any prose that may have been removed or condensed in prior edits
-2. Read current specification
-3. Identify all tables to convert
-4. Convert tables to YAML per schema
-5. **Restore any lost prose** by comparing current content against git history; all analytical content must be preserved
-6. Verify all prose sections remain intact
-7. Validate factor/event/variable references against catalogs
-8. Add changelog entry
-9. Commit atomically
+1. **Read the schema** at [[methodology/reference/event-yaml-schema]] before starting
+2. **Read entire git history** for this event file using `git log` and `git show` to understand all changes since creation; identify any prose that may have been removed or condensed in prior edits
+3. Read current specification
+4. Identify all tables to convert
+5. Convert tables to YAML per schema, **validating enum values** (e.g., `onset` must be `sudden|gradual`, `domain` must be `political|economic|environmental|health|technological`, etc.)
+6. **Restore any lost prose** by comparing current content against git history; all analytical content must be preserved
+7. Verify all prose sections remain intact
+8. **Validate references against catalogs**:
+   - Factors → [[factors/]] catalog
+   - Events → [[events/]] catalog  
+   - State variables → [[methodology/reference/state-variables-global]] or [[methodology/reference/state-variables-country]]
+   - If a reference doesn't exist, find a justifiable alternative in the catalog, or **stop and ask for help**
+9. Add changelog entry
+10. Commit atomically
 
 #### Task 4.2 Event Subtasks
 
