@@ -101,14 +101,15 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 5. **Variance**: Factor loadings should achieve type-appropriate variance target (Type 1: 0.75, Type 2: 0.65, Type 3: 0.45)
 
 **Process per event**:
-1. Read current specification
-2. **Review git history** for this event file to understand all changes made since creation; ensure no important prose has been lost in prior edits
+1. **Read entire git history** for this event file using `git log` and `git show` to understand all changes since creation; identify any prose that may have been removed or condensed in prior edits
+2. Read current specification
 3. Identify all tables to convert
 4. Convert tables to YAML per schema
-5. Verify all prose sections remain intact (compare against git history if uncertain)
-6. Validate factor/event/variable references against catalogs
-7. Add changelog entry
-8. Commit atomically
+5. **Restore any lost prose** by comparing current content against git history; all analytical content must be preserved
+6. Verify all prose sections remain intact
+7. Validate factor/event/variable references against catalogs
+8. Add changelog entry
+9. Commit atomically
 
 #### Task 4.2 Event Subtasks
 
@@ -250,4 +251,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: January 3, 2026 — Task 4.2 detailed instructions added; noted early migrations require prose remediation*
+*Last updated: January 3, 2026 — Task 4.2 process strengthened: entire git history must be read; lost prose must be restored*
