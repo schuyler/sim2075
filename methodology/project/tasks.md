@@ -114,6 +114,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 #### Task 4.2 Event Subtasks
 
 **Climate Events**:
+
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.1 | [[events/climate/amoc-weakening]] | ⚠️ Needs remediation |
@@ -121,6 +122,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 | 4.2.3 | [[events/climate/permafrost-methane-release]] | 🔲 |
 
 **Geopolitical Events**:
+
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.4 | [[events/geopolitical/taiwan-conflict]] | ✅ |
@@ -141,6 +143,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 | 4.2.19 | [[events/geopolitical/us-constitutional-crisis]] | 🔲 |
 
 **Financial Events**:
+
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.20 | [[events/financial/global-financial-crisis]] | 🔲 |
@@ -148,16 +151,19 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 | 4.2.22 | [[events/financial/chinese-economic-crisis]] | 🔲 |
 
 **Health Events**:
+
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.23 | [[events/health/severe-pandemic]] | ⚠️ Needs remediation |
 
 **Energy Events**:
+
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.24 | [[events/energy/oil-supply-shock]] | 🔲 |
 
 **Breakthrough Events**:
+
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.25 | [[events/breakthrough/fusion-commercialization]] | ⚠️ Needs remediation |
