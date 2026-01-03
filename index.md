@@ -45,6 +45,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/reference/factor-loadings]] | Factor loading guidance |
 | [[methodology/reference/variance-allocation]] | Type-based variance targets for factor model |
 | [[methodology/reference/factor-correlation-matrix]] | Inter-factor correlation matrix (Ω) |
+| [[methodology/reference/event-yaml-schema]] | **YAML schema for machine-readable event specs** |
 | [[methodology/reference/mvp-dynamics-scope]] | **v0.1 dynamics scope** — essential vs. default vs. deferred |
 | [[methodology/reference/calibration-anchors]] | Reference events for comparison |
 | [[methodology/reference/priority-event-ranking]] | Cross-check probability estimates |
@@ -279,4 +280,4 @@ Evidence library supporting parameter choices. Sources are archived and cross-re
 
 ---
 
-*Last updated: December 31, 2025*
+*Last updated: January 2, 2026*
