@@ -102,14 +102,72 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 
 **Process per event**:
 1. Read current specification
-2. Identify all tables to convert
-3. Convert tables to YAML per schema
-4. Verify all prose sections remain intact
-5. Validate factor/event/variable references against catalogs
-6. Add changelog entry
-7. Commit atomically
+2. **Review git history** for this event file to understand all changes made since creation; ensure no important prose has been lost in prior edits
+3. Identify all tables to convert
+4. Convert tables to YAML per schema
+5. Verify all prose sections remain intact (compare against git history if uncertain)
+6. Validate factor/event/variable references against catalogs
+7. Add changelog entry
+8. Commit atomically
 
-**Progress**: 6/29 complete (Taiwan, AMOC, Fusion, Severe Pandemic, Pakistan — note: early migrations lost prose and require remediation)
+#### Task 4.2 Event Subtasks
+
+**Climate Events**:
+| Subtask | Event | Status |
+|---------|-------|--------|
+| 4.2.1 | [[events/climate/amoc-weakening]] | ⚠️ Needs remediation |
+| 4.2.2 | [[events/climate/amazon-tipping-point]] | 🔲 |
+| 4.2.3 | [[events/climate/permafrost-methane-release]] | 🔲 |
+
+**Geopolitical Events**:
+| Subtask | Event | Status |
+|---------|-------|--------|
+| 4.2.4 | [[events/geopolitical/taiwan-conflict]] | ✅ |
+| 4.2.5 | [[events/geopolitical/pakistan-state-failure]] | ⚠️ Needs remediation |
+| 4.2.6 | [[events/geopolitical/egypt-state-failure]] | 🔲 |
+| 4.2.7 | [[events/geopolitical/russia-state-failure]] | 🔲 |
+| 4.2.8 | [[events/geopolitical/saudi-regime-instability]] | 🔲 |
+| 4.2.9 | [[events/geopolitical/iran-regime-change]] | 🔲 |
+| 4.2.10 | [[events/geopolitical/turkey-political-breakdown]] | 🔲 |
+| 4.2.11 | [[events/geopolitical/chinese-political-crisis]] | 🔲 |
+| 4.2.12 | [[events/geopolitical/eu-fragmentation]] | 🔲 |
+| 4.2.13 | [[events/geopolitical/india-pakistan-military-conflict]] | 🔲 |
+| 4.2.14 | [[events/geopolitical/korean-peninsula-crisis]] | 🔲 |
+| 4.2.15 | [[events/geopolitical/us-china-economic-rupture]] | 🔲 |
+| 4.2.16 | [[events/geopolitical/iran-nuclear-acquisition]] | 🔲 |
+| 4.2.17 | [[events/geopolitical/sahel-catastrophe]] | 🔲 |
+| 4.2.18 | [[events/geopolitical/saudi-nuclear-acquisition]] | 🔲 |
+| 4.2.19 | [[events/geopolitical/us-constitutional-crisis]] | 🔲 |
+
+**Financial Events**:
+| Subtask | Event | Status |
+|---------|-------|--------|
+| 4.2.20 | [[events/financial/global-financial-crisis]] | 🔲 |
+| 4.2.21 | [[events/financial/dollar-reserve-crisis]] | 🔲 |
+| 4.2.22 | [[events/financial/chinese-economic-crisis]] | 🔲 |
+
+**Health Events**:
+| Subtask | Event | Status |
+|---------|-------|--------|
+| 4.2.23 | [[events/health/severe-pandemic]] | ⚠️ Needs remediation |
+
+**Energy Events**:
+| Subtask | Event | Status |
+|---------|-------|--------|
+| 4.2.24 | [[events/energy/oil-supply-shock]] | 🔲 |
+
+**Breakthrough Events**:
+| Subtask | Event | Status |
+|---------|-------|--------|
+| 4.2.25 | [[events/breakthrough/fusion-commercialization]] | ⚠️ Needs remediation |
+| 4.2.26 | [[events/breakthrough/agricultural-yield-breakthrough]] | 🔲 |
+| 4.2.27 | [[events/breakthrough/cancer-treatment-breakthrough]] | 🔲 |
+| 4.2.28 | [[events/breakthrough/antimicrobial-platform]] | 🔲 |
+| 4.2.29 | [[events/breakthrough/energy-storage-breakthrough]] | 🔲 |
+
+**Status key**: ✅ Complete | ⚠️ Needs remediation (prose lost) | 🟡 In progress | 🔲 Not started
+
+**Progress**: 1/29 complete, 4/29 need remediation, 24/29 not started
 
 **Completed:** Tasks 4.1, 4.5 — see [[methodology/project/tasks-completed]]
 
