@@ -41,7 +41,21 @@ reversibility: irreversible
 
 ---
 
-## Probability
+## Causal Type Specification (Type 2: Threshold)
+
+### Why Type 2?
+
+AMOC weakening exhibits threshold behavior characteristic of Type 2 events:
+
+- **Pressure accumulation**: Observable variables (temperature, ice loss, circulation strength) accumulate toward critical threshold
+- **No actor decision**: Unlike Type 3 events, no small-N actor decision determines whether collapse occurs
+- **Self-reinforcing dynamics**: Weaker AMOC → reduced salt transport → further weakening
+- **Historical precedent**: Paleoclimate record shows abrupt AMOC transitions (Dansgaard-Oeschger events)
+
+Not Type 1: Clear pressure accumulation, not stable stochastic base rate
+Not Type 3: Physical process, not actor-contingent
+
+### Pressure Function
 
 ```yaml
 probability:
@@ -57,6 +71,26 @@ probability:
   range: [0.005, 0.020]
   confidence: low
 ```
+
+| State Variable | Weight | Transform | Rationale |
+|----------------|--------|-----------|-----------|
+| `global_temp_anomaly` | 0.50 | linear | Primary driver of Greenland melt |
+| `arctic_sea_ice_sept` | 0.25 | inverse | Lower ice → more freshwater input |
+| `amoc_strength` | 0.25 | inverse | Self-reinforcing: weaker AMOC → more vulnerable |
+
+### Threshold Specification
+
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| **Estimate** | 65 (on 0-100 pressure scale) | Corresponds to ~1.5-2.0°C warming trajectory |
+| **Uncertainty (std)** | ±15 | Reflects deep uncertainty about tipping point location |
+| **Sharpness (k)** | 0.15 | Moderate; not knife-edge threshold |
+| **Floor** | 0.2%/year | Irreducible uncertainty even at low pressure |
+| **Historical calibration** | Paleoclimate records of abrupt D-O events | Transitions occurred over decades, not centuries |
+
+---
+
+## Probability
 
 ### Current Pressure Estimate
 
@@ -82,12 +116,14 @@ probability:
 
 **Impact magnitudes may be overstated**: European economies are wealthy and adaptive. The -12% GDP may underestimate recovery capacity.
 
+**What would change the estimate by 2× or more**: New paleoclimate constraints on threshold location; observational evidence of AMOC stabilizing despite freshwater input; model consensus shifting toward gradual decline.
+
 ### Key Uncertainties
 
-- Threshold location (deep uncertainty; could be much closer or further)
-- Greenland melt rate (accelerating faster than models predicted)
-- Model structural uncertainty (climate models may miss critical dynamics)
-- Feedback strength (self-reinforcing dynamics uncertain)
+- **Threshold location**: Deep uncertainty; could be much closer or further than estimated
+- **Greenland melt rate**: Accelerating faster than models predicted
+- **Model structural uncertainty**: Climate models may miss critical dynamics
+- **Feedback strength**: Self-reinforcing dynamics uncertain
 
 ---
 
@@ -103,21 +139,31 @@ factors:
 variance: 0.65  # Type 2 target
 ```
 
+*Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
+
+### Loading Interpretation (per Integrated Framework)
+
+Factors shock state variables that feed into pressure function:
+- High F_CLIM → `global_temp_anomaly` increases faster → pressure accumulates faster → P(AMOC collapse) rises
+- This is the Type 2 factor→state→pressure→probability pathway
+
 ---
 
 ## Impacts
 
 ### Transmission Channels
 
-**Direct Climate**: Northwestern Europe cools 3-8°C relative to global trend (partially offsetting greenhouse warming). Growing seasons shorten 30-60 days. Storm tracks shift southward. These physical changes transmit to observable economic and demographic variables.
+**Direct Climate Effects**: Northwestern Europe cools 3-8°C relative to global trend (partially offsetting greenhouse warming). Growing seasons shorten 30-60 days. Storm tracks shift southward. Precipitation patterns change (generally drier).
 
-**Agricultural**: Northern Europe loses climatic advantage. Captured via shift in `gdp_share_agriculture` and GDP impacts.
+**Agricultural Shock**: Northern Europe loses climatic advantage. Wine regions eliminated or shifted. Crop calendars fundamentally altered. North Atlantic fisheries collapse.
 
-**Energy**: Heating demand rises ~25% in NW Europe. Captured via increased `energy_import_dependence`.
+**Energy System**: Heating demand rises ~25% in NW Europe. Existing infrastructure designed for milder climate. Natural gas demand spike. Renewable output changes (wind patterns shift).
+
+**Financial Spillover**: European recession → global financial contagion. Insurance losses from infrastructure damage. Stranded assets (agricultural land, coastal infrastructure).
 
 **Displacement**: Climate-driven internal migration within Europe. Modeled via `idp_population`.
 
-**Mortality**: Cold exposure and disruption cause excess deaths. Modeled via `life_expectancy` depression.
+**Mortality**: Cold exposure, agricultural disruption, and economic stress cause excess deaths. Modeled via temporary depression of `life_expectancy` in affected countries.
 
 ```yaml
 impacts:
@@ -165,13 +211,26 @@ impacts:
 | Southern Europe | 0.5× | May partially benefit from reduced heat stress |
 | Rest of world | 0.3× | Trade/spillover only |
 
+### Durability Rationale
+
+| Impact Type | Durability | Rationale |
+|-------------|------------|-----------|
+| Climate changes | permanent | New equilibrium state; AMOC recovery takes centuries |
+| GDP impacts | decaying (half_life: 25yr) | Economies adapt but never fully recover to prior trajectory |
+| Agricultural shifts | permanent | Represents new climate-determined baseline |
+| Deaths | permanent | Deaths don't reverse (modeled via life_expectancy) |
+
 ### Mortality Note
 
 Excess deaths arise from cold exposure, agricultural disruption, and economic stress. Modeled via temporary depression of `life_expectancy` in affected countries. Cumulative mortality impact is computed as an output by comparing population trajectories to baseline.
 
+### Sahel Impacts (Uncertain Direction)
+
+AMOC collapse affects West African monsoon through Atlantic sea surface temperature changes. Models disagree on direction — Sahel could get wetter or drier. This uncertainty is captured in the cascade effect on SAHEL_CATASTROPHE rather than as a direct impact.
+
 ---
 
-## Cascades
+## Cascade Effects
 
 ```yaml
 cascades:
@@ -181,6 +240,35 @@ cascades:
   triggered_by: []  # Type 2 event driven by physical accumulation
 ```
 
+### Impact Chains
+
+**Pathway 1**: AMOC → European agriculture → food prices → MENA import pressure
+```
+Event → Europe ag output -30% → global wheat supply -5% → 
+MENA food stress ↑ → P(MENA instability) ↑
+```
+
+**Pathway 2**: AMOC → European economy → global demand
+```
+Event → Europe GDP -12% → global trade -3% → 
+EM export stress → P(EM financial crisis) ↑
+```
+
+---
+
+## Comparison to Geopolitical Events
+
+| Dimension | AMOC Weakening | Pakistan State Failure |
+|-----------|----------------|----------------------|
+| Causal Type | Type 2 (threshold) | Type 2 (threshold) |
+| Human agency | Minimal (physics-driven) | Significant (policy-responsive) |
+| Global GDP | -2.5% | -0.3% |
+| Displacement | 5M | 30M |
+| Mortality | 0.5M | 6M |
+| Primary victims | Wealthy, adaptive populations | Poor, vulnerable populations |
+
+**Key insight**: AMOC has larger economic impact but smaller humanitarian impact because it affects wealthy regions with adaptive capacity.
+
 ---
 
 ## Research Status
@@ -188,7 +276,7 @@ cascades:
 ```yaml
 research:
   tier: 1
-  updated: 2025-01-02
+  updated: 2025-01-03
   review: complete
   upgrade: true
 ```
@@ -198,6 +286,13 @@ research:
 - Threshold location is load-bearing uncertainty
 - Recent research suggests tipping may be closer than IPCC estimates
 - Country-specific impact calibration needs refinement
+
+## Sources
+
+- [[research/21st-century-assessment]] Europe section
+- IPCC AR6 Chapter 9 (Ocean, Cryosphere and Sea Level Change)
+- Ditlevsen & Ditlevsen 2023, Nature Communications (early warning signals)
+- Paleoclimate literature on Dansgaard-Oeschger events
 
 ## Open Questions
 
@@ -211,13 +306,14 @@ research:
 
 ## Changelog
 
-| Date | Change |
-|------|--------|
-| 2025-12-17 | Initial Level 1 specification |
-| 2025-12-30 | Variance allocation: scaled loadings to Type 2 target |
-| 2025-12-30 | Critical review complete |
-| 2025-01-01 | Migrated to YAML-embedded schema |
-| 2025-01-02 | Revised impacts to use only observable state variables |
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2025-12-17 | Initial Level 1 specification | Task 2.1 climate tipping point |
+| 2025-12-30 | Variance allocation: scaled loadings | Task 3.11 - Factor-explained variance reduced to Type 2 target (0.65) |
+| 2025-12-30 | Critical review complete | Task 2.4 systematic review |
+| 2025-01-02 | Migrated to YAML-embedded schema | Task 4.2 format migration |
+| 2025-01-02 | Revised impacts to use observable state variables | Mortality via life_expectancy, not direct deaths |
+| 2025-01-03 | **Remediated**: Restored lost prose | Task 4.2.1 — Restored causal type rationale, threshold specification, loading interpretation, transmission channels detail, impact chains, comparison table, sources, changelog rationale |
 
 ---
 
