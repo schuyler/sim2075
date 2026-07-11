@@ -47,6 +47,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/reference/factor-correlation-matrix]] | Inter-factor correlation matrix (Ω) |
 | [[methodology/reference/event-yaml-schema]] | **YAML schema for machine-readable event specs** |
 | [[methodology/reference/mvp-dynamics-scope]] | **v0.1 dynamics scope** — essential vs. default vs. deferred |
+| [[methodology/reference/simulator-architecture]] | **Simulator engine architecture** — execution model + decision records (ADRs) |
 | [[methodology/reference/calibration-anchors]] | Reference events for comparison |
 | [[methodology/reference/priority-event-ranking]] | Cross-check probability estimates |
 | [[methodology/reference/research-documentation-standards]] | Source registry and citation conventions |
