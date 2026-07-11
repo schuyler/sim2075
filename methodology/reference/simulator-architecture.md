@@ -28,6 +28,7 @@ are ratified.
 - [[methodology/concepts/gaussian-copula]] — how Ω enters sampling
 - [[methodology/reference/factor-correlation-matrix]] — the 12×12 Ω matrix
 - [[methodology/reference/event-yaml-schema]] — the input the compiler consumes
+- [[methodology/reference/expression-language]] — **normative contract** for event-embedded expressions (companion to ADR-4)
 - [[methodology/reference/mvp-dynamics-scope]] — Tier 1/2/3 dynamics the engine implements
 - [[methodology/reference/state-dynamics]] — the six dynamics types
 - [[methodology/reference/state-outputs]] — what the engine records
@@ -144,13 +145,32 @@ a year, all events are evaluated as array ops across the run axis.
   interpreter on 15M iterations. Kept as the **reference implementation** for
   cross-checking the vectorized engine, not as the production path.
 - *Full flatten across years.* Impossible given inter-year state dependence.
-- *JAX/Numba JIT.* Deferred. Revisit only if pure NumPy misses the target after
-  profiling; adds a dependency and debugging friction not warranted for v0.1.
+- *JAX/Numba JIT (CPU or GPU).* Deferred. Revisit only if pure NumPy misses the
+  target after profiling; adds a dependency and debugging friction not warranted
+  for v0.1. Note the option stays cheap to exercise later — see consequences.
 
 **Consequences.** The batch axis is load-bearing everywhere: state is a tensor,
 memory is a tensor, the impact ledger is a tensor. Every design below is shaped by
 "can this be expressed as an op over the `R` axis?" Runs remain independent, so the
 `R` axis is also the natural chunking axis for multiprocessing (ADR-8).
+
+The reference implementation has **two jobs**, not one: it is the correctness
+oracle (diff against the vectorized engine at small `R` under shared seeds), and
+it is the **narrator** — because runs are deterministic given the master seed
+(ADR-8), any individual run that analysis flags as interesting can be *replayed*
+through the scalar implementation with verbose instrumentation, recovering an
+arbitrarily detailed per-run narrative without having stored it. Thin logging for
+all runs, deep reconstruction on demand for the few that matter.
+
+The constraints this ADR imposes (fixed-width tensors, no per-run control flow,
+pure whitelisted expressions, explicit keyed RNG) are **exactly the constraints
+GPU/JIT compilation requires** — so the design is GPU-ready as a side effect. At
+v0.1 scale (10⁴ runs × ~30 events) per-year arrays are far too small to benefit
+from a GPU; the option becomes attractive when the batch axis grows — tail
+analysis at 10⁵–10⁶ runs, or sensitivity sweeps run as an additional batch
+dimension (many parameter settings × many runs simultaneously). Caveat if
+exercised: bit-exact CPU/GPU reproducibility will not hold, so the oracle
+cross-check becomes tolerance-based rather than exact.
 
 ---
 
@@ -241,6 +261,10 @@ comparison, NumPy broadcasting resolves all 10k runs in a single evaluation —
 - Names resolve through the state index map: `chn.military_spending_deviation` →
   a view into `country[:, idx(chn), idx(that_var)]`.
 
+The permitted subset, its semantics under broadcasting, and the authoring rules
+are specified normatively in [[methodology/reference/expression-language]] —
+that document is the contract between event authors and this compiler.
+
 **Alternatives rejected.**
 - *`eval` per run.* 15M interpreter calls — defeats ADR-1.
 - *A bespoke mini-DSL instead of Python.* The schema already commits to "Python
@@ -251,6 +275,23 @@ comparison, NumPy broadcasting resolves all 10k runs in a single evaluation —
 references a non-vectorizable construct fails at compile time, not mid-run. This
 also becomes a natural home for validation rule #3 in the schema (every referenced
 variable must exist in the state catalog).
+
+Vectorized evaluation **changes the language**, not just its speed: broadcasting
+breaks `and`/`or` (the compiler rewrites them elementwise — safe because
+expressions are pure and total, but guarding idioms like `x > 0 and log(x) > 1`
+no longer guard), forbids ternary conditionals (use `where()`), and evaluates
+every sub-expression for every run. The schema's "Python expressions for logic"
+is thereby amended to *the broadcastable subset of Python* — a schema-level
+contract, not an implementation detail.
+
+It also forces an **expressiveness boundary** that feeds back into event
+authoring: expressions read the *current* state only. Anything requiring memory
+("GDP declined 5 consecutive years"), aggregation with logic, or iteration must
+be promoted to an engine-maintained state variable that the expression merely
+reads — the `years_since_irregular_transition` pattern, and the
+[[methodology/concepts/synthetic-variable-problem]] discipline applied to
+formulas. Details and the escape-hatch process:
+[[methodology/reference/expression-language]] §6.
 
 ---
 
@@ -316,6 +357,23 @@ overflow counter guards against silent truncation. This is the single trickiest
 component to vectorize and the first candidate for the reference-implementation
 cross-check (ADR-1).
 
+Two rules keep the ledger scaling with the **shock intensity of the modeled
+world rather than catalog size** (important if the catalog grows toward
+hundreds of events):
+1. **`permanent` shocks never occupy a ledger slot.** A permanent impact is a
+   one-time level shift; apply it to state at firing time and forget it. This
+   removes the longest-lived slot occupants entirely.
+2. **Epsilon-cull decayed shocks.** Expire a decaying shock once its
+   contribution falls below a threshold (a `decay: 2` shock is at ~3% of
+   magnitude after 10 years) rather than carrying it forever. This bounds
+   effective lifetime, which bounds peak concurrency.
+
+More generally, catalog size `E` enters every core structure **linearly**
+(`U[R,E]`, `p_eff[R,E]`, `Λ[E,K]`, sparse cascade edges) — there is no
+combinatorial growth, *provided nothing pairwise between events is ever built*.
+This is a standing design rule and the structural argument against the legacy
+compound multipliers (open decision §5.5), which are inherently `E²`.
+
 ---
 
 ### ADR-7 — Catalog compilation: markdown YAML → resolved arrays
@@ -376,12 +434,31 @@ outputs. No inter-run communication.
 **Context.** Full 50-year trajectories for 3,072 variables × 10k runs ≈ 15 GB
 ([[methodology/reference/state-outputs]] §8.1) — too much to keep for every run.
 
-**Decision.** Follow the state-outputs recommendation:
-- **All runs:** terminal state vector + full event log (event_id, year, branch,
-  magnitude draws) + per-run summary statistics and scenario flags, computed during
-  the run.
+**Decision.** Follow the state-outputs recommendation, extended:
+- **All runs:** terminal state vector + full event log + per-run summary
+  statistics and scenario flags, computed during the run.
+- **Event log carries provenance.** Each firing records not just
+  (event_id, year, resolution, branch, magnitude draws) but also `p_base`,
+  `p_eff`, and which cascade deltas were active at firing time. Firing is
+  probabilistic, so no causal claim is possible — but "Egypt's firing
+  probability was elevated 2.5× by the Sahel cascade when it fired" is an
+  auditable, quantified narrative link, and it costs two floats and a bitmask
+  per fire.
+- **Factor trajectories `F[R, K, T]` for all runs.** At 10⁴ runs × 12 factors ×
+  50 years this is ~50 MB — trivial — and it supplies the "weather" of each run
+  ("2031 was a +2.1σ climate/food year") for narrative reconstruction and for
+  the Phase 3 factor-contribution analysis.
+- **Scenario flags are config, not code.** Predicates like "multi-year famine in
+  SSA" are defined declaratively (an [[methodology/reference/expression-language]]
+  condition + a minimum duration) and computed for **all** runs during
+  simulation using the same counter machinery as ADR-5's sustained
+  preconditions. Cross-run frequencies ("in 56% of runs…") are then a mean over
+  a boolean run-axis array.
 - **Subset (≈1,000 runs):** full annual trajectories for the key variables in
-  [[methodology/reference/state-outputs]] §4.1.
+  [[methodology/reference/state-outputs]] §4.1. Prefer widening the set of
+  *thin* trajectories kept for all runs (a dozen variables × 50 years × 10⁴
+  runs ≈ 50 MB) over deepening the subset — post-hoc scenario queries want
+  breadth of runs, not breadth of variables.
 - **Derived assessments** (stability, fragility, alignment, …) are computed
   **post-run from observables** — never during simulation, never as state variables
   ([[methodology/reference/state-outputs]] §1, [[methodology/concepts/synthetic-variable-problem]]).
@@ -389,7 +466,10 @@ outputs. No inter-run communication.
 
 **Consequences.** The event log is the primary substrate for Phase 3 contribution
 analysis ("in the worst 5% of runs, which events fired?"), so it must be complete
-even where trajectories are dropped.
+even where trajectories are dropped. Anything *not* recorded remains recoverable:
+determinism by seed (ADR-8) means any single run can be replayed with verbose
+instrumentation through the reference implementation (ADR-1) — narrative depth is
+reconstructed on demand, not stored speculatively.
 
 ---
 
@@ -412,7 +492,10 @@ part of ratifying this document:
    non-linear multipliers to known dangerous event pairs (financial crisis ×
    pandemic). The current schema expresses compounding through cascades + additive
    impacts instead. Decide whether compound multipliers are still needed or fully
-   subsumed by cascades.
+   subsumed by cascades. **Recommendation: retire them.** They are the only
+   pairwise-between-events structure in the design (`E²` scaling, see ADR-6
+   consequences), and cascades express the same co-occurrence amplification as a
+   sparse authored edge list.
 
 ---
 
@@ -455,6 +538,7 @@ cascade buffers)** to the backlog.
 | Date | Change |
 |------|--------|
 | 2026-01 | Initial architecture overview + ADRs (draft for discussion) |
+| 2026-01 | Design-review refinements: reference impl as narrator + replay-by-seed (ADR-1); GPU/JIT readiness note (ADR-1); expression language extracted to normative spec (ADR-4 → [[methodology/reference/expression-language]]); ledger scaling rules — permanent shocks fold into state, epsilon-culling, no pairwise structures (ADR-6); event-log provenance, factor trajectories for all runs, declarative scenario flags (ADR-9); recommendation to retire compound multipliers (§5.5) |
 
 ---
 

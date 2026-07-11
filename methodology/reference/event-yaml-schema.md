@@ -320,6 +320,8 @@ Python expressions are evaluated against a context dict containing:
 
 Expressions must be valid Python that returns a boolean (preconditions) or numeric (pressure functions).
 
+**Normative subset:** because the simulator evaluates expressions vectorized across all runs, only a defined subset of Python is permitted, with specific semantic rules (e.g. `and`/`or` are rewritten elementwise; guarding idioms don't guard; ternaries are rejected in favor of `where()`). See [[methodology/reference/expression-language]] for the full contract, the function whitelist, and what to do when an expression needs history or aggregation.
+
 ---
 
 ## Validation Rules
