@@ -14,7 +14,7 @@ tags:
 
 # Event Expression Language
 
-**Document Version:** 0.1 (draft for discussion)
+**Document Version:** 1.0
 **Date:** July 2026
 **Status:** Normative specification — the contract for expressions embedded in event YAML
 
@@ -230,6 +230,7 @@ compiles cannot raise from expression evaluation at simulation time.
 | Date | Change |
 |------|--------|
 | 2026-07 | Initial specification, extracted from simulator-architecture ADR-4 discussion |
+| 2026-07-12 | Version 1.0 — header no longer says "draft for discussion," matching the normative status the guide and architecture already cite |
 
 ---
 

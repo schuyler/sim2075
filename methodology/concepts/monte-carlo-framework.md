@@ -10,6 +10,19 @@ permalink: methodology/concepts/monte-carlo-framework
 **Date:** December 2025  
 **Status:** Methodology specification (pre-implementation)
 
+> ⚠️ **Partially superseded** (July 2026). §§8–9 (Simulation Mechanics,
+> Implementation Architecture) describe the original independent-factor, static
+> sampler and predate the current schema. The v0.1 engine is defined by
+> [[methodology/reference/simulator-architecture]] (ADRs) and executed per
+> [[methodology/project/implementation-guide]]. In particular: factor draws are
+> correlated over Ω (ADR-2 — not §8's independent normals), idiosyncratic
+> variance is `1 − (ΛΩΛᵀ)ᵢᵢ` (not §8's `1 − Σλ²`), the sampler is a stateful
+> path-dependent stepper (not §8's static `U < p` comparison), and §8.6
+> compound multipliers are **retired** (implementation-guide pinned decision #5).
+> The earlier sections remain live conceptual foundations; wherever this
+> document conflicts with the ADRs or [[methodology/reference/event-yaml-schema]],
+> they win.
+
 ---
 
 ## Table of Contents
@@ -1629,6 +1642,7 @@ def validate_loadings(event: dict) -> bool:
 |---------|------|---------|
 | 1.0 | December 2025 | Initial methodology specification |
 | 1.1 | December 2025 | Reframed as Discontinuity Effects Model; adopted factor model for correlations; added explicit limitations section |
+| 1.1 + banner | July 2026 | Partial-supersession banner added: §§8–9 (independent factors, static sampler, §8.6 compound multipliers) replaced by [[methodology/reference/simulator-architecture]] ADRs; body text left as historical record |
 
 ---
 

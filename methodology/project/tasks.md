@@ -208,7 +208,7 @@ Specification: [[strategy/sim2075-third-gulf-war-interaction]] (§3 corrections,
 | **6.1** | Author `ISRAEL_IRAN_WAR`/`US_IRAN_WAR` (**one event** — settle the final ID at authoring; cascade lists will reference it), `STRAIT_OF_HORMUZ_CRISIS`, `GULF_STATE_ATTACKS` as first-class Type 3 events against the **current** schema; add to the 4.2 migration table. Each spec notes that the single-resolution shape deliberately compresses the multi-clock structure the war exposed (interaction doc §4 fix 3 — a v0.2 backlog item) | 🔲 |
 | **6.2** | `OIL_SUPPLY_SHOCK`: record precursor-war hazard case + reclassification rationale in prose (YAML stays Type 1 until schema v0.2) | 🔲 |
 | **6.3** | Methodology corrections: two boundary corrections into [[methodology/concepts/tractability-boundaries]]; depletion-stock proposal into [[methodology/reference/causal-types]]; widen demand-elasticity bands | 🔲 |
-| **6.4** | Open the **schema v0.2 backlog** note: hybrid causal types, multi-front resolution clocks, per-component thresholds/hysteresis, behavioral-history/ratchet/duration-clock constructs, decay-to-floor ("persistent / floor") durability for impact rows (the war's "damage a ceasefire cannot fix" class, interaction doc §2d). Promotion gated on Phase 2 instrument evidence | 🔲 |
+| **6.4** | Open the **schema v0.2 backlog** note: hybrid causal types, multi-front resolution clocks, per-component thresholds/hysteresis, behavioral-history/ratchet/duration-clock constructs, decay-to-floor ("persistent / floor") durability for impact rows (the war's "damage a ceasefire cannot fix" class, interaction doc §2d). Promotion gated on Phase 2 instrument evidence. **Also fold in the v2.0 feature list from [[methodology/concepts/implementation-roadmap]]** (one consolidated evidence-gated backlog), then move that doc to `methodology/archive/` with a pointer stub — extract-then-archive, never bare-delete | 🔲 |
 | **6.5** | Adopt process rule: event named in any cascade list but absent from catalog = mandatory backlog item; sweep existing specs for such flags | 🔲 |
 | **6.6** | Public launch essay ("what the war taught a model built 60 days before it started"). Before publication, re-verify every load-bearing wiki quote and date against the wiki itself — the digests are second-hand, and one day-anchor already needed correcting | 🔲 |
 | **6.7** | **State-vector widening prose** ([[strategy/roadmap]] Phase 0 item 3): document the war's load-bearing variable classes (actor behavioral histories, ratchet/lock-in variables, duration clocks for aftermath sojourns); add any expressible as plain engine-maintained state variables (the `years_since_irregular_transition` pattern) to the state catalog. **Scope pin:** additions are spec-side — they enter the v0.1 engine only via an explicit revision of [[methodology/reference/mvp-dynamics-scope]], never as a side effect of event authoring | 🔲 |
@@ -253,6 +253,8 @@ Build simulation prototype. **Execution plan: [[methodology/project/implementati
 
 ### Post-Engine (Sensitivity-Driven — [[strategy/roadmap]] Phase 2+)
 
+When the Phase 2 sensitivity-instrument note is written, it absorbs the §3.1–3.5 analysis menu from [[methodology/project/development-roadmap]]; that document then moves to `methodology/archive/` with a pointer stub (extract-then-archive — its design principles are already restated in [[strategy/roadmap]]).
+
 Tasks prioritized after sensitivity analysis reveals what matters:
 
 | Task | Trigger |
@@ -280,4 +282,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: July 12, 2026 — Added Task 6.7 (state-vector widening, roadmap Phase 0 item 3, previously unmapped); pinned 6.1 war-hub event count (three events, one carrying the ISRAEL_IRAN_WAR/US_IRAN_WAR naming question); hybrid-variance exception cross-referenced in rule 5; 4.1 pointer and 4.3 parameter count corrected*
+*Last updated: July 12, 2026 — Added Task 6.7 (state-vector widening, roadmap Phase 0 item 3, previously unmapped); pinned 6.1 war-hub event count (three events, one carrying the ISRAEL_IRAN_WAR/US_IRAN_WAR naming question); hybrid-variance exception cross-referenced in rule 5; 4.1 pointer and 4.3 parameter count corrected. Second pass: extract-then-archive plans recorded on 6.4 (implementation-roadmap v2.0 list) and Post-Engine (development-roadmap §3.1–3.5)*

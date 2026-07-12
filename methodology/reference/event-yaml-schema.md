@@ -15,7 +15,7 @@ tags:
 
 Reference for machine-readable event specifications embedded in markdown files.
 
-**Status**: Draft — refining through initial conversions
+**Status**: v0.1 engine/catalog contract — normative for Task 4.2 migrations and the catalog compiler ([[methodology/reference/simulator-architecture]] ADR-7). Changes are versioned and deliberate; the formal freeze is [[strategy/roadmap]] Phase 1 item 3, and schema-breaking war lessons live in the v0.2 backlog (Task 6.4), not here.
 
 ---
 
@@ -340,3 +340,4 @@ Expressions must be valid Python that returns a boolean (preconditions) or numer
 |------|--------|
 | 2025-01-01 | Initial draft during Task 4.2 schema design |
 | 2025-01-02 | Added Entity and Variable References section: entity ID conventions, wildcard syntax |
+| 2026-07-12 | Status promoted from "Draft — refining" to v0.1 engine/catalog contract (normative for migrations and the compiler; formal freeze at [[strategy/roadmap]] Phase 1) |
