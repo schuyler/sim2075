@@ -189,6 +189,7 @@ Plus the sketch's open questions for Schuyler before drafting: single paper vs. 
 - [[strategy/methods-paper-sketch]] — Phase 3 specification
 - [[strategy/pcm-integration-brief]] — Phase 2 (PCM check) and Phase 4 (shared schema); figures primary-sourced via [[strategy/inputs/pcm-v25-synopsis-notes]]
 - [[strategy/inputs/public-landscape-survey]] — positioning and niches
+- [[strategy/emergent-ideas]] — recorded candidate mechanisms and practices, not yet scheduled; promotion goes through this roadmap's normal gates
 - [[methodology/reference/simulator-architecture]] — engine design (ADRs; normative)
 - [[methodology/project/implementation-guide]] — engine execution plan (normative)
 - [[methodology/concepts/implementation-roadmap]] — superseded engine spec; v2.0 candidate backlog
