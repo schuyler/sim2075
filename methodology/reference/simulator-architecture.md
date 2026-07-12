@@ -412,9 +412,11 @@ over 50 years, must be reproducible and chunkable across cores.
 **Decision.**
 - **State** is dense tensors: `country[R, E, V]`, `global[R, Vg]`, `factors[R, K]`,
   with compile-time index maps (`entity_id → row`, `var_name → col`) shared with
-  ADR-4's name resolution. v0.1 uses the 15-country / ~18-variable scope from the
-  development roadmap; the entity/variable **axes are configurable** so Phase 4 can
-  widen to 46 entities / 63 variables without code changes.
+  ADR-4's name resolution. v0.1 uses the 46-entity (40 countries + 6 Tier 1
+  aggregates) × ~18-variable scope from [[methodology/reference/mvp-dynamics-scope]];
+  the entity/variable **axes are configurable** so post-v0.1 expansion can widen
+  toward the full state catalog (52 entities incl. Tier 2 aggregates / 63
+  variables) without code changes.
 - **RNG** is one `numpy.random.SeedSequence`; each run-block gets an independent
   child via `.spawn()`, so results are deterministic given the master seed and
   invariant to how runs are chunked across processes.
@@ -447,7 +449,8 @@ outputs. No inter-run communication.
 - **Factor trajectories `F[R, K, T]` for all runs.** At 10⁴ runs × 12 factors ×
   50 years this is ~50 MB — trivial — and it supplies the "weather" of each run
   ("2031 was a +2.1σ climate/food year") for narrative reconstruction and for
-  the Phase 3 factor-contribution analysis.
+  factor-contribution analysis (the sensitivity instrument of
+  [[strategy/roadmap]] Phase 2).
 - **Scenario flags are config, not code.** Predicates like "multi-year famine in
   SSA" are defined declaratively (an [[methodology/reference/expression-language]]
   condition + a minimum duration) and computed for **all** runs during
@@ -464,9 +467,9 @@ outputs. No inter-run communication.
   ([[methodology/reference/state-outputs]] §1, [[methodology/concepts/synthetic-variable-problem]]).
 - Storage format: Parquet for tensors, JSON for logs.
 
-**Consequences.** The event log is the primary substrate for Phase 3 contribution
-analysis ("in the worst 5% of runs, which events fired?"), so it must be complete
-even where trajectories are dropped. Anything *not* recorded remains recoverable:
+**Consequences.** The event log is the primary substrate for contribution
+analysis ("in the worst 5% of runs, which events fired?" — [[strategy/roadmap]]
+Phase 2), so it must be complete even where trajectories are dropped. Anything *not* recorded remains recoverable:
 determinism by seed (ADR-8) means any single run can be replayed with verbose
 instrumentation through the reference implementation (ADR-1) — narrative depth is
 reconstructed on demand, not stored speculatively.
@@ -535,6 +538,7 @@ cascade buffers)** to the backlog.
 | 2026-07 | Initial architecture overview + ADRs (draft for discussion) |
 | 2026-07 | Design-review refinements: reference impl as narrator + replay-by-seed (ADR-1); GPU/JIT readiness note (ADR-1); expression language extracted to normative spec (ADR-4 → [[methodology/reference/expression-language]]); ledger scaling rules — permanent shocks fold into state, epsilon-culling, no pairwise structures (ADR-6); event-log provenance, factor trajectories for all runs, declarative scenario flags (ADR-9); recommendation to retire compound multipliers (§5.5) |
 | 2026-07 | §5 open decisions resolved and pinned in [[methodology/project/implementation-guide]] §0 |
+| 2026-07-11 | Reconciled with [[strategy/roadmap]]: superseded-plan phase numbers removed (ADR-8 expansion no longer keyed to "Phase 4"; ADR-9 contribution analysis keyed to roadmap Phase 2); ADR-8 v0.1 scope corrected to the 46-entity MVP dynamics scope (was a stale 15-country figure from the superseded development roadmap) |
 
 ---
 

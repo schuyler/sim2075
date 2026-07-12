@@ -55,8 +55,9 @@ This document is now the project plan. Reconciliation with the two pre-war plann
 | Prior document | Disposition |
 |---|---|
 | [[methodology/project/development-roadmap]] | **Superseded as the plan.** Its Phase 1 (event catalog) is complete at Level 1 scope (~30 events; see [[index]]) — short of its own 40–60-event success criterion; the gap is Phase 0 and ongoing catalog-growth work, not a blocker. Its Phase 2 (prototype) becomes Phase 1 here, rebuilt around public-from-first-commit and imported baselines. Its Phase 3 (sensitivity analysis) is absorbed into Phase 2 here as one validation instrument among three. Its Phases 4–6 (iterative expansion, calibration, production use) are dropped as phases: expansion becomes continuous catalog-layer work driven by audit findings; "calibration" is reframed per [[methodology/concepts/epistemology]] — parameters are documented judgments checked by the Phase 2 instruments, not calibrated quantities; "production use" is replaced by the open-tool framing above. Its design principles (start minimal, events before dynamics, sensitivity guides investment, working code beats specification) are inherited intact. |
-| [[methodology/concepts/implementation-roadmap]] | **Inherited, not replaced.** It remains the authoritative technical specification of engine v1.0 scope (type-appropriate sampling, state-conditioned multipliers, two-stage Type 3, single-branch aftermaths) and the v1.0/v2.0 boundary. This roadmap sequences that work into Phase 1. Its v2.0 items are unscheduled; they become candidates only if a Phase 2 instrument demonstrates they matter. |
-| [[index]] "Next Steps" | Stale — points at the old plan's Phase 2. Update to point here (Phase 0 work item). |
+| [[methodology/concepts/implementation-roadmap]] | **Superseded as engine specification** by [[methodology/reference/simulator-architecture]] (the ADRs) and [[methodology/project/implementation-guide]] (pinned decisions, build order, gates), which postdate it and define v0.1 scope authoritatively. Its v2.0 feature list survives as the candidate backlog: unscheduled, promoted only if a Phase 2 instrument demonstrates an item matters. |
+| [[methodology/reference/simulator-architecture]] + [[methodology/project/implementation-guide]] | **The engine specification and execution plan — normative.** Phase 1 below *is* these documents: the guide's data track (4.2–4.4) and engine track (E0–E10) are Phase 1's work breakdown. Where this roadmap's prose and those documents differ on engine matters, they win. |
+| [[index]] "Next Steps" | Updated — now points here. |
 
 ---
 
@@ -65,7 +66,7 @@ This document is now the project plan. Reconciliation with the two pre-war plann
 | Phase | Name | Standalone artifact | Depends on |
 |---|---|---|---|
 | 0 | Absorb the war | Remediated catalog + public launch essay | Nothing — all inputs exist |
-| 1 | The engine, public from the first commit | Runnable engine + frozen schema + catalog | Phase 0 (content only) |
+| 1 | The engine, built in the open | Runnable engine + frozen schema + catalog | Phase 0 (content only) |
 | 2 | Validation instruments | Three self-contained published notes | Phase 1 engine |
 | 3 | The methods paper | Public preprint + journal submission | Phases 0–2 |
 | 4 | Elicitation at scale *(optional)* | Judgment schema + pilot elicitation round | A community that has materialized |
@@ -78,11 +79,11 @@ This document is now the project plan. Reconciliation with the two pre-war plann
 
 **Work items.**
 
-1. **Promote the self-flagged missing events.** Add `ISRAEL_IRAN_WAR` / `US_IRAN_WAR`, `STRAIT_OF_HORMUZ_CRISIS`, and `GULF_STATE_ATTACKS` as first-class Type 3 events — all three are named as "not in catalog" in a single cascade comment (`events/geopolitical/iran-regime-change.md:373`) and were left unactioned. Adopt the process rule permanently: any event named in a cascade list but absent from the catalog is a mandatory backlog item.
-2. **Precursor-war hazard multipliers and `OIL_SUPPLY_SHOCK` reclassification.** Reclassify from flat Type 1 to hybrid Type 1/2-3: base stochastic rate plus a state-conditioned geopolitical pathway (time-since-last-conflict-with-same-actor, arsenal reconstitution, negotiation-collapse risk).
-3. **State-vector widening.** Add the variable classes the war showed are load-bearing: actor behavioral histories (the §3.2 repeated-actor base rates — OPG-style within-episode counts), ratchet/lock-in variables (insurance floors, alliance-credibility damage), and duration clocks for aftermath sojourns. Scope discipline: add only what the new and reclassified events need; general schema support lands in Phase 1.
-4. **Methodology updates from §3.** Write the two boundary corrections into [[methodology/concepts/tractability-boundaries]] (expectation-mediated transmission; repeated-actor partial tractability); record the depletion-stock proposal in [[methodology/reference/causal-types]] as a candidate Type 2 sub-pattern; widen demand-elasticity uncertainty bands per §3.4.
-5. **Note remaining structural fixes** (multi-front resolution clocks, per-component transmission thresholds/hysteresis — interaction doc §4.3–4.4) as schema requirements for Phase 1 rather than retrofitting every spec now.
+1. **Promote the self-flagged missing events.** Add `ISRAEL_IRAN_WAR` / `US_IRAN_WAR`, `STRAIT_OF_HORMUZ_CRISIS`, and `GULF_STATE_ATTACKS` as first-class Type 3 events — all three are named as "not in catalog" in a single cascade comment (`events/geopolitical/iran-regime-change.md:373`) and were left unactioned. They are textbook Type 3 window/resolution events (interaction doc §1) and **fit the current [[methodology/reference/event-yaml-schema]] as-is** — author them against it and add them to the Task 4.2 migration table, so they compile into the v0.1 engine like any other event. Adopt the process rule permanently: any event named in a cascade list but absent from the catalog is a mandatory backlog item.
+2. **Precursor-war hazard multipliers and `OIL_SUPPLY_SHOCK` reclassification.** Record the reclassification case (flat Type 1 → hybrid: base stochastic rate plus a state-conditioned geopolitical pathway — time-since-last-conflict-with-same-actor, arsenal reconstitution, negotiation-collapse risk) in the event's prose and probability-evolution discussion now. The YAML keeps `causal_type: 1` for v0.1 — the schema and the frozen `CompiledCatalog` contract ([[methodology/project/implementation-guide]] §4.1) represent a single generating mechanism per event — and the mechanical reclassification lands with schema v0.2 (see item 5).
+3. **State-vector widening — prose now, schema v0.2 for the rest.** Document the variable classes the war showed are load-bearing: actor behavioral histories (the §3.2 repeated-actor base rates — OPG-style within-episode counts), ratchet/lock-in variables (insurance floors, alliance-credibility damage), and duration clocks for aftermath sojourns. Anything expressible as an ordinary engine-maintained state variable under the current schema (the `years_since_irregular_transition` pattern, per [[methodology/reference/expression-language]] §6) may be added now; anything requiring new schema constructs waits for v0.2.
+4. **Methodology updates from §3.** Write the two boundary corrections into [[methodology/concepts/tractability-boundaries]] (expectation-mediated transmission; repeated-actor partial tractability — the latter framed as a mechanism hypothesis with one supporting case, not a calibrated rule); record the depletion-stock proposal in [[methodology/reference/causal-types]] as a candidate Type 2 sub-pattern; widen demand-elasticity uncertainty bands per §3.4. Engine-neutral prose — no sequencing constraint.
+5. **Open the schema v0.2 backlog.** The war lessons that require new schema constructs — hybrid causal types (item 2), multi-front events with actor-specific resolution clocks, per-component transmission thresholds/hysteresis (interaction doc §4, items 3–4), behavioral-history/ratchet/duration-clock constructs beyond plain state variables (item 3) — are recorded as a named **schema v0.2 backlog**, not built into v0.1. Promotion out of the backlog is gated the same way as the old plan's v2.0 features: a Phase 2 instrument has to show the omission matters. This applies the roadmap's own evidence discipline to its own wishlist.
 6. **The public launch essay.** Adapt the interaction document into "what the Third Gulf War taught a model built 60 days before it started." It leads with the model's failure — the war wasn't a first-class catalog event despite the catalog's own self-flag — matching the wiki's credibility-through-honesty tone, and introduces the project to the wiki's existing audience.
 7. Update [[index]] Next Steps to point at this roadmap.
 
@@ -94,15 +95,15 @@ This document is now the project plan. Reconciliation with the two pre-war plann
 
 ---
 
-## Phase 1 — The engine, public from the first commit
+## Phase 1 — The engine, built in the open
 
-**Purpose.** Turn the specs into a runnable sampler and establish the engine/catalog interface split in public. The repo is public from the first commit — the refinement process is the point, not a threat to it.
+**Purpose.** Turn the specs into a runnable sampler and establish the engine/catalog interface split in public. The repo is already public — the refinement process is the point, not a threat to it.
 
 **Work items.**
 
-1. **Minimal semi-Markov kernel**, per the v1.0 scope in [[methodology/concepts/implementation-roadmap]] and [[methodology/reference/mvp-dynamics-scope]]: load YAML event specs; sample correlated factor draws via the Gaussian copula ([[methodology/concepts/gaussian-copula]], Ω from [[methodology/reference/factor-correlation-matrix]]); type-appropriate event sampling (flat hazard / state-conditioned multipliers / two-stage window-resolution); evolve state including single-branch aftermaths; emit paths — event sequences with timing and state snapshots.
-2. **Imported baselines.** Type 4 trend dynamics come from SSP/IFs public data as exogenous inputs. The engine does not contain a trend model.
-3. **Schema freeze.** [[methodology/reference/event-yaml-schema]] becomes the engine/catalog contract, extended for the Phase 0 items (behavioral histories, ratchets, duration clocks) and, if cheap, the multi-clock and per-component-hysteresis requirements noted in Phase 0 item 5. Schema changes after freeze are versioned, deliberate, and rare.
+1. **The v0.1 engine, exactly as specified.** The design is [[methodology/reference/simulator-architecture]] (ADRs: vectorized stateful stepper, Gaussian copula over Ω, unified firing kernel, active-shock ledger, compiled expression language) and the execution plan is [[methodology/project/implementation-guide]] (data track 4.2–4.4; engine stages E0–E10, reference-implementation-first, fixture-gated). This roadmap adds nothing to those documents and does not restate them; the conceptual summary is that each Monte Carlo run samples a path through a rich state space — a semi-Markov process where everything history-dependent lives in state — and emits event sequences with timing and state snapshots.
+2. **Imported baselines.** Type 4 trend dynamics come from SSP/IFs public data as exogenous inputs (v0.1 seeds trend rates from IMF WEO / UN WPP per the guide's data track). The engine does not contain a trend model.
+3. **Schema freeze — the current schema, versioned.** [[methodology/reference/event-yaml-schema]] as it stands today is the v0.1 engine/catalog contract; the Phase 0 war events are authored against it (they fit — see Phase 0 items 1–2). The schema-breaking war lessons live in the Phase 0 item 5 **v0.2 backlog** and land, if the Phase 2 instruments justify them, as a versioned schema revision with a migration path. Schema changes after freeze are versioned, deliberate, and rare.
 4. **The interface split, materialized.** Engine and schema in one small, stable layer; the catalog as the data layer with a documented contribution path. A catalog PR that changes a probability must change the attached reasoning — that's the whole review standard.
 5. **Licensing and hygiene.** Apply the decided licenses: BSD (2- or 3-clause) for the engine — the 2-vs-3-clause choice is the only open question — and CC BY 4.0 for catalog and prose. CI that validates every catalog file against the schema. A README that states what the tool is and is not (scenario exploration under documented judgment, not forecasting).
 
@@ -110,7 +111,7 @@ This document is now the project plan. Reconciliation with the two pre-war plann
 
 **Dependencies.** Phase 0, softly — engine development can start against the pre-remediation catalog; the remediated catalog is what ships.
 
-**Failure modes.** The classic one: dynamics scope creep — building baseline models instead of importing them, or reaching for v2.0 features (sub-annual steps, full cascade propagation) before any instrument shows they matter. The v1.0/v2.0 boundary in [[methodology/concepts/implementation-roadmap]] is the defense; cross it only on Phase 2 evidence. If the phase stalls: the frozen schema plus machine-readable catalog is itself a complete artifact — a citable, forkable corpus of documented judgments — and even a partial engine (copula sampling without state evolution) demonstrates the O(n×k) elicitation argument concretely.
+**Failure modes.** The classic one: dynamics scope creep — building baseline models instead of importing them, or reaching for deferred features (sub-annual steps, full cascade propagation, the v0.2 schema backlog) before any instrument shows they matter. The defenses are the implementation guide's guardrails ("no feature invention," frozen seams) and the evidence gate on the v0.2/v2.0 backlogs; cross either only on Phase 2 evidence. If the phase stalls: the frozen schema plus machine-readable catalog is itself a complete artifact — a citable, forkable corpus of documented judgments — and even a partial engine (copula sampling without state evolution) demonstrates the O(n×k) elicitation argument concretely.
 
 ---
 
@@ -186,5 +187,7 @@ Plus the sketch's open questions for Schuyler before drafting: single paper vs. 
 - [[strategy/methods-paper-sketch]] — Phase 3 specification
 - [[strategy/pcm-integration-brief]] — Phase 2 (PCM check) and Phase 4 (shared schema); figures primary-sourced via [[strategy/inputs/pcm-v25-synopsis-notes]]
 - [[strategy/inputs/public-landscape-survey]] — positioning and niches
-- [[methodology/concepts/implementation-roadmap]] — engine v1.0 technical scope (inherited)
+- [[methodology/reference/simulator-architecture]] — engine design (ADRs; normative)
+- [[methodology/project/implementation-guide]] — engine execution plan (normative)
+- [[methodology/concepts/implementation-roadmap]] — superseded engine spec; v2.0 candidate backlog
 - [[methodology/project/development-roadmap]] — superseded plan (design principles inherited)

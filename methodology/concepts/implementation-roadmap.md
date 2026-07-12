@@ -15,6 +15,13 @@ tags:
 
 **Phased approach to building the simulation architecture.**
 
+> ⚠️ **Superseded as engine specification** (July 2026). The v0.1 engine is
+> defined by [[methodology/reference/simulator-architecture]] (ADRs) and
+> executed per [[methodology/project/implementation-guide]]; project sequencing
+> is [[strategy/roadmap]]. What survives here: the **v2.0 feature list** below
+> remains the candidate backlog — unscheduled, promoted only when a
+> [[strategy/roadmap]] Phase 2 instrument shows an item matters.
+
 ---
 
 ## v1.0: State-Conditioned Multipliers (Current Target)

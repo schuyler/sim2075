@@ -25,6 +25,16 @@ this guide adds is what an orchestrator needs and the ADRs don't provide:
 **pinned decisions, build order, verification gates, frozen interface
 contracts, and guardrails.**
 
+**Relationship to the project plan.** This guide is the execution of
+[[strategy/roadmap]] **Phase 1** (the engine track). Roadmap Phase 0 — war
+absorption — proceeds in parallel as prose, methodology corrections, and new
+event specs: war events that fit the current schema (the three Type 3 war-hub
+events) join the Task 4.2 migration table and this guide's data track like any
+other event. War lessons that would require new schema constructs (hybrid
+causal types, multi-front resolution clocks, per-component hysteresis) are
+**schema v0.2 backlog** items per roadmap Phase 0 item 5 and MUST NOT be built
+into v0.1 — guardrail 3 applies.
+
 **Rules of engagement for any agent using this guide:**
 1. Where this guide and the ADRs conflict, **stop and report** — do not resolve
    the conflict yourself.
@@ -53,6 +63,11 @@ them silently:
 - **dtype is float64 everywhere** in v0.1. No float32 "optimizations."
 - **Draw shapes must be outcome-independent** (see §5.2). Never draw random
   numbers only for runs that "need" them.
+- **One causal type per event in YAML.** Events whose prose describes a hybrid
+  mechanism (e.g. GLOBAL_FINANCIAL_CRISIS "Type 1/2") declare their dominant
+  mechanism as `causal_type`; the secondary pathway stays in prose until
+  schema v0.2. Migrating agents pick the type the event's own probability
+  model actually implements and note the choice in the changelog.
 
 ---
 
@@ -104,8 +119,9 @@ data track complete.
 | D3 | Task 4.3: 2025 baselines + trend rates (~196 params) per [[methodology/reference/mvp-dynamics-scope]] §2, single-sourced (IMF WEO, UN WPP) into `sim/data/initial_conditions.yaml` | All 46 Tier-1 entities (40 countries + 6 Tier 1 aggregates per [[methodology/reference/state-entities]]) covered; every value carries a source tag |
 | D4 | Task 4.4: mean-reversion defaults per [[methodology/reference/mvp-dynamics-scope]] §3 into `sim/data/dynamics_defaults.yaml` | All Tier 2 variable classes covered; outlier overrides (Argentina, Turkey) present |
 
-The final gate for the whole track: **the catalog compiler (E2) compiles all 29
-events with zero errors.**
+The final gate for the whole track: **the catalog compiler (E2) compiles every
+event in `events/` with zero errors** (29 at time of writing; roadmap Phase 0
+adds the three war-hub events, which gate identically).
 
 ---
 
@@ -290,6 +306,7 @@ Standing prohibitions for all agents on this work:
 | Date | Change |
 |------|--------|
 | 2026-07 | Initial guide. Pins §5 open decisions from simulator-architecture (discharges Task 5.0); establishes fixture-driven build order with reference-impl-first sequencing |
+| 2026-07-11 | Reconciled with [[strategy/roadmap]]: guide identified as Phase 1's execution plan; war events join the data track when authored; schema-breaking war lessons deferred to v0.2 backlog; one-causal-type-per-YAML rule stated; migration counts corrected against git history; compiler gate made dynamic over `events/` |
 
 ---
 

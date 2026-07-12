@@ -198,6 +198,19 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 | **3.15** | **Vestigial Type 4**: Evaluate whether Type 4 variance targets are needed—we classified Type 4 as "not events, move to baseline." If no Type 4 events exist, remove from framework. | Low | 🔲 Deferred |
 | **3.16** | **Validation notes cleanup**: Deleted stale validation working documents. Essential findings captured in [[methodology/reference/variance-allocation]]. | Low | ✅ |
 
+### War Absorption ([[strategy/roadmap]] Phase 0 — Section 6)
+
+Specification: [[strategy/sim2075-third-gulf-war-interaction]] (§3 corrections, §4 fixes). Runs in parallel with the engine track; none of these block Section 5.
+
+| Task | Description | Status |
+|------|-------------|--------|
+| **6.1** | Author `ISRAEL_IRAN_WAR`/`US_IRAN_WAR`, `STRAIT_OF_HORMUZ_CRISIS`, `GULF_STATE_ATTACKS` as first-class Type 3 events against the **current** schema; add to the 4.2 migration table | 🔲 |
+| **6.2** | `OIL_SUPPLY_SHOCK`: record precursor-war hazard case + reclassification rationale in prose (YAML stays Type 1 until schema v0.2) | 🔲 |
+| **6.3** | Methodology corrections: two boundary corrections into [[methodology/concepts/tractability-boundaries]]; depletion-stock proposal into [[methodology/reference/causal-types]]; widen demand-elasticity bands | 🔲 |
+| **6.4** | Open the **schema v0.2 backlog** note: hybrid causal types, multi-front resolution clocks, per-component thresholds/hysteresis, behavioral-history/ratchet/duration-clock constructs. Promotion gated on Phase 2 instrument evidence | 🔲 |
+| **6.5** | Adopt process rule: event named in any cascade list but absent from catalog = mandatory backlog item; sweep existing specs for such flags | 🔲 |
+| **6.6** | Public launch essay ("what the war taught a model built 60 days before it started") | 🔲 |
+
 ### Additional Events
 
 Candidates for expanding beyond 29 current events:

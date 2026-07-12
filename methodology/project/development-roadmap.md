@@ -6,7 +6,7 @@ permalink: methodology/project/development-roadmap
 
 **Document Version:** 1.0  
 **Date:** December 2025  
-**Status:** Planning document
+**Status:** ⚠️ **Superseded as the project plan by [[strategy/roadmap]]** (July 2026). The phase numbering below (Phases 1–6) is historical — do not cite it; live documents use [[strategy/roadmap]]'s Phase 0–4. Engine scope is now defined by [[methodology/reference/simulator-architecture]] and [[methodology/project/implementation-guide]]. The design principles below are inherited intact by the new plan; the Phase 3 sensitivity-analysis menu (§3.1–3.5) is inherited by its Phase 2. Retained for reference.
 
 ---
 
