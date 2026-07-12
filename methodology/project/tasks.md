@@ -215,21 +215,24 @@ Candidates for expanding beyond 29 current events:
 
 ### Implementation (Phase 2 — Section 5)
 
-Build simulation prototype. See [[methodology/project/development-roadmap]] for detailed architecture.
+Build simulation prototype. Engine design: [[methodology/reference/simulator-architecture]] (execution model + ADRs; §6 maps ADRs to these tasks). Expression contract: [[methodology/reference/expression-language]]. See [[methodology/project/development-roadmap]] for phase context.
 
 | Task | Description | Status | Dependencies |
 |------|-------------|--------|--------------|
-| **5.1** | Set up prototype directory structure | ⏸️ | 4.1 decision |
+| **5.0** | Ratify architecture ADRs; resolve open decisions in [[methodology/reference/simulator-architecture]] §5 | 🔲 | — |
+| **5.1** | Set up prototype directory structure | ⏸️ | 5.0 |
 | **5.2** | Implement state vector management | ⏸️ | 5.1, 4.3 |
 | **5.3** | Implement factor sampling with correlations | ⏸️ | 5.1 |
-| **5.4** | Implement event firing logic | ⏸️ | 5.3, 4.2 |
-| **5.5** | Implement impact transmission | ⏸️ | 5.2, 5.4 |
-| **5.6** | Implement aftermath tracking | ⏸️ | 5.5 |
+| **5.4** | Implement event firing logic (incl. catalog compiler + expression compiler) | ⏸️ | 5.3, 4.2 |
+| **5.4b** | Implement per-run memory: sustained counters + cascade delta buffers (ADR-5) | ⏸️ | 5.4 |
+| **5.5** | Implement impact transmission (active-shock ledger, ADR-6) | ⏸️ | 5.2, 5.4 |
+| **5.6** | Implement aftermath tracking | ⏸️ | 5.4b, 5.5 |
 | **5.7** | Implement baseline dynamics | ⏸️ | 5.2, 4.4 |
 | **5.8** | Implement main simulation loop | ⏸️ | 5.3–5.7 |
+| **5.8b** | Implement scalar reference impl; cross-check vectorized engine at small R (ADR-1) | ⏸️ | 5.8 |
 | **5.9** | Implement output analysis | ⏸️ | 5.8 |
 | **5.10** | Create prototype run notebook | ⏸️ | 5.8, 5.9 |
-| **5.11** | Validate prototype produces sensible output | ⏸️ | 5.10 |
+| **5.11** | Validate prototype produces sensible output | ⏸️ | 5.8b, 5.10 |
 
 **Note:** Section 4 uses "minimum viable dynamics" approach — baseline drift (progress engine) is essential; mean-reversion uses defaults; complex transmission is deferred. All Section 5 tasks proceed with this scope.
 
@@ -262,4 +265,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: January 3, 2026 — Task 4.2 process strengthened: entire git history must be read; lost prose must be restored*
+*Last updated: July 12, 2026 — Section 5 linked to simulator architecture doc; added 5.0 (ratify ADRs), 5.4b (per-run memory), 5.8b (reference impl cross-check)*

@@ -15,7 +15,7 @@ tags:
 # Event Expression Language
 
 **Document Version:** 0.1 (draft for discussion)
-**Date:** January 2026
+**Date:** July 2026
 **Status:** Normative specification — the contract for expressions embedded in event YAML
 
 This document pins down exactly what "Python expressions for logic" means in
@@ -145,7 +145,7 @@ simulation time.
 
 ## 5. Worked examples from the current catalog
 
-Every expression in the catalog as of January 2026 falls inside the subset:
+Every expression in the catalog as of July 2026 falls inside the subset:
 
 **AMOC pressure function** (Type 2, arithmetic only):
 
@@ -229,7 +229,7 @@ compiles cannot raise from expression evaluation at simulation time.
 
 | Date | Change |
 |------|--------|
-| 2026-01 | Initial specification, extracted from simulator-architecture ADR-4 discussion |
+| 2026-07 | Initial specification, extracted from simulator-architecture ADR-4 discussion |
 
 ---
 

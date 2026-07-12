@@ -15,7 +15,7 @@ tags:
 # Simulator Architecture
 
 **Document Version:** 0.1 (draft for discussion)
-**Date:** January 2026
+**Date:** July 2026
 **Status:** Design specification — architecture overview + decision records
 
 The engine that executes the v0.1 prototype (Tasks 5.1–5.11). This document
@@ -537,8 +537,8 @@ cascade buffers)** to the backlog.
 
 | Date | Change |
 |------|--------|
-| 2026-01 | Initial architecture overview + ADRs (draft for discussion) |
-| 2026-01 | Design-review refinements: reference impl as narrator + replay-by-seed (ADR-1); GPU/JIT readiness note (ADR-1); expression language extracted to normative spec (ADR-4 → [[methodology/reference/expression-language]]); ledger scaling rules — permanent shocks fold into state, epsilon-culling, no pairwise structures (ADR-6); event-log provenance, factor trajectories for all runs, declarative scenario flags (ADR-9); recommendation to retire compound multipliers (§5.5) |
+| 2026-07 | Initial architecture overview + ADRs (draft for discussion) |
+| 2026-07 | Design-review refinements: reference impl as narrator + replay-by-seed (ADR-1); GPU/JIT readiness note (ADR-1); expression language extracted to normative spec (ADR-4 → [[methodology/reference/expression-language]]); ledger scaling rules — permanent shocks fold into state, epsilon-culling, no pairwise structures (ADR-6); event-log provenance, factor trajectories for all runs, declarative scenario flags (ADR-9); recommendation to retire compound multipliers (§5.5) |
 
 ---
 
