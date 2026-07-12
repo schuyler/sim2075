@@ -34,10 +34,15 @@ other event. War lessons that would require new schema constructs (hybrid
 causal types, multi-front resolution clocks, per-component hysteresis) are
 **schema v0.2 backlog** items per roadmap Phase 0 item 5 and MUST NOT be built
 into v0.1 — guardrail 3 applies. Phase 0 state-variable additions (roadmap
-Phase 0 item 3 / Task 6.7) are likewise spec-side only: the v0.1 engine's
-entity/variable axes stay pinned to [[methodology/reference/mvp-dynamics-scope]],
-and widening them is a frozen-seam change (stop and report), not something
-event authoring can trigger.
+Phase 0 item 3 / Task 6.7) are likewise spec-side only: **for the duration of
+the build**, the v0.1 engine's entity/variable axes stay pinned to
+[[methodology/reference/mvp-dynamics-scope]], and widening them mid-build is a
+frozen-seam change (stop and report), not something event authoring can
+trigger. The sanctioned widening moments — a one-time pre-E0 revision of the
+MVP scope, and post-E10 versioned catalog releases — are defined in
+[[methodology/reference/catalog-versioning]], along with the variable
+admission rule (dossier) and release gates. Guardrail 7 is what makes the
+post-E10 moment a data change rather than an engine change.
 
 **Rules of engagement for any agent using this guide:**
 1. Where this guide and the ADRs conflict, **stop and report** — do not resolve
@@ -300,6 +305,12 @@ Standing prohibitions for all agents on this work:
 6. **Data track agents follow the Task 4.2 process exactly** — including the
    full-git-history prose-restoration step; validation failures are reported,
    not patched around.
+7. **No hardcoded axis sizes.** Entity, variable, event, and factor counts
+   (`E`, `K`, `N_ent`, `N_cvar`, `N_gvar`) derive at runtime from the
+   `CompiledCatalog` and state-catalog index maps; no such count appears as a
+   literal in engine code (fixture files excepted). This is what makes
+   post-v0.1 catalog releases data changes rather than engine changes — see
+   [[methodology/reference/catalog-versioning]].
 
 ---
 
@@ -323,6 +334,7 @@ Standing prohibitions for all agents on this work:
 | 2026-07 | Initial guide. Pins §5 open decisions from simulator-architecture (discharges Task 5.0); establishes fixture-driven build order with reference-impl-first sequencing |
 | 2026-07-11 | Reconciled with [[strategy/roadmap]]: guide identified as Phase 1's execution plan; war events join the data track when authored; schema-breaking war lessons deferred to v0.2 backlog; one-causal-type-per-YAML rule stated; migration counts corrected against git history; compiler gate made dynamic over `events/` |
 | 2026-07-12 | Review fixes: variance validation pinned to the declared `variance:` field (protects hybrid-type events at the E2/D-track gates); Phase 0 state-variable additions pinned spec-side (v0.1 axes frozen to MVP scope); broken-input fixture variants assigned to E0; §1 diagram shows E10 |
+| 2026-07-12 | Catalog growth policy adopted: the axes pin scoped to build duration, with sanctioned widening moments (pre-E0 scope revision; post-E10 catalog releases) delegated to [[methodology/reference/catalog-versioning]]; guardrail 7 added (no hardcoded axis sizes) |
 
 ---
 
