@@ -57,7 +57,7 @@ resolved as follows. These are **constraints, not options**.
 | 4 | Reference implementation location | **`sim/reference/`** inside the same package, importable in tests. Shares the compile layer (`catalog/`); shares **no** engine code. |
 | 5 | Compound multipliers (framework §8.6) | **Retired.** Compounding is expressed through cascades + additive impacts only. No pairwise-between-events structure may be built (ADR-6). |
 
-Two further standing constraints, stated here because agents commonly violate
+Further standing constraints, stated here because agents commonly violate
 them silently:
 
 - **dtype is float64 everywhere** in v0.1. No float32 "optimizations."
@@ -141,7 +141,7 @@ Stages map to tasks 5.1–5.11; each row lists the deliverable and its
 | **E5** | 5.4b | `engine/memory.py`: sustained counters + cascade delta buffers (pinned #2) | Sustained: hand-built factor path in FIX-B opens the gate in exactly the specified year, resets on interruption. Cascades: delta present for exactly `years` years post-firing; conditional cascade respects its `if` |
 | **E6** | 5.5, 5.6 | `engine/impacts.py`: active-shock ledger (pinned #2, #3); permanent shocks fold into state at firing; epsilon-cull at contribution < 1e-4 of drawn magnitude; `until: resolved` linkage; resolution/branch draws | Single-shock decay curve matches closed-form half-life to rtol 1e-9; `permanent` occupies no slot; overflow raises with run indices; **oracle diff vs E1 on FIX-B passes** (§5.2) |
 | **E7** | 5.7 | `engine/dynamics.py`: Tier 1 drift, Tier 2 mean reversion, oil/food→inflation transmission per [[methodology/reference/mvp-dynamics-scope]] §5.1 (growth-rate-first ordering) | No-event run from FIX-A initial conditions shows compounding GDP growth and linear LE gains matching hand-computed trajectories to rtol 1e-9; shocked mean-reverting variable recovers with specified half-life |
-| **E8** | 5.2, 5.8 | `engine/state.py` + `engine/simulation.py`: the year loop, wiring E3–E7 in the architecture §3 order; recording per ADR-9 (event log w/ provenance, factor trajectories, scenario flags, thin trajectories) | **Oracle diff vs E1 on all fixtures passes** (§5.2); performance smoke: R=10,000 × 50 years < 60 s |
+| **E8** | 5.2, 5.8 | `engine/state.py` + `engine/simulation.py`: the year loop, wiring E3–E7 in the architecture §3 order; recording per ADR-9 (event log w/ provenance, factor trajectories, scenario flags, thin trajectories) | **Oracle diff vs E1 on FIX-A and FIX-B passes** (§5.2; FIX-C is compiler-only — no run semantics, not oracle-diffed); performance smoke: R=10,000 × 50 years < 60 s |
 | **E9** | 5.9, 5.10 | `analysis/`: percentiles, scenario frequencies, conditional distributions, contribution analysis; run notebook / `run.py` | Analysis of a fixture batch reproduces hand-computable statistics (e.g. scenario flag frequency equals direct count from event logs) |
 | **E10** | 5.11 | Full-catalog validation runs (requires data track complete) | The five success criteria of [[methodology/reference/mvp-dynamics-scope]] §8, each expressed as an executable check, all pass; validation outputs of [[methodology/reference/state-outputs]] §8.4 produced |
 

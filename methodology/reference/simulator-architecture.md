@@ -177,7 +177,7 @@ cross-check becomes tolerance-based rather than exact.
 ### ADR-2 — Factor sampling: Gaussian copula over Ω
 
 **Context.** Factors are correlated ([[methodology/reference/factor-correlation-matrix]]:
-19 non-zero off-diagonals, max ρ=0.55, PSD with min eigenvalue 0.20). The original
+20 non-zero off-diagonals, max ρ=0.55, PSD with min eigenvalue 0.20). The original
 §8 pseudocode drew independent factors — no longer correct.
 
 **Decision.** Precompute the Cholesky factor `L` of Ω once (`Ω = LLᵀ`). Each year

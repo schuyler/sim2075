@@ -116,9 +116,9 @@ LAM      0.00  0.35  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  1.00
 ```
 
 **Summary statistics:**
-- Non-zero off-diagonal entries: 19 (of 66 possible)
+- Non-zero off-diagonal entries: 20 (of 66 possible)
 - Maximum correlation: 0.55 (F_GPT ↔ F_EAS)
-- Mean non-zero correlation: 0.31
+- Mean non-zero correlation: 0.32
 
 ---
 

@@ -26,7 +26,7 @@ Seven-plus distinct "fiction" cycles — episodes where the reported price of oi
 
 | Phase | Days | Signal | Physical reality | Gap | Resolution |
 |---|---|---|---|---|---|
-| 1 | 9–11 | Trump rhetoric / IEA 400M bbl release / fabricated Navy-escort claim | Strait 97% closed, ~15M bpd stranded | ~$20–40 | Days — collapsed on Basra tanker attacks |
+| 1 | 10–12 | Trump rhetoric / IEA 400M bbl release / fabricated Navy-escort claim | Strait 97% closed, ~15M bpd stranded | ~$20–40 | Days — collapsed on Basra tanker attacks |
 | 2 | 13–31 | Benchmarks vs. refined products | Crack spread blowout (refining capacity destroyed) | Structural | Persistent |
 | 3 | 23–27 | Ceasefire expectations in futures | $32 spot-futures gap | $32, Gulf | Persistent |
 | 4 | 40–41 | Presidential ceasefire announcement | Zero tankers transited; Saudi bypass pipeline struck | ~$20 crash/bounce | <24 hours |

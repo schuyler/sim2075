@@ -23,9 +23,9 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 ---
 
 ## Active Work
-**Phase 1 Complete** — All Level 1 event specifications, critical reviews, and variance allocation finished (Dec 31, 2025).
+**Event catalog complete at Level 1 scope** — All Level 1 event specifications, critical reviews, and variance allocation finished (Dec 31, 2025).
 
-**Next: Pre-Implementation Preparation (Section 4)**
+**Next: Pre-Implementation Preparation (Section 4)** — and the engine track (Section 5) is fixture-driven and startable in parallel per [[methodology/project/implementation-guide]] §1.
 
 Key insight driving Section 4: **progress is continuous, catastrophe is discontinuous**. Without baseline dynamics capturing gradual improvement (GDP growth, life expectancy gains, technology cost declines), the simulation produces only decline. The "progress engine" is essential, not optional.
 
@@ -34,7 +34,7 @@ Start with **Task 4.1** to document MVP dynamics scope, then proceed with parall
 
 ### Pre-Implementation Preparation (Section 4)
 
-Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "minimum viable dynamics" approach.
+Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 31, 2025 to reflect "minimum viable dynamics" approach.
 
 **Tier structure:**
 - **Tier 1 (Essential):** Parameters that carry the positive side of the ledger — baseline growth, life expectancy trends, technology costs
@@ -94,6 +94,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 - Open questions
 
 **Validation requirements**:
+0. **Hybrid-type events keep their documented variance target.** Events whose prose declares a hybrid type (Type 1/2, Type 2/3) declare a single dominant `causal_type` in YAML (per [[methodology/project/implementation-guide]] §0) but retain the hybrid variance target documented in the event spec / [[methodology/reference/variance-allocation]] (e.g., Type 2/3 hybrid = 0.55) — do **not** rescale loadings to the dominant type's target from rule 5.
 1. **Factors**: Every factor ID in `factors:` block must exist in [[factors/]] catalog (e.g., `F_GPT`, `F_SAS`)
 2. **Events**: Every event ID in `cascades:` block must exist in [[events/]] catalog (e.g., `TAIWAN_CONFLICT`, `SEVERE_PANDEMIC`)
 3. **State variables**: Every variable in `probability.pressure`, `probability.preconditions`, and `impacts:` must exist in [[methodology/reference/state-variables-global]] or [[methodology/reference/state-variables-country]] using correct entity.variable syntax
@@ -188,8 +189,8 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 | Task | Dependencies | Notes |
 |------|--------------|-------|
 | **3.5** Audit Type 3 resolution branch completeness | — | 🔲 Ensure favorable branches exist per positive-discontinuity resolution. **Elevated priority** — affects specification quality before implementation. |
-| **3.3** Historical proxy analysis | Phase 2 complete | 🟡 **Deferred** — Requires observable proxy data |
-| **3.4** Sensitivity analysis: factor correlations | Phase 2 complete | ⏸️ Blocked on prototype |
+| **3.3** Historical proxy analysis | Engine (Section 5) complete | 🟡 **Deferred** — Requires observable proxy data |
+| **3.4** Sensitivity analysis: factor correlations | Engine (Section 5) complete | ⏸️ Blocked on prototype |
 
 ### Cleanup Tasks
 
@@ -224,16 +225,16 @@ Candidates for expanding beyond 29 current events:
 
 ---
 
-## Blocked / Future Work
+## Engine Track and Future Work
 
-### Implementation (Phase 2 — Section 5)
+### Engine Implementation (Section 5 — [[strategy/roadmap]] Phase 1)
 
 Build simulation prototype. **Execution plan: [[methodology/project/implementation-guide]]** (pinned decisions, build order E0–E10, gates, frozen contracts, guardrails). Engine design: [[methodology/reference/simulator-architecture]] (execution model + ADRs; §6 maps ADRs to these tasks). Expression contract: [[methodology/reference/expression-language]]. Plan context: this section is the engine track of [[strategy/roadmap]] Phase 1.
 
 | Task | Description | Status | Dependencies |
 |------|-------------|--------|--------------|
 | **5.0** | Ratify architecture ADRs; resolve open decisions in [[methodology/reference/simulator-architecture]] §5 | ✅ | Decisions pinned in [[methodology/project/implementation-guide]] §0 |
-| **5.1** | Set up prototype directory structure | ⏸️ | 5.0 |
+| **5.1** | Set up prototype directory structure + fixtures (guide stage E0) | 🔲 Ready | 5.0 ✅ |
 | **5.2** | Implement state vector management | ⏸️ | 5.1, 4.3 |
 | **5.3** | Implement factor sampling with correlations | ⏸️ | 5.1 |
 | **5.4** | Implement event firing logic (incl. catalog compiler + expression compiler) | ⏸️ | 5.3, 4.2 |
@@ -249,7 +250,7 @@ Build simulation prototype. **Execution plan: [[methodology/project/implementati
 
 **Note:** Section 4 uses "minimum viable dynamics" approach — baseline drift (progress engine) is essential; mean-reversion uses defaults; complex transmission is deferred. All Section 5 tasks proceed with this scope.
 
-### Phase 3+ (Sensitivity-Driven)
+### Post-Engine (Sensitivity-Driven — [[strategy/roadmap]] Phase 2+)
 
 Tasks prioritized after sensitivity analysis reveals what matters:
 
