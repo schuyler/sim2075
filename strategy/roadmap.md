@@ -84,7 +84,7 @@ This document is now the project plan. Reconciliation with the two pre-war plann
 3. **State-vector widening — prose now, schema v0.2 for the rest.** Document the variable classes the war showed are load-bearing: actor behavioral histories (the §3.2 repeated-actor base rates — OPG-style within-episode counts), ratchet/lock-in variables (insurance floors, alliance-credibility damage), and duration clocks for aftermath sojourns. Anything expressible as an ordinary engine-maintained state variable under the current schema (the `years_since_irregular_transition` pattern, per [[methodology/reference/expression-language]] §6) may be added now; anything requiring new schema constructs waits for v0.2. **Scope pin:** "added now" means added to the state catalog and event specs — the v0.1 engine's entity/variable axes stay pinned to [[methodology/reference/mvp-dynamics-scope]], and a new variable enters the engine only through an explicit revision of that scope, never as a side effect of event authoring (the implementation guide treats the axes as a frozen seam).
 4. **Methodology updates from §3.** Write the two boundary corrections into [[methodology/concepts/tractability-boundaries]] (expectation-mediated transmission; repeated-actor partial tractability — the latter framed as a mechanism hypothesis with one supporting case, not a calibrated rule); record the depletion-stock proposal in [[methodology/reference/causal-types]] as a candidate Type 2 sub-pattern; widen demand-elasticity uncertainty bands per §3.4. Engine-neutral prose — no sequencing constraint.
 5. **Open the schema v0.2 backlog.** The war lessons that require new schema constructs — hybrid causal types (item 2), multi-front events with actor-specific resolution clocks, per-component transmission thresholds/hysteresis (interaction doc §4, items 3–4), behavioral-history/ratchet/duration-clock constructs beyond plain state variables (item 3), and decay-to-floor ("persistent / floor") durability for impact rows — the war's "damage a ceasefire cannot fix" class (interaction doc §2d), which the current five durability types can only approximate as `permanent` — are recorded as a named **schema v0.2 backlog**, not built into v0.1. Promotion out of the backlog is gated the same way as the old plan's v2.0 features: a Phase 2 instrument has to show the omission matters. This applies the roadmap's own evidence discipline to its own wishlist.
-6. **The public launch essay.** Adapt the interaction document into "what the Third Gulf War taught a model built 60 days before it started." It leads with the model's failure — the war wasn't a first-class catalog event despite the catalog's own self-flag — matching the wiki's credibility-through-honesty tone, and introduces the project to the wiki's existing audience. Before publication, re-verify every load-bearing wiki quote and date against the wiki itself: the strategy inputs are second-hand digests, and one day-anchor in them has already needed correcting.
+6. **The public launch essay** (sketched: [[strategy/launch-essay-sketch]]). Adapt the interaction document into "what the Third Gulf War taught a model built 60 days before it started." It leads with the model's failure — the war wasn't a first-class catalog event despite the catalog's own self-flag — matching the wiki's credibility-through-honesty tone, and introduces the project to the wiki's existing audience. Before publication, re-verify every load-bearing wiki quote and date against the wiki itself: the strategy inputs are second-hand digests, and one day-anchor in them has already needed correcting.
 7. Update [[index]] Next Steps to point at this roadmap.
 
 **Standalone artifact.** The remediated catalog (a better set of documented judgments than existed before, useful as pure research prose even with no engine) plus the published essay.
@@ -117,7 +117,7 @@ This document is now the project plan. Reconciliation with the two pre-war plann
 
 ## Phase 2 — Validation instruments
 
-**Purpose.** The model is unvalidatable in the calibration sense; these are the instruments that test its structure anyway. Three independent instruments, each ending in its own self-contained published note. They share the engine but not each other — do them in any order, stop after any of them.
+**Purpose.** The model is unvalidatable in the calibration sense; these are the instruments that test its structure anyway. Three independent instruments, each ending in its own self-contained published note (sketched: [[strategy/validation-notes-sketch]]). They share the engine but not each other — do them in any order, stop after any of them.
 
 **Work items.**
 
@@ -184,6 +184,8 @@ Plus the sketch's open questions for Schuyler before drafting: single paper vs. 
 ## Sources
 
 - [[strategy/sim2075-third-gulf-war-interaction]] — Phase 0 specification
+- [[strategy/launch-essay-sketch]] — Phase 0 item 6 (launch essay) sketch
+- [[strategy/validation-notes-sketch]] — Phase 2 published-notes sketch
 - [[strategy/methods-paper-sketch]] — Phase 3 specification
 - [[strategy/pcm-integration-brief]] — Phase 2 (PCM check) and Phase 4 (shared schema); figures primary-sourced via [[strategy/inputs/pcm-v25-synopsis-notes]]
 - [[strategy/inputs/public-landscape-survey]] — positioning and niches
