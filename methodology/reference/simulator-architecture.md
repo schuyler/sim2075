@@ -14,14 +14,14 @@ tags:
 
 # Simulator Architecture
 
-**Document Version:** 0.1 (draft for discussion)
+**Document Version:** 1.0
 **Date:** July 2026
-**Status:** Design specification — architecture overview + decision records
+**Status:** Ratified design specification — architecture overview + decision records (**normative**, per [[strategy/roadmap]]; the §5 open decisions are resolved and pinned in [[methodology/project/implementation-guide]] §0)
 
 The engine that executes the v0.1 prototype (Tasks 5.1–5.11). This document
 records the architecture at the level of **decisions and their rationale**, not
-line-by-line module specs. Detailed module contracts follow once these decisions
-are ratified.
+line-by-line module specs. Module-level interface contracts live in
+[[methodology/project/implementation-guide]] §4.
 
 **Related documents:**
 - [[methodology/concepts/monte-carlo-framework]] — original methodology (§8–9 predate the current schema)
@@ -513,9 +513,9 @@ Summary:
 | 5.10 Prototype run notebook | `run.py` / notebook |
 | 5.11 Validate sensible output | [[methodology/reference/mvp-dynamics-scope]] §8 success criteria |
 
-The cascade/memory machinery (ADR-5) spans 5.4 and 5.6 and is not called out as its
-own task — recommend adding **Task 5.4b: per-run memory (sustained counters +
-cascade buffers)** to the backlog.
+The cascade/memory machinery (ADR-5) spans 5.4 and 5.6 and is carried by its
+own task, **Task 5.4b: per-run memory (sustained counters + cascade buffers)**,
+in [[methodology/project/tasks]] §5.
 
 ---
 
@@ -539,9 +539,11 @@ cascade buffers)** to the backlog.
 | 2026-07 | Design-review refinements: reference impl as narrator + replay-by-seed (ADR-1); GPU/JIT readiness note (ADR-1); expression language extracted to normative spec (ADR-4 → [[methodology/reference/expression-language]]); ledger scaling rules — permanent shocks fold into state, epsilon-culling, no pairwise structures (ADR-6); event-log provenance, factor trajectories for all runs, declarative scenario flags (ADR-9); recommendation to retire compound multipliers (§5.5) |
 | 2026-07 | §5 open decisions resolved and pinned in [[methodology/project/implementation-guide]] §0 |
 | 2026-07-11 | Reconciled with [[strategy/roadmap]]: superseded-plan phase numbers removed (ADR-8 expansion no longer keyed to "Phase 4"; ADR-9 contribution analysis keyed to roadmap Phase 2); ADR-8 v0.1 scope corrected to the 46-entity MVP dynamics scope (was a stale 15-country figure from the superseded development roadmap) |
+| 2026-07-12 | Status promoted to ratified/normative v1.0 (was "draft for discussion" — stale after §5 resolution and Task 5.0 ✅); §6 note updated (Task 5.4b exists, no longer a recommendation); footer ratification instruction retired |
 
 ---
 
-*Ratify the ADRs and resolve §5 before detailed module contracts. For the dynamics
+*The ADRs are ratified and §5 is resolved — pinned decisions, build order, and
+module contracts are in [[methodology/project/implementation-guide]]. For the dynamics
 this engine runs see [[methodology/reference/mvp-dynamics-scope]]; for what it
 records see [[methodology/reference/state-outputs]].*

@@ -33,7 +33,11 @@ events) join the Task 4.2 migration table and this guide's data track like any
 other event. War lessons that would require new schema constructs (hybrid
 causal types, multi-front resolution clocks, per-component hysteresis) are
 **schema v0.2 backlog** items per roadmap Phase 0 item 5 and MUST NOT be built
-into v0.1 — guardrail 3 applies.
+into v0.1 — guardrail 3 applies. Phase 0 state-variable additions (roadmap
+Phase 0 item 3 / Task 6.7) are likewise spec-side only: the v0.1 engine's
+entity/variable axes stay pinned to [[methodology/reference/mvp-dynamics-scope]],
+and widening them is a frozen-seam change (stop and report), not something
+event authoring can trigger.
 
 **Rules of engagement for any agent using this guide:**
 1. Where this guide and the ADRs conflict, **stop and report** — do not resolve
@@ -68,6 +72,12 @@ them silently:
   mechanism as `causal_type`; the secondary pathway stays in prose until
   schema v0.2. Migrating agents pick the type the event's own probability
   model actually implements and note the choice in the changelog.
+- **Variance validation is against the declared `variance:` field.** The
+  compiler checks achieved `(ΛΩΛᵀ)ᵢᵢ` against each event's declared target,
+  never against a type-derived table — hybrid-type events legitimately declare
+  off-table targets (Task 4.2 validation rule 0). The type-keyed targets in
+  [[methodology/reference/variance-allocation]] are authoring guidance, not a
+  compile gate.
 
 ---
 
@@ -85,7 +95,7 @@ DATA TRACK                          ENGINE TRACK
                            │        E7 dynamics
                            │        E8 year loop + recording
                            ▼        E9 analysis
-                    ──── 5.11 end-to-end validation ────
+                    ── E10 / 5.11 end-to-end validation ──
 ```
 
 The engine track is **fixture-driven** and does not wait for the data track:
@@ -243,6 +253,11 @@ what makes replay and oracle diffing possible.
 Fixtures are hand-built `CompiledCatalog` instances (not YAML) except FIX-C,
 which exists precisely to test the compiler against a hand-built target.
 
+E0 also commits the **deliberately-broken input variants** the E2 rejection
+gate consumes — one minimal broken event file per failure mode: unknown
+variable, bad enum, branch p-sum ≠ 1, banned AST node, undeclared resolution
+name.
+
 ### 5.2 Oracle diff (the central check)
 
 To compare engines, the reference implementation **replays a specific run of a
@@ -307,6 +322,7 @@ Standing prohibitions for all agents on this work:
 |------|--------|
 | 2026-07 | Initial guide. Pins §5 open decisions from simulator-architecture (discharges Task 5.0); establishes fixture-driven build order with reference-impl-first sequencing |
 | 2026-07-11 | Reconciled with [[strategy/roadmap]]: guide identified as Phase 1's execution plan; war events join the data track when authored; schema-breaking war lessons deferred to v0.2 backlog; one-causal-type-per-YAML rule stated; migration counts corrected against git history; compiler gate made dynamic over `events/` |
+| 2026-07-12 | Review fixes: variance validation pinned to the declared `variance:` field (protects hybrid-type events at the E2/D-track gates); Phase 0 state-variable additions pinned spec-side (v0.1 axes frozen to MVP scope); broken-input fixture variants assigned to E0; §1 diagram shows E10 |
 
 ---
 

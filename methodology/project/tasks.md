@@ -29,7 +29,7 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 Key insight driving Section 4: **progress is continuous, catastrophe is discontinuous**. Without baseline dynamics capturing gradual improvement (GDP growth, life expectancy gains, technology cost declines), the simulation produces only decline. The "progress engine" is essential, not optional.
 
-Start with **Task 4.1** to document MVP dynamics scope, then proceed with parallel work on 4.2 (event extraction) and 4.3 (initial conditions).
+Task 4.1 (MVP dynamics scope) is complete — see [[methodology/project/tasks-completed]]. Start with parallel work on 4.2 (event migration) and 4.3 (initial conditions); engine task 5.1 is also ready now.
 ## Upcoming Priorities
 
 ### Pre-Implementation Preparation (Section 4)
@@ -44,7 +44,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
 | **4.2** | **Event specification migration** (5/29 migrated, of which 3 still need prose remediation): See detailed instructions below. | — | 🟡 |
-| **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~200 parameters. | — | 🔲 |
+| **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~196 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.3 | 🔲 |
 
 **Dependency graph:**
@@ -99,7 +99,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 2. **Events**: Every event ID in `cascades:` block must exist in [[events/]] catalog (e.g., `TAIWAN_CONFLICT`, `SEVERE_PANDEMIC`)
 3. **State variables**: Every variable in `probability.pressure`, `probability.preconditions`, and `impacts:` must exist in [[methodology/reference/state-variables-global]] or [[methodology/reference/state-variables-country]] using correct entity.variable syntax
 4. **Probabilities**: Resolution probabilities sum to 1.0; branch probabilities within each resolution sum to 1.0
-5. **Variance**: Factor loadings should achieve type-appropriate variance target (Type 1: 0.75, Type 2: 0.65, Type 3: 0.45)
+5. **Variance**: Factor loadings should achieve type-appropriate variance target (Type 1: 0.75, Type 2: 0.65, Type 3: 0.45) — **except hybrid-type events, which keep their documented hybrid target per rule 0**
 
 **Process per event**:
 1. **Read the schema** at [[methodology/reference/event-yaml-schema]] before starting
@@ -189,7 +189,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 | Task | Dependencies | Notes |
 |------|--------------|-------|
 | **3.5** Audit Type 3 resolution branch completeness | — | 🔲 Ensure favorable branches exist per positive-discontinuity resolution. **Elevated priority** — affects specification quality before implementation. |
-| **3.3** Historical proxy analysis | Engine (Section 5) complete | 🟡 **Deferred** — Requires observable proxy data |
+| **3.3** Historical proxy analysis | Engine (Section 5) complete | ⏸️ **Deferred** — Requires observable proxy data |
 | **3.4** Sensitivity analysis: factor correlations | Engine (Section 5) complete | ⏸️ Blocked on prototype |
 
 ### Cleanup Tasks
@@ -205,12 +205,13 @@ Specification: [[strategy/sim2075-third-gulf-war-interaction]] (§3 corrections,
 
 | Task | Description | Status |
 |------|-------------|--------|
-| **6.1** | Author `ISRAEL_IRAN_WAR`/`US_IRAN_WAR`, `STRAIT_OF_HORMUZ_CRISIS`, `GULF_STATE_ATTACKS` as first-class Type 3 events against the **current** schema; add to the 4.2 migration table | 🔲 |
+| **6.1** | Author `ISRAEL_IRAN_WAR`/`US_IRAN_WAR` (**one event** — settle the final ID at authoring; cascade lists will reference it), `STRAIT_OF_HORMUZ_CRISIS`, `GULF_STATE_ATTACKS` as first-class Type 3 events against the **current** schema; add to the 4.2 migration table. Each spec notes that the single-resolution shape deliberately compresses the multi-clock structure the war exposed (interaction doc §4 fix 3 — a v0.2 backlog item) | 🔲 |
 | **6.2** | `OIL_SUPPLY_SHOCK`: record precursor-war hazard case + reclassification rationale in prose (YAML stays Type 1 until schema v0.2) | 🔲 |
 | **6.3** | Methodology corrections: two boundary corrections into [[methodology/concepts/tractability-boundaries]]; depletion-stock proposal into [[methodology/reference/causal-types]]; widen demand-elasticity bands | 🔲 |
-| **6.4** | Open the **schema v0.2 backlog** note: hybrid causal types, multi-front resolution clocks, per-component thresholds/hysteresis, behavioral-history/ratchet/duration-clock constructs. Promotion gated on Phase 2 instrument evidence | 🔲 |
+| **6.4** | Open the **schema v0.2 backlog** note: hybrid causal types, multi-front resolution clocks, per-component thresholds/hysteresis, behavioral-history/ratchet/duration-clock constructs, decay-to-floor ("persistent / floor") durability for impact rows (the war's "damage a ceasefire cannot fix" class, interaction doc §2d). Promotion gated on Phase 2 instrument evidence | 🔲 |
 | **6.5** | Adopt process rule: event named in any cascade list but absent from catalog = mandatory backlog item; sweep existing specs for such flags | 🔲 |
-| **6.6** | Public launch essay ("what the war taught a model built 60 days before it started") | 🔲 |
+| **6.6** | Public launch essay ("what the war taught a model built 60 days before it started"). Before publication, re-verify every load-bearing wiki quote and date against the wiki itself — the digests are second-hand, and one day-anchor already needed correcting | 🔲 |
+| **6.7** | **State-vector widening prose** ([[strategy/roadmap]] Phase 0 item 3): document the war's load-bearing variable classes (actor behavioral histories, ratchet/lock-in variables, duration clocks for aftermath sojourns); add any expressible as plain engine-maintained state variables (the `years_since_irregular_transition` pattern) to the state catalog. **Scope pin:** additions are spec-side — they enter the v0.1 engine only via an explicit revision of [[methodology/reference/mvp-dynamics-scope]], never as a side effect of event authoring | 🔲 |
 
 ### Additional Events
 
@@ -279,4 +280,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: July 11, 2026 — Corrected 4.2 migration counts against git history (5 migrated, AMOC remediated, 3 remediations outstanding); 5.8b resequenced first per implementation-guide E1; Section 5 linked to [[strategy/roadmap]] Phase 1*
+*Last updated: July 12, 2026 — Added Task 6.7 (state-vector widening, roadmap Phase 0 item 3, previously unmapped); pinned 6.1 war-hub event count (three events, one carrying the ISRAEL_IRAN_WAR/US_IRAN_WAR naming question); hybrid-variance exception cross-referenced in rule 5; 4.1 pointer and 4.3 parameter count corrected*
