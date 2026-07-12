@@ -473,29 +473,24 @@ reconstructed on demand, not stored speculatively.
 
 ---
 
-## 5. Open decisions to pin before build
+## 5. Open decisions — RESOLVED
 
-These are genuinely unresolved and should be settled (or explicitly deferred) as
-part of ratifying this document:
+These were open at first draft; all five are now pinned in
+[[methodology/project/implementation-guide]] §0, which is the normative record.
+Summary:
 
-1. **Type 2 `threshold_std` handling** (ADR-3). Marginalize the logistic over a
-   Gaussian threshold analytically, or draw a per-run threshold offset at init?
-   The latter is simpler and adds realistic cross-run dispersion.
-2. **Cascade / ledger storage shape** (ADR-5, ADR-6). Fixed-width active-effect
-   tensor vs. accumulator + expiry schedule. Pick one pattern and share it.
-3. **`max_active` ledger width** (ADR-6). Needs an empirical upper bound from a
-   pilot run before it can be fixed.
-4. **Where the reference (scalar) implementation lives** (ADR-1). Same package
-   behind a flag, or a separate `sim/reference/`? It is the correctness oracle, so
-   it should be easy to diff against.
-5. **Compound multipliers** (framework §8.6). The original design applies
-   non-linear multipliers to known dangerous event pairs (financial crisis ×
-   pandemic). The current schema expresses compounding through cascades + additive
-   impacts instead. Decide whether compound multipliers are still needed or fully
-   subsumed by cascades. **Recommendation: retire them.** They are the only
-   pairwise-between-events structure in the design (`E²` scaling, see ADR-6
-   consequences), and cascades express the same co-occurrence amplification as a
-   sparse authored edge list.
+1. **Type 2 `threshold_std` handling** (ADR-3) → **per-run threshold offset**
+   drawn once at run initialization (simpler than analytic marginalization;
+   adds realistic cross-run dispersion).
+2. **Cascade / ledger storage shape** (ADR-5, ADR-6) → **fixed-width
+   active-effect tensors** with slot recycling; one shared pattern for both.
+3. **`max_active` ledger width** (ADR-6) → **256** per run, overflow as a
+   counted hard failure; revisit after fixture pilots.
+4. **Reference (scalar) implementation location** (ADR-1) → **`sim/reference/`**
+   in the same package; shares the compile layer, none of the engine.
+5. **Compound multipliers** (framework §8.6) → **retired**; compounding is
+   expressed through cascades + additive impacts only (they were the design's
+   only `E²` pairwise structure — see ADR-6 consequences).
 
 ---
 
@@ -539,6 +534,7 @@ cascade buffers)** to the backlog.
 |------|--------|
 | 2026-07 | Initial architecture overview + ADRs (draft for discussion) |
 | 2026-07 | Design-review refinements: reference impl as narrator + replay-by-seed (ADR-1); GPU/JIT readiness note (ADR-1); expression language extracted to normative spec (ADR-4 → [[methodology/reference/expression-language]]); ledger scaling rules — permanent shocks fold into state, epsilon-culling, no pairwise structures (ADR-6); event-log provenance, factor trajectories for all runs, declarative scenario flags (ADR-9); recommendation to retire compound multipliers (§5.5) |
+| 2026-07 | §5 open decisions resolved and pinned in [[methodology/project/implementation-guide]] §0 |
 
 ---
 

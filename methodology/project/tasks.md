@@ -215,11 +215,11 @@ Candidates for expanding beyond 29 current events:
 
 ### Implementation (Phase 2 — Section 5)
 
-Build simulation prototype. Engine design: [[methodology/reference/simulator-architecture]] (execution model + ADRs; §6 maps ADRs to these tasks). Expression contract: [[methodology/reference/expression-language]]. See [[methodology/project/development-roadmap]] for phase context.
+Build simulation prototype. **Execution plan: [[methodology/project/implementation-guide]]** (pinned decisions, build order E0–E10, gates, frozen contracts, guardrails). Engine design: [[methodology/reference/simulator-architecture]] (execution model + ADRs; §6 maps ADRs to these tasks). Expression contract: [[methodology/reference/expression-language]]. See [[methodology/project/development-roadmap]] for phase context.
 
 | Task | Description | Status | Dependencies |
 |------|-------------|--------|--------------|
-| **5.0** | Ratify architecture ADRs; resolve open decisions in [[methodology/reference/simulator-architecture]] §5 | 🔲 | — |
+| **5.0** | Ratify architecture ADRs; resolve open decisions in [[methodology/reference/simulator-architecture]] §5 | ✅ | Decisions pinned in [[methodology/project/implementation-guide]] §0 |
 | **5.1** | Set up prototype directory structure | ⏸️ | 5.0 |
 | **5.2** | Implement state vector management | ⏸️ | 5.1, 4.3 |
 | **5.3** | Implement factor sampling with correlations | ⏸️ | 5.1 |
