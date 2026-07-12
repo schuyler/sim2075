@@ -43,7 +43,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
-| **4.2** | **Event specification migration** (6/29): See detailed instructions below. | — | 🟡 |
+| **4.2** | **Event specification migration** (5/29 migrated, of which 3 still need prose remediation): See detailed instructions below. | — | 🟡 |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~200 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.3 | 🔲 |
 
@@ -122,7 +122,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 
 | Subtask | Event | Status |
 |---------|-------|--------|
-| 4.2.1 | [[events/climate/amoc-weakening]] | ⚠️ Needs remediation |
+| 4.2.1 | [[events/climate/amoc-weakening]] | ✅ (remediated) |
 | 4.2.2 | [[events/climate/amazon-tipping-point]] | 🔲 |
 | 4.2.3 | [[events/climate/permafrost-methane-release]] | 🔲 |
 
@@ -179,7 +179,7 @@ Tasks required before Phase 2 implementation. Revised Dec 31, 2025 to reflect "m
 
 **Status key**: ✅ Complete | ⚠️ Needs remediation (prose lost) | 🟡 In progress | 🔲 Not started
 
-**Progress**: 1/29 complete, 4/29 need remediation, 24/29 not started
+**Progress**: 2/29 complete (taiwan-conflict, amoc-weakening), 3/29 migrated but need prose remediation (pakistan-state-failure, severe-pandemic, fusion-commercialization), 24/29 not started
 
 **Completed:** Tasks 4.1, 4.5 — see [[methodology/project/tasks-completed]]
 
@@ -215,7 +215,7 @@ Candidates for expanding beyond 29 current events:
 
 ### Implementation (Phase 2 — Section 5)
 
-Build simulation prototype. **Execution plan: [[methodology/project/implementation-guide]]** (pinned decisions, build order E0–E10, gates, frozen contracts, guardrails). Engine design: [[methodology/reference/simulator-architecture]] (execution model + ADRs; §6 maps ADRs to these tasks). Expression contract: [[methodology/reference/expression-language]]. See [[methodology/project/development-roadmap]] for phase context.
+Build simulation prototype. **Execution plan: [[methodology/project/implementation-guide]]** (pinned decisions, build order E0–E10, gates, frozen contracts, guardrails). Engine design: [[methodology/reference/simulator-architecture]] (execution model + ADRs; §6 maps ADRs to these tasks). Expression contract: [[methodology/reference/expression-language]]. Plan context: this section is the engine track of [[strategy/roadmap]] Phase 1.
 
 | Task | Description | Status | Dependencies |
 |------|-------------|--------|--------------|
@@ -229,7 +229,7 @@ Build simulation prototype. **Execution plan: [[methodology/project/implementati
 | **5.6** | Implement aftermath tracking | ⏸️ | 5.4b, 5.5 |
 | **5.7** | Implement baseline dynamics | ⏸️ | 5.2, 4.4 |
 | **5.8** | Implement main simulation loop | ⏸️ | 5.3–5.7 |
-| **5.8b** | Implement scalar reference impl; cross-check vectorized engine at small R (ADR-1) | ⏸️ | 5.8 |
+| **5.8b** | Implement scalar reference impl (ADR-1) — built **first** as the verification oracle per [[methodology/project/implementation-guide]] stage E1; vectorized engine stages diff against it as they land | ⏸️ | 5.1 |
 | **5.9** | Implement output analysis | ⏸️ | 5.8 |
 | **5.10** | Create prototype run notebook | ⏸️ | 5.8, 5.9 |
 | **5.11** | Validate prototype produces sensible output | ⏸️ | 5.8b, 5.10 |
@@ -265,4 +265,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: July 12, 2026 — Section 5 linked to simulator architecture doc; added 5.0 (ratify ADRs), 5.4b (per-run memory), 5.8b (reference impl cross-check)*
+*Last updated: July 11, 2026 — Corrected 4.2 migration counts against git history (5 migrated, AMOC remediated, 3 remediations outstanding); 5.8b resequenced first per implementation-guide E1; Section 5 linked to [[strategy/roadmap]] Phase 1*

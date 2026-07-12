@@ -61,7 +61,7 @@ them silently:
 ```
 DATA TRACK                          ENGINE TRACK
 4.2  event YAML migration  ┐        E0 scaffolding + fixtures
-     (23 + 4 remediations) │        E1 scalar reference impl (the oracle)
+     (24 + 3 remediations) │        E1 scalar reference impl (the oracle)
 4.3  initial conditions    │        E2 catalog compiler
 4.4  dynamics defaults     │        E3 factor sampling
                            │        E4 firing (Types 1/2/3)
@@ -79,8 +79,10 @@ already-migrated events. Only 5.11 (full-catalog validation runs) requires the
 data track complete.
 
 **Parallelism guidance for an orchestrator:**
-- The data track's Task 4.2 is the ideal fan-out: 23 migrations + 4
-  remediations, each independent, each with a strict documented process
+- The data track's Task 4.2 is the ideal fan-out: 24 migrations + 3
+  remediations (counts per the [[methodology/project/tasks]] §4.2 subtask
+  table, which is the single source of truth for migration status), each
+  independent, each with a strict documented process
   ([[methodology/project/tasks]] §Task 4.2 Detailed Instructions) and
   mechanical validation. One agent per event; verify with a separate checker
   pass per event (schema validation + prose-preservation diff against git
@@ -97,9 +99,9 @@ data track complete.
 
 | Step | Work | Gate |
 |------|------|------|
-| D1 | Remediate 4 flagged events (AMOC, Pakistan, severe pandemic, fusion) restoring lost prose per git history | Checker agent confirms: YAML validates; all prose sections from history present |
-| D2 | Migrate remaining 23 events per Task 4.2 process | Same per-event gate; progress table in [[methodology/project/tasks]] updated |
-| D3 | Task 4.3: 2025 baselines + trend rates (~196 params) per [[methodology/reference/mvp-dynamics-scope]] §2, single-sourced (IMF WEO, UN WPP) into `sim/data/initial_conditions.yaml` | Every entity in [[methodology/reference/state-entities]] covered; every value carries a source tag |
+| D1 | Remediate 3 flagged events (Pakistan, severe pandemic, fusion) restoring lost prose per git history — AMOC already remediated | Checker agent confirms: YAML validates; all prose sections from history present |
+| D2 | Migrate remaining 24 events per Task 4.2 process | Same per-event gate; progress table in [[methodology/project/tasks]] updated |
+| D3 | Task 4.3: 2025 baselines + trend rates (~196 params) per [[methodology/reference/mvp-dynamics-scope]] §2, single-sourced (IMF WEO, UN WPP) into `sim/data/initial_conditions.yaml` | All 46 Tier-1 entities (40 countries + 6 Tier 1 aggregates per [[methodology/reference/state-entities]]) covered; every value carries a source tag |
 | D4 | Task 4.4: mean-reversion defaults per [[methodology/reference/mvp-dynamics-scope]] §3 into `sim/data/dynamics_defaults.yaml` | All Tier 2 variable classes covered; outlier overrides (Argentina, Turkey) present |
 
 The final gate for the whole track: **the catalog compiler (E2) compiles all 29
@@ -196,8 +198,9 @@ the ADR-9 variable list, validation statistics per
 
 ### 4.6 RNG discipline (ADR-8)
 
-One `np.random.SeedSequence(master_seed)`; `.spawn()` per run-block. Within a
-year, draws occur in this **fixed order with fixed shapes**:
+One `np.random.SeedSequence(master_seed)`; `.spawn()` per run-block. Draws
+occur in this **fixed order with fixed shapes** (all per-year except item 3,
+which is consumed once at run initialization):
 
 1. factor draws `[R, K]`
 2. idiosyncratic draws `[R, E]`

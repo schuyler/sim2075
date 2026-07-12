@@ -14,7 +14,7 @@ tags:
 
 *Research subagent report, July 10, 2026. Sources: Third Gulf War research wiki pages `Trends/Oil Price Fiction` (1,031 lines, confidence: high, updated 2026-06-30) and `Variables/P1 Taco Clock` (1,377 lines, confidence: medium, updated 2026-06-03). All quotes verbatim.*
 
-**Framing notes:** (1) The TACO page never expands the acronym and carries confidence "medium"; the "confirmed" scoring lives on the linked `Hypothesis/Power Plant Taco` page. (2) The Day-40 ceasefire (announced 8pm April 7) did **not** end the war — it fractured within 18 hours; the war ran on through a blockade and 8+ "inside-ceasefire" kinetic exchanges, ending with the Islamabad MOU around Day 110 (June 16–17). Day 40 confirmed the *behavioral hypothesis* (Trump backs down at the execution threshold), not the war's termination.
+**Framing notes:** (1) The TACO page never expands the acronym and carries confidence "medium"; the "confirmed" scoring lives on the linked `Hypothesis/Power Plant Taco` page. (2) The Day-40 ceasefire (announced at the 8pm April 7 deadline; wiki-dated Day 40, April 8) did **not** end the war — it fractured within 18 hours; the war ran on through a blockade and 8+ "inside-ceasefire" kinetic exchanges, ending with the Islamabad MOU around Day 110 (June 16–17). Day 40 confirmed the *behavioral hypothesis* (Trump backs down at the execution threshold), not the war's termination.
 
 ---
 
@@ -113,7 +113,7 @@ Foundational evidence (Day 14, Kilmeade Show), Trump on when he'd know the war i
 **Genuinely predictive at the structural level, and early:**
 - The dominance thesis (Day 7) — externally validated repeatedly: Axios Day 54 ("the president thinks the US has achieved everything it can militarily and wants out"); Israeli intelligence Day 53 (Trump's statements "may not be based on a concrete plan, but reflect shifting moods and negotiating tactics").
 - The "fake off-ramp" prediction (Day 12) → materialized as "Epic Fury is over" (Day 67) and the sell-any-deal-as-win exit.
-- Timing convergence: Day 25 identification of April 9 as the war-termination target window ("Passover Ceasefire" hypothesis) landed within 48 hours of the actual Day 40 (April 7) ceasefire — via "a wildly nonlinear path."
+- Timing convergence: Day 25 identification of April 9 as the war-termination target window ("Passover Ceasefire" hypothesis) landed within 48 hours of the actual Day 40 (April 8) ceasefire — via "a wildly nonlinear path."
 - The OPG base rate became a working predictive tool: by Day 84 the framework explicitly bet "The OPG pattern predicts cycle 9" against the strongest kinetic-signal constellation of the war — and was right.
 - Method lesson captured (Passover retrospective / "pessimistic anchor bias"): "when the TACO Clock (Trump's psychology) is pointing toward exit, we systematically underestimate how long that condition holds, because we overweight subordinate-variable evidence against the dominant variable." Their one big miss (Day 36 downgrade) came from overriding their own dominant variable.
 

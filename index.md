@@ -276,11 +276,13 @@ Evidence library supporting parameter choices. Sources are archived and cross-re
 
 ## Next Steps
 
-1. ~~Complete Level 1 for all priority events~~ ✓ Phase 1 complete
-2. Build prototype simulation (Phase 2)
-3. Sensitivity analysis (Phase 3)
-4. Level 2 upgrades for high-impact events
+**The project plan is [[strategy/roadmap]].** Current phases:
+
+1. ~~Complete Level 1 for all priority events~~ ✓ (event catalog at Level 1 scope)
+2. **Phase 0 — Absorb the war**: catalog remediation + methodology corrections per [[strategy/sim2075-third-gulf-war-interaction]]
+3. **Phase 1 — The engine**: v0.1 per [[methodology/reference/simulator-architecture]], executed per [[methodology/project/implementation-guide]] (runs in parallel with Phase 0)
+4. **Phase 2 — Validation instruments**: sensitivity analysis, PCM attractor check, LLM path-plausibility audits
 
 ---
 
-*Last updated: July 12, 2026*
+*Last updated: July 11, 2026*

@@ -24,7 +24,7 @@ How the Cascade Institute's Polycrisis Core Model (PCM v2.5, technical synopsis 
 | Dimension | PCM v2.5 | sim2075 |
 |---|---|---|
 | Object of analysis | Internal consistency of global system configurations in 2040 | Probabilistic trajectories of correlated discontinuities through 2075 |
-| Resolution | 11 global-aggregate descriptors (Economy, Polity Type, World Order, Inequality, Conflict & Security, Energy, Climate, Health, Food, Transportation, Information Technology), 45 discrete states, ~4.05M combinations | 40 countries and 12 regional aggregates, plus global commons; ~2,600 state variables; ~30 typed events; 12 latent factors ([[methodology/concepts/framework-overview]]) |
+| Resolution | 11 global-aggregate descriptors (Economy, Polity Type, World Order, Inequality, Conflict & Security, Energy, Climate, Health, Food, Transportation, Information Technology), 45 discrete states, ~4.05M combinations | 40 countries and 12 regional aggregates, plus global commons; ~3,100 state variables ([[methodology/reference/state-outputs]]: 3,072); 29 typed events; 12 latent factors ([[methodology/concepts/framework-overview]]) |
 | Time treatment | Static: single-year (2040) equilibrium snapshot; no dynamics, no paths | Annual dynamic simulation with state-event feedback, cascades, aftermath branches, impact durability ([[methodology/concepts/state-event-coupling]]) |
 | Probability treatment | Deliberately none (CIB doctrine): consistency + basin width ("weight" from succession analysis) and depth ("total impact score") | Explicit: annual event probabilities, joint distribution via Gaussian copula over correlated factors, Monte Carlo over full trajectories |
 | Judgment base | 1,800+ documented cross-impact judgments on a −3..+3 Likert scale: sign = promoting/inhibitory influence of one descriptor state on another; magnitude = judgment confidence; row-balance constraint (judgments across a target descriptor's states sum to zero) | Documented per-parameter judgments: event probabilities, factor loadings, factor correlation matrix Ω ([[methodology/reference/factor-correlation-matrix]]), thresholds, cascade magnitudes |
@@ -68,7 +68,7 @@ Sourcing: the headline PCM figures (45 states, ~4.05M combinations, 1,800+ judgm
 
 **Mechanics**: invert the projection map from (a). Take a fully consistent scenario (e.g., Mad Max — their Scenario 4: nonocracy, international fragmentation, widespread non-state violence, unmanaged economic failure, failed global industrial food production, high burden of disease; full state list in [[strategy/inputs/pcm-v25-synopsis-notes]]), set sim2075 initial state variables and factor means consistent with those descriptor states, run forward. Output: basin durability, escape routes, and conditional trajectory distributions — the dynamic questions their static method explicitly cannot ask.
 
-**Effort**: **M**. Reuses the (a) projection map inverted; the hard part is choosing defensible initializations for the ~2,600 state variables a coarse descriptor state underdetermines. Natural second joint experiment after (a).
+**Effort**: **M**. Reuses the (a) projection map inverted; the hard part is choosing defensible initializations for the ~3,100 state variables a coarse descriptor state underdetermines. Natural second joint experiment after (a).
 
 ### d. sim2075 events as PCM "triggers" (contribution flowing the other way)
 

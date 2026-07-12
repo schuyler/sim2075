@@ -106,7 +106,7 @@ This document is now the project plan. Reconciliation with the two pre-war plann
 4. **The interface split, materialized.** Engine and schema in one small, stable layer; the catalog as the data layer with a documented contribution path. A catalog PR that changes a probability must change the attached reasoning — that's the whole review standard.
 5. **Licensing and hygiene.** Apply the decided licenses: BSD (2- or 3-clause) for the engine — the 2-vs-3-clause choice is the only open question — and CC BY 4.0 for catalog and prose. CI that validates every catalog file against the schema. A README that states what the tool is and is not (scenario exploration under documented judgment, not forecasting).
 
-**Standalone artifact.** A runnable engine + frozen schema + the ~30-event (post-Phase 0, ~33+) catalog. Anyone can clone it, run it, and get trajectory ensembles; anyone can fork the catalog and disagree with a parameter legibly.
+**Standalone artifact.** A runnable engine + frozen schema + the 29-event (post-Phase 0, 32+) catalog. Anyone can clone it, run it, and get trajectory ensembles; anyone can fork the catalog and disagree with a parameter legibly.
 
 **Dependencies.** Phase 0, softly — engine development can start against the pre-remediation catalog; the remediated catalog is what ships.
 
