@@ -62,6 +62,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 | [[methodology/reference/state-entities]] | The 40 countries and 12 regional aggregates |
 | [[methodology/reference/state-variables-country]] | Country-level variable catalog |
 | [[methodology/reference/state-variables-global]] | Global variable catalog |
+| [[methodology/reference/state-variables-round-2]] | **Round-2 variable stubs** — war-mandated classes + round-2 event consumers, pre-dossier |
 | [[methodology/reference/state-dynamics]] | How variables evolve between events |
 | [[methodology/reference/state-transmission]] | How variables affect each other |
 | [[methodology/reference/state-outputs]] | What the simulation produces |
@@ -139,7 +140,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 
 Events organized by domain. Each specifies causal type, probability, factor loadings, and impact vectors.
 
-**Planning document**: [[events/planned-event-categories]]
+**Planning documents**: [[events/planned-event-categories]] (round 1) · [[events/planned-events-round-2]] (round-2 stubs) · [[events/backlog-registry]] (dangling-reference dispositions)
 
 ### Climate Events
 
