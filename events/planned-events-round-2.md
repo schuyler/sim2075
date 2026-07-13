@@ -90,6 +90,14 @@ The catalog's thinnest tail relative to impact. Several of these are registry-ma
 - **Provisional loadings:** F_GPT ~0.40, F_SAS ~0.30 (Pakistan), F_EUR ~0.20 (Russia).
 - **Consumers:** triggered_by `PAKISTAN_STATE_FAILURE`, `RUSSIA_STATE_FAILURE`.
 
+### A8. `NUCLEAR_FIRST_USE` — P1 [standout omission]
+
+- **Discontinuity:** First combat use of a nuclear weapon since 1945 — the taboo break. This is **distinct from every nuclear event already in the catalog**: acquisition (`IRAN_/SAUDI_NUCLEAR_ACQUISITION`), systemic proliferation (`NPT_REGIME_COLLAPSE`, A6), and custody failure (`NUCLEAR_SECURITY_CRISIS`, A7) all leave the 80-year non-use norm intact. Detonation-in-anger is its own civilizational discontinuity and the single largest gap in the catalog. The 2025 sweep found no `NUCLEAR_USE`/`NUCLEAR_TABOO` event of any kind.
+- **Type:** 3 (Contingent) — conditional on a nuclear-armed dyad already in active conflict; resolution = use vs. non-use, then a second clock for the post-taboo world (limited exchange, escalation, or one-off).
+- **Provisional loadings:** F_GPT ~0.55 (dominant), plus the regional factor of whichever dyad fires (F_SAS for India–Pakistan, F_EAS for Korea/Taiwan, F_MENA for Israel–Iran).
+- **Consumers:** triggered_by `INDIA_PAKISTAN_MILITARY_CONFLICT`, `KOREAN_PENINSULA_CRISIS`, `NATO_RUSSIA_DIRECT_CONFLICT`, `TAIWAN_CONFLICT`; triggers a broad delta to `NPT_REGIME_COLLAPSE` (norm shattered → cascade proliferation) and a global risk-off shock. The aftermath branch is a *permanent* change to the whole model's nuclear-conflict priors — a strong candidate for the ratchet treatment in [[methodology/reference/state-variables-round-2]] §3.
+- **Note:** the hardest Type 3 in the catalog to calibrate honestly (n=1 reference, 1945). Lean hard on the [[methodology/concepts/entropy-maximization]] default and invest in the *aftermath* branch (tractable) over the resolution probability (intractable), per [[methodology/project/open-questions]] Q2.
+
 ---
 
 ## B. State Failure & Regional Collapse
@@ -254,6 +262,93 @@ Per [[methodology/project/open-questions]] resolved-Q4: the framework is valence
 
 ---
 
+## H. Health & Bio
+
+Only one health event exists (`SEVERE_PANDEMIC`, natural) plus the antimicrobial *breakthrough*. The deliberate/engineered and slow-burn-resistance tails are unrepresented.
+
+### H1. `ENGINEERED_PANDEMIC` — P1 [coverage gap]
+
+- **Discontinuity:** Deliberate or accidental release of an engineered pathogen — a *different generating mechanism* from `SEVERE_PANDEMIC` (which is Type 1 natural spillover). Higher tail severity (designed transmissibility/lethality), non-stochastic timing (intent- or lab-safety-conditioned), and distinct policy response. Author must justify non-duplication with the pandemic event's `catastrophic` branch, or argue this replaces it.
+- **Type:** 2/3 hybrid — deliberate release is contingent on actor intent (Type 3); lab-accident is a stochastic rate rising with democratized biotech (Type 2 on `ai_capability_index`/biotech diffusion). Consider splitting.
+- **Provisional loadings:** F_HLTH ~0.55 (dominant), F_TECH ~0.35, F_GPT ~0.20.
+- **Consumers:** shocks `pandemic_status`/`pandemic_severity`; triggers `GLOBAL_FINANCIAL_CRISIS`, mortality shocks to population cohorts. Absorbs the "bioengineering democratization" idea (a biotech-diffusion variable as its pressure term).
+
+### H2. `ANTIMICROBIAL_RESISTANCE_CRISIS` — P2 [asymmetry gap]
+
+- **Discontinuity:** AMR crosses a threshold where routine infections/surgery become high-mortality — the *negative* counterpart to the `ANTIMICROBIAL_PLATFORM` breakthrough (which currently shocks `antibiotic_resistance` downward with no upward-crisis event to balance it). Reads the existing `antibiotic_resistance` slow-rising variable.
+- **Type:** 2 (Threshold) on `antibiotic_resistance`.
+- **Provisional loadings:** F_HLTH ~0.60, F_FOOD ~0.15 (livestock antibiotic use).
+
+### H3. `VACCINE_CONFIDENCE_COLLAPSE` — P3 [coverage gap]
+
+- **Discontinuity:** Sustained collapse in vaccination coverage returns controlled diseases (measles, polio) to endemic circulation in high-income populations — a public-health discontinuity driven by institutional-trust erosion.
+- **Type:** 2 (Threshold). **Synthetic-trap risk** on the "trust" driver — ground in observable coverage rates (WHO/UNICEF WUENIC), not sentiment.
+- **Provisional loadings:** F_HLTH ~0.45, plus regional factors.
+
+---
+
+## I. Frontier Technology (disruption tail)
+
+The original list named "AI disruption" as highest-uncertainty; E1 covers the labor case. These are the other frontier-AI discontinuities the [[methodology/project/open-questions]] AI discussion flags as needing separate treatment.
+
+### I1. `TRANSFORMATIVE_AI_THRESHOLD` — P2 [open-questions gap]
+
+- **Discontinuity:** A specific capability threshold crossing (broadly capable autonomous systems) that discretely restructures economic/strategic dynamics — *not* the `ai_capability_index` S-curve (baseline), but a named threshold with step-change downstream effects. The hardest specification in the catalog; the exclusion note in [[events/planned-breakthrough-events]] and [[methodology/project/open-questions]] both defer it. Author must define the threshold operationally or decline. Genuinely may not be specifiable at Level 1.
+- **Type:** 2 (Threshold) on `ai_capability_index`, or decline as baseline. Mixed valence — this is not intrinsically positive or negative.
+- **Provisional loadings:** F_TECH ~0.70 (dominant), F_GPT ~0.30, F_FIN ~0.25.
+
+### I2. `AUTONOMOUS_SYSTEMS_ACCIDENT` — P2 [coverage gap]
+
+- **Discontinuity:** A high-consequence failure of a deployed autonomous/AI system — financial (flash-crash-scale), military (unintended-escalation), or infrastructure — distinct from a deliberate cyber attack (E2) and from labor disruption (E1). Captures the AI-reliability tail.
+- **Type:** 1 (Stochastic), rate rising with autonomous-system deployment.
+- **Provisional loadings:** F_TECH ~0.50, F_FIN ~0.25, F_GPT ~0.20.
+
+---
+
+## J. Climate Policy & Adaptation Failure
+
+The physical-tipping tail is covered (round-1 + D1/D2); the *human-response* tail — unilateral intervention and adaptation-threshold crossing — is not.
+
+### J1. `UNILATERAL_GEOENGINEERING` — P2 [deferred-in-breakthrough-doc]
+
+- **Discontinuity:** Unilateral solar-radiation-management deployment by a state or coalition — a Type 3 *policy/deployment decision* (explicitly parked in [[events/planned-breakthrough-events]] "Considered but Excluded" as not-a-breakthrough). Carries a distinctive **termination-shock** risk: if deployment stops abruptly, suppressed warming returns fast. Mixed valence and a geopolitical flashpoint (who controls the thermostat).
+- **Type:** 3 (Contingent) — window = a climate-desperation trigger; resolution = deploy/cooperate/conflict.
+- **Provisional loadings:** F_CLIM ~0.45, F_GPT ~0.40, F_FOOD ~0.15.
+- **New variables:** an SRM-deployment-status global variable; termination-shock is a natural `persistent`/ratchet interaction — see [[methodology/reference/state-variables-round-2]] §3.
+
+### J2. `LETHAL_HEAT_THRESHOLD` — P2 [unconsumed-variable gap]
+
+- **Discontinuity:** Wet-bulb temperatures cross survivability limits for sustained periods across populous regions (Gulf, South Asia, Sahel), forcing abandonment/mass seasonal displacement. The `heat_exposure` country variable exists but no event consumes it as a threshold crossing.
+- **Type:** 2 (Threshold) on `heat_exposure` × `global_temp_anomaly`.
+- **Provisional loadings:** F_CLIM ~0.50, F_SAS ~0.25, F_MENA ~0.20, F_FOOD ~0.15.
+- **Consumers:** triggers `EUROPEAN_MIGRATION_CRISIS`, `EGYPT_/PAKISTAN_STATE_FAILURE` (habitability→displacement).
+
+---
+
+## K. Economic-Demographic & Resource
+
+### K1. `AGING_SOCIETY_FISCAL_CRISIS` — P2 [coverage gap]
+
+- **Discontinuity:** Pension/healthcare-obligation load in a rapidly-aging economy (Japan, Italy, Korea, China) forces a fiscal discontinuity — sovereign stress or forced entitlement restructuring — distinct from a market-driven `GLOBAL_FINANCIAL_CRISIS`. The state model tracks rich age-cohort demographics that currently feed no fiscal-crisis event. Check overlap with `DOLLAR_RESERVE_CRISIS`/`EUROZONE_SOVEREIGN_CRISIS` (queue) before specifying.
+- **Type:** 2 (Threshold) on `dependency_ratio` × `debt_public`.
+- **Provisional loadings:** F_FIN ~0.55, plus regional factor (F_EAS or F_EUR).
+
+### K2. `CRITICAL_MINERALS_WEAPONIZATION` — P2 [unconsumed-variable gap]
+
+- **Discontinuity:** Weaponized restriction of rare-earth / critical-mineral supply (China concentration) as economic coercion — collapses `rare_earths_index` availability, which no current event consumes. The materials-side counterpart to `SEMICONDUCTOR_SUPPLY_COLLAPSE` (E3).
+- **Type:** 2/3 hybrid — F_GPT-conditioned policy decision.
+- **Provisional loadings:** F_GPT ~0.45, F_TECH ~0.35, F_EAS ~0.25.
+- **Consumers:** shocks `rare_earths_index`; transmits to energy-transition and defense-industrial variables; triggered_by `US_CHINA_ECONOMIC_RUPTURE`.
+
+### K3. `INDIA_POLITICAL_CRISIS` — P2 [major-power gap]
+
+- **Discontinuity:** Democratic backsliding to breakdown, or a governance crisis, in the world's largest democracy and soon-largest economy — absent from the catalog despite majors like the US, China, Russia, Turkey, EU all having political-crisis events.
+- **Type:** 2 (Threshold).
+- **Provisional loadings:** F_SAS ~0.60 (dominant), F_GPT ~0.15.
+- **Consumers:** interacts with `INDIA_PAKISTAN_MILITARY_CONFLICT` (a nationalist-crisis→conflict delta).
+
+---
+
 ## G. Low-Priority Queue (author only if sensitivity analysis surfaces them)
 
 Registry declines and Tier-2-region references, held explicitly so they are consciously deferred, not forgotten. All cross-listed in [[events/backlog-registry]].
@@ -274,16 +369,32 @@ Registry declines and Tier-2-region references, held explicitly so they are cons
 
 | Section | Stubs | P1 | P2 | P3 |
 |---|---|---|---|---|
-| A. Nuclear & Great-Power | 7 | 5 | 2 | 0 |
+| A. Nuclear & Great-Power | 8 | 6 | 2 | 0 |
 | B. State Failure & Regional | 5 | 1 | 3 | 1 |
 | C. Migration & Humanitarian | 2 | 1 | 0 | 1 |
 | D. Climate, Food & Infrastructure | 5 | 1 | 3 | 1 |
 | E. Technology & Infrastructure | 4 | 1 | 2 | 1 |
 | F. Positive / De-escalation | 3 | 1 | 0 | 2 |
+| H. Health & Bio | 3 | 1 | 1 | 1 |
+| I. Frontier Technology | 2 | 0 | 2 | 0 |
+| J. Climate Policy & Adaptation | 2 | 0 | 2 | 0 |
+| K. Economic-Demographic & Resource | 3 | 0 | 3 | 0 |
 | G. Low-priority queue | 7 | — | — | 7 |
-| **Total** | **33** | **10** | **10** | **13** |
+| **Total** | **44** | **12** | **18** | **14** |
 
-If the ten P1 stubs are authored, the catalog grows from 29 to ~39 events — landing in the original 40–60 target band ([[events/planned-event-categories]]) and clearing every registry-mandated dangling reference. That set is the natural **catalog v1.1** release ([[methodology/reference/catalog-versioning]] §4).
+If the twelve P1 stubs are authored, the catalog grows from 29 to ~41 events — landing in the original 40–60 target band ([[events/planned-event-categories]]), clearing every registry-mandated dangling reference, and closing the two largest civilizational-scale omissions (nuclear first use, engineered pandemic). That set is the natural **catalog v1.1** release ([[methodology/reference/catalog-versioning]] §4). **The P2/P3 stubs are backlog, not a work order** — see the drawback note below; they should be promoted to full specs only on a demand signal (registry, world event, or Phase 2 sensitivity analysis), not for completeness.
+
+## Why stubs but not specs: the cost of premature catalog growth
+
+Recording a stub costs ~nothing and commits to nothing — the same evidence discipline [[strategy/emergent-ideas]] applies to process ideas. **Authoring a stub to Level 1 is where the cost lands**, and [[methodology/reference/catalog-versioning]] is explicit that growth is "prioritized by demonstrated model deficiency, not encyclopedic completeness." Concretely, each full spec:
+
+1. **Spends elicitation budget** — O(k) documented judgments that must each survive review and be kept coherent (§5, "which additions does this release buy, and why these").
+2. **Adds coherence debt** — every new event enlarges the pairwise-ranking cross-check ([[methodology/reference/priority-event-ranking]]) and the implied-correlation re-derivation, and creates new chances for dangling references and double-counting in Ω.
+3. **Can make the model *worse*, not just costlier** — a catalog that keeps adding *amplifying* couplings without the negative-structure audit ([[strategy/emergent-ideas]] idea 6) overstates tail clustering by construction, corrupting the headline tail-driver output.
+4. **Is spent blind before Phase 2** — the sensitivity instrument that tells you *which* events actually move tail outcomes doesn't exist until the engine does. Authoring a large batch now risks investing in events that load only on factors that drive nothing.
+5. **Trades against the binding constraint** — the project's critical path is the Phase 1 engine, not more specs. 29 events you can run beats 44 you can't; Monte Carlo results are only comparable within a catalog version anyway.
+
+**The discipline is at the promotion gate, not the capture gate.** Keep this list rich; promote in small, signal-driven releases.
 
 ## Ensemble authoring notes
 
@@ -297,3 +408,4 @@ If the ten P1 stubs are authored, the catalog grows from 29 to ~39 events — la
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2026-07-13 | Initial stub catalog (33 stubs across 7 sections) | Demand-signal batch: registry sweep + planned-category gaps + asymmetry gaps |
+| 2026-07-13 | Second expansion: +11 stubs (nuclear first use; §§H–K health/bio, frontier tech, climate policy, economic-demographic); added premature-growth cost note | Fill remaining domain gaps at zero commitment; make the stub-vs-spec cost distinction explicit so the list stays backlog, not a work order |
