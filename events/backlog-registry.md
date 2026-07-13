@@ -54,6 +54,7 @@ Every ID below was extracted from the 29 specified event files (July 2026 sweep)
 | `EGYPT_NUCLEAR_PROGRAM` | saudi-nuclear-acquisition | `NPT_REGIME_COLLAPSE` | Same cascade branch |
 | `GULF_STATE_CONTAGION` / `GULF_STATE_CASCADE` / `GULF_COOPERATION_STRESS` / `GUEST_WORKER_CRISIS` | saudi-regime-instability | `SAUDI_REGIME_INSTABILITY` + `GULF_STATE_ATTACKS` | Contagion belongs in the existing event's aftermath branches; attack pathways in the promoted war event |
 | `PROXY_NETWORK_WEAKENING` / `PROXY_NETWORK_COLLAPSE` | iran-regime-change | `IRAN_REGIME_CHANGE`, `ISRAEL_IRAN_WAR` | Resolution-branch content, not standalone events |
+| `NUCLEAR_PROGRAM_UNCERTAINTY` | iran-regime-change (same "not in catalog" comment family as line 373) | `IRAN_NUCLEAR_ACQUISITION` | Post-regime-change program uncertainty is pressure/branch content in the existing acquisition event |
 | `CHINA_FAR_EAST_ASSERTION` | russia-state-failure | `RUSSIA_STATE_FAILURE` | Aftermath branch (who fills the vacuum) |
 | `BOSPHORUS_TRANSIT_DISRUPTION` | turkey-political-breakdown | `TURKEY_POLITICAL_BREAKDOWN` | Impact row (trade/shipping variables), not an event |
 
@@ -74,6 +75,7 @@ Every ID below was extracted from the 29 specified event files (July 2026 sweep)
 | `CAUCASUS_CONFLICT` | russia-state-failure | Same treatment as Central Asia (low-priority queue) |
 | `MAGHREB_INSTABILITY` | sahel-catastrophe | Same treatment (low-priority queue) |
 | `GHANA_POLITICAL_CRISIS` / `COTE_DIVOIRE_INSTABILITY` | sahel-catastrophe | Country-level texture inside `COASTAL_WEST_AFRICA_DESTABILIZATION`; not separate events |
+| `MAJOR_CONFLICT` | agricultural-yield-breakthrough (`vulnerable_to:` list) | Generic placeholder, not an event. **Fix at source:** the `shock_vulnerable` durability row should enumerate real conflict event IDs (or wait for a class-selector construct — schema v0.2) |
 
 ---
 

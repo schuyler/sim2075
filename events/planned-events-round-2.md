@@ -30,6 +30,8 @@ Where a stub came from a dangling cascade reference, its origin is tagged `[regi
 
 **Author's contract for each stub:** fill every template section; run the critical review; if you conclude the event should be *folded* or *declined* instead of specified, say so in the changelog and update [[events/backlog-registry]] — a well-argued decline is a valid Level 1 outcome.
 
+**Modeling scope.** This catalog — like everything under `events/` — estimates the *probabilities and impact vectors* of possible future events so the Monte Carlo engine can explore trajectory space. Specs describe consequences (mortality, GDP, displacement, system load) and cite public risk literature for base rates (per [[methodology/reference/research-documentation-standards]]). They do not analyze mechanisms for bringing any event about, and nothing here is guidance toward any outcome; the epistemic stance is [[methodology/concepts/epistemology]]. This applies with particular force to the conflict, nuclear, cyber, and health/bio stubs below: authors stay at the consequence-and-base-rate level throughout.
+
 ---
 
 ## A. Nuclear & Great-Power Conflict
@@ -92,7 +94,7 @@ The catalog's thinnest tail relative to impact. Several of these are registry-ma
 
 ### A8. `NUCLEAR_FIRST_USE` — P1 [standout omission]
 
-- **Discontinuity:** First combat use of a nuclear weapon since 1945 — the taboo break. This is **distinct from every nuclear event already in the catalog**: acquisition (`IRAN_/SAUDI_NUCLEAR_ACQUISITION`), systemic proliferation (`NPT_REGIME_COLLAPSE`, A6), and custody failure (`NUCLEAR_SECURITY_CRISIS`, A7) all leave the 80-year non-use norm intact. Detonation-in-anger is its own civilizational discontinuity and the single largest gap in the catalog. The 2025 sweep found no `NUCLEAR_USE`/`NUCLEAR_TABOO` event of any kind.
+- **Discontinuity:** First combat use of a nuclear weapon since 1945 — the taboo break. This is **distinct from every nuclear event already in the catalog**: acquisition (`IRAN_/SAUDI_NUCLEAR_ACQUISITION`), systemic proliferation (`NPT_REGIME_COLLAPSE`, A6), and custody failure (`NUCLEAR_SECURITY_CRISIS`, A7) all leave the 80-year non-use norm intact. Detonation-in-anger is its own civilizational discontinuity and the single largest gap in the catalog. The July 2026 sweep found no `NUCLEAR_USE`/`NUCLEAR_TABOO` event of any kind.
 - **Type:** 3 (Contingent) — conditional on a nuclear-armed dyad already in active conflict; resolution = use vs. non-use, then a second clock for the post-taboo world (limited exchange, escalation, or one-off).
 - **Provisional loadings:** F_GPT ~0.55 (dominant), plus the regional factor of whichever dyad fires (F_SAS for India–Pakistan, F_EAS for Korea/Taiwan, F_MENA for Israel–Iran).
 - **Consumers:** triggered_by `INDIA_PAKISTAN_MILITARY_CONFLICT`, `KOREAN_PENINSULA_CRISIS`, `NATO_RUSSIA_DIRECT_CONFLICT`, `TAIWAN_CONFLICT`; triggers a broad delta to `NPT_REGIME_COLLAPSE` (norm shattered → cascade proliferation) and a global risk-off shock. The aftermath branch is a *permanent* change to the whole model's nuclear-conflict priors — a strong candidate for the ratchet treatment in [[methodology/reference/state-variables-round-2]] §3.
@@ -143,11 +145,11 @@ Fills the biggest *named-but-absent* cluster (Sahel cascade sub-events) and the 
 
 ## C. Migration, Displacement & Humanitarian
 
-Seven cascade references collapse to essentially one missing event class. The displacement *variables* exist ([[methodology/reference/state-variables-country]] §2.2); the *system-capacity* discontinuity does not.
+A seven-ID cascade-reference cluster collapses to essentially one missing event class. The displacement *variables* exist ([[methodology/reference/state-variables-country]] §2.2); the *system-capacity* discontinuity does not.
 
 ### C1. `EUROPEAN_MIGRATION_CRISIS` — P1 [registry]
 
-- **Discontinuity:** A migration surge that overwhelms EU absorption/political capacity — the 2015-scale-or-worse political discontinuity, measured by political response (border closures, EU-cohesion damage), not headcount alone. Canonical target for the 5-way cascade reference cluster (`MASS_MIGRATION_CRISIS`, `EUROPEAN_REFUGEE_CRISIS`, `EU_MIGRATION_CRISIS`, `REFUGEE_CRISIS_MENA`, `REFUGEE_CRISIS_MAJOR`).
+- **Discontinuity:** A migration surge that overwhelms EU absorption/political capacity — the 2015-scale-or-worse political discontinuity, measured by political response (border closures, EU-cohesion damage), not headcount alone. Canonical target for the seven-ID cascade-reference cluster (`MASS_MIGRATION_CRISIS`, `EUROPEAN_REFUGEE_CRISIS`, `EU_MIGRATION_CRISIS`, `REFUGEE_CRISIS_MENA`, `REFUGEE_CRISIS_MAJOR`, `GLOBAL_REFUGEE_CRISIS`, plus itself — full mapping in [[events/backlog-registry]]).
 - **Type:** 2/3 hybrid — pressure from upstream displacement stocks; resolution = political response class.
 - **Provisional loadings:** F_EUR ~0.55 (dominant), F_MENA ~0.30, F_SSA ~0.20.
 - **Consumers:** triggered_by nearly every MENA/SSA state-failure and conflict event (displacement→hosting transmission per [[methodology/reference/state-transmission]]); triggers `EU_FRAGMENTATION`.
@@ -268,10 +270,10 @@ Only one health event exists (`SEVERE_PANDEMIC`, natural) plus the antimicrobial
 
 ### H1. `ENGINEERED_PANDEMIC` — P1 [coverage gap]
 
-- **Discontinuity:** Deliberate or accidental release of an engineered pathogen — a *different generating mechanism* from `SEVERE_PANDEMIC` (which is Type 1 natural spillover). Higher tail severity (designed transmissibility/lethality), non-stochastic timing (intent- or lab-safety-conditioned), and distinct policy response. Author must justify non-duplication with the pandemic event's `catastrophic` branch, or argue this replaces it.
-- **Type:** 2/3 hybrid — deliberate release is contingent on actor intent (Type 3); lab-accident is a stochastic rate rising with democratized biotech (Type 2 on `ai_capability_index`/biotech diffusion). Consider splitting.
+- **Discontinuity:** A pandemic whose *origin* differs from `SEVERE_PANDEMIC` (Type 1 natural spillover) — an engineered or laboratory-origin pathogen. The modeling distinction is purely the generating mechanism and its resulting probability structure and severity distribution; the spec describes *outcomes and base rates*, never how such a pathogen would be produced. Whether its tail differs enough from the pandemic event's `catastrophic` branch to warrant a separate event is the author's first question — fold if not.
+- **Type:** 2/3 hybrid — an intent-conditioned pathway (Type 3) and a lab-accident stochastic rate that scales with biotech diffusion (Type 2). Base rates come from published biosecurity/GCR risk assessments ([[methodology/reference/research-documentation-standards]]); consider splitting the two pathways.
 - **Provisional loadings:** F_HLTH ~0.55 (dominant), F_TECH ~0.35, F_GPT ~0.20.
-- **Consumers:** shocks `pandemic_status`/`pandemic_severity`; triggers `GLOBAL_FINANCIAL_CRISIS`, mortality shocks to population cohorts. Absorbs the "bioengineering democratization" idea (a biotech-diffusion variable as its pressure term).
+- **Consumers:** shocks `pandemic_status`/`pandemic_severity`; triggers `GLOBAL_FINANCIAL_CRISIS`, mortality shocks to population cohorts. A biotech-diffusion *proxy* variable (an observable index of capability spread drawn from the literature, not a how-to) could serve as the Type 2 pressure term — hold it to the synthetic-variable dossier standard.
 
 ### H2. `ANTIMICROBIAL_RESISTANCE_CRISIS` — P2 [asymmetry gap]
 
@@ -398,7 +400,7 @@ Recording a stub costs ~nothing and commits to nothing — the same evidence dis
 
 ## Ensemble authoring notes
 
-- **Parallelizable:** stubs are independent except where a cascade target is itself a stub (author the target's ID first, or use a placeholder and reconcile at release). Sections A–F can go to separate agents.
+- **Parallelizable:** stubs are independent except where a cascade target is itself a stub (author the target's ID first, or use a placeholder and reconcile at release). The eleven sections can go to separate agents.
 - **Coherence pass required after authoring:** run every new probability through [[methodology/reference/priority-event-ranking]] pairwise, and re-derive implied event correlations per [[methodology/project/open-questions]] resolved-Q1 remaining work.
 - **Variables gate the release, not the authoring:** a stub that needs a new variable can be drafted against the [[methodology/reference/state-variables-round-2]] stub, but the variable's dossier (§3 of [[methodology/reference/catalog-versioning]]) must complete before v1.1 ships.
 - **Decline is a valid outcome:** E1 (AI labor), A5 (US-China direct), E3 (semiconductor) each have a real fold/duplication risk flagged inline. A reasoned decline that updates [[events/backlog-registry]] counts as done.

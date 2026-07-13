@@ -29,6 +29,8 @@ Candidate state variables for **catalog v1.1**, assembled alongside [[events/pla
 
 **Anti-pattern warning.** Several stubs (§2 absorption capacity, §4 automation exposure) are one careless step from the synthetic-variable trap the whole state model was designed to avoid. The dossier's requirement #1 is the guardrail: if you cannot state the measurement procedure and data source in one line, the variable is synthetic and does not get admitted — decompose it or drop it.
 
+**Modeling scope.** Every variable here is an *observable measured from public data* used to condition event probabilities and impacts — the same consequence-and-base-rate stance as the event catalog ([[events/planned-events-round-2]] "Modeling scope"). Where a candidate touches a sensitive domain (e.g. a biotech-diffusion proxy for the engineered-pandemic pressure term, or actor conflict histories), the variable is an *index of publicly observable state*, never operational detail. If the only way to populate a variable would be non-public or mechanism-level information, it fails requirement #1 and is not admitted.
+
 ---
 
 ## 1. Actor Behavioral Histories (war-mandated)
