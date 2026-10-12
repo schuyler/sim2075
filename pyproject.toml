@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sim2075"
+version = "0.1.0.dev0"
+description = "Monte Carlo discontinuity-effects model: compile layer and engines for the sim2075 event catalog"
+readme = "sim/README.md"
+requires-python = ">=3.11"
+license = {text = "BSD-2-Clause"}
+# Implementation guide guardrail 1: no dependencies beyond these without explicit approval.
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "pandas>=2.1",
+  "pyarrow>=14",
+  "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+include = ["sim*"]
+
+[tool.setuptools.package-data]
+sim = ["data/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["sim/tests"]
+addopts = "-q"

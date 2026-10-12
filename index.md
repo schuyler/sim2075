@@ -91,6 +91,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 |----------|---------|
 | [[methodology/tools/compute-scaled-loadings]] | Python script to compute correctly scaled factor loadings |
 | [[methodology/tools/variance-verification-script]] | Python script to verify variance allocation calculations |
+| `sim/README.md` | **The engine** — compile layer, scalar reference implementation, fixtures and gates (stages E0–E2); pinned semantics and build findings |
 
 ### Project Management
 

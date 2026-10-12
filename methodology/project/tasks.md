@@ -235,19 +235,21 @@ Build simulation prototype. **Execution plan: [[methodology/project/implementati
 | Task | Description | Status | Dependencies |
 |------|-------------|--------|--------------|
 | **5.0** | Ratify architecture ADRs; resolve open decisions in [[methodology/reference/simulator-architecture]] §5 | ✅ | Decisions pinned in [[methodology/project/implementation-guide]] §0 |
-| **5.1** | Set up prototype directory structure + fixtures (guide stage E0) | 🔲 Ready | 5.0 ✅ |
+| **5.1** | Set up prototype directory structure + fixtures (guide stage E0) | ✅ `sim/` + `sim/tests/fixtures/` (Oct 2026) | 5.0 ✅ |
 | **5.2** | Implement state vector management | ⏸️ | 5.1, 4.3 |
 | **5.3** | Implement factor sampling with correlations | ⏸️ | 5.1 |
-| **5.4** | Implement event firing logic (incl. catalog compiler + expression compiler) | ⏸️ | 5.3, 4.2 |
+| **5.4** | Implement event firing logic (incl. catalog compiler + expression compiler) | 🟡 compiler half ✅ (`sim/catalog/`, guide E2); engine half ⏸️ | 5.3, 4.2 |
 | **5.4b** | Implement per-run memory: sustained counters + cascade delta buffers (ADR-5) | ⏸️ | 5.4 |
 | **5.5** | Implement impact transmission (active-shock ledger, ADR-6) | ⏸️ | 5.2, 5.4 |
 | **5.6** | Implement aftermath tracking | ⏸️ | 5.4b, 5.5 |
 | **5.7** | Implement baseline dynamics | ⏸️ | 5.2, 4.4 |
 | **5.8** | Implement main simulation loop | ⏸️ | 5.3–5.7 |
-| **5.8b** | Implement scalar reference impl (ADR-1) — built **first** as the verification oracle per [[methodology/project/implementation-guide]] stage E1; vectorized engine stages diff against it as they land | ⏸️ | 5.1 |
+| **5.8b** | Implement scalar reference impl (ADR-1) — built **first** as the verification oracle per [[methodology/project/implementation-guide]] stage E1; vectorized engine stages diff against it as they land | ✅ `sim/reference/` (guide E1 gate passes on FIX-A/FIX-B) | 5.1 |
 | **5.9** | Implement output analysis | ⏸️ | 5.8 |
 | **5.10** | Create prototype run notebook | ⏸️ | 5.8, 5.9 |
 | **5.11** | Validate prototype produces sensible output | ⏸️ | 5.8b, 5.10 |
+
+**Engine build log:** stages E0–E2 landed Oct 2026 (`sim/README.md` §1). The compiler's findings against the migrated events — Type 2 pressure scale, `until: resolved` end semantics, Pakistan's out-of-catalog names, the `confidence` enum, impact units — are listed in `sim/README.md` §4 and feed Tasks 4.2 (D1 remediation) and the schema owners.
 
 **Note:** Section 4 uses "minimum viable dynamics" approach — baseline drift (progress engine) is essential; mean-reversion uses defaults; complex transmission is deferred. All Section 5 tasks proceed with this scope.
 
@@ -282,4 +284,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: July 12, 2026 — Added Task 6.7 (state-vector widening, roadmap Phase 0 item 3, previously unmapped); pinned 6.1 war-hub event count (three events, one carrying the ISRAEL_IRAN_WAR/US_IRAN_WAR naming question); hybrid-variance exception cross-referenced in rule 5; 4.1 pointer and 4.3 parameter count corrected. Second pass: extract-then-archive plans recorded on 6.4 (implementation-roadmap v2.0 list) and Post-Engine (development-roadmap §3.1–3.5)*
+*Last updated: October 12, 2026 — engine stages E0–E2 landed (5.1, 5.8b, compiler half of 5.4); build findings cross-referenced from sim/README.md*

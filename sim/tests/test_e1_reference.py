@@ -1,0 +1,67 @@
+"""E1 gate: the scalar reference implementation reproduces FIX-A exactly and FIX-B's hand-traced event log."""
+import numpy as np
+import pytest
+
+from sim.reference import ReferenceRun, LedgerOverflow, SimParams
+from sim.tests.fixtures import fix_a, fix_b
+
+
+def _event_dicts(rec):
+    return [dict(year=e.year, event=e.event, resolution=e.resolution, branch=e.branch, p_base=e.p_base,
+                 p_eff=e.p_eff, cascade_mask=e.cascade_mask, magnitudes=e.magnitudes) for e in rec.events]
+
+
+def _assert_events(got, want):
+    assert len(got) == len(want), (got, want)
+    for g, w in zip(got, want):
+        for k in ("year", "event", "resolution", "branch", "cascade_mask"):
+            assert g[k] == w[k], (k, g, w)
+        assert g["p_base"] == pytest.approx(w["p_base"], rel=1e-12)
+        assert g["p_eff"] == pytest.approx(w["p_eff"], rel=1e-12)
+        assert [m[0] for m in g["magnitudes"]] == [m[0] for m in w["magnitudes"]]
+        np.testing.assert_allclose([m[1] for m in g["magnitudes"]], [m[1] for m in w["magnitudes"]], rtol=1e-12)
+
+
+def test_fix_a_matches_hand_trace():
+    cat = fix_a.catalog()
+    rec = ReferenceRun(cat, fix_a.initial_conditions(), fix_a.dynamics(), fix_a.params(), fix_a.draws(), 0).run()
+    want = fix_a.expected()
+    _assert_events(_event_dicts(rec), want["events"])
+    ia, ib = cat.index.entity["a"], cat.index.entity["b"]
+    for t, w in enumerate(want["trajectory"]):
+        np.testing.assert_allclose(rec.country[t + 1, ia], w["a"], rtol=1e-12)
+        np.testing.assert_allclose(rec.country[t + 1, ib], w["b"], rtol=1e-12)
+        assert rec.global_[t + 1, 0] == pytest.approx(w["oil"], rel=1e-12)
+    # the copula uniform in the firing year is Φ(-1.6), elsewhere Φ(0.8)
+    from scipy.special import ndtr
+    assert rec.propensity_u[1, 0] == pytest.approx(ndtr(-1.6))
+    assert rec.propensity_u[0, 0] == pytest.approx(ndtr(0.8))
+    assert rec.max_active_seen == 1          # the decaying shock holds one slot; the permanent one none
+
+
+def test_fix_b_matches_hand_trace():
+    cat = fix_b.catalog()
+    rec = ReferenceRun(cat, fix_b.initial_conditions(), fix_b.dynamics(), fix_b.params(), fix_b.draws(), 0).run()
+    want = fix_b.expected()
+    _assert_events(_event_dicts(rec), want["events"])
+    gdp = cat.index.country_var["gdp"]; stress = cat.index.country_var["stress"]
+    temp = cat.index.global_var["temp"]; conf = cat.index.global_var["conflicts"]
+    np.testing.assert_allclose(rec.country[1:, 0, gdp], want["gdp"], rtol=1e-12)
+    np.testing.assert_allclose(rec.country[1:, 0, stress], want["stress"], rtol=1e-12)
+    np.testing.assert_allclose(rec.global_[1:, temp], want["temp"], rtol=1e-12)
+    np.testing.assert_allclose(rec.global_[1:, conf], want["conflicts"], rtol=1e-12)
+    assert rec.gate[:, 2].tolist() == want["gate_t3"]
+    np.testing.assert_allclose(rec.p_eff[:, 2], want["p_eff_t3"], rtol=1e-12)
+
+
+def test_ledger_overflow_is_a_loud_failure():
+    # FIX-B holds one slot from 2026 (gdp decay) and a second from 2028 (conflicts until-resolved)
+    p = SimParams(until_resolved_years=2, start_year=2025, years=fix_b.YEARS, max_active=1)
+    with pytest.raises(LedgerOverflow) as ei:
+        ReferenceRun(fix_b.catalog(), fix_b.initial_conditions(), fix_b.dynamics(), p, fix_b.draws(), 0).run()
+    assert ei.value.run_index == 0 and ei.value.year == 2028 and ei.value.count == 2
+
+
+def test_until_resolved_years_is_required():
+    with pytest.raises(TypeError):
+        SimParams()  # type: ignore[call-arg]

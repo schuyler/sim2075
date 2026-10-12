@@ -1,0 +1,199 @@
+# State catalog for the sim2075 compile layer.
+#
+# GENERATED from the markdown catalogs (methodology/reference/State Entities.md,
+# State Variables - Country.md, State Variables - Global.md) by a one-off script;
+# re-generate rather than hand-edit when those documents change. The markdown is
+# the source of truth; this file is what the compiler validates names against
+# (schema validation rule 3) and what sizes the engine's entity/variable axes
+# (implementation guide guardrail 7).
+#
+# derived: true marks variables the engine computes from other variables; they may
+# be referenced in expressions but must not be impact targets.
+version: 1
+factors:
+  - F_CLIM
+  - F_FIN
+  - F_HLTH
+  - F_GPT
+  - F_TECH
+  - F_FOOD
+  - F_EUR
+  - F_MENA
+  - F_SAS
+  - F_EAS
+  - F_SSA
+  - F_LAM
+entities:
+  - {id: usa, name: "United States", kind: country}
+  - {id: can, name: "Canada", kind: country}
+  - {id: mex, name: "Mexico", kind: country}
+  - {id: deu, name: "Germany", kind: country}
+  - {id: gbr, name: "United Kingdom", kind: country}
+  - {id: fra, name: "France", kind: country}
+  - {id: ita, name: "Italy", kind: country}
+  - {id: esp, name: "Spain", kind: country}
+  - {id: nld, name: "Netherlands", kind: country}
+  - {id: pol, name: "Poland", kind: country}
+  - {id: ukr, name: "Ukraine", kind: country}
+  - {id: chn, name: "China", kind: country}
+  - {id: jpn, name: "Japan", kind: country}
+  - {id: kor, name: "South Korea", kind: country}
+  - {id: twn, name: "Taiwan", kind: country}
+  - {id: prk, name: "North Korea", kind: country}
+  - {id: ind, name: "India", kind: country}
+  - {id: pak, name: "Pakistan", kind: country}
+  - {id: bgd, name: "Bangladesh", kind: country}
+  - {id: idn, name: "Indonesia", kind: country}
+  - {id: vnm, name: "Vietnam", kind: country}
+  - {id: tha, name: "Thailand", kind: country}
+  - {id: phl, name: "Philippines", kind: country}
+  - {id: sgp, name: "Singapore", kind: country}
+  - {id: kaz, name: "Kazakhstan", kind: country}
+  - {id: irn, name: "Iran", kind: country}
+  - {id: tur, name: "Turkey", kind: country}
+  - {id: sau, name: "Saudi Arabia", kind: country}
+  - {id: egy, name: "Egypt", kind: country}
+  - {id: isr, name: "Israel", kind: country}
+  - {id: are, name: "UAE", kind: country}
+  - {id: nga, name: "Nigeria", kind: country}
+  - {id: eth, name: "Ethiopia", kind: country}
+  - {id: cod, name: "DR Congo", kind: country}
+  - {id: zaf, name: "South Africa", kind: country}
+  - {id: ken, name: "Kenya", kind: country}
+  - {id: bra, name: "Brazil", kind: country}
+  - {id: arg, name: "Argentina", kind: country}
+  - {id: aus, name: "Australia", kind: country}
+  - {id: rus, name: "Russia", kind: country}
+  - {id: gulf_states, name: "Gulf States", kind: aggregate_tier1}
+  - {id: central_america, name: "Central America", kind: aggregate_tier1}
+  - {id: sahel, name: "Sahel", kind: aggregate_tier1}
+  - {id: east_africa, name: "East Africa", kind: aggregate_tier1}
+  - {id: eu_other, name: "Rest of EU", kind: aggregate_tier1}
+  - {id: levant_iraq, name: "Levant/Iraq", kind: aggregate_tier1}
+  - {id: central_asia_other, name: "Central Asia (other)", kind: aggregate_tier2}
+  - {id: southeast_asia_other, name: "Southeast Asia (other)", kind: aggregate_tier2}
+  - {id: andean_caribbean, name: "Andean/Caribbean", kind: aggregate_tier2}
+  - {id: maghreb, name: "Maghreb", kind: aggregate_tier2}
+  - {id: southern_africa_other, name: "Southern Africa (other)", kind: aggregate_tier2}
+  - {id: west_central_africa_other, name: "West/Central Africa (other)", kind: aggregate_tier2}
+country_variables:
+  - {name: pop_0_14_m, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_0_14_f, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_15_34_m, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_15_34_f, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_35_54_m, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_35_54_f, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_55_64_m, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_55_64_f, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_65_79_m, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_65_79_f, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_80_plus_m, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: pop_80_plus_f, section: demographic_stock, derived: false, units: "Millions"}
+  - {name: tfr, section: demographic_flow, derived: false, units: "Children per woman"}
+  - {name: life_expectancy, section: demographic_flow, derived: false, units: "Years"}
+  - {name: infant_mortality, section: demographic_flow, derived: false, units: "Deaths per 1,000 live births"}
+  - {name: net_migration_rate, section: demographic_flow, derived: false, units: "% per year"}
+  - {name: emigration_skilled_rate, section: demographic_flow, derived: false, units: "% per year"}
+  - {name: idp_population, section: demographic_flow, derived: false, units: "Millions"}
+  - {name: refugees_abroad, section: demographic_flow, derived: false, units: "Millions"}
+  - {name: refugees_hosted, section: demographic_flow, derived: false, units: "Millions"}
+  - {name: displaced_present, section: demographic_flow, derived: true, units: ""}
+  - {name: displacement_caused, section: demographic_flow, derived: true, units: ""}
+  - {name: pop_total, section: demographic_derived, derived: true, units: ""}
+  - {name: pop_working_age, section: demographic_derived, derived: true, units: ""}
+  - {name: dependency_ratio, section: demographic_derived, derived: true, units: ""}
+  - {name: youth_bulge_index, section: demographic_derived, derived: true, units: ""}
+  - {name: median_age, section: demographic_derived, derived: true, units: ""}
+  - {name: military_age_males, section: demographic_derived, derived: true, units: ""}
+  - {name: gdp_real, section: economic_stock, derived: false, units: "$T"}
+  - {name: gdp_per_capita, section: economic_stock, derived: false, units: "$K"}
+  - {name: debt_public, section: economic_stock, derived: false, units: "% of GDP"}
+  - {name: debt_external, section: economic_stock, derived: false, units: "% of GDP"}
+  - {name: reserves_foreign, section: economic_stock, derived: false, units: "Months of imports"}
+  - {name: current_account, section: economic_stock, derived: false, units: "% of GDP"}
+  - {name: gdp_growth, section: economic_flow, derived: false, units: "% per year"}
+  - {name: inflation_rate, section: economic_flow, derived: false, units: "% per year"}
+  - {name: unemployment_rate, section: economic_flow, derived: false, units: "% of labor force"}
+  - {name: fdi_net, section: economic_flow, derived: false, units: "% of GDP"}
+  - {name: gdp_share_agriculture, section: economic_structure, derived: false, units: "%"}
+  - {name: gdp_share_industry, section: economic_structure, derived: false, units: "%"}
+  - {name: gdp_share_services, section: economic_structure, derived: false, units: "%"}
+  - {name: export_concentration, section: economic_structure, derived: false, units: "0-1"}
+  - {name: trade_openness, section: economic_structure, derived: false, units: "% of GDP"}
+  - {name: debt_service_ratio, section: economic_derived, derived: true, units: ""}
+  - {name: fiscal_space, section: economic_derived, derived: true, units: ""}
+  - {name: default_probability, section: economic_derived, derived: true, units: ""}
+  - {name: years_since_irregular_transition, section: political_stress, derived: false, units: "Integer"}
+  - {name: coup_attempts_10yr, section: political_stress, derived: false, units: "Count"}
+  - {name: leadership_tenure_years, section: political_stress, derived: false, units: "Integer"}
+  - {name: cabinet_turnover_annual, section: political_stress, derived: false, units: "0-1"}
+  - {name: political_prisoner_estimate, section: political_stress, derived: false, units: "Count"}
+  - {name: press_freedom_events, section: political_stress, derived: false, units: "Count"}
+  - {name: tax_revenue_gdp, section: governance, derived: false, units: "% of GDP"}
+  - {name: budget_execution_rate, section: governance, derived: false, units: "%"}
+  - {name: public_investment_efficiency, section: governance, derived: false, units: "Index (country avg = 100)"}
+  - {name: regime_type, section: political_structure, derived: false, units: "Categorical"}
+  - {name: protest_intensity_annual, section: political_structure, derived: false, units: "0-100 index"}
+  - {name: internal_conflict_intensity, section: conflict, derived: false, units: "0-4 scale"}
+  - {name: water_stress, section: climate_exposure, derived: false, units: "0-100"}
+  - {name: heat_exposure, section: climate_exposure, derived: false, units: "0-100"}
+  - {name: agricultural_climate_risk, section: climate_exposure, derived: false, units: "0-100"}
+  - {name: sea_level_exposure, section: climate_exposure, derived: false, units: "% of total"}
+  - {name: energy_import_dependence, section: resource_dependence, derived: false, units: "% of consumption"}
+  - {name: food_import_dependence, section: resource_dependence, derived: false, units: "% of consumption"}
+  - {name: alliance_status, section: alliance, derived: false, units: "Categorical"}
+  - {name: un_voting_alignment_us, section: alignment, derived: false, units: "-1 to +1"}
+  - {name: un_voting_alignment_china, section: alignment, derived: false, units: "-1 to +1"}
+  - {name: arms_import_share_west, section: alignment, derived: false, units: "% of total"}
+  - {name: arms_import_share_east, section: alignment, derived: false, units: "% of total"}
+  - {name: trade_share_west, section: alignment, derived: false, units: "% of total trade"}
+  - {name: trade_share_china, section: alignment, derived: false, units: "% of total trade"}
+  - {name: military_spending, section: security, derived: false, units: "% of GDP"}
+  - {name: military_spending_deviation, section: security, derived: false, units: "Standard deviations"}
+  - {name: armed_forces_per_capita, section: security, derived: false, units: "Per 1,000 population"}
+  - {name: external_conflict_involvement, section: security, derived: false, units: "0-4 scale"}
+  - {name: sanctions_level, section: sanctions_nuclear, derived: false, units: "0-100"}
+  - {name: nuclear_status, section: sanctions_nuclear, derived: false, units: "Categorical"}
+global_variables:
+  - {name: global_temp_anomaly, section: climate, units: "°C", baseline_2025: "1.3"}
+  - {name: sea_level_global, section: climate, units: "cm", baseline_2025: "10"}
+  - {name: arctic_sea_ice_sept, section: climate, units: "M km²", baseline_2025: "4.5"}
+  - {name: amoc_strength, section: climate, units: "% of 2000 baseline", baseline_2025: "95"}
+  - {name: amazon_forest_cover, section: climate, units: "% of 2000 baseline", baseline_2025: "85"}
+  - {name: permafrost_integrity, section: climate, units: "% intact", baseline_2025: "90"}
+  - {name: global_co2_ppm, section: climate, units: "ppm", baseline_2025: "425"}
+  - {name: climate_variability, section: climate, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: oil_brent, section: commodity, units: "$/barrel (2025 real)", baseline_2025: "75"}
+  - {name: gas_europe_ttf, section: commodity, units: "€/MWh (2025 real)", baseline_2025: "35"}
+  - {name: gas_asia_lng, section: commodity, units: "$/MMBtu (2025 real)", baseline_2025: "12"}
+  - {name: gold_price, section: commodity, units: "$/oz (2025 real)", baseline_2025: "2000"}
+  - {name: wheat_price, section: commodity, units: "$/bushel (2025 real)", baseline_2025: "6"}
+  - {name: rice_price, section: commodity, units: "$/ton (2025 real)", baseline_2025: "500"}
+  - {name: corn_price, section: commodity, units: "$/bushel (2025 real)", baseline_2025: "5"}
+  - {name: fertilizer_price_index, section: commodity, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: food_stocks_grains, section: commodity, units: "%", baseline_2025: "28"}
+  - {name: copper_price, section: commodity, units: "$/ton (2025 real)", baseline_2025: "8500"}
+  - {name: lithium_price, section: commodity, units: "$/ton (2025 real)", baseline_2025: "20000"}
+  - {name: rare_earths_index, section: commodity, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: usd_reserve_share, section: financial, units: "%", baseline_2025: "58"}
+  - {name: eur_reserve_share, section: financial, units: "%", baseline_2025: "20"}
+  - {name: cny_reserve_share, section: financial, units: "%", baseline_2025: "3"}
+  - {name: gold_reserve_share, section: financial, units: "%", baseline_2025: "15"}
+  - {name: us_10yr_yield, section: financial, units: "% nominal", baseline_2025: "4.5"}
+  - {name: us_real_rate, section: financial, units: "%", baseline_2025: "2.0"}
+  - {name: global_credit_spread, section: financial, units: "bps over risk-free", baseline_2025: "120"}
+  - {name: fed_funds_rate, section: financial, units: "%", baseline_2025: "4.5"}
+  - {name: ecb_rate, section: financial, units: "%", baseline_2025: "3.0"}
+  - {name: pboc_rate, section: financial, units: "%", baseline_2025: "3.5"}
+  - {name: global_trade_volume, section: trade, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: container_freight_index, section: trade, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: semiconductor_supply, section: trade, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: swift_share, section: trade, units: "%", baseline_2025: "75"}
+  - {name: cips_share, section: trade, units: "%", baseline_2025: "8"}
+  - {name: ai_capability_index, section: technology, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: renewable_cost_index, section: technology, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: battery_cost_kwh, section: technology, units: "$/kWh", baseline_2025: "130"}
+  - {name: pandemic_status, section: health, units: "Categorical (0-4)", baseline_2025: "0"}
+  - {name: pandemic_severity, section: health, units: "% GDP impact", baseline_2025: "0"}
+  - {name: antibiotic_resistance, section: health, units: "Index (2025=100)", baseline_2025: "100"}
+  - {name: active_major_conflicts, section: conflict, units: "Count", baseline_2025: "3"}
