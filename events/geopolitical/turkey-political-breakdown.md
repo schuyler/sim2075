@@ -24,16 +24,18 @@ This specification follows the pattern established in [[events/geopolitical/egyp
 
 ---
 
-## Event Classification
+## Specification
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | TURKEY_POLITICAL_BREAKDOWN |
-| **Scale** | National (with significant regional and European consequences) |
-| **Domain** | Political |
-| **Causal Type** | **Type 2: Threshold** |
-| **Onset Speed** | Rapid (1-3 years from trigger to acute phase) |
-| **Reversibility** | Partial (democratic recovery possible but institutional damage may persist) |
+```yaml
+id: TURKEY_POLITICAL_BREAKDOWN
+domain: political
+scale: national
+causal_type: 2
+onset: sudden
+reversibility: partial
+```
+
+*Scale: national, with significant regional and European consequences. Onset speed: rapid (1-3 years from trigger to acute phase). Reversibility: partial (democratic recovery possible but institutional damage may persist).*
 
 ## Description
 
@@ -71,7 +73,7 @@ Turkey political crisis exhibits threshold dynamics:
 | `tur.reserves_foreign` | 0.10 | inverse | Buffer capacity for currency defense |
 | `tur.leadership_tenure_years` | 0.05 | threshold(20) | Succession risk with prolonged leadership |
 
-**Pressure calculation**:
+**Pressure calculation** (as originally specified):
 ```
 pressure = 0.25 × min(inflation_rate, 100) / 100
          + 0.20 × max(0, -current_account) / 10  # deficit contributes
@@ -82,6 +84,8 @@ pressure = 0.25 × min(inflation_rate, 100) / 100
          + 0.05 × (leadership_tenure_years > 20 ? 0.5 : 0)
 ```
 *Normalized to 0-100 scale*
+
+The YAML expression in the Probability section realizes this calculation term for term in the expression language's subset: the inflation threshold as `min(inflation, 100) / 100` (capped linear, as the calculation writes it), the current-account inverse as `max(0, -current_account) / 10` (deficits only), the reserves inverse as `(6 - reserves) / 6` in months of imports, and the tenure threshold's ternary as `where(tenure > 20, 0.5, 0)`; the whole sum is wrapped in `100 * (...)` to sit on the threshold's 0-100 scale.
 
 **Proxy limitations**: True "currency stability," "regime stability," and "social cohesion" are unobservable. We proxy through economic indicators (inflation, current account, reserves, unemployment) and conflict/protest measures. The key unobservables—elite loyalty, succession planning, military political orientation post-purges—cannot be directly captured. Probability calibration relies on reference class reasoning from middle-income democracies under stress.
 
@@ -141,6 +145,29 @@ Despite vulnerabilities, Turkey possesses:
 
 ## Probability
 
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.25 * min(tur.inflation_rate, 100) / 100 +
+      0.20 * max(0, -tur.current_account) / 10 +
+      0.15 * tur.unemployment_rate / 25 +
+      0.15 * tur.protest_intensity_annual / 100 +
+      0.10 * tur.internal_conflict_intensity / 4 +
+      0.10 * (6 - tur.reserves_foreign) / 6 +
+      0.05 * where(tur.leadership_tenure_years > 20, 0.5, 0)
+    )
+  threshold: 68
+  threshold_std: 8
+  sharpness: 0.15
+  floor: 0.004
+  annual: 0.0055
+  range: [0.003, 0.009]
+  confidence: medium
+```
+
+No impact row uses `until: resolved` (every effect decays), so the probability block carries no `resolves_after`.
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability (current pressure)** | 0.55% |
@@ -161,7 +188,7 @@ The ~45% of crisis windows where the system absorbs the shock (2001/2018/2023 pa
 
 ### Current Pressure Estimate
 
-Current pressure: ~45/100 (elevated but well below threshold)
+Current pressure: ~45/100 (elevated but well below threshold; the expression gives 42.3 at the values below)
 - `inflation_rate`: ~50-60% (elevated but declining from peak)
 - `current_account`: ~-4% GDP (chronic deficit but manageable)
 - `unemployment_rate`: ~10% (elevated)
@@ -223,9 +250,7 @@ As a Type 2 event, probability depends on pressure trajectory:
 - Major Istanbul earthquake (probabilistically likely within 50 years) would stress-test all systems
 - Return to orthodox monetary policy would reduce economic pressure significantly
 
-### Probability Evolution
-
-As a Type 2 event, probability depends on pressure trajectory:
+The 2025-12-30 critical review added this section twice, with slightly different tables; the second pass is kept here rather than reconciled:
 
 | Period | Annual Probability | Rationale |
 |--------|-------------------|-----------|
@@ -233,7 +258,7 @@ As a Type 2 event, probability depends on pressure trajectory:
 | 2035-2050 | 0.5-1.0% | Succession window opens (Erdoğan aging); economic trajectory uncertain; climate stress rising |
 | 2050-2075 | 0.4-1.2% | Depends heavily on successor regime stability and economic trajectory |
 
-**Key inflection points**:
+**Key inflection points** (second pass):
 - Erdoğan succession (timing uncertain): Opens high-risk window regardless of mechanism
 - Major Istanbul earthquake (timing unpredictable): Could accelerate pressure dramatically if occurs during other stress
 - Monetary policy normalization (if achieved): Would reduce economic pressure substantially
@@ -245,22 +270,21 @@ As a Type 2 event, probability depends on pressure trajectory:
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| **F_MENA** | 0.34 | Regional spillover, Kurdish dimension spans Syria/Iraq, refugee source |
-| **F_FIN** | 0.31 | Currency vulnerability, external financing needs, EM contagion |
-| **F_EUR** | 0.27 | NATO member, EU candidate, migration route, democratic standards |
-| **F_GPT** | 0.24 | Russia-West balancing, sanctions risk, strategic positioning |
-| F_CLIM | 0.10 | Heat stress, agricultural impacts, water management (as upstream power) |
-| F_FOOD | 0.07 | Agricultural exporter but inflation affects food access domestically |
-| F_SAS | 0.03 | Limited; some Afghanistan refugee pathway |
-| F_EAS | 0.00 | No significant pathway |
-| F_SSA | 0.00 | No significant pathway |
-| F_LAM | 0.00 | No significant pathway |
-| F_HLTH | 0.00 | No distinct pathway beyond general state capacity |
-| F_TECH | 0.00 | No significant pathway |
+```yaml
+factors:
+  F_MENA: 0.34  # Regional spillover, Kurdish dimension spans Syria/Iraq, refugee source
+  F_FIN: 0.31   # Currency vulnerability, external financing needs, EM contagion
+  F_EUR: 0.27   # NATO member, EU candidate, migration route, democratic standards
+  F_GPT: 0.24   # Russia-West balancing, sanctions risk, strategic positioning
+  F_CLIM: 0.10  # Heat stress, agricultural impacts, water management (as upstream power)
+  F_FOOD: 0.07  # Agricultural exporter but inflation affects food access domestically
+  F_SAS: 0.03   # Limited; some Afghanistan refugee pathway
+variance: 0.65  # Type 2 target
+```
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.68 from original loadings
+F_EAS, F_SSA and F_LAM carry no loading (no significant pathway); F_HLTH carries none (no distinct pathway beyond general state capacity); F_TECH carries none (no significant pathway).
+
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.68 from original loadings. The pre-allocation loadings (initial specification, 2025-12-19) were F_MENA 0.50, F_FIN 0.45, F_EUR 0.40, F_GPT 0.35, F_CLIM 0.15, F_FOOD 0.10, F_SAS 0.05, with sum of squared loadings 0.73; Task 3.11 scaled them uniformly by 0.68 to the values above.
 
 ### Loading Interpretation (Type 2)
 
@@ -278,140 +302,74 @@ Factors shock state variables that feed into pressure function:
 Once threshold is crossed AND the political system breaks down (rather than absorbing the shock), the form of breakdown varies. All branches represent genuine discontinuities—the political system does not survive intact.
 
 ```yaml
-severity_branches:
-
-  - id: political_breakdown
-    probability: 0.55
-    description: |
-      Political system breaks down beyond normal crisis management.
-      Possibilities include: Erdoğan succession crisis (contested or 
-      chaotic), constitutional crisis, prolonged political paralysis,
-      or democratic collapse into authoritarian consolidation. State
-      continues to function but political trajectory fundamentally
-      altered. International isolation likely deepens. May involve
-      significant political violence or repression. This is the most
-      likely form of breakdown given Turkey's institutional strength.
-      
-    impact_multiplier: 1.0  # baseline
-    
-    factor_modifications:
-      F_EUR: +0.40
-      F_GPT: +0.30
-      F_MENA: +0.25
-      
-    duration:
-      type: decaying
-      half_life_years: 8
-      floor: 0.15
-      
-    cascade_triggers:
-      # Note: NATO_CRISIS, KURDISH_AUTONOMY_EXPANSION not in catalog
-      - event_id: EU_FRAGMENTATION
-        probability_modifier: 1.3
-        rationale: "Migration surge, NATO uncertainty"
-      - event_id: GLOBAL_FINANCIAL_CRISIS
-        probability_modifier: 1.4
-        rationale: "EM contagion channel"
-
-  - id: state_fragmentation
-    probability: 0.27
-    description: |
-      State loses effective control over significant territory or 
-      functions. Most likely pathway is Kurdish regions achieving
-      de facto autonomy during central government crisis. Could also
-      involve military fragmentation, regional power centers, or 
-      prolonged civil conflict. Less severe than Syria-style collapse
-      due to stronger institutions, but represents fundamental state
-      failure. Massive refugee outflows likely.
-      
-    impact_multiplier: 2.5
-    
-    factor_modifications:
-      F_EUR: +0.55
-      F_MENA: +0.50
-      F_GPT: +0.35
-      F_FIN: +0.30
-      
-    duration:
-      type: decaying
-      half_life_years: 12
-      floor: 0.20
-      
-    cascade_triggers:
-      # Note: KURDISH_STATE_FORMATION, EUROPEAN_MIGRATION_CRISIS, NATO_ARTICLE_5_CRISIS, BOSPHORUS_TRANSIT_DISRUPTION not in catalog
-      - event_id: EU_FRAGMENTATION
-        probability_modifier: 1.8
-        rationale: "Migration surge from 80M population"
-      - event_id: GLOBAL_FINANCIAL_CRISIS
-        probability_modifier: 1.6
-        rationale: "EM contagion, banking stress"
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 1.3
-        rationale: "Black Sea transit disruption"
-
-  - id: earthquake_cascade
-    probability: 0.18
-    description: |
-      Major earthquake (likely Istanbul, M7.0+) triggers cascading
-      crisis across economic, political, and social dimensions 
-      simultaneously. Massive casualties (50,000-100,000+), economic
-      destruction ($100B+), state capacity overwhelmed, political 
-      legitimacy crisis. Unlike 2023, the state does not recover—
-      political breakdown follows. International assistance mobilized 
-      but recovery takes decade+. Distinct from other branches because
-      natural disaster is proximate cause and damage profile is 
-      different (concentrated physical destruction).
-      
-    impact_multiplier: 3.0
-    
-    factor_modifications:
-      F_EUR: +0.45
-      F_FIN: +0.50
-      F_MENA: +0.30
-      
-    duration:
-      type: decaying
-      half_life_years: 15
-      floor: 0.25
-      
-    cascade_triggers:
-      # Note: GLOBAL_REINSURANCE_CRISIS, BOSPHORUS_TRANSIT_DISRUPTION not in catalog
-      - event_id: GLOBAL_FINANCIAL_CRISIS
-        probability_modifier: 1.5
-        rationale: "Reinsurance stress, market panic"
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 1.4
-        rationale: "Bosphorus transit disruption"
-
-severity_probability_rationale: |
-  Distribution reflects Turkey's structural features, conditional on
-  actual political breakdown occurring (not economic crises the system
-  absorbs):
-  
-  - Political breakdown (0.55): Most likely breakdown mode. Erdoğan
-    succession is genuine uncertainty—system is highly personalized.
-    Constitutional crisis or authoritarian consolidation both represent
-    genuine discontinuities that permanently alter Turkey's trajectory.
-    This is distinct from managed government change through elections.
-    
-  - State fragmentation (0.27): Requires multiple failures: central
-    authority collapse AND Kurdish regions seize opportunity AND 
-    military cannot restore control. Lower than Egypt/Iran equivalent
-    because Turkey has stronger institutional base and NATO membership
-    creates external stabilization incentive. But Kurdish dimension
-    creates fragmentation pathway that Egypt/Iran lack.
-    
-  - Earthquake cascade (0.18): Conditional on political breakdown
-    occurring AND major earthquake being the trigger. The 2023 earthquake
-    showed Turkey can absorb major disasters—this branch captures cases
-    where the disaster is larger (Istanbul) or occurs during other
-    political stress, overwhelming absorption capacity. Higher share
-    than before because we've removed the non-discontinuity branch.
+branches:
+  - {id: political_breakdown, p: 0.55, desc: "Succession crisis, constitutional crisis, paralysis or authoritarian consolidation; state keeps functioning"}
+  - {id: state_fragmentation, p: 0.27, desc: "Loss of effective control over significant territory, most likely Kurdish regions"}
+  - {id: earthquake_cascade, p: 0.18, desc: "Major Istanbul earthquake (M7.0+) triggers cascading crisis the state does not recover from"}
 ```
+
+### Branch 1: Political Breakdown (55%)
+
+Political system breaks down beyond normal crisis management. Possibilities include: Erdoğan succession crisis (contested or chaotic), constitutional crisis, prolonged political paralysis, or democratic collapse into authoritarian consolidation. State continues to function but political trajectory fundamentally altered. International isolation likely deepens. May involve significant political violence or repression. This is the most likely form of breakdown given Turkey's institutional strength.
+
+**Impact multiplier**: 1.0× (baseline).
+
+### Branch 2: State Fragmentation (27%)
+
+State loses effective control over significant territory or functions. Most likely pathway is Kurdish regions achieving de facto autonomy during central government crisis. Could also involve military fragmentation, regional power centers, or prolonged civil conflict. Less severe than Syria-style collapse due to stronger institutions, but represents fundamental state failure. Massive refugee outflows likely.
+
+**Impact multiplier**: 2.5×.
+
+### Branch 3: Earthquake Cascade (18%)
+
+Major earthquake (likely Istanbul, M7.0+) triggers cascading crisis across economic, political, and social dimensions simultaneously. Massive casualties (50,000-100,000+), economic destruction ($100B+), state capacity overwhelmed, political legitimacy crisis. Unlike 2023, the state does not recover—political breakdown follows. International assistance mobilized but recovery takes decade+. Distinct from other branches because natural disaster is proximate cause and damage profile is different (concentrated physical destruction).
+
+**Impact multiplier**: 3.0×.
+
+### Branch-Level Factor Modifications and Durations
+
+The original branch specification carried per-branch factor modifications (post-event loading shifts) and a branch-level decaying-with-floor duration. Neither is a schema v0.1 construct (factor modifications are not in the schema; decay-to-floor is v0.2 backlog), so both are retained here as the reference for the backlog rather than written to YAML.
+
+| Branch | Factor modifications | Duration |
+|--------|---------------------|----------|
+| political_breakdown | F_EUR +0.40, F_GPT +0.30, F_MENA +0.25 | decaying, half_life 8 years, floor 0.15 |
+| state_fragmentation | F_EUR +0.55, F_MENA +0.50, F_GPT +0.35, F_FIN +0.30 | decaying, half_life 12 years, floor 0.20 |
+| earthquake_cascade | F_EUR +0.45, F_FIN +0.50, F_MENA +0.30 | decaying, half_life 15 years, floor 0.25 |
+
+### Branch-Level Cascade Modifiers
+
+The original branch specification also carried multiplicative cascade modifiers per branch. The schema's `triggers:` take absolute annual probability deltas (given in the Cascade Effects section below), so these multipliers stay in prose. Targets not in the event catalog are listed with their [[events/backlog-registry]] disposition and are not written to YAML.
+
+| Branch | Target | Probability modifier | Rationale |
+|--------|--------|---------------------|-----------|
+| political_breakdown | EU_FRAGMENTATION | 1.3× | Migration surge, NATO uncertainty |
+| political_breakdown | GLOBAL_FINANCIAL_CRISIS | 1.4× | EM contagion channel |
+| political_breakdown | NATO_CRISIS, KURDISH_AUTONOMY_EXPANSION | — | Not in catalog: registry promotions (`NATO_RUSSIA_DIRECT_CONFLICT`, `KURDISH_STATE_FORMATION`) |
+| state_fragmentation | EU_FRAGMENTATION | 1.8× | Migration surge from 80M population |
+| state_fragmentation | GLOBAL_FINANCIAL_CRISIS | 1.6× | EM contagion, banking stress |
+| state_fragmentation | OIL_SUPPLY_SHOCK | 1.3× | Black Sea transit disruption |
+| state_fragmentation | KURDISH_STATE_FORMATION, EUROPEAN_MIGRATION_CRISIS, NATO_ARTICLE_5_CRISIS | — | Not in catalog: registry promotions |
+| state_fragmentation | BOSPHORUS_TRANSIT_DISRUPTION | — | Not in catalog: registry fold into this event's impact rows |
+| earthquake_cascade | GLOBAL_FINANCIAL_CRISIS | 1.5× | Reinsurance stress, market panic |
+| earthquake_cascade | OIL_SUPPLY_SHOCK | 1.4× | Bosphorus transit disruption |
+| earthquake_cascade | GLOBAL_REINSURANCE_CRISIS | — | Not in catalog: registry promotion (`CLIMATE_INSURANCE_CRISIS`) |
+| earthquake_cascade | BOSPHORUS_TRANSIT_DISRUPTION | — | Not in catalog: registry fold |
+
+### Severity Probability Rationale
+
+Distribution reflects Turkey's structural features, conditional on actual political breakdown occurring (not economic crises the system absorbs):
+
+- **Political breakdown (0.55)**: Most likely breakdown mode. Erdoğan succession is genuine uncertainty—system is highly personalized. Constitutional crisis or authoritarian consolidation both represent genuine discontinuities that permanently alter Turkey's trajectory. This is distinct from managed government change through elections.
+
+- **State fragmentation (0.27)**: Requires multiple failures: central authority collapse AND Kurdish regions seize opportunity AND military cannot restore control. Lower than Egypt/Iran equivalent because Turkey has stronger institutional base and NATO membership creates external stabilization incentive. But Kurdish dimension creates fragmentation pathway that Egypt/Iran lack.
+
+- **Earthquake cascade (0.18)**: Conditional on political breakdown occurring AND major earthquake being the trigger. The 2023 earthquake showed Turkey can absorb major disasters—this branch captures cases where the disaster is larger (Istanbul) or occurs during other political stress, overwhelming absorption capacity. Higher share than before because we've removed the non-discontinuity branch.
 
 ---
 
 ## Impact Vector
+
+The tables below are the original specification and keep its forms (sub-year onsets, decay-to-floor, countries outside the state catalog); the YAML block that follows them re-expresses each row in schema v0.1 terms, with the re-expressions noted after it.
 
 ### Turkey Impacts (Baseline: Political Breakdown Branch)
 
@@ -446,6 +404,46 @@ severity_probability_rationale: |
 
 **Note**: Many intuitive impact channels (NATO cohesion, regional stability indices) are derived outputs, not state variables. The simulation tracks observable impacts on GDP, conflict levels, commodity prices, and migration flows.
 
+```yaml
+impacts:
+  political_breakdown:
+    # Turkey
+    - {var: tur.gdp_real,                      mag: [-0.20, 0.10], onset: {gradual: 1}, decay: 6}
+    - {var: tur.gdp_growth,                    mag: [-12, 6],      onset: immediate,    decay: 3}
+    - {var: tur.inflation_rate,                mag: [60, 30],      onset: immediate,    decay: 3}
+    - {var: tur.unemployment_rate,             mag: [12, 5],       onset: {gradual: 1}, decay: 5}
+    - {var: tur.fdi_net,                       mag: [-4, 2],       onset: immediate,    decay: 8}
+    - {var: tur.internal_conflict_intensity,   mag: [2, 0],        onset: immediate,    decay: 8}
+    - {var: tur.refugees_abroad,               mag: [1, 0.5],      onset: {gradual: 2}, decay: 10}
+
+    # Global
+    - {var: global_credit_spread,              mag: [50, 25],      onset: immediate,    decay: 2}
+    - {var: wheat_price,                       mag: [0.6, 0.3],    onset: immediate,    decay: 0.75}
+
+    # Regional (aggregates standing in for Greece/Bulgaria and Iraq/Syria)
+    - {var: eu_other.gdp_growth,               mag: [-0.3, 0.15],  onset: immediate,    decay: 2}
+    - {var: levant_iraq.internal_conflict_intensity, mag: [0.5, 0.4], onset: {gradual: 1}, decay: 8}
+    - {var: deu.refugees_hosted,               mag: [0.5, 0.3],    onset: {gradual: 2}, decay: 10}
+
+  state_fragmentation:
+    inherit: political_breakdown
+    scale: 2.5
+
+  earthquake_cascade:
+    inherit: political_breakdown
+    scale: 3.0
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (−20% ± 10% for the political_breakdown branch); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields): `gdp_growth`, `inflation_rate`, `unemployment_rate` and `fdi_net` in percentage points, `internal_conflict_intensity` in levels of the 0-4 scale, refugee rows in millions, `global_credit_spread` in bps.*
+
+**Re-expressions in the YAML**:
+- *Onsets*: `rapid(1yr)` and `rapid(2yr)` are `{gradual: 1}` and `{gradual: 2}`; `rapid(6mo)` is `immediate` (onset years are integers ≥ 1).
+- *GDP floor*: the −8% floor on `tur.gdp_real` recovery is decay-to-floor durability, schema v0.2 backlog; the YAML uses the plain 6-year half-life.
+- *Wheat*: +10% ± 5% converted against the catalog's 2025 baseline of $6/bushel to +0.6 ± 0.3 $/bushel; the 9-month half-life is `decay: 0.75`.
+- *Conflict intensity*: "+2 levels" carries no spread in the original, so the std is 0.
+- *Greece and Bulgaria* are not state-catalog entities; both belong to the Rest of EU aggregate (`eu_other`, ~$3,000B GDP, of which Greece ≈ $240B and Bulgaria ≈ $100B). Their growth hits (−2 ± 1 and −3 ± 1.5 pp) weighted by GDP share give the single `eu_other.gdp_growth` row of −0.3 ± 0.15 pp.
+- *Iraq and Syria* are not state-catalog entities; both belong to the Levant/Iraq aggregate (`levant_iraq`: Iraq, Syria, Jordan, Lebanon). Iraq's +1 level diluted over an aggregate it is roughly half of gives +0.5; Syria's indeterminate ±1 level is folded into the std (0.4). The original gave no half-life for this row ("decaying, Kurdish dimension"); the YAML uses 8 years, matching Turkey's own conflict-intensity row and the "persistent" durability rationale below.
+
 ### Bosphorus/Dardanelles Consideration
 
 Turkey controls the Turkish Straits (~3% of global oil trade, significant grain trade, Black Sea access):
@@ -462,7 +460,7 @@ Turkey is NATO's second-largest military and controls the alliance's southeaster
 
 ### Durability Rationale
 
-- **GDP**: Decaying with moderate half-life; Turkey has recovery capacity but political breakdown creates lasting structural damage
+- **GDP**: Decaying with moderate half-life; Turkey has recovery capacity but political breakdown creates lasting structural damage. The original specification carried a −8% floor on the GDP recovery; decay-to-floor durability is schema v0.2 backlog, so the YAML uses a plain 6-year half-life.
 - **Currency**: Decaying; can stabilize under new political equilibrium but credibility rebuilding takes years
 - **FDI**: Longer decay; investor confidence requires political stability that takes time to re-establish
 - **Institutional quality**: Regime-dependent; trajectory depends on successor political order
@@ -494,7 +492,19 @@ Turkey political breakdown would trigger significant cascade effects. Key pathwa
 | Energy transit | OIL_SUPPLY_SHOCK | +0.5%/year for 2 years | Black Sea transit disruption |
 | Regional instability | EGYPT_STATE_FAILURE | +0.3%/year for 5 years | Regional contagion; refugee dynamics |
 
-**Note**: Many intuitive cascade targets (Kurdish state formation, NATO crisis, Bosphorus disruption, European migration crisis) are not yet specified in the event catalog.
+```yaml
+cascades:
+  triggers:
+    - {event: EU_FRAGMENTATION,        delta: 0.005, years: 5}
+    - {event: GLOBAL_FINANCIAL_CRISIS, delta: 0.010, years: 2}
+    - {event: OIL_SUPPLY_SHOCK,        delta: 0.005, years: 2}
+    - {event: EGYPT_STATE_FAILURE,     delta: 0.003, years: 5}
+  triggered_by:
+    - {event: EU_FRAGMENTATION,        delta: 0.003}
+    - {event: DOLLAR_RESERVE_CRISIS,   delta: 0.008}
+```
+
+**Note**: Many intuitive cascade targets (Kurdish state formation, NATO crisis, Bosphorus disruption, European migration crisis) are not yet specified in the event catalog; each is registered with a disposition in [[events/backlog-registry]] (see Branch-Level Cascade Modifiers above). The `triggered_by` entries are informational and record the two specified events whose cascade tables name this event (under its registered alias `TURKEY_POLITICAL_CRISIS`): [[events/geopolitical/eu-fragmentation]] (+0.3%/year for 3 years; NATO weakening, regional instability) and [[events/financial/dollar-reserve-crisis]] (+0.8%/year for 3 years; lira crisis amplification, dollar debt exposure).
 
 ---
 
@@ -584,13 +594,17 @@ These cases inform the 55% of crisis windows that produce genuine political brea
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Istanbul earthquake modeling; Kurdish conflict dynamics; Erdoğan succession scenarios; banking sector exposure analysis; NATO contingency planning |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+Istanbul earthquake modeling; Kurdish conflict dynamics; Erdoğan succession scenarios; banking sector exposure analysis; NATO contingency planning.
 
 ## Sources
 
@@ -621,7 +635,9 @@ These cases inform the 55% of crisis windows that produce genuine political brea
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.10. Classification, probability, factor, branch, impact, cascade and research tables converted to YAML; the legacy `severity_branches` block became `branches:`, with its descriptions, factor modifications, decaying-with-floor durations and multiplicative cascade modifiers moved to prose (none is a schema v0.1 construct). Judgment calls: (1) `onset: sudden` for "Rapid (1-3 years)"; row onsets `rapid(1yr)`/`rapid(2yr)` → `{gradual: 1}`/`{gradual: 2}`, `rapid(6mo)` → `immediate`. (2) Pressure expression wrapped in `100 * (...)`, the tenure ternary realized with `where()`; the compiler's baseline check is skipped (country variables) — at the prose's current values the expression gives 42.3, consistent with "~45". (3) Durability: the −8% decay-to-floor on `tur.gdp_real` is v0.2 backlog → plain `decay: 6`; the original form stays in the impact table and durability rationale. (4) Unit conversion: `wheat_price` +10% ± 5% → +0.6 ± 0.3 $/bushel against the $6/bushel 2025 baseline; 9-month half-life → `decay: 0.75`. (5) Missing entities: `grc.gdp_growth` (−2 ± 1) and `bgr.gdp_growth` (−3 ± 1.5) → one `eu_other.gdp_growth` row of −0.3 ± 0.15 pp (GDP-share-weighted over Rest of EU); `irq.internal_conflict_intensity` (+1) and `syr.internal_conflict_intensity` (±1) → one `levant_iraq.internal_conflict_intensity` row of +0.5 ± 0.4 (Iraq ≈ half the aggregate; Syria's indeterminate sign folded into the std), half-life set to 8 years because the original gave none. (6) `tur.internal_conflict_intensity` "+2 levels" has no stated spread → std 0. (7) Cascades: `triggers:` carries the four Specified Event Cascades (EU_FRAGMENTATION, GLOBAL_FINANCIAL_CRISIS, OIL_SUPPLY_SHOCK, EGYPT_STATE_FAILURE); the branch-level `probability_modifier` cascades are multipliers, not deltas, and stay in prose, and their uncataloged targets (NATO_CRISIS/NATO_ARTICLE_5_CRISIS, KURDISH_AUTONOMY_EXPANSION/KURDISH_STATE_FORMATION, EUROPEAN_MIGRATION_CRISIS, GLOBAL_REINSURANCE_CRISIS: registry promotions; BOSPHORUS_TRANSIT_DISRUPTION: registry fold) are not written to YAML. `triggered_by:` records EU_FRAGMENTATION and DOLLAR_RESERVE_CRISIS, whose cascade tables name this event under the registered alias TURKEY_POLITICAL_CRISIS. (8) No `until: resolved` row, so no `resolves_after`. Restored from history: the pre-allocation loadings and their sum of squares (0.73), dropped at Task 3.11. The duplicated Probability Evolution section (both passes from the 2025-12-30 review) is kept under one heading. Achieved variance 0.6478 against the declared 0.65. |
 | 2025-12-30 | Added Probability Evolution section; updated research status | Task 2.4 critical review completion |
+| 2025-12-30 | Variance allocation: scaled loadings to Type 2 target | Task 3.11 - Factor-explained variance reduced to Type 2 target (0.65); scale factor 0.68 from the original loadings |
 | 2025-12-22 | Removed "economic_crisis_managed" branch; renamed to Political Breakdown; lowered probability to 0.55% | Critical review identified that absorbed economic crises (2001, 2018 pattern) are not discontinuities—they're the ~45% of crisis windows where the system survives intact. Event now models only genuine political breakdown. |
 | 2025-12-22 | Reweighted remaining branches to 100% (55/27/18); updated impact magnitudes | Political_breakdown now baseline; state_fragmentation and earthquake_cascade retain relative weights |
 | 2025-12-22 | Added Case Against section; revised Historical Analogues to distinguish absorbed vs. breakdown cases | Per critical review requirements; clarifies what is and isn't a discontinuity |
