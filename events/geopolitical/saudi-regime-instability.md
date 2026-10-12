@@ -22,16 +22,18 @@ This specification follows the pattern established in [[events/geopolitical/egyp
 
 ---
 
-## Event Classification
+## Specification
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | SAUDI_REGIME_INSTABILITY |
-| **Scale** | National (with regional and global consequences) |
-| **Domain** | Political |
-| **Causal Type** | **Type 2: Threshold** |
-| **Onset Speed** | Rapid (1-2 years from trigger to acute phase) |
-| **Reversibility** | Partial (regime may reconstitute in different form; full collapse unlikely given resources) |
+```yaml
+id: SAUDI_REGIME_INSTABILITY
+domain: political
+scale: national
+causal_type: 2
+onset: sudden
+reversibility: partial
+```
+
+*Scale: national, with regional and global consequences. Onset speed: rapid (1-2 years from trigger to acute phase). Reversibility: partial (regime may reconstitute in different form; full collapse unlikely given resources).*
 
 ## Description
 
@@ -67,7 +69,7 @@ Saudi regime instability exhibits threshold dynamics:
 | `sau.years_since_irregular_transition` | 0.10 | complex | Long stability but succession concentration risk |
 | `oil_brent` | 0.05 | inverse | Global oil price affects revenue directly |
 
-**Pressure calculation**:
+**Pressure calculation** (original specification, as written):
 ```
 pressure = 0.20 × max(0, 2 - gdp_growth) / 5  # below 2% contributes
          + 0.20 × unemployment_rate / 20
@@ -78,6 +80,8 @@ pressure = 0.20 × max(0, 2 - gdp_growth) / 5  # below 2% contributes
          + 0.05 × max(0, 80 - oil_brent) / 80  # below $80 breakeven
 ```
 *Normalized to 0-100 scale*
+
+The YAML expression in the probability block below realizes these transforms in the expression language's subset: each term is clipped to [0, 1] with `min(1, max(0, ·))` so that no single indicator can exceed its weight (the growth term saturates below −3% growth, the reserves term at zero months of cover, the current-account term at a 10%-of-GDP deficit, the oil term at $0/bbl), the ternary succession factor becomes `where(sau.leadership_tenure_years > 30, 0.5, 0)`, and the weighted sum is wrapped in `100 * (...)` to sit on `threshold`'s 0-100 scale. The succession term reads `sau.leadership_tenure_years`, as the original calculation did; the pressure table names `sau.years_since_irregular_transition` for the same 0.10 weight ("complex" transform), and both are catalog variables—the calculation, not the table label, is what the YAML implements.
 
 **Proxy limitations**: True "regime legitimacy" and "social contract stress" are unobservable. We proxy through economic indicators (unemployment, growth, reserves) and protest intensity. The key unobservables—elite factional dynamics within royal family, religious establishment sentiment—cannot be directly captured. Probability calibration relies on reference class reasoning from Gulf petrostates and comparable authoritarian rentier states.
 
@@ -119,6 +123,27 @@ This cushion means the threshold is far away under current conditions. The proba
 
 ## Probability
 
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.20 * min(1.0, max(0.0, 2.0 - sau.gdp_growth) / 5.0) +
+      0.20 * min(1.0, sau.unemployment_rate / 20.0) +
+      0.15 * min(1.0, max(0.0, (12.0 - sau.reserves_foreign) / 12.0)) +
+      0.15 * min(1.0, max(0.0, -sau.current_account) / 10.0) +
+      0.15 * (sau.protest_intensity_annual / 100.0) +
+      0.10 * where(sau.leadership_tenure_years > 30, 0.5, 0.0) +
+      0.05 * min(1.0, max(0.0, 80.0 - oil_brent) / 80.0)
+    )
+  threshold: 70
+  threshold_std: 12
+  sharpness: 0.15
+  floor: 0.003
+  annual: 0.008
+  range: [0.004, 0.012]
+  confidence: medium
+```
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability (current pressure)** | 0.8% |
@@ -137,6 +162,8 @@ Current pressure: ~25/100 (low; financial cushion provides substantial buffer)
 - `protest_intensity_annual`: ~5 (heavily suppressed; minimal visible dissent)
 - `years_since_irregular_transition`: 0 (no irregular transitions in modern Saudi history)
 - `oil_brent`: ~$75-80 (near breakeven; adequate)
+
+At these values the YAML expression gives ~12/100 (unemployment contributes 11 of the 12 points; growth, reserves and current account all sit on the zero side of their clips, and MBS's tenure is well short of the 30-year succession trigger). The "~25" is a judgment estimate that also weighs the unobservable legitimacy and social-contract stress the proxies cannot see; both sit far below the 70 ± 12 threshold, so the two agree on the probability regime even though they differ on the number.
 
 ### Derivation
 
@@ -199,22 +226,22 @@ As a Type 2 event, probability depends on pressure trajectory, primarily driven 
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| **F_MENA** | 0.46 | Core MENA state; regional instability is contagious |
-| **F_FIN** | 0.30 | Oil prices, global energy markets, sovereign wealth |
-| **F_CLIM** | 0.23 | Extreme heat stress; habitability approaching limits |
-| F_GPT | 0.17 | US-Saudi relationship; China competition for influence |
-| F_TECH | 0.13 | Energy transition; solar, EVs, battery storage disrupt oil demand |
-| F_FOOD | 0.07 | Food import dependence; but can afford imports indefinitely if solvent |
-| F_EUR | 0.03 | European energy policy affects oil demand |
-| F_HLTH | 0.00 | No distinct pathway |
-| F_SAS | 0.00 | Limited direct linkage |
-| F_EAS | 0.03 | China energy demand; Asian economic growth |
-| F_SSA | 0.00 | No significant pathway |
-| F_LAM | 0.00 | No significant pathway |
+```yaml
+factors:
+  F_MENA: 0.46  # Core MENA state; regional instability is contagious
+  F_FIN: 0.30   # Oil prices, global energy markets, sovereign wealth
+  F_CLIM: 0.23  # Extreme heat stress; habitability approaching limits
+  F_GPT: 0.17   # US-Saudi relationship; China competition for influence
+  F_TECH: 0.13  # Energy transition; solar, EVs, battery storage disrupt oil demand
+  F_FOOD: 0.07  # Food import dependence; but can afford imports indefinitely if solvent
+  F_EUR: 0.03   # European energy policy affects oil demand
+  F_EAS: 0.03   # China energy demand; Asian economic growth
+variance: 0.65  # Type 2 target
+```
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings
+F_HLTH carries no loading (no distinct pathway), F_SAS none (limited direct linkage), and F_SSA and F_LAM none (no significant pathway).
+
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings. The original (2025-12-19) loadings were F_MENA 0.70, F_FIN 0.45, F_CLIM 0.35, F_GPT 0.25, F_TECH 0.20, F_FOOD 0.10, F_EUR 0.05, F_EAS 0.05, with the pre-variance-allocation check **Sum of squared loadings**: 0.92 ✓; Task 3.11 scaled them to the Type 2 target on 2025-12-30.
 
 ### Loading Interpretation (Type 2)
 
@@ -232,135 +259,92 @@ Factors shock state variables that feed into pressure function:
 Once threshold is crossed, the form of instability varies. All branches represent genuine regime crisis—minor protests or policy adjustments that the regime easily absorbs don't trigger this event.
 
 ```yaml
-severity_branches:
-
-  - id: elite_realignment
-    probability: 0.45
-    description: |
-      Palace coup or forced succession within royal family. MBS replaced
-      or forced to share power. Different faction takes control but
-      system remains similar. Brief period of uncertainty, then
-      reconsolidation. "Managed crisis" - instability is real but
-      contained within elite circles. International relations may
-      shift but fundamental oil-for-security arrangements persist.
-      
-    impact_multiplier: 1.0  # baseline for this event
-    
-    factor_modifications:
-      F_MENA: +0.20
-      F_FIN: +0.15
-      
-    duration:
-      type: decaying
-      half_life_years: 3
-      floor: 0.05
-      
-    cascade_triggers:
-      # Note: GULF_COOPERATION_STRESS not in catalog
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 1.3
-        rationale: "Production uncertainty during transition"
-
-  - id: popular_uprising_contained
-    probability: 0.35
-    description: |
-      Significant popular unrest—protests in major cities, possibly
-      triggered by austerity measures or political grievance. Regime
-      deploys security forces; international criticism but no
-      intervention. Unrest eventually suppressed but regime weakened,
-      forced to make concessions (spending increases, limited reforms,
-      or conservative retrenchment). Hundreds to low thousands killed.
-      Economy disrupted for 1-2 years.
-      
-    impact_multiplier: 1.8
-    
-    factor_modifications:
-      F_MENA: +0.35
-      F_FIN: +0.25
-      F_GPT: +0.15
-      
-    duration:
-      type: decaying
-      half_life_years: 5
-      floor: 0.10
-      
-    cascade_triggers:
-      # Note: GULF_STATE_CONTAGION, GUEST_WORKER_CRISIS not in catalog
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 1.8
-        rationale: "Production disruption during unrest"
-      - event_id: EGYPT_STATE_FAILURE
-        probability_modifier: 1.3
-        rationale: "Gulf aid reduced; Egypt fiscal stress"
-
-  - id: regime_collapse
-    probability: 0.20
-    description: |
-      Regime loses control. Security forces fragment or refuse orders.
-      Royal family flees or is overthrown. What emerges is uncertain:
-      military government, Islamic republic, regional fragmentation,
-      or prolonged civil conflict. Oil production severely disrupted.
-      Holy sites (Mecca, Medina) become international concern.
-      Massive guest worker displacement (millions). Regional shock
-      as Gulf security architecture collapses.
-      
-    impact_multiplier: 4.0
-    
-    factor_modifications:
-      F_MENA: +0.70
-      F_FIN: +0.50
-      F_GPT: +0.40
-      F_FOOD: +0.25
-      
-    duration:
-      type: decaying
-      half_life_years: 15
-      floor: 0.25
-      
-    cascade_triggers:
-      # Note: GULF_STATE_CASCADE, MASS_MIGRATION_CRISIS not in catalog
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 3.0
-        rationale: "Major production disruption"
-      - event_id: IRAN_REGIME_CHANGE
-        probability_modifier: 0.7
-        rationale: "Regime may consolidate against external threat"
-      - event_id: EGYPT_STATE_FAILURE
-        probability_modifier: 1.8
-        rationale: "Gulf financial support collapses"
-      - event_id: PAKISTAN_STATE_FAILURE
-        probability_modifier: 1.3
-        rationale: "Remittance shock; Gulf migrant return"
-
-severity_probability_rationale: |
-  Distribution reflects Saudi Arabia's structural features, conditional
-  on actual regime crisis occurring:
-  
-  - Elite realignment (0.45): Most likely failure mode. Saudi succession
-    has historically been managed within the royal family. MBS has
-    consolidated power but also created resentments. A palace coup that
-    replaces him with another prince maintains system continuity.
-    International actors prefer stability; would accept new leadership.
-    
-  - Popular uprising contained (0.35): Arab Spring showed Saudi Arabia
-    is not immune to popular mobilization, though 2011 protests were
-    small. Regime has resources to buy off or suppress dissent, but
-    a larger trigger (fiscal crisis, major grievance) could overwhelm
-    normal responses. Bahrain 2011 showed Gulf regimes can survive
-    with sufficient force.
-    
-  - Regime collapse (0.20): Requires multiple failures: elite fragmentation
-    AND popular uprising AND security force defection. Saudi Arabia's
-    resources make this less likely than in poorer states. However, the
-    speed of collapse in Iran 1979 shows that even wealthy, Western-backed
-    regimes can fall rapidly when conditions align. Religious legitimacy
-    (Custodian of Holy Mosques) cuts both ways—provides support but also
-    makes regime vulnerable to Islamic revolutionary challenge.
+branches:
+  - {id: elite_realignment,          p: 0.45, desc: "Palace coup or forced succession; managed crisis within elite circles"}
+  - {id: popular_uprising_contained, p: 0.35, desc: "Significant unrest suppressed by force; regime weakened, concessions forced"}
+  - {id: regime_collapse,            p: 0.20, desc: "Security forces fragment; royal family overthrown; successor uncertain"}
 ```
+
+### Branch 1: Elite Realignment (45%)
+
+Palace coup or forced succession within royal family. MBS replaced or forced to share power. Different faction takes control but system remains similar. Brief period of uncertainty, then reconsolidation. "Managed crisis" - instability is real but contained within elite circles. International relations may shift but fundamental oil-for-security arrangements persist.
+
+**Impact multiplier**: 1.0× (baseline for this event). **Factor modifications**: F_MENA +0.20, F_FIN +0.15. **Duration**: decaying, half-life 3 years, floor 0.05.
+
+### Branch 2: Popular Uprising Contained (35%)
+
+Significant popular unrest—protests in major cities, possibly triggered by austerity measures or political grievance. Regime deploys security forces; international criticism but no intervention. Unrest eventually suppressed but regime weakened, forced to make concessions (spending increases, limited reforms, or conservative retrenchment). Hundreds to low thousands killed. Economy disrupted for 1-2 years.
+
+**Impact multiplier**: 1.8× baseline. **Factor modifications**: F_MENA +0.35, F_FIN +0.25, F_GPT +0.15. **Duration**: decaying, half-life 5 years, floor 0.10.
+
+### Branch 3: Regime Collapse (20%)
+
+Regime loses control. Security forces fragment or refuse orders. Royal family flees or is overthrown. What emerges is uncertain: military government, Islamic republic, regional fragmentation, or prolonged civil conflict. Oil production severely disrupted. Holy sites (Mecca, Medina) become international concern. Massive guest worker displacement (millions). Regional shock as Gulf security architecture collapses.
+
+**Impact multiplier**: 4.0× baseline. **Factor modifications**: F_MENA +0.70, F_FIN +0.50, F_GPT +0.40, F_FOOD +0.25. **Duration**: decaying, half-life 15 years, floor 0.25.
+
+*The YAML `impacts:` block takes the elite-realignment branch as its explicit list and scales the other two from it by their impact multipliers (1.8 and 4.0). The per-branch factor modifications and the per-branch durations (branch-specific half-lives and decay floors) have no v0.1 schema construct: inheritance scales magnitudes only, so the scaled branches keep the baseline rows' half-lives, and the branch durations above stay in prose as schema v0.2 backlog.*
+
+### Branch Cascade Multipliers (original specification)
+
+The original branch definitions carried multiplicative probability modifiers on other events; the flat additive deltas in the `cascades:` block below are the file's specified cascades, and these per-branch multipliers stay in prose.
+
+| Branch | Target Event | Probability Modifier | Rationale |
+|--------|--------------|---------------------|-----------|
+| Elite realignment | OIL_SUPPLY_SHOCK | ×1.3 | Production uncertainty during transition |
+| Popular uprising contained | OIL_SUPPLY_SHOCK | ×1.8 | Production disruption during unrest |
+| Popular uprising contained | EGYPT_STATE_FAILURE | ×1.3 | Gulf aid reduced; Egypt fiscal stress |
+| Regime collapse | OIL_SUPPLY_SHOCK | ×3.0 | Major production disruption |
+| Regime collapse | IRAN_REGIME_CHANGE | ×0.7 | Regime may consolidate against external threat |
+| Regime collapse | EGYPT_STATE_FAILURE | ×1.8 | Gulf financial support collapses |
+| Regime collapse | PAKISTAN_STATE_FAILURE | ×1.3 | Remittance shock; Gulf migrant return |
+
+The original branch definitions also noted targets not in the catalog: GULF_COOPERATION_STRESS (elite realignment), GULF_STATE_CONTAGION and GUEST_WORKER_CRISIS (popular uprising), GULF_STATE_CASCADE and MASS_MIGRATION_CRISIS (regime collapse). Per [[events/backlog-registry]], the four Gulf IDs fold into this event's aftermath branches and the promoted GULF_STATE_ATTACKS, and MASS_MIGRATION_CRISIS is the promotion EUROPEAN_MIGRATION_CRISIS; none has a file yet, so none appears in `triggers:`.
+
+### Severity Probability Rationale
+
+Distribution reflects Saudi Arabia's structural features, conditional on actual regime crisis occurring:
+
+- **Elite realignment (0.45)**: Most likely failure mode. Saudi succession has historically been managed within the royal family. MBS has consolidated power but also created resentments. A palace coup that replaces him with another prince maintains system continuity. International actors prefer stability; would accept new leadership.
+
+- **Popular uprising contained (0.35)**: Arab Spring showed Saudi Arabia is not immune to popular mobilization, though 2011 protests were small. Regime has resources to buy off or suppress dissent, but a larger trigger (fiscal crisis, major grievance) could overwhelm normal responses. Bahrain 2011 showed Gulf regimes can survive with sufficient force.
+
+- **Regime collapse (0.20)**: Requires multiple failures: elite fragmentation AND popular uprising AND security force defection. Saudi Arabia's resources make this less likely than in poorer states. However, the speed of collapse in Iran 1979 shows that even wealthy, Western-backed regimes can fall rapidly when conditions align. Religious legitimacy (Custodian of Holy Mosques) cuts both ways—provides support but also makes regime vulnerable to Islamic revolutionary challenge.
 
 ---
 
 ## Impact Vector
+
+```yaml
+impacts:
+  elite_realignment:
+    # Saudi Arabia
+    - {var: sau.gdp_real,                    mag: [-0.08, 0.05],  onset: {gradual: 1}, decay: 3}
+    - {var: sau.gdp_growth,                  mag: [-5, 3],        onset: immediate,    decay: 2}
+    - {var: sau.internal_conflict_intensity, mag: [1.5, 0.5],     onset: immediate,    decay: 5}
+    - {var: sau.fdi_net,                     mag: [-3, 1.5],      onset: immediate,    decay: 5}
+    - {var: sau.protest_intensity_annual,    mag: [30, 20],       onset: immediate,    decay: 3}
+    - {var: sau.net_migration_rate,          mag: [-5, 3],        onset: {gradual: 1}, decay: 3}
+
+    # Global
+    - {var: oil_brent,                       mag: [18.75, 11.25], onset: immediate,    decay: 1}
+    - {var: global_credit_spread,            mag: [30, 20],       onset: immediate,    decay: 1}
+
+    # Regional
+    - {var: egy.reserves_foreign,            mag: [-2, 1],        onset: {gradual: 1}, permanent: true}
+    - {var: pak.current_account,             mag: [-2, 1],        onset: {gradual: 1}, decay: 3}
+    - {var: irn.gdp_growth,                  mag: [0, 1],         onset: {gradual: 2}, decay: 3}
+
+  popular_uprising_contained:
+    inherit: elite_realignment
+    scale: 1.8
+
+  regime_collapse:
+    inherit: elite_realignment
+    scale: 4.0
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (−8% ± 5% for the elite-realignment branch); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields). The `oil_brent` row re-expresses the original +25% ± 15% against the catalog's 2025 baseline of $75/bbl (0.25 × 75 = 18.75, 0.15 × 75 = 11.25). The original tables follow; where a cell differs from the YAML, the tables are the author's statement and the YAML the nearest v0.1 form.*
 
 ### Saudi Arabia Impacts (Baseline: Elite Realignment Branch)
 
@@ -410,11 +394,19 @@ Displaced workers would return to South Asia, Southeast Asia, and Africa, creati
 
 ### Durability Rationale
 
-- **GDP**: Decaying; Saudi economy can recover if oil production resumes
+- **GDP**: Decaying; Saudi economy can recover if oil production resumes. The original specification carried a −3% floor on the GDP recovery; decay-to-floor durability is schema v0.2 backlog, so the YAML uses a plain 3-year half-life.
 - **Oil production**: Decaying; infrastructure intact in most scenarios
 - **Investment**: Longer decay; reputational damage persists
 - **Guest workers**: Persistent; rebuilding workforce takes years
 - **Regional influence**: Regime-dependent; varies with successor government orientation
+
+| Original form | YAML form | Note |
+|---------------|-----------|------|
+| `sau.gdp_real` decaying (half_life 3yr, floor −3%) | `decay: 3` | Decay-to-floor is schema v0.2 backlog; the −3% floor is dropped in v0.1 |
+| `egy.reserves_foreign` persistent | `permanent: true` | "Persistent" has no shorthand; permanent is the nearest implementable form |
+| `irn.gdp_growth` variable ±1%, gradual, uncertain | `mag: [0, 1]`, `onset: {gradual: 2}`, `decay: 3` | Zero mean with 1-point std keeps the sign-uncertain draw; the 2-year ramp and 3-year half-life are the migration's choice to match the other regional rows |
+| "rapid(1yr)" onset | `onset: {gradual: 1}` | A one-year linear ramp |
+| "+1-2 levels" | `mag: [1.5, 0.5]` | Midpoint of the stated range |
 
 ---
 
@@ -434,6 +426,23 @@ Saudi regime instability would trigger significant cascade effects. Key pathways
 
 ### Specified Event Cascades
 
+```yaml
+cascades:
+  triggers:
+    - {event: OIL_SUPPLY_SHOCK,        delta: 0.050,  years: 3}
+    - {event: GLOBAL_FINANCIAL_CRISIS, delta: 0.015,  years: 2}
+    - {event: EGYPT_STATE_FAILURE,     delta: 0.010,  years: 5}
+    - {event: IRAN_REGIME_CHANGE,      delta: -0.005, years: 5}
+    - {event: PAKISTAN_STATE_FAILURE,  delta: 0.005,  years: 5}
+  triggered_by:
+    # Informational: events whose own cascade lists name this event (this file specified no sources)
+    - {event: OIL_SUPPLY_SHOCK}              # ×0.7 initially, ×1.3 after the windfall ends
+    - {event: IRAN_REGIME_CHANGE}            # −0.3%/year for 5 years; external threat consolidates Gulf regimes
+    - {event: CHINESE_ECONOMIC_CRISIS}       # +0.3%/year for 3 years; oil price collapse stresses fiscal model
+    - {event: FUSION_COMMERCIALIZATION}      # +0.8%/year for 15 years; petrostate revenue collapse
+    - {event: ENERGY_STORAGE_BREAKTHROUGH}   # +0.1%/year, permanent; oil demand destruction
+```
+
 | Pathway | Target Event | Probability Change | Mechanism |
 |---------|--------------|-------------------|-----------|
 | Oil disruption | OIL_SUPPLY_SHOCK | +5%/year for 3 years | Saudi production disruption |
@@ -442,7 +451,7 @@ Saudi regime instability would trigger significant cascade effects. Key pathways
 | Regional shift | IRAN_REGIME_CHANGE | -0.5%/year for 5 years | External threat may consolidate regime |
 | South Asian stress | PAKISTAN_STATE_FAILURE | +0.5%/year for 5 years | Remittance shock, migrant return |
 
-**Note**: Many intuitive cascade targets (Gulf state contagion, mass migration crisis, Bahrain/UAE instability) are not yet specified in the event catalog.
+**Note**: Many intuitive cascade targets (Gulf state contagion, mass migration crisis, Bahrain/UAE instability) are not yet specified in the event catalog; see the branch cascade table above for their [[events/backlog-registry]] dispositions.
 
 ---
 
@@ -510,13 +519,17 @@ Saudi regime instability would trigger significant cascade effects. Key pathways
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Energy transition modeling; Vision 2030 assessment; religious legitimacy dynamics; climate habitability analysis |
+```yaml
+research:
+  tier: 1
+  updated: 2026-10-12
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+Energy transition modeling; Vision 2030 assessment; religious legitimacy dynamics; climate habitability analysis.
 
 ## Sources
 
@@ -545,6 +558,8 @@ Saudi regime instability would trigger significant cascade effects. Key pathways
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.8 format migration. Classification, probability, factors, branches, impacts, cascades and research status now carry `id`-bearing YAML; the legacy `severity_branches` block became `branches:` with its descriptions, factor modifications, durations and cascade multipliers moved to prose. Judgment calls: (1) pressure terms clipped to [0, 1] and the ternary realized as `where()`; the succession term reads `sau.leadership_tenure_years` per the original calculation (the table labels it `years_since_irregular_transition`); at the prose's current values the expression gives ~12/100 against the prose's "~25" judgment estimate. (2) Onset `sudden` for "rapid (1-2 years)"; "rapid(1yr)" rows as `{gradual: 1}`. (3) `oil_brent` +25% ± 15% converted against the $75/bbl 2025 baseline to [18.75, 11.25]. (4) `sau.gdp_real` decay-to-floor (−3%) written as plain `decay: 3`; `egy.reserves_foreign` "persistent" as `permanent: true`; `irn.gdp_growth` "variable ±1%, gradual, uncertain" as `[0, 1]`, `{gradual: 2}`, `decay: 3`; "+1-2 levels" as `[1.5, 0.5]` (all recorded in the durability table). (5) Branches scaled from `elite_realignment` by the 1.8× and 4.0× impact multipliers; per-branch half-lives, floors and factor modifications stay in prose (schema v0.2 backlog). (6) `triggers:` carries the five specified additive cascades (including the negative IRAN_REGIME_CHANGE delta); the per-branch multipliers stay in prose; GULF_COOPERATION_STRESS, GULF_STATE_CONTAGION, GULF_STATE_CASCADE, GUEST_WORKER_CRISIS (registry §2 folds) and MASS_MIGRATION_CRISIS (registry §1 promotion to EUROPEAN_MIGRATION_CRISIS) have no file and are kept in prose only. (7) `triggered_by:` lists, informationally, the five events whose own cascade tables name this event; the original file specified no sources. (8) No `until: resolved` rows, so no `resolves_after`. Restored from git history: the original 2025-12-19 loadings and their "sum of squared loadings 0.92" check (replaced by Task 3.11 on 2025-12-30), and the Task 3.11 changelog row that commit never added. |
+| 2025-12-30 | Variance allocation: scaled loadings to Type 2 target | Task 3.11 - Factor-explained variance reduced to Type 2 target (0.65) per variance allocation framework; scale factor 0.66 (row backfilled 2026-10-12 from git history) |
 | 2025-12-30 | Critical review: replaced synthetic variables with observables; added Case Against and Probability Evolution; fixed cascade/impact references | Task 2.4 systematic review |
 | 2025-12-19 | Initial Level 1 specification | Task 2.1.8 - Type 2 regime instability event |
 
