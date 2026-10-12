@@ -21,16 +21,18 @@ This specification follows the pattern established in [[events/geopolitical/saud
 
 ---
 
-## Event Classification
+## Specification
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | IRAN_REGIME_CHANGE |
-| **Scale** | National (with major regional and global consequences) |
-| **Domain** | Political |
-| **Causal Type** | **Type 2: Threshold** |
-| **Onset Speed** | Rapid (1-3 years from trigger to resolution) |
-| **Reversibility** | Partial (regime may reconstitute in different form; full revolutionary transition possible but uncertain) |
+```yaml
+id: IRAN_REGIME_CHANGE
+domain: political
+scale: national
+causal_type: 2
+onset: sudden
+reversibility: partial
+```
+
+*Scale: national, with major regional and global consequences. Onset speed: rapid (1-3 years from trigger to resolution). Reversibility: partial (regime may reconstitute in different form; full revolutionary transition possible but uncertain).*
 
 ## Description
 
@@ -68,7 +70,7 @@ Iran regime change exhibits threshold dynamics:
 | `irn.years_since_irregular_transition` | 0.10 | complex | 1979 was last transition; 46 years of regime stability |
 | `irn.inflation_rate` | 0.05 | linear | Currency crisis, purchasing power erosion |
 
-**Pressure calculation**:
+**Pressure calculation** (as originally specified):
 ```
 pressure = 0.25 × sanctions_level / 100
          + 0.20 × max(0, -gdp_growth) / 10  # negative growth contributes
@@ -79,6 +81,8 @@ pressure = 0.25 × sanctions_level / 100
          + 0.05 × min(inflation_rate, 50) / 50  # capped contribution
 ```
 *Normalized to 0-100 scale*
+
+The YAML expression below realizes these transforms in the expression language's subset: the inverse growth term as `max(0, -gdp_growth) / 10` (only contraction contributes), the exponential water term as `exp(water_stress / 50) / exp(2)` (saturating at 1.0 when `water_stress` = 100), the "complex" aging-revolution step as `where(years_since_irregular_transition > 40, 0.3, 0)` in place of the original ternary, the capped inflation term as `min(inflation_rate, 50) / 50`, and the whole weighted sum wrapped in `100 * (...)` to put it on `threshold`'s 0-100 scale.
 
 **Proxy limitations**: True "regime legitimacy," "elite cohesion," and "social contract stress" are unobservable. We proxy through economic indicators (sanctions, GDP, unemployment, inflation), water stress (measurable), and protest intensity. The key unobservables—IRGC-clerical faction dynamics, succession positioning—cannot be directly captured. Probability calibration relies on reference class reasoning from comparable ideological authoritarian regimes.
 
@@ -129,6 +133,29 @@ Despite vulnerabilities, the regime possesses:
 
 ## Probability
 
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.25 * (irn.sanctions_level / 100) +
+      0.20 * (max(0, -irn.gdp_growth) / 10) +
+      0.15 * (irn.unemployment_rate / 30) +
+      0.15 * (exp(irn.water_stress / 50) / exp(2)) +
+      0.10 * (irn.protest_intensity_annual / 100) +
+      0.10 * where(irn.years_since_irregular_transition > 40, 0.3, 0) +
+      0.05 * (min(irn.inflation_rate, 50) / 50)
+    )
+  threshold: 65
+  threshold_std: 10
+  sharpness: 0.20
+  floor: 0.004
+  annual: 0.012
+  range: [0.008, 0.018]
+  confidence: medium
+```
+
+No impact row uses `until: resolved`, so the probability block carries no `resolves_after`; every impact decays on its own half-life.
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability (current pressure)** | 1.2% |
@@ -147,6 +174,8 @@ Current pressure: ~50/100 (elevated but below threshold)
 - `protest_intensity_annual`: ~40 (elevated post-2022; suppressed but persistent)
 - `years_since_irregular_transition`: 46 years (1979 revolution)
 - `inflation_rate`: ~40% (severe currency depreciation)
+
+At these values the YAML expression gives 45.2 with `gdp_growth` at 0 and 49.2 at −2%, consistent with the "~50/100" estimate. The compiler's pressure-scale check at 2025 baselines is skipped for this event because every term reads an `irn.*` country variable, which has no recorded baseline in the state catalog.
 
 ### Derivation
 
@@ -210,22 +239,23 @@ As a Type 2 event, probability depends on pressure trajectory:
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| **F_MENA** | 0.43 | Core MENA power; instability would transform regional dynamics |
-| **F_GPT** | 0.30 | US sanctions regime, great power competition, nuclear negotiations |
-| **F_CLIM** | 0.23 | Water crisis is existential; affects agricultural base and habitability |
-| **F_FIN** | 0.20 | Oil prices, sanctions effects, global finance exclusion |
-| F_EAS | 0.10 | China relationship; alternative economic partner |
-| F_TECH | 0.07 | Information control challenges; nuclear program trajectory |
-| F_FOOD | 0.07 | Agricultural stress from water; food import dependence |
-| F_EUR | 0.07 | European policy on sanctions, nuclear deal |
-| F_SAS | 0.03 | Limited direct linkage; some Afghanistan spillover |
-| F_HLTH | 0.00 | No distinct pathway |
-| F_SSA | 0.00 | No significant pathway |
-| F_LAM | 0.00 | No significant pathway |
+```yaml
+factors:
+  F_MENA: 0.43  # Core MENA power; instability would transform regional dynamics
+  F_GPT: 0.30   # US sanctions regime, great power competition, nuclear negotiations
+  F_CLIM: 0.23  # Water crisis is existential; affects agricultural base and habitability
+  F_FIN: 0.20   # Oil prices, sanctions effects, global finance exclusion
+  F_EAS: 0.10   # China relationship; alternative economic partner
+  F_TECH: 0.07  # Information control challenges; nuclear program trajectory
+  F_FOOD: 0.07  # Agricultural stress from water; food import dependence
+  F_EUR: 0.07   # European policy on sanctions, nuclear deal
+  F_SAS: 0.03   # Limited direct linkage; some Afghanistan spillover
+variance: 0.65  # Type 2 target
+```
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings
+F_HLTH carries no loading (no distinct pathway); F_SSA and F_LAM carry no loading (no significant pathway).
+
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings. The original (pre-scaling, Level 1) loadings were F_MENA 0.65, F_GPT 0.45, F_CLIM 0.35, F_FIN 0.30, F_EAS 0.15, F_TECH 0.10, F_FOOD 0.10, F_EUR 0.10, F_SAS 0.05, with a sum of squared loadings of 0.88 — the pre-variance-allocation check the specification originally recorded.
 
 ### Loading Interpretation (Type 2)
 
@@ -243,207 +273,115 @@ Factors shock state variables that feed into pressure function:
 Once threshold is crossed, the form of regime crisis varies. All branches represent genuine regime crisis—protests that are successfully suppressed without fundamental change, or smooth leadership successions that maintain system continuity, don't trigger this event.
 
 ```yaml
-severity_branches:
-
-  - id: popular_uprising_suppressed
-    probability: 0.40
-    description: |
-      Mass protests exceed 2022 scale—potentially triggered by economic
-      collapse, environmental disaster, or political catalyst. Regime
-      deploys maximum force; significant casualties (thousands). Uprising
-      eventually suppressed but regime fundamentally weakened. Significant
-      international isolation. Brain drain accelerates. Economy further
-      damaged. Regime survives but severely delegitimized and weakened;
-      future instability more likely. This is a genuine discontinuity
-      because the regime's coercive legitimacy and capacity are permanently
-      degraded.
-      
-    impact_multiplier: 1.0  # baseline
-    
-    factor_modifications:
-      F_MENA: +0.25
-      F_GPT: +0.20
-      
-    duration:
-      type: decaying
-      half_life_years: 4
-      floor: 0.10
-      
-    cascade_triggers:
-      # Note: REFUGEE_CRISIS_MENA, SANCTIONS_INTENSIFICATION not in catalog
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 1.4
-        rationale: "Production disruption during crisis"
-
-  - id: revolutionary_transition
-    probability: 0.35
-    description: |
-      Regime actually falls—security forces fragment or refuse orders,
-      elite defections cascade, protests cannot be suppressed. What
-      emerges is deeply uncertain: secular democratic government,
-      reformed Islamic system, military transitional authority,
-      regional fragmentation, or civil conflict. Nuclear facilities
-      become major international concern. Proxy networks lose central
-      direction. Regional power vacuum.
-      
-    impact_multiplier: 3.0
-    
-    factor_modifications:
-      F_MENA: +0.65
-      F_GPT: +0.55
-      F_FIN: +0.35
-      F_HLTH: +0.10  # potential for violence, humanitarian crisis
-      
-    duration:
-      type: decaying
-      half_life_years: 12
-      floor: 0.20
-      
-    cascade_triggers:
-      # Note: NUCLEAR_SECURITY_CRISIS, PROXY_NETWORK_COLLAPSE, KURDISH_AUTONOMY_EXPANSION, REFUGEE_CRISIS_MAJOR not in catalog
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 2.5
-        rationale: "Major production disruption"
-      - event_id: GLOBAL_FINANCIAL_CRISIS
-        probability_modifier: 1.5
-        rationale: "Oil shock, regional instability"
-      - event_id: SAUDI_REGIME_INSTABILITY
-        probability_modifier: 0.7
-        rationale: "External threat may consolidate Gulf regimes"
-
-  - id: failed_succession_crisis
-    probability: 0.15
-    description: |
-      Supreme Leader death or incapacitation triggers succession process
-      that fails to resolve. IRGC and clerical factions cannot agree on
-      successor or power-sharing arrangement. Open elite conflict emerges.
-      This is distinct from managed succession (which doesn't trigger
-      this event)—here the succession mechanism breaks down, producing
-      prolonged institutional paralysis, factional violence, or civil
-      conflict. System may eventually reconstitute but only after
-      significant instability and permanent damage to institutional
-      legitimacy.
-      
-    impact_multiplier: 2.0
-    
-    factor_modifications:
-      F_MENA: +0.40
-      F_GPT: +0.30
-      F_FIN: +0.25
-      
-    duration:
-      type: decaying
-      half_life_years: 8
-      floor: 0.15
-      
-    cascade_triggers:
-      # Note: PROXY_NETWORK_WEAKENING, NUCLEAR_PROGRAM_UNCERTAINTY not in catalog
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 1.5
-        rationale: "Production uncertainty during crisis"
-      - event_id: IRAN_NUCLEAR_ACQUISITION
-        probability_modifier: 1.3
-        rationale: "Factional competition may accelerate program"
-
-  - id: external_intervention_trigger
-    probability: 0.10
-    description: |
-      US or Israeli military strike on nuclear facilities or
-      leadership targets triggers regime destabilization. Initial
-      strike may produce rally-around-flag effect, but if combined
-      with existing pressures, could catalyze broader collapse.
-      Distinct from other branches because external action is
-      proximate cause. High escalation risk—Iran may retaliate
-      against Gulf states, Israel; regional war possible.
-      
-    impact_multiplier: 4.0
-    
-    factor_modifications:
-      F_MENA: +0.80
-      F_GPT: +0.70
-      F_FIN: +0.50
-      F_FOOD: +0.20  # oil disruption affects food prices
-      
-    duration:
-      type: decaying
-      half_life_years: 10
-      floor: 0.25
-      
-    cascade_triggers:
-      # Note: STRAIT_OF_HORMUZ_CRISIS, GULF_STATE_ATTACKS, ISRAEL_IRAN_WAR not in catalog
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 4.0
-        rationale: "Regional conflict disrupts ~20% of global oil"
-      - event_id: GLOBAL_FINANCIAL_CRISIS
-        probability_modifier: 2.0
-        rationale: "Oil spike, market panic"
-      - event_id: SAUDI_REGIME_INSTABILITY
-        probability_modifier: 1.5
-        rationale: "Iran retaliation against Gulf states"
-
-severity_probability_rationale: |
-  Distribution reflects Iran's structural features, conditional on
-  actual regime crisis occurring. Smooth successions where the Islamic
-  Republic continues with a new Supreme Leader don't trigger this event.
-  
-  - Popular uprising suppressed (0.40): Most likely crisis mode. 2009
-    and 2022 showed regime can suppress major protests, but a crisis-level
-    uprising would be larger and suppression more costly. Regime survives
-    but permanently weakened—this is a discontinuity because coercive
-    capacity and legitimacy are durably degraded, unlike normal protest
-    cycles.
-    
-  - Revolutionary transition (0.35): Requires multiple failures: elite
-    fragmentation AND security force defection AND mass mobilization.
-    1979 shows it can happen in Iran specifically. Higher probability
-    than in Russia because ideological exhaustion is more advanced and
-    population is more mobilized.
-    
-  - Failed succession crisis (0.15): Khamenei is 85+; succession will
-    eventually occur. Most successions will be managed (not triggering
-    this event). This branch captures scenarios where the succession
-    mechanism fails—factional deadlock, open conflict, institutional
-    breakdown. Lower probability because IRGC has strong interest in
-    managed transition.
-    
-  - External intervention trigger (0.10): Requires deliberate US/Israeli
-    decision to strike AND that strike catalyzes regime collapse rather
-    than rally-around-flag. Both conditions are uncertain. However, the
-    consequences of this pathway are severe enough to warrant distinct
-    modeling.
+branches:
+  - {id: popular_uprising_suppressed,  p: 0.40, desc: "Mass protests beyond 2022 scale; suppressed at great cost; regime survives but durably weakened"}
+  - {id: revolutionary_transition,     p: 0.35, desc: "Security forces fragment; regime falls; successor deeply uncertain"}
+  - {id: failed_succession_crisis,     p: 0.15, desc: "Supreme Leader succession mechanism breaks down; open elite conflict"}
+  - {id: external_intervention_trigger, p: 0.10, desc: "US/Israeli strike catalyzes broader collapse; regional war risk"}
 ```
+
+### Branch 1: Popular Uprising Suppressed (40%)
+
+Mass protests exceed 2022 scale—potentially triggered by economic collapse, environmental disaster, or political catalyst. Regime deploys maximum force; significant casualties (thousands). Uprising eventually suppressed but regime fundamentally weakened. Significant international isolation. Brain drain accelerates. Economy further damaged. Regime survives but severely delegitimized and weakened; future instability more likely. This is a genuine discontinuity because the regime's coercive legitimacy and capacity are permanently degraded.
+
+**Impact multiplier**: 1.0× (baseline).
+
+### Branch 2: Revolutionary Transition (35%)
+
+Regime actually falls—security forces fragment or refuse orders, elite defections cascade, protests cannot be suppressed. What emerges is deeply uncertain: secular democratic government, reformed Islamic system, military transitional authority, regional fragmentation, or civil conflict. Nuclear facilities become major international concern. Proxy networks lose central direction. Regional power vacuum.
+
+**Impact multiplier**: 3.0× baseline.
+
+### Branch 3: Failed Succession Crisis (15%)
+
+Supreme Leader death or incapacitation triggers succession process that fails to resolve. IRGC and clerical factions cannot agree on successor or power-sharing arrangement. Open elite conflict emerges. This is distinct from managed succession (which doesn't trigger this event)—here the succession mechanism breaks down, producing prolonged institutional paralysis, factional violence, or civil conflict. System may eventually reconstitute but only after significant instability and permanent damage to institutional legitimacy.
+
+**Impact multiplier**: 2.0× baseline.
+
+### Branch 4: External Intervention Trigger (10%)
+
+US or Israeli military strike on nuclear facilities or leadership targets triggers regime destabilization. Initial strike may produce rally-around-flag effect, but if combined with existing pressures, could catalyze broader collapse. Distinct from other branches because external action is proximate cause. High escalation risk—Iran may retaliate against Gulf states, Israel; regional war possible.
+
+**Impact multiplier**: 4.0× baseline.
+
+### Branch Factor Modifications and Durations
+
+The original specification attached per-branch factor modifications (post-firing shifts to the factor draws) and a branch-level duration profile to each severity branch. Neither construct exists in the v0.1 schema (factor modifications are not compiled; branch-level decay-to-floor is schema v0.2 backlog), so both are kept here as the documented intent.
+
+| Branch | Factor modifications | Duration (original form) |
+|--------|---------------------|--------------------------|
+| Popular uprising suppressed | F_MENA +0.25, F_GPT +0.20 | decaying, half-life 4 years, floor 0.10 |
+| Revolutionary transition | F_MENA +0.65, F_GPT +0.55, F_FIN +0.35, F_HLTH +0.10 (potential for violence, humanitarian crisis) | decaying, half-life 12 years, floor 0.20 |
+| Failed succession crisis | F_MENA +0.40, F_GPT +0.30, F_FIN +0.25 | decaying, half-life 8 years, floor 0.15 |
+| External intervention trigger | F_MENA +0.80, F_GPT +0.70, F_FIN +0.50, F_FOOD +0.20 (oil disruption affects food prices) | decaying, half-life 10 years, floor 0.25 |
+
+### Severity Probability Rationale
+
+Distribution reflects Iran's structural features, conditional on actual regime crisis occurring. Smooth successions where the Islamic Republic continues with a new Supreme Leader don't trigger this event.
+
+- **Popular uprising suppressed (0.40)**: Most likely crisis mode. 2009 and 2022 showed regime can suppress major protests, but a crisis-level uprising would be larger and suppression more costly. Regime survives but permanently weakened—this is a discontinuity because coercive capacity and legitimacy are durably degraded, unlike normal protest cycles.
+- **Revolutionary transition (0.35)**: Requires multiple failures: elite fragmentation AND security force defection AND mass mobilization. 1979 shows it can happen in Iran specifically. Higher probability than in Russia because ideological exhaustion is more advanced and population is more mobilized.
+- **Failed succession crisis (0.15)**: Khamenei is 85+; succession will eventually occur. Most successions will be managed (not triggering this event). This branch captures scenarios where the succession mechanism fails—factional deadlock, open conflict, institutional breakdown. Lower probability because IRGC has strong interest in managed transition.
+- **External intervention trigger (0.10)**: Requires deliberate US/Israeli decision to strike AND that strike catalyzes regime collapse rather than rally-around-flag. Both conditions are uncertain. However, the consequences of this pathway are severe enough to warrant distinct modeling.
 
 ---
 
 ## Impact Vector
 
-### Iran Impacts (Baseline: Popular Uprising Suppressed Branch)
+The YAML `impacts:` block takes the popular-uprising-suppressed branch as its explicit baseline list and scales the others from it with the branch multipliers above (`revolutionary_transition` 3.0, `failed_succession_crisis` 2.0, `external_intervention_trigger` 4.0). The multipliers apply uniformly to every row, so bounded-scale variables (`internal_conflict_intensity`, 0-4) overshoot their range in the heavier branches exactly as the original multiplier table implied.
 
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `irn.gdp_real` | ↓ | -12% ± 8% | rapid(1yr) | decaying (half_life: 4yr, floor: -5%) |
-| `irn.gdp_growth` | ↓ | -8% ± 4% | immediate | decaying (half_life: 2yr) |
-| `irn.internal_conflict_intensity` | ↑ | +2-3 levels | immediate | decaying (half_life: 5yr) |
-| `irn.protest_intensity_annual` | ↑ | +40 ± 20 | immediate | decaying (half_life: 3yr) |
-| `irn.fdi_net` | ↓ | -2% GDP ± 1% | immediate | decaying (half_life: 6yr) |
-| `irn.emigration_skilled_rate` | ↑ | +3% ± 1.5% | rapid(1yr) | decaying (half_life: 5yr) |
-| `irn.refugees_abroad` | ↑ | +1M ± 0.5M | rapid(2yr) | decaying (half_life: 10yr) |
+```yaml
+impacts:
+  popular_uprising_suppressed:
+    # Iran
+    - {var: irn.gdp_real,                    mag: [-0.12, 0.08], onset: {gradual: 1}, decay: 4}
+    - {var: irn.gdp_growth,                  mag: [-8, 4],       onset: immediate,    decay: 2}
+    - {var: irn.internal_conflict_intensity, mag: [2.5, 0.5],    onset: immediate,    decay: 5}
+    - {var: irn.protest_intensity_annual,    mag: [40, 20],      onset: immediate,    decay: 3}
+    - {var: irn.fdi_net,                     mag: [-2, 1],       onset: immediate,    decay: 6}
+    - {var: irn.emigration_skilled_rate,     mag: [3, 1.5],      onset: {gradual: 1}, decay: 5}
+    - {var: irn.refugees_abroad,             mag: [1, 0.5],      onset: {gradual: 2}, decay: 10}
 
-### Global Impacts
+    # Global
+    - {var: oil_brent,                       mag: [15, 9],       onset: immediate,    decay: 1}
+    - {var: global_credit_spread,            mag: [25, 15],      onset: immediate,    decay: 1}
 
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `oil_brent` | ↑ | +20% ± 12% | immediate | decaying (half_life: 1yr) |
-| `global_credit_spread` | ↑ | +25bps ± 15bps | immediate | decaying (half_life: 1yr) |
+    # Regional
+    - {var: levant_iraq.gdp_growth,                  mag: [-0.25, 0.15], onset: {gradual: 1}, decay: 10}
+    - {var: levant_iraq.internal_conflict_intensity, mag: [0.6, 0.3],    onset: {gradual: 1}, decay: 5}
+    - {var: tur.refugees_hosted,             mag: [0.5, 0.3],    onset: {gradual: 2}, decay: 10}
 
-### Regional Impacts (Selected Countries)
+  revolutionary_transition:
+    inherit: popular_uprising_suppressed
+    scale: 3.0
 
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `lbn.gdp_growth` | ↓ | -3% ± 2% | rapid(1yr) | persistent (Hezbollah funding cut) |
-| `irq.internal_conflict_intensity` | ↑ | +1 level | rapid(1yr) | decaying (militia fragmentation) |
-| `yem.internal_conflict_intensity` | variable | ±1 level | rapid(6mo) | uncertain (Houthi support cut) |
-| `tur.refugees_hosted` | ↑ | +0.5M ± 0.3M | rapid(2yr) | decaying (half_life: 10yr) |
+  failed_succession_crisis:
+    inherit: popular_uprising_suppressed
+    scale: 2.0
+
+  external_intervention_trigger:
+    inherit: popular_uprising_suppressed
+    scale: 4.0
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (−12% ± 8% for the baseline branch); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields) — percentage points for `gdp_growth`, `fdi_net` (% of GDP) and `emigration_skilled_rate`, levels on the 0-4 scale for `internal_conflict_intensity`, index points for `protest_intensity_annual`, millions for refugee stocks, $/bbl for `oil_brent`, bps for `global_credit_spread`.*
+
+### Iran Impacts (Baseline: Popular Uprising Suppressed Branch) — original specification
+
+The YAML rows above carry the original magnitudes with three re-expressions: `irn.gdp_real` was specified as −12% ± 8%, rapid (1yr) onset, *decaying (half_life: 4yr, floor: −5%)* — decay-to-floor durability is schema v0.2 backlog, so the YAML uses a plain 4-year half-life and the −5% floor is recorded here; `irn.internal_conflict_intensity` was specified as "+2-3 levels", written as 2.5 ± 0.5; and the two "rapid (1yr)" / "rapid (2yr)" onsets became `{gradual: 1}` / `{gradual: 2}`. The remaining Iran rows (`gdp_growth` −8% ± 4%, half-life 2yr; `protest_intensity_annual` +40 ± 20, half-life 3yr; `fdi_net` −2% GDP ± 1%, half-life 6yr; `emigration_skilled_rate` +3% ± 1.5%, half-life 5yr; `refugees_abroad` +1M ± 0.5M, half-life 10yr) convert one-to-one.
+
+### Global Impacts — original specification
+
+`oil_brent` was specified as **+20% ± 12%** (immediate, half-life 1yr); against the catalog's 2025 baseline of $75/bbl this is +$15 ± $9, which is what the YAML carries. `global_credit_spread` +25bps ± 15bps (immediate, half-life 1yr) converts one-to-one.
+
+### Regional Impacts (Selected Countries) — original specification
+
+| Variable | Direction | Magnitude (mean ± std) | Onset | Durability | Disposition at migration |
+|----------|-----------|------------------------|-------|------------|--------------------------|
+| `lbn.gdp_growth` | ↓ | -3% ± 2% | rapid(1yr) | persistent (Hezbollah funding cut) | Lebanon is not a state-catalog entity; it is a member of the `levant_iraq` Tier 1 aggregate. Re-expressed as `levant_iraq.gdp_growth` −0.25 ± 0.15 pp (Lebanon is ~8% of the aggregate's $300B GDP). "Persistent" (decay-to-floor class) is schema v0.2 backlog; written as a 10-year half-life |
+| `irq.internal_conflict_intensity` | ↑ | +1 level | rapid(1yr) | decaying (militia fragmentation) | Iraq is not a state-catalog entity; it is ~60% of `levant_iraq` by population. Re-expressed as `levant_iraq.internal_conflict_intensity` +0.6 ± 0.3; the unspecified half-life is written as 5 years, matching the Iran conflict-intensity row |
+| `yem.internal_conflict_intensity` | variable | ±1 level | rapid(6mo) | uncertain (Houthi support cut) | **Dropped**: Yemen is not one of the 40 countries and belongs to no Tier 1 or Tier 2 aggregate ([[methodology/reference/state-entities]]); the channel stays in the Proxy Network Effects prose below |
+| `tur.refugees_hosted` | ↑ | +0.5M ± 0.3M | rapid(2yr) | decaying (half_life: 10yr) | Converts one-to-one |
 
 **Note**: Many intuitive impact channels (proxy network capacity, regional influence indices, nuclear proliferation risk) are derived outputs, not state variables. The simulation tracks observable impacts on GDP, conflict levels, commodity prices, and migration flows.
 
@@ -465,10 +403,10 @@ Iran's regional proxy network (Hezbollah, Iraqi militias, Houthis, Hamas support
 
 ### Durability Rationale
 
-- **GDP**: Decaying; economy can recover under new management or sanctions relief
+- **GDP**: Decaying; economy can recover under new management or sanctions relief. The original specification carried a −5% floor on the GDP recovery; decay-to-floor durability is schema v0.2 backlog, so the YAML uses a plain 4-year half-life.
 - **Oil production**: Decaying; infrastructure persists, sanctions relief possible
 - **Brain drain**: Persistent; departed talent doesn't return quickly
-- **Proxy network effects**: Persistent; rebuilding state sponsorship takes years
+- **Proxy network effects**: Persistent; rebuilding state sponsorship takes years (the Lebanon growth row's "persistent" form is written as a 10-year half-life for the same backlog reason)
 - **Nuclear status**: Regime-dependent; successor government makes new choices
 
 ---
@@ -489,6 +427,16 @@ Iran regime change would trigger significant cascade effects. Key pathways inclu
 
 ### Specified Event Cascades
 
+```yaml
+cascades:
+  triggers:
+    - {event: OIL_SUPPLY_SHOCK,          delta: 0.050,  years: 3}
+    - {event: GLOBAL_FINANCIAL_CRISIS,   delta: 0.015,  years: 2}
+    - {event: SAUDI_REGIME_INSTABILITY,  delta: -0.003, years: 5}
+    - {event: SAUDI_NUCLEAR_ACQUISITION, delta: 0.010,  years: 10}
+  triggered_by: []  # none specified; the external-strike pathway is modeled as the external_intervention_trigger branch
+```
+
 | Pathway | Target Event | Probability Change | Mechanism |
 |---------|--------------|-------------------|-----------|
 | Oil disruption | OIL_SUPPLY_SHOCK | +5%/year for 3 years | Iranian production disruption; Hormuz risk |
@@ -496,6 +444,42 @@ Iran regime change would trigger significant cascade effects. Key pathways inclu
 | Regional shift | SAUDI_REGIME_INSTABILITY | -0.3%/year for 5 years | External threat consolidates Gulf regimes |
 | Nuclear cascade | SAUDI_NUCLEAR_ACQUISITION | +1%/year for 10 years | Primary restraint removed |
 | Nuclear acceleration | IRAN_NUCLEAR_ACQUISITION | uncertain | Could accelerate or collapse with regime |
+
+The IRAN_NUCLEAR_ACQUISITION edge has no specified magnitude or sign ("uncertain"), so it is not written into `triggers:`; it stays here as a documented pathway.
+
+### Branch-Conditional Cascade Modifiers (original specification)
+
+The original severity-branch block expressed cascades as per-branch *multipliers* on the target's annual probability rather than the absolute deltas the schema compiles. The flat deltas above are the specified cascade table; the branch modifiers are kept here as the documented intent for a conditional (`if: branch == ...`) refinement.
+
+| Branch | Target | Probability modifier | Rationale |
+|--------|--------|---------------------|-----------|
+| Popular uprising suppressed | OIL_SUPPLY_SHOCK | 1.4× | Production disruption during crisis |
+| Revolutionary transition | OIL_SUPPLY_SHOCK | 2.5× | Major production disruption |
+| Revolutionary transition | GLOBAL_FINANCIAL_CRISIS | 1.5× | Oil shock, regional instability |
+| Revolutionary transition | SAUDI_REGIME_INSTABILITY | 0.7× | External threat may consolidate Gulf regimes |
+| Failed succession crisis | OIL_SUPPLY_SHOCK | 1.5× | Production uncertainty during crisis |
+| Failed succession crisis | IRAN_NUCLEAR_ACQUISITION | 1.3× | Factional competition may accelerate program |
+| External intervention trigger | OIL_SUPPLY_SHOCK | 4.0× | Regional conflict disrupts ~20% of global oil |
+| External intervention trigger | GLOBAL_FINANCIAL_CRISIS | 2.0× | Oil spike, market panic |
+| External intervention trigger | SAUDI_REGIME_INSTABILITY | 1.5× | Iran retaliation against Gulf states |
+
+### Cascade Targets Not in the Catalog
+
+The original branch block named cascade targets that have no event file. Per [[events/backlog-registry]] they are not written into `triggers:`; each is listed there with a disposition.
+
+| Branch | Referenced ID | Registry disposition |
+|--------|---------------|---------------------|
+| Popular uprising suppressed | REFUGEE_CRISIS_MENA | promote → `EUROPEAN_MIGRATION_CRISIS` (stub in round-2 catalog) |
+| Popular uprising suppressed | SANCTIONS_INTENSIFICATION | decline (policy action; expressible as a `sanctions_level` impact row) |
+| Revolutionary transition | NUCLEAR_SECURITY_CRISIS | promote (stub in round-2 catalog) |
+| Revolutionary transition | PROXY_NETWORK_COLLAPSE | fold into `IRAN_REGIME_CHANGE` / `ISRAEL_IRAN_WAR` branch content |
+| Revolutionary transition | KURDISH_AUTONOMY_EXPANSION | promote → `KURDISH_STATE_FORMATION` (low-priority queue) |
+| Revolutionary transition | REFUGEE_CRISIS_MAJOR | promote → `EUROPEAN_MIGRATION_CRISIS` |
+| Failed succession crisis | PROXY_NETWORK_WEAKENING | fold into `IRAN_REGIME_CHANGE` / `ISRAEL_IRAN_WAR` branch content |
+| Failed succession crisis | NUCLEAR_PROGRAM_UNCERTAINTY | fold into `IRAN_NUCLEAR_ACQUISITION` |
+| External intervention trigger | STRAIT_OF_HORMUZ_CRISIS | promote (stub in round-2 catalog; Task 6.1) |
+| External intervention trigger | GULF_STATE_ATTACKS | promote (stub in round-2 catalog; Task 6.1) |
+| External intervention trigger | ISRAEL_IRAN_WAR | promote (stub in round-2 catalog; Task 6.1) |
 
 **Note**: Many intuitive cascade targets (proxy network collapse, Lebanon political crisis, Kurdish autonomy, Hormuz crisis) are not yet specified in the event catalog.
 
@@ -565,13 +549,17 @@ Iran regime change would trigger significant cascade effects. Key pathways inclu
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Water crisis modeling; IRGC political economy; succession dynamics; nuclear program trajectory; proxy network dependencies |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+Water crisis modeling; IRGC political economy; succession dynamics; nuclear program trajectory; proxy network dependencies.
 
 ## Sources
 
@@ -600,6 +588,7 @@ Iran regime change would trigger significant cascade effects. Key pathways inclu
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.9. Classification, probability, factor, branch, impact, cascade and research tables converted to the schema's blocks; the legacy `severity_branches` block merged into `branches:` / `impacts:` / `cascades:` with its descriptions, factor modifications, durations, multipliers and probability rationale kept in prose. Causal type: Type 2 as documented (not a hybrid); variance target 0.65, achieved 0.666 with the documented loadings. Pressure: the original ternary became `where()`, the weighted sum is wrapped in `100 * (...)`; at the prose's current values the expression gives 45.2-49.2, consistent with "~50/100"; the compiler's baseline check is skipped (all `irn.*` terms). Onset "rapid (1-3 years)" → `sudden`; "rapid (1yr/2yr)" row onsets → `{gradual: 1}`/`{gradual: 2}`. Durability substitutions (schema v0.2 backlog): `irn.gdp_real` decay-to-floor (half-life 4, floor −5%) → `decay: 4`; Lebanon "persistent" → `decay: 10`; per-branch decay-to-floor durations and factor modifications kept in a prose table, not compiled. Unit conversion: `oil_brent` +20% ± 12% → +$15 ± $9 against the $75 2025 baseline. Entity alternatives: `lbn.gdp_growth` −3 ± 2 pp → `levant_iraq.gdp_growth` −0.25 ± 0.15 (GDP-share weighted); `irq.internal_conflict_intensity` +1 → `levant_iraq.internal_conflict_intensity` +0.6 ± 0.3 (population-share weighted, half-life 5 assigned); "+2-3 levels" → 2.5 ± 0.5. Dropped row: `yem.internal_conflict_intensity` (Yemen is in no catalog entity or aggregate); channel kept in prose. Cascades: four flat deltas written; IRAN_NUCLEAR_ACQUISITION ("uncertain", no magnitude) kept in prose; eleven branch-block targets with no event file (REFUGEE_CRISIS_MENA, SANCTIONS_INTENSIFICATION, NUCLEAR_SECURITY_CRISIS, PROXY_NETWORK_COLLAPSE, KURDISH_AUTONOMY_EXPANSION, REFUGEE_CRISIS_MAJOR, PROXY_NETWORK_WEAKENING, NUCLEAR_PROGRAM_UNCERTAINTY, STRAIT_OF_HORMUZ_CRISIS, GULF_STATE_ATTACKS, ISRAEL_IRAN_WAR) kept in a prose table per [[events/backlog-registry]]; no aliases to normalize. No `until: resolved` rows, so no `resolves_after`. Restored from history: the original pre-scaling loadings (F_MENA 0.65 … F_SAS 0.05) and their sum-of-squares check (0.88) removed by the 2025-12-31 variance scaling |
 | 2025-12-30 | Critical review: replaced synthetic variables with observables; added Case Against and Probability Evolution; fixed cascade/impact references | Task 2.4 systematic review |
 | 2025-12-19 | Revised severity branches; removed "managed succession crisis" | Smooth succession isn't regime crisis; replaced with "failed succession crisis" where mechanism breaks down |
 | 2025-12-19 | Initial Level 1 specification | Task 2.1.9 - Type 2 regime change event |
