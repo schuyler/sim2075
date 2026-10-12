@@ -21,7 +21,10 @@ decisions they left open (§3) and what the build has found so far (§4).
 | E0 | `sim/` scaffolding, fixtures FIX-A/B/C, five broken-input variants | `pytest` collects and runs | done |
 | E1 | scalar reference implementation `sim/reference/` | FIX-A reproduced exactly; FIX-B event log matches hand trace | done |
 | E2 | catalog compiler `sim/catalog/` | compiles the completed migrations; rejects each broken variant naming the event | done |
-| E3–E10 | vectorized engine, dynamics, analysis | per guide §3 | not started |
+| E3 | `sim/engine/factors.py`: Ω validation, Cholesky, correlated draws, propensity, copula uniforms | R=100k: factor correlation within ±0.02 of Ω; per-event Z variance within ±0.02 of 1 | done |
+| E4 | `sim/engine/firing.py`: per-type `p_base` and gates, per-run Type 2 thresholds, fire mask | R=100k: Type 1 frequency within 3σ for every fixture event; Type 2 monotone in pressure; Type 3 never fires while gated off | done |
+| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; `p_base`, gate, fire mask in year 0 — grows with each stage | in suite |
+| E5–E10 | memory, impacts, dynamics, year loop, analysis | per guide §3 | not started |
 
 ```
 pip install -e ".[test]"
@@ -37,7 +40,7 @@ sim/
 ├── reference/    scalar reference engine (ADR-1): model.py (inputs) · engine.py (the year step)
 ├── rng.py        draw schedule contract (guide §4.6), shared by both engines
 ├── data/         state_catalog.yaml (generated from the markdown catalogs) · omega.yaml (Ω, transcribed)
-├── engine/       vectorized runtime — E3+ (empty)
+├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · E5+ pending
 ├── analysis/     E9 (empty)
 └── tests/        fixtures/ (fix_a, fix_b, fix_c, broken/) and one test module per gate
 ```
@@ -128,6 +131,19 @@ field of the catalog, beyond the guide's §4.1 table (§4, item 2).
 number for an event that has never fired. `branch` names usable in
 expressions must be unique across the event's resolutions. Multi-line YAML
 block scalars are parsed as one parenthesized expression.
+
+**Vectorized modules** (E3, E4) consume whole §4.6 blocks and reproduce
+the reference's steps 1–4 for every run of the block: `FactorModel.year`
+gives `F = z Lᵀ` and `U = Φ(F Λᵀ + σ_idio ε)`; `FiringModel.thresholds`
+takes the init-time `t2_offset` block; `FiringModel.base` evaluates the §4.3
+callables once over `(R,)` views (namespace from `namespace_from_state`
+plus per-event `resolution`/`branch`/`years_since` columns of an
+`EventState`) and returns `p_base`, the Type 3 gate and this year's sustained
+evaluations for step 8; `FiringModel.fire` is `gate & (U < p_eff)`. Type 2
+uses `scipy.special.expit`, which agrees with the reference's `1/(1+e^{−x})`
+to rounding (the oracle diff's rtol 1e-9 covers it). Per-run memory
+(`EventState`, sustained counters, cascade deltas) is read here and will be
+owned by E5.
 
 **Draws** (guide §4.6). One `SeedSequence(master_seed)`, one child per block
 of `block_size` runs; within a block, `t2_offset` once, then per year
