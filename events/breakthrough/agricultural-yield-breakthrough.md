@@ -15,16 +15,9 @@ tags:
 
 # Agricultural Yield Breakthrough
 
-## Event Classification
+**Type 1 (Stochastic) Event** — Technological breakthrough with timing unpredictable; base rate from analog reference class.
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | AGRICULTURAL_YIELD_BREAKTHROUGH |
-| **Scale** | Global |
-| **Domain** | Technological / Agricultural |
-| **Causal Type** | Type 1: Stochastic |
-| **Onset Speed** | Gradual (10-20 years from breakthrough to material global impact) |
-| **Reversibility** | Irreversible (genetic/technological knowledge permanent; deployment may vary) |
+---
 
 ## Description
 
@@ -33,6 +26,21 @@ A discrete scientific breakthrough enables step-change improvement in crop heat 
 **What marks occurrence**: New genetic pathway, gene-editing technique, or breeding approach demonstrates reproducible step-change improvement in heat/drought tolerance across major staple crops AND attracts major deployment investment AND credible pathway exists for global diffusion. The event fires at validated breakthrough, not at incremental research progress.
 
 **Distinction from baseline**: Baseline trajectory includes ~1%/year yield improvement from conventional breeding and existing biotechnology. This event captures *discontinuous* improvement—a platform technology or discovery that changes the improvement rate or ceiling, analogous to how dwarf wheat varieties transformed wheat yields in the 1960s.
+
+---
+
+## Specification
+
+```yaml
+id: AGRICULTURAL_YIELD_BREAKTHROUGH
+domain: technological
+scale: global
+causal_type: 1
+onset: gradual
+reversibility: irreversible
+```
+
+*Domain: technological / agricultural. Onset speed: gradual (10-20 years from breakthrough to material global impact). Reversibility: irreversible (genetic/technological knowledge permanent; deployment may vary).*
 
 ---
 
@@ -86,12 +94,19 @@ This is slightly higher than fusion (0.9%) because:
 
 ## Probability
 
+```yaml
+probability:
+  annual: 0.013
+  range: [0.006, 0.025]
+  confidence: low
+```
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability** | 1.3% |
 | **Low bound** | 0.6% |
 | **High bound** | 2.5% |
-| **Confidence** | Low-Medium |
+| **Confidence** | Low-Medium (recorded as `low` in YAML: the schema enum is `low|medium|high`) |
 | **25-year cumulative** | ~28% at point estimate |
 | **50-year cumulative** | ~48% at point estimate |
 
@@ -128,6 +143,16 @@ This ranking seems appropriate—agricultural breakthroughs have stronger recent
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
 
+```yaml
+factors:
+  F_TECH: 0.52  # Gene editing, computational biology and agricultural R&D cluster together
+  F_FOOD: 0.32  # Food system stress drives urgency and funding for yield improvement
+  F_CLIM: 0.20  # Climate stress creates the demand signal for heat/drought tolerance
+  F_FIN: 0.12   # Capital availability for private research investment and deployment
+  F_GPT: 0.08   # Great power competition may drive national food security programs
+variance: 0.55  # Breakthrough target (variance-allocation Type 4 midpoint), not the Type 1 default of 0.75
+```
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
 | **F_TECH** | 0.52 | Primary driver: Gene editing advances, computational biology, and agricultural R&D cluster together; high F_TECH year means accelerated progress across frontier technologies |
@@ -143,7 +168,7 @@ This ranking seems appropriate—agricultural breakthroughs have stronger recent
 | F_SSA | 0.00 | No pathway (affects impact, not probability) |
 | F_LAM | 0.00 | No pathway |
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.80 from original loadings
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.80 from original loadings. The original (pre-scaling) loadings of the 2025-12-26 specification were F_TECH 0.65, F_FOOD 0.40, F_CLIM 0.25, F_FIN 0.15, F_GPT 0.10, with the check **sum of squared loadings**: 0.42 + 0.16 + 0.06 + 0.02 + 0.01 = 0.67 ✓; Task 3.11 replaced that uncorrelated-sum check with the correlated (ΛΩΛᵀ)ᵢᵢ target. The scaled loadings above achieve 0.548 under the catalog's Ω.
 
 ### Loading Interpretation (Type 1)
 
@@ -159,6 +184,13 @@ Note: Regional factors (F_MENA, F_SAS, F_SSA) don't affect breakthrough probabil
 ## Deployment Branches
 
 Once agricultural yield breakthrough occurs, deployment patterns vary:
+
+```yaml
+branches:
+  - {id: gradual, p: 0.50, desc: "Gradual diffusion over 15-25 years (Green Revolution pattern)"}
+  - {id: rapid, p: 0.30, desc: "Rapid transformation: platform technology, 10 years to material global impact"}
+  - {id: concentrated, p: 0.20, desc: "Regionally concentrated: IP/export controls limit diffusion"}
+```
 
 ### Gradual Diffusion (50%)
 
@@ -220,6 +252,55 @@ Breakthrough controlled by specific nation or company. IP restrictions, export c
 
 *Scale by impact_multiplier for rapid transformation (2.0×) and regionally concentrated (0.7×) branches*
 
+The YAML below re-expresses the percentage rows in each variable's own units against the 2025 baselines in the state catalog: `wheat_price` −20% of $6/bushel = −1.20 ± 0.60; `rice_price` −20% of $500/ton = −100 ± 50; `corn_price` −15% of $5/bushel = −0.75 ± 0.40; `fertilizer_price_index` −5 ± 5 index points (index 2025 = 100, so percentages and points coincide); `food_stocks_grains` is already in percentage points.
+
+```yaml
+impacts:
+  gradual:
+    # Global food system
+    - {var: wheat_price,              mag: [-1.20, 0.60],   onset: {gradual: 15}, permanent: true}
+    - {var: rice_price,               mag: [-100, 50],      onset: {gradual: 15}, permanent: true}
+    - {var: corn_price,               mag: [-0.75, 0.40],   onset: {gradual: 15}, permanent: true}
+    - {var: food_stocks_grains,       mag: [8, 4],          onset: {gradual: 15}, permanent: true}
+    - {var: fertilizer_price_index,   mag: [-5, 5],         onset: {gradual: 20}, permanent: true}
+
+    # High benefit regions (food importers with climate stress)
+    - {var: egy.gdp_real,             mag: [0.02, 0.01],    onset: {gradual: 15}, decay: 15}
+    - {var: pak.gdp_real,             mag: [0.03, 0.015],   onset: {gradual: 15}, decay: 15}
+    - {var: bgd.gdp_real,             mag: [0.025, 0.01],   onset: {gradual: 15}, decay: 15}
+    - {var: sahel.gdp_real,           mag: [0.04, 0.02],    onset: {gradual: 20}, decay: 15}
+    - {var: east_africa.gdp_real,     mag: [0.03, 0.015],   onset: {gradual: 20}, decay: 15}
+    - {var: ind.gdp_real,             mag: [0.015, 0.008],  onset: {gradual: 15}, decay: 15}
+
+    # Moderate benefit regions (food importers without acute stress)
+    - {var: jpn.gdp_real,             mag: [0.005, 0.003],  onset: {gradual: 15}, decay: 15}
+    - {var: kor.gdp_real,             mag: [0.005, 0.003],  onset: {gradual: 15}, decay: 15}
+    # "EU aggregate" carried as the six cataloged EU members plus the Rest-of-EU aggregate
+    - {var: deu.gdp_real,             mag: [0.003, 0.002],  onset: {gradual: 15}, decay: 15}
+    - {var: fra.gdp_real,             mag: [0.003, 0.002],  onset: {gradual: 15}, decay: 15}
+    - {var: ita.gdp_real,             mag: [0.003, 0.002],  onset: {gradual: 15}, decay: 15}
+    - {var: esp.gdp_real,             mag: [0.003, 0.002],  onset: {gradual: 15}, decay: 15}
+    - {var: nld.gdp_real,             mag: [0.003, 0.002],  onset: {gradual: 15}, decay: 15}
+    - {var: pol.gdp_real,             mag: [0.003, 0.002],  onset: {gradual: 15}, decay: 15}
+    - {var: eu_other.gdp_real,        mag: [0.003, 0.002],  onset: {gradual: 15}, decay: 15}
+
+    # Mixed impact regions (food exporters)
+    - {var: usa.gdp_real,             mag: [0.003, 0.005],  onset: {gradual: 15}, decay: 15}
+    - {var: bra.gdp_real,             mag: [0.005, 0.005],  onset: {gradual: 15}, decay: 15}
+    - {var: aus.gdp_real,             mag: [0.003, 0.004],  onset: {gradual: 15}, decay: 15}
+    - {var: arg.gdp_real,             mag: [0.002, 0.004],  onset: {gradual: 15}, decay: 15}
+
+  rapid:
+    inherit: gradual
+    scale: 2.0
+
+  concentrated:
+    inherit: gradual
+    scale: 0.7
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (Pakistan +3% ± 1.5% for the gradual branch); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields). The food-exporter table below gives no onset; the YAML uses the gradual(15yr) onset of the other GDP rows.*
+
 ### Country/Regional Differential Impacts
 
 **High Benefit Regions** (food importers with climate stress):
@@ -239,7 +320,7 @@ Breakthrough controlled by specific nation or company. IP restrictions, export c
 |----------------|------------|---------------------|-------|-----------|
 | Japan | +0.5% ± 0.3% | Modest | gradual(15yr) | Lower import costs |
 | South Korea | +0.5% ± 0.3% | Modest | gradual(15yr) | Lower import costs |
-| EU aggregate | +0.3% ± 0.2% | Modest | gradual(15yr) | Agricultural cost reduction |
+| EU aggregate | +0.3% ± 0.2% | Modest | gradual(15yr) | Agricultural cost reduction (the catalog has no whole-EU entity; carried in the YAML as `deu`, `fra`, `ita`, `esp`, `nld`, `pol` and `eu_other`) |
 
 **Mixed Impact Regions** (food exporters):
 
@@ -262,9 +343,11 @@ Breakthrough controlled by specific nation or company. IP restrictions, export c
 |-------------|------------|------------|-----------|
 | Price reduction | permanent | N/A | Technology doesn't un-invent; new yield floor established |
 | Yield improvement | permanent | N/A | Genetic improvement persists in seed stock |
-| Food security gains | shock_vulnerable | vulnerable_to: [SEVERE_PANDEMIC, MAJOR_CONFLICT] | Gains can be disrupted by systemic shocks |
+| Food security gains | shock_vulnerable (original); permanent in YAML | vulnerable_to: [SEVERE_PANDEMIC, MAJOR_CONFLICT] | Gains can be disrupted by systemic shocks |
 | GDP benefits | decaying (slow) | half_life: 15yr | Economic adaptation captures gains; effect normalizes |
 | Agricultural land pressure | permanent | N/A | Less need to expand into forests/marginal land |
+
+*The `shock_vulnerable` form is schema v0.2 backlog; the v0.1 engine compiles only `decay`, `permanent` and `until: resolved`, so the food-security row (`food_stocks_grains`) is `permanent: true` in the YAML. `MAJOR_CONFLICT` is a generic placeholder, not a catalog event — [[events/backlog-registry]] §4 declines it and asks that the row eventually enumerate real conflict event IDs — so it stays in this table and is not written into YAML. Yield improvement and agricultural land pressure have no state variable at Level 1 and carry no rows.*
 
 ### Impact Derivation
 
@@ -279,6 +362,21 @@ Breakthrough controlled by specific nation or company. IP restrictions, export c
 ---
 
 ## Cascade Effects
+
+```yaml
+cascades:
+  triggers:
+    # Food security improvement → reduced instability pressure
+    - {event: EGYPT_STATE_FAILURE,    delta: -0.004,  years: 20}
+    - {event: PAKISTAN_STATE_FAILURE, delta: -0.003,  years: 20}
+    # Reduced agricultural expansion pressure
+    - {event: AMAZON_TIPPING_POINT,   delta: -0.0015, years: 25}
+    # Food system resilience (food component of pandemic severity)
+    - {event: SEVERE_PANDEMIC,        delta: -0.001,  years: 15}
+    # Reduced food-driven migration
+    - {event: SAHEL_CATASTROPHE,      delta: -0.003,  years: 20}
+  triggered_by: []  # Breakthrough timing is fundamentally stochastic; conditional effects stay in prose below
+```
 
 ### State → Probability Cascades
 
@@ -342,7 +440,7 @@ long-term productivity improvement (20+ year lag)
 
 **Mechanism**: Drought/heat tolerance enables agricultural production in areas becoming marginal due to climate change. Reduces forced adaptation/displacement.
 **Affected regions**: Climate-stressed agricultural zones (Sahel, South Asia, Mediterranean)
-**Affected variables**: `agricultural_climate_risk`, `net_migration_rate`, `regime_stability`
+**Affected variables**: `agricultural_climate_risk`, `net_migration_rate`, `regime_stability` (a composite the catalog no longer carries; per [[methodology/concepts/synthetic-variable-problem]] read it as the observable political-stress indicators)
 **Differential exposure**: Current climate stress, projected temperature increase
 
 ### Land Use Channel
@@ -351,6 +449,8 @@ long-term productivity improvement (20+ year lag)
 **Affected regions**: Frontier agricultural zones (Amazon, Cerrado, Congo Basin, Southeast Asia)
 **Affected variables**: `amazon_forest_cover` (global), land use variables
 **Differential exposure**: Current deforestation pressure, agricultural expansion rates
+
+*At Level 1 only the food-price and GDP channels are carried as impact rows; the fiscal, climate-adaptation and land-use channels are described here and reach the catalog through the cascade block above.*
 
 ---
 
@@ -377,6 +477,8 @@ long-term productivity improvement (20+ year lag)
 | High F_FOOD realization | +probability | Food stress increases research urgency and funding |
 | Prior climate tipping point | +probability (indirect) | Crisis accelerates research prioritization |
 | Gene editing regulatory harmonization | +probability | Reduces deployment barriers, increasing research payoff |
+
+*These interactions are impact-side (not probability cascades) or carry no stated magnitude, so the YAML `triggered_by` list is empty; the F_FOOD effect is already expressed through the factor loading.*
 
 ---
 
@@ -414,13 +516,19 @@ As a Type 1 stochastic event, probability is relatively stable but influenced by
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | CGIAR drought tolerance program results; CRISPR crop development pipeline; specific pathway probability decomposition |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+- CGIAR drought tolerance program results
+- CRISPR crop development pipeline
+- Specific pathway probability decomposition
 
 ## Sources
 
@@ -448,8 +556,10 @@ As a Type 1 stochastic event, probability is relatively stable but influenced by
 
 | Date | Change | Rationale |
 |------|--------|-----------|
-| 2025-12-30 | Critical review: added Probability Evolution section | Task 2.4 systematic review |
 | 2025-12-26 | Initial Level 1 specification | Task 2.2.2 - second Type 1 breakthrough event |
+| 2025-12-30 | Critical review: added Probability Evolution section | Task 2.4 systematic review |
+| 2025-12-30 | Variance allocation: scaled loadings to Breakthrough target (0.55) | Task 3.11 - loadings scaled by 0.80 from the original 0.65/0.40/0.25/0.15/0.10 (row added at migration from the commit history; the scaling commit carried no changelog entry) |
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.26. `causal_type: 1` (not hybrid); `variance: 0.55` is the Breakthrough target the prose documents, not the Type 1 default of 0.75 (validation rule 0 logic; same as fusion-commercialization); achieved (ΛΩΛᵀ)ᵢᵢ = 0.548. `confidence: low` for the prose's "Low-Medium" (enum `low|medium|high`; fusion precedent). Price rows converted from percentages to the variables' units against `baseline_2025`: wheat −20% × $6 = −1.20 ± 0.60 $/bushel, rice −20% × $500 = −100 ± 50 $/ton, corn −15% × $5 = −0.75 ± 0.40 $/bushel, fertilizer index −5 ± 5 points; `food_stocks_grains` +8 ± 4 pp unchanged; `gdp_real` rows as fractions. "EU aggregate" has no catalog entity: carried as `deu`, `fra`, `ita`, `esp`, `nld`, `pol` and `eu_other` at +0.3% ± 0.2% each. Food-exporter rows (no onset in the table) take the gradual(15yr) onset of the other GDP rows. GDP rows `decay: 15` per the durability table. Durability substitutions: `shock_vulnerable` food-security gains → `permanent: true` on `food_stocks_grains` (v0.2 backlog); its `vulnerable_to: MAJOR_CONFLICT` is a generic ID that [[events/backlog-registry]] §4 declines, kept in prose only. Yield improvement and land-pressure durability rows have no state variable and carry no YAML rows. All five cascade targets exist as files and are written to `triggers:` (SEVERE_PANDEMIC with its "food component" qualifier kept in prose); `triggered_by` empty because the interaction tables are impact-side or carry no magnitude. `regime_stability` in the climate-adaptation channel annotated as a retired composite. Restored from history: the pre-scaling loadings and the "sum of squared loadings = 0.67" check removed by the Task 3.11 commit. No rows dropped |
 
 ---
 
