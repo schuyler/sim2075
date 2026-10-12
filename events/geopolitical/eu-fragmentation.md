@@ -15,16 +15,9 @@ tags:
 
 # EU Fragmentation
 
-## Event Classification
+**Type 2 (Threshold) Event** — Probability rises as fiscal, economic and political pressure in the core member states accumulates toward the point where disorderly collapse becomes inevitable.
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | EU_FRAGMENTATION |
-| **Scale** | Regional (with global implications) |
-| **Domain** | Political |
-| **Causal Type** | Type 2: Threshold |
-| **Onset Speed** | Rapid (crisis unfolds over 1-3 years) |
-| **Reversibility** | Irreversible (institutional dissolution cannot be undone) |
+---
 
 ## Description
 
@@ -33,6 +26,21 @@ Discontinuity in European integration: the EU or Eurozone ceases to function as 
 The event fires only when fragmentation becomes inevitable. Severe crises that the EU weathers through extraordinary measures (ECB interventions, fiscal transfers, treaty modifications) are sub-threshold — they represent the system functioning under stress, not discontinuity. Brexit is the canonical example: major stress, but the remaining EU continued governing with the same institutional form.
 
 **Discontinuity requirement**: All resolutions produce a fundamentally different European institutional architecture. "Eurosceptic governments" or "two-speed Europe within existing treaties" is not a discontinuity.
+
+---
+
+## Specification
+
+```yaml
+id: EU_FRAGMENTATION
+domain: political
+scale: regional
+causal_type: 2
+onset: sudden
+reversibility: irreversible
+```
+
+*Scale: regional, with global implications. Onset speed: rapid (crisis unfolds over 1-3 years). Reversibility: irreversible (institutional dissolution cannot be undone).*
 
 ---
 
@@ -62,6 +70,8 @@ Per [[methodology/concepts/synthetic-variable-problem]], we use observable indic
 | `ita.gdp_growth` | 0.10 | inverse | Italian economic performance affects debt dynamics |
 | `pol.years_since_irregular_transition` | 0.10 | complex | Rule of law pressure; time since democratic consolidation |
 | `fra.unemployment_rate` | 0.10 | linear | Economic stress in core member |
+
+The YAML expression in the Probability section realizes these transforms in the expression language's subset: every `max(0, ·)` term of the calculation below becomes `clip(·, 0, 1)` so that each weighted term stays in [0, 1] and the sum is bounded on the 0-100 scale the prose says it is normalized to; the Italian debt threshold is the calculation's linear ramp from 100% of GDP (saturating at 200%); and the "complex" Polish rule-of-law term (`pol_democratic_backsliding_proxy`) is realized as transition recency, `1 / (1 + years_since_irregular_transition / 5)`, the same form Pakistan State Failure uses for its transition-recency term.
 
 **Pressure calculation**:
 ```
@@ -103,6 +113,8 @@ pressure = 0.25 × max(0, (ita_debt_public - 100) / 100)
 
 Distance to threshold (~45-50 points) is substantial.
 
+At illustrative 2025 values — Italian debt 140% of GDP, German growth 0.2%, French protest index 50, credit spread 120 bps (the catalog baseline), Italian growth 0.7%, 36 years since Poland's last irregular transition, French unemployment 7.5% — the YAML expression gives 32.1, consistent with the ~30-35 estimate. The compiler's baseline check is skipped for this event because six of the seven inputs are country variables, which carry no recorded 2025 baseline.
+
 ### Minimum Probability
 
 **Floor**: 0.15% annually even at low pressure
@@ -112,6 +124,27 @@ Black swan triggers: simultaneous bank failures across multiple countries, catas
 ---
 
 ## Probability
+
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.25 * clip((ita.debt_public - 100) / 100, 0, 1) +
+      0.15 * clip((1 - deu.gdp_growth) / 5, 0, 1) +
+      0.15 * clip(fra.protest_intensity_annual / 100, 0, 1) +
+      0.15 * clip(global_credit_spread / 300, 0, 1) +
+      0.10 * clip(-ita.gdp_growth / 5, 0, 1) +
+      0.10 * (1.0 / (1 + pol.years_since_irregular_transition / 5)) +
+      0.10 * clip(fra.unemployment_rate / 15, 0, 1)
+    )
+  threshold: 80
+  threshold_std: 12
+  sharpness: 12
+  floor: 0.0015
+  annual: 0.004
+  range: [0.002, 0.007]
+  confidence: low
+```
 
 | Metric | Value |
 |--------|-------|
@@ -221,26 +254,50 @@ As a Type 2 event, probability depends on pressure trajectory, primarily Italian
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| F_CLIM | 0.10 | Climate stress drives migration pressure, agricultural disruption |
-| **F_FIN** | 0.28 | **Secondary**: Financial stress is primary transmission mechanism |
-| F_HLTH | 0.03 | Pandemic stress tests coordination capacity |
-| F_GPT | 0.17 | Great power tension affects transatlantic relations, defense burden |
-| F_FOOD | 0.07 | Food price spikes stress periphery budgets |
-| F_TECH | 0.00 | Limited direct relevance |
-| **F_EUR** | 0.45 | **Primary**: European stress is definitional |
-| F_MENA | 0.14 | MENA instability drives migration pressure |
-| F_SAS | 0.00 | No direct linkage |
-| F_EAS | 0.03 | China trade relations, Taiwan scenario implications |
-| F_SSA | 0.07 | African instability drives migration |
-| F_LAM | 0.00 | No direct linkage |
+```yaml
+factors:
+  F_EUR: 0.45   # Primary: European stress is definitional
+  F_FIN: 0.28   # Secondary: Financial stress is primary transmission mechanism
+  F_GPT: 0.17   # Great power tension affects transatlantic relations, defense burden
+  F_MENA: 0.14  # MENA instability drives migration pressure
+  F_CLIM: 0.10  # Climate stress drives migration pressure, agricultural disruption
+  F_FOOD: 0.07  # Food price spikes stress periphery budgets
+  F_SSA: 0.07   # African instability drives migration
+  F_HLTH: 0.03  # Pandemic stress tests coordination capacity
+  F_EAS: 0.03   # China trade relations, Taiwan scenario implications
+variance: 0.65  # Type 2 target
+```
+
+F_TECH (limited direct relevance), F_SAS and F_LAM (no direct linkage) carry no loading.
 
 **Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.70 from original loadings
 
 ### Loading Rationale
 
 F_EUR is primary because it directly captures European-specific political stress. F_FIN is secondary because the Eurozone's design flaw means financial stress is the most likely trigger mechanism. F_GPT captures how great power dynamics (US reliability, Russia threat) affect European cohesion. F_MENA and F_SSA capture migration pressure as a key political stress vector.
+
+### Original Loadings (pre-allocation)
+
+The loadings above are the Task 3.11 (2025-12-30) rescaling of the original Level 1 specification's loadings by the 0.70 scale factor. The original table and its sum-of-squares check, removed at that rescaling, are restored here from the file's history:
+
+| Factor | Loading | Rationale |
+|--------|---------|-----------|
+| F_CLIM | 0.15 | Climate stress drives migration pressure, agricultural disruption |
+| F_FIN | 0.40 | **Secondary**: Financial stress is primary transmission mechanism |
+| F_HLTH | 0.05 | Pandemic stress tests coordination capacity |
+| F_GPT | 0.25 | Great power tension affects transatlantic relations, defense burden |
+| F_FOOD | 0.10 | Food price spikes stress periphery budgets |
+| F_TECH | 0.0 | Limited direct relevance |
+| F_EUR | 0.65 | **Primary**: European stress is definitional |
+| F_MENA | 0.20 | MENA instability drives migration pressure |
+| F_SAS | 0.0 | No direct linkage |
+| F_EAS | 0.05 | China trade relations, Taiwan scenario implications |
+| F_SSA | 0.10 | African instability drives migration |
+| F_LAM | 0.0 | No direct linkage |
+
+**Sum of squared loadings**: 0.65² + 0.40² + 0.25² + 0.20² + 0.15² + 0.10² + 0.10² + 0.05² + 0.05² = 0.42 + 0.16 + 0.06 + 0.04 + 0.02 + 0.01 + 0.01 + 0.003 + 0.003 ≈ **0.73** ✓
+
+High loading sum reflects that EU fragmentation is influenced by multiple external pressures (migration, finance, geopolitics) channeled through the F_EUR factor.
 
 ---
 
@@ -257,6 +314,58 @@ F_EUR is primary because it directly captures European-specific political stress
 | **USSR dissolution** | Political union collapse | Trade collapsed 50%+; GDP -15 to -50% across successors | Extreme disorderly case |
 | **Czechoslovak divorce** | Orderly separation | Minimal GDP impact; successful transition | Orderly template |
 | **Brexit** | Single member exit | UK GDP -2 to -4% vs counterfactual; EU minimal impact | Below threshold |
+
+### Impact Specification
+
+Impacts are keyed by the two aftermath branches declared under [[#Aftermath Branches]] below. The specification's impact tables (kept in full after the block) are not branch-differentiated — the branches differ in duration and factor modifications, not magnitude — so the `extended_crisis` branch carries the explicit list and `rapid_reorganization` inherits it at scale 1.0.
+
+Where the YAML re-expresses a table row, the table keeps the original: the `regime_stability` rows (Germany, France, Italy, Rest of EU, UK) are written on `protest_intensity_annual`, the observable the pressure function already uses as its proxy for political instability, with the sign flipped (a 20-point fall in stability is a 20-point rise in the 0-100 protest index); the `global_trade_volume` row's −6 ± 3% is −6 ± 3 index points against the 2025 = 100 baseline; sub-year onsets (3 months, 6 months) are `immediate` because onset is in whole years and both fall inside the firing year; and `rest_eu` is the catalog's `eu_other`. Four table rows have no state-catalog variable and are not in the YAML: `eu_cohesion` (synthetic; its fall is the event's definition), `nato_cohesion` and `nuclear_stability` (no alliance or nuclear-stability global variable exists), and `chn.alliance_west` (no magnitude given; `alliance_status` is categorical). Those channels stay in the tables and in the NATO Interaction and Transmission Channel prose.
+
+```yaml
+impacts:
+  extended_crisis:
+    # Global
+    - {var: eur_reserve_share,            mag: [-10, 5],     onset: {gradual: 3}, permanent: true}
+    - {var: global_trade_volume,          mag: [-6, 3],      onset: immediate,    decay: 4}
+    - {var: global_credit_spread,         mag: [120, 50],    onset: immediate,    decay: 2}
+
+    # Germany
+    - {var: deu.gdp_growth,               mag: [-4, 2],      onset: immediate,    decay: 3}
+    - {var: deu.current_account,          mag: [-5, 2.5],    onset: immediate,    decay: 3}
+    - {var: deu.protest_intensity_annual, mag: [20, 10],     onset: immediate,    decay: 5}
+
+    # France
+    - {var: fra.gdp_growth,               mag: [-3.0, 1.5],  onset: immediate,    decay: 2}
+    - {var: fra.debt_public,              mag: [12, 6],      onset: {gradual: 2}, permanent: true}
+    - {var: fra.protest_intensity_annual, mag: [25, 12],     onset: immediate,    decay: 3}
+
+    # Italy
+    - {var: ita.gdp_growth,               mag: [-8, 4],      onset: immediate,    decay: 4}
+    - {var: ita.debt_public,              mag: [20, 10],     onset: immediate,    permanent: true}
+    - {var: ita.inflation_rate,           mag: [8, 5],       onset: immediate,    decay: 2}
+    - {var: ita.protest_intensity_annual, mag: [30, 15],     onset: immediate,    decay: 5}
+
+    # Poland
+    - {var: pol.gdp_growth,               mag: [-4.0, 2.0],  onset: immediate,    decay: 2}
+    - {var: pol.fdi_net,                  mag: [-3.0, 1.5],  onset: immediate,    decay: 3}
+
+    # Rest of EU (aggregate)
+    - {var: eu_other.gdp_growth,               mag: [-3.5, 2.0], onset: immediate, decay: 2}
+    - {var: eu_other.protest_intensity_annual, mag: [20, 10],    onset: immediate, decay: 4}
+
+    # External
+    - {var: usa.gdp_growth,               mag: [-0.8, 0.4],  onset: immediate,    decay: 2}
+    - {var: usa.military_spending,        mag: [0.3, 0.2],   onset: {gradual: 2}, permanent: true}
+    - {var: gbr.gdp_growth,               mag: [-1.2, 0.6],  onset: immediate,    decay: 2}
+    - {var: gbr.protest_intensity_annual, mag: [-5, 10],     onset: {delayed: 1}, decay: 3}
+    - {var: chn.gdp_growth,               mag: [-0.5, 0.3],  onset: immediate,    decay: 2}
+
+  rapid_reorganization:
+    inherit: extended_crisis
+    scale: 1.0
+```
+
+*Units: every row is additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields) — percentage points of growth, debt, current account, FDI, inflation, military spending and reserve share; bps for the credit spread; index points for trade volume and protest intensity. The specification expresses the GDP shocks as growth-rate hits, and `gdp_growth` is a non-derived catalog variable, so the rows stay on it rather than being re-expressed as fractions of `gdp_real`.*
 
 ### Global Impacts
 
@@ -346,9 +455,28 @@ F_EUR is primary because it directly captures European-specific political stress
 | EUR reserve share | permanent | N/A | Euro ceases to exist or loses reserve status |
 | Debt increases | permanent | N/A | Accumulated during crisis |
 
+Every durability in this specification is a plain half-life decay or a permanent effect, both of which the v0.1 engine implements directly; no substitution was needed.
+
 ---
 
 ## Cascade Effects
+
+```yaml
+cascades:
+  triggers:
+    - {event: GLOBAL_FINANCIAL_CRISIS,     delta: 0.010,  years: 2}
+    - {event: DOLLAR_RESERVE_CRISIS,       delta: -0.005, years: 3}
+    - {event: RUSSIA_STATE_FAILURE,        delta: 0.002,  years: 2}
+    - {event: TURKEY_POLITICAL_BREAKDOWN,  delta: 0.003,  years: 3}
+  triggered_by:
+    - {event: GLOBAL_FINANCIAL_CRISIS,     delta: 0.015}
+    - {event: DOLLAR_RESERVE_CRISIS,       delta: 0.005}
+    - {event: RUSSIA_STATE_FAILURE,        delta: 0.003}
+    - {event: TURKEY_POLITICAL_BREAKDOWN,  delta: 0.003}
+    - {event: SEVERE_PANDEMIC,             delta: 0.004}
+```
+
+The tables below name `TURKEY_POLITICAL_CRISIS`; the YAML uses `TURKEY_POLITICAL_BREAKDOWN`, the canonical ID the [[events/backlog-registry]] §3 alias table maps it to.
 
 ### Triggered By
 
@@ -421,6 +549,12 @@ European defense capacity degraded; NATO coordination impaired.
 
 Once fragmentation occurs, the aftermath unfolds through one of two trajectories:
 
+```yaml
+branches:
+  - {id: extended_crisis,      p: 0.60, desc: "Multi-year economic crisis across former EU; slow recovery"}
+  - {id: rapid_reorganization, p: 0.40, desc: "Crisis forces rapid new arrangements; faster-than-expected stabilization"}
+```
+
 **Branch 1: Extended Crisis (60%)**
 
 | Attribute | Value |
@@ -448,18 +582,27 @@ Once fragmentation occurs, the aftermath unfolds through one of two trajectories
 - Northern core may form tighter arrangements post-crisis
 - Still significant disruption but contained faster than expected
 
+*The branches differ in duration and in post-event factor modifications (the F_EUR and F_FIN boosts above), neither of which schema v0.1 can express — inheritance scales magnitude only, and factor modifications have no YAML construct. The YAML therefore records the 60/40 split and gives both branches the same impact list; the factor modifications remain prose for the schema v0.2 backlog.*
+
 ---
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete |
-| **Revision note** | Removed "Orderly Fragmentation" resolution — negotiated restructuring into differentiated tiers is not a discontinuity but managed evolution (the EU already has opt-outs, multi-speed mechanisms, enhanced cooperation). If actors can coordinate an orderly transition, the threshold hasn't been crossed. Event now models only disorderly collapse. |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | High-impact event; Level 2 could model Italian debt dynamics and ECB capacity limits |
+```yaml
+research:
+  tier: 1
+  updated: 2026-10-12
+  review: complete
+  upgrade: true
+```
+
+### Revision Note
+
+Removed "Orderly Fragmentation" resolution — negotiated restructuring into differentiated tiers is not a discontinuity but managed evolution (the EU already has opt-outs, multi-speed mechanisms, enhanced cooperation). If actors can coordinate an orderly transition, the threshold hasn't been crossed. Event now models only disorderly collapse.
+
+### Upgrade Rationale
+
+High-impact event; Level 2 could model Italian debt dynamics and ECB capacity limits.
 
 ## Sources
 
@@ -493,6 +636,8 @@ Once fragmentation occurs, the aftermath unfolds through one of two trajectories
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2026-10-12 | Migrated to YAML-embedded schema; restored lost prose | Task 4.2.12. Classification, probability, pressure, loadings, aftermath branches, impacts, cascades and research status now carry YAML blocks; all prose kept, with the original impact and cascade tables retained beside the YAML. Judgment calls: (1) the pressure calculation's `max(0, ·)` terms become `clip(·, 0, 1)` so the weighted sum is bounded on the 0-100 scale, and the "complex" Polish rule-of-law proxy is realized as transition recency `1 / (1 + years / 5)`; at illustrative 2025 values the expression gives 32.1 (prose: ~30-35); sharpness 12, threshold 80 ± 12 and floor 0.15% are written as documented. (2) `regime_stability` rows (deu, fra, ita, rest_eu, gbr) are written on `protest_intensity_annual` with the sign flipped — the observable the pressure function already uses as its instability proxy. (3) `rest_eu` → `eu_other` (catalog name). (4) `global_trade_volume` −6 ± 3% → −6 ± 3 index points against the 2025 = 100 baseline. (5) Sub-year onsets (3mo, 6mo) → `immediate`. (6) Rows dropped for lack of a catalog variable, channels kept in prose: `eu_cohesion`, `nato_cohesion`, `nuclear_stability`, `chn.alliance_west`. (7) Aftermath branches declared 60/40; `rapid_reorganization` inherits `extended_crisis` at scale 1.0 because the spec's tables are not branch-differentiated; per-branch factor modifications stay in prose (schema v0.2). (8) `TURKEY_POLITICAL_CRISIS` normalized to `TURKEY_POLITICAL_BREAKDOWN` per the backlog registry alias table. (9) No `until: resolved` rows, so no `resolves_after`. Restored from history (removed at the 2025-12-30 variance allocation): the original pre-scaling loadings table, its sum-of-squares check (≈0.73) and the "high loading sum" paragraph |
+| 2025-12-30 | Variance allocation: scaled loadings to Type 2 target | Task 3.11 — Factor-explained variance reduced to Type 2 target (0.65); scale factor 0.70 from original loadings |
 | 2025-12-30 | Critical review: replaced synthetic variables (eu_cohesion, regime_stability, institutional_quality) with observables; added Case Against and Probability Evolution sections | Task 2.4 systematic review |
 | 2025-12-21 | Removed "Orderly Fragmentation" resolution | Negotiated restructuring is managed evolution, not discontinuity |
 | 2025-12-20 | Initial Level 1 specification | Type 2 threshold event |
