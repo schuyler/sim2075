@@ -13,7 +13,8 @@ Hand computations recorded here:
      (ΛΩΛᵀ) = .6557  (declared .65)
   Impact rows: Taiwan military_conflict.limited 10 rows × 3 branches (inherit/scale 1.5, 3.0) = 30, settlement 3 × 2
   (scale .5) = 6 -> 36; AMOC default 21 -> 57 total.
-  AMOC pressure at the 2025 baselines (temp 1.3, ice 4.5, amoc 95) = .5·(1.3/2) + .25·0 + .25·0 = .325.
+  AMOC pressure at the 2025 baselines (temp 1.3, ice 4.5, amoc 95) = 100·(.5·(1.3/2) + .25·0 + .25·0) = 32.5
+  (the schema's 0-100 pressure scale, 2026-10-12), inside threshold 65 ± 4·15.
 """
 from __future__ import annotations
 
@@ -30,7 +31,7 @@ AMOC_LOADINGS = {"F_CLIM": 0.67, "F_FOOD": 0.16, "F_EUR": 0.12, "F_SSA": 0.08, "
 TAIWAN_TREE = (["military_conflict", "settlement"], [0.65, 0.35],
                [["limited", "full_invasion", "nuclear"], ["stable", "unstable"]], [[0.55, 0.30, 0.15], [0.40, 0.60]])
 N_ROWS_TAIWAN, N_ROWS_AMOC = 36, 21
-AMOC_PRESSURE_AT_BASELINE = 0.325
+AMOC_PRESSURE_AT_BASELINE = 32.5
 AMOC_BASELINE_NS = {"global_temp_anomaly": 1.3, "arctic_sea_ice_sept": 4.5, "amoc_strength": 95.0}
 # cascade targets of both events are unmigrated as of E0: all 5 edges are dropped with warnings
 N_DROPPED_EDGES = 5

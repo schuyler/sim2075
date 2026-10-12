@@ -42,6 +42,11 @@ a contract, enforced at catalog compile time — not discovered at run time.
 | `probability.preconditions.sustained[].expr` (Type 3) | boolean | `"F_GPT > 1.0"` |
 | `cascades.triggers[].if` | boolean | `"resolution == 'military_conflict'"` |
 
+A `pressure` expression is on the same 0–100 scale as the event's `threshold`
+([[methodology/reference/event-yaml-schema]] §Type 2): weighted sums of
+[0, 1] terms are written `100 * (...)`, and the compiler checks the value at
+the 2025 baselines against `threshold ± 4·threshold_std`.
+
 ---
 
 ## 2. Evaluation model
@@ -150,11 +155,13 @@ Every expression in the catalog as of July 2026 falls inside the subset:
 **AMOC pressure function** (Type 2, arithmetic only):
 
 ```python
-0.50 * (global_temp_anomaly / 2.0) +
-0.25 * (1.0 - arctic_ice_extent / 6.0) +
-0.25 * (1.0 - amoc_strength / 18.0)
+100 * (
+  0.50 * (global_temp_anomaly / 2.0) +
+  0.25 * (1.0 - arctic_sea_ice_sept / 4.5) +
+  0.25 * (1.0 - amoc_strength / 95)
+)
 ```
-→ numeric `(R,)` vector; three global-variable names, arithmetic. Valid.
+→ numeric `(R,)` vector on the 0–100 scale; three global-variable names, arithmetic. Valid.
 
 **Taiwan preconditions** (Type 3, comparisons):
 
@@ -231,6 +238,7 @@ compiles cannot raise from expression evaluation at simulation time.
 |------|--------|
 | 2026-07 | Initial specification, extracted from simulator-architecture ADR-4 discussion |
 | 2026-07-12 | Version 1.0 — header no longer says "draft for discussion," matching the normative status the guide and architecture already cite |
+| 2026-10-12 | §1: `pressure` expressions share `threshold`'s 0–100 scale (schema changelog of the same date) |
 
 ---
 

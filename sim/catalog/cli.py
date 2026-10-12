@@ -30,6 +30,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  OK    {rec['id']:<32} {len(cat.impact_table):>4} impact rows, achieved variance "
                   f"{cat.meta['achieved_variance'][0]:.4f} (declared {cat.meta['declared_variance'][0]:.2f}), "
                   f"{dropped} cascade edge(s) to unmigrated events")
+            for note in cat.meta["notes"]:
+                print(f"        {note}")
         except CatalogError as e:
             failed += 1
             print(f"  FAIL  {rec['id']:<32} {e}")

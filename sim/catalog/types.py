@@ -39,6 +39,9 @@ class StateCatalog:
     country_vars: tuple[str, ...]
     country_var_derived: dict[str, bool]
     global_vars: tuple[str, ...]
+    # 2025 baseline values where the catalog records them (``baseline_2025``); keys are namespace
+    # names ("oil_brent", "pak.water_stress"). Used by the Type 2 pressure-scale check only.
+    baseline_2025: dict[str, float] = field(default_factory=dict)
 
     @property
     def countries(self) -> tuple[str, ...]:

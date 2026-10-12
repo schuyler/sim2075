@@ -44,12 +44,14 @@ reversibility: partial
 ```yaml
 probability:
   pressure: |
-    0.25 * (pak.water_stress / 100) +
-    0.20 * min(1.0, max(0, (pak.debt_external - 60) / 40)) +
-    0.20 * (pak.internal_conflict_intensity / 4) +
-    0.15 * (1.0 / (1 + pak.years_since_irregular_transition / 5)) +
-    0.10 * (pak.protest_intensity_annual / 100) +
-    0.10 * (pak.food_import_dependence / 100)
+    100 * (
+      0.25 * (pak.water_stress / 100) +
+      0.20 * min(1.0, max(0, (pak.debt_external - 60) / 40)) +
+      0.20 * (pak.internal_conflict_intensity / 4) +
+      0.15 * (1.0 / (1 + pak.years_since_irregular_transition / 5)) +
+      0.10 * (pak.protest_intensity_annual / 100) +
+      0.10 * (pak.food_import_dependence / 100)
+    )
   threshold: 70
   threshold_std: 10
   sharpness: 0.20
@@ -228,6 +230,7 @@ research:
 | 2025-12-30 | Variance allocation: scaled loadings to Type 2 target |
 | 2025-12-30 | Critical review complete; replaced regime_stability with observables |
 | 2025-01-03 | Migrated to YAML-embedded schema |
+| 2026-10-12 | Pressure expression wrapped in `100 * (...)` per the schema's pressure-scale rule (event-yaml-schema changelog 2026-10-12); at the prose's current values the expression gives 53.7, consistent with "~55/100" |
 
 ---
 

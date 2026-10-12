@@ -14,6 +14,30 @@ from .types import (CascadeEdge, CatalogError, CatalogIndex, CompiledCatalog, EN
                     IMPACT_DTYPE, ResolutionTree, StateCatalog, Type2Spec, Type3Spec)
 
 DEFAULT_VARIANCE_TOL = 0.02
+PRESSURE_BASELINE_SIGMAS = 4.0   # schema §Type 2: pressure at the 2025 baselines must lie within threshold ± 4·threshold_std
+
+
+def check_pressure_scale(spec: Type2Spec, state: StateCatalog, event: str) -> tuple[float | None, str]:
+    """Evaluate a Type 2 pressure expression at the catalog's 2025 baselines (schema §Type 2 pressure scale).
+
+    Returns ``(value, note)``. ``value`` is None when a name the expression reads has no recorded
+    baseline (country variables, factors, event state); the note then says which, so a skipped check is
+    reported rather than silent. Raises CatalogError when the value is outside
+    ``threshold ± PRESSURE_BASELINE_SIGMAS·threshold_std``.
+    """
+    missing = [n for n in spec.pressure.names if n not in state.baseline_2025]
+    if missing:
+        return None, f"pressure-scale check skipped: no 2025 baseline for {missing}"
+    ns = {"_shape": (1,), **{n: np.array([state.baseline_2025[n]], dtype=np.float64) for n in spec.pressure.names}}
+    value = float(spec.pressure(ns)[0])
+    lo = spec.threshold - PRESSURE_BASELINE_SIGMAS * spec.threshold_std
+    hi = spec.threshold + PRESSURE_BASELINE_SIGMAS * spec.threshold_std
+    if not (lo <= value <= hi):
+        raise CatalogError(
+            f"{event}: Type 2 pressure at the 2025 baselines is {value:.4g}, outside [{lo:.4g}, {hi:.4g}] "
+            f"(threshold {spec.threshold:g} ± {PRESSURE_BASELINE_SIGMAS:g}·{spec.threshold_std:g}); pressure expressions "
+            f"share threshold's 0-100 scale (schema §Type 2)")
+    return value, f"pressure at 2025 baselines = {value:.4g} (threshold {spec.threshold:g} ± {spec.threshold_std:g})"
 
 
 def _resolve_var(var: str, state: StateCatalog, event: str, where: str) -> list[tuple[int, int, str]]:
@@ -75,6 +99,8 @@ def compile_event_records(records: list[dict], omega: np.ndarray, state: StateCa
     warnings: list[str] = []
     declared_var = np.zeros(E, dtype=np.float64)
     meta_events: dict[str, dict] = {}
+    pressure_at_baseline: dict[str, float | None] = {}
+    notes: list[str] = []
 
     for i, rec in enumerate(records):
         eid = ids[i]
@@ -103,6 +129,8 @@ def compile_event_records(records: list[dict], omega: np.ndarray, state: StateCa
             type2[i] = Type2Spec(
                 compile_expression(p["pressure"], ctx, "probability.pressure", "numeric"),
                 float(p["threshold"]), float(p["threshold_std"]), float(p["sharpness"]), float(p["floor"]))
+            pressure_at_baseline[eid], note = check_pressure_scale(type2[i], state, eid)
+            notes.append(f"{eid}: {note}")
         else:
             pre = p["preconditions"]
             type3[i] = Type3Spec(
@@ -155,7 +183,8 @@ def compile_event_records(records: list[dict], omega: np.ndarray, state: StateCa
         type2=type2, type3=type3, resolution_tree=trees, impact_table=table, cascade_edges=edges,
         index=index, omega=omega,
         meta={"declared_variance": declared_var, "achieved_variance": achieved,
-              "warnings": warnings, "events": meta_events, "state_catalog": state})
+              "warnings": warnings, "notes": notes, "pressure_at_baseline": pressure_at_baseline,
+              "events": meta_events, "state_catalog": state})
 
 
 def compile_catalog(event_paths, omega: np.ndarray, state_catalog: StateCatalog, *,

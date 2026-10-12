@@ -47,6 +47,9 @@ def test_fix_c_compiles_to_hand_built_structure(world):
     assert (t2.threshold, t2.threshold_std, t2.sharpness, t2.floor) == (65, 15, 0.15, 0.002)
     ns = {"_shape": (1,), **{k: np.array([v]) for k, v in fix_c.AMOC_BASELINE_NS.items()}}
     assert t2.pressure(ns)[0] == pytest.approx(fix_c.AMOC_PRESSURE_AT_BASELINE)
+    # the compiler's own pressure-scale check evaluated the same thing from state_catalog.yaml's baselines
+    assert cat.meta["pressure_at_baseline"]["AMOC_WEAKENING"] == pytest.approx(fix_c.AMOC_PRESSURE_AT_BASELINE)
+    assert sc.baseline_2025["global_temp_anomaly"] == 1.3
 
     tree = cat.resolution_tree[0]
     r_ids, r_p, b_ids, b_p = fix_c.TAIWAN_TREE
@@ -83,6 +86,23 @@ def test_fix_c_compiles_to_hand_built_structure(world):
     assert all("not compiled (unmigrated)" in w for w in cat.meta["warnings"])
 
 
+def test_pressure_scale_check_is_skipped_loudly_without_baselines(world):
+    """Country variables carry no baseline_2025 in the state catalog, so a pressure reading them cannot be
+    checked; the compiler records the skip in meta['notes'] rather than passing silently."""
+    from sim.catalog.compile import check_pressure_scale
+    from sim.catalog.types import Type2Spec
+    sc, _, _ = world
+    ctx = ExprContext(sc, "T2_SKIP")
+    spec = Type2Spec(compile_expression("100 * (pak.water_stress / 100)", ctx, "pressure", "numeric"), 70, 10, 0.2, 0.003)
+    value, note = check_pressure_scale(spec, sc, "T2_SKIP")
+    assert value is None and "skipped" in note and "pak.water_stress" in note
+    spec = Type2Spec(compile_expression("100 * (global_temp_anomaly / 2.0)", ctx, "pressure", "numeric"), 65, 15, 0.15, 0.002)
+    assert check_pressure_scale(spec, sc, "T2_OK")[0] == pytest.approx(65.0)
+    spec = Type2Spec(compile_expression("global_temp_anomaly / 2.0", ctx, "pressure", "numeric"), 65, 15, 0.15, 0.002)
+    with pytest.raises(CatalogError, match="T2_BAD: Type 2 pressure at the 2025 baselines is 0.65"):
+        check_pressure_scale(spec, sc, "T2_BAD")
+
+
 def test_strict_cascades_rejects_unmigrated_targets(world):
     sc, omega, known = world
     with pytest.raises(CatalogError, match="TAIWAN_CONFLICT: cascade target 'KOREAN_PENINSULA_CRISIS'"):
@@ -96,6 +116,7 @@ def test_strict_cascades_rejects_unmigrated_targets(world):
     ("branch_psum", "probabilities sum to 0.900000"),
     ("banned_ast", "disallowed construct IfExp"),
     ("undeclared_resolution", "undeclared resolution name 'nope'"),
+    ("pressure_scale", "pressure at the 2025 baselines is 0.325, outside [5, 125]"),
 ])
 def test_broken_variant_rejected_with_event_id(world, name, needle):
     sc, omega, known = world

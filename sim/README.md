@@ -65,7 +65,15 @@ cascade deltas`. `p_eff` is not clamped: a value ≤ 0 never fires and ≥ 1
 always fires, which is what unclamped arithmetic gives and is never silent.
 Type 2 `p_base = floor + (1 − floor) · σ(k · (pressure − threshold_r))` with
 `threshold_r = threshold + threshold_std · z_r` drawn once per run (pinned #1;
-this is the probability-estimation logistic with ceiling 1). Type 3
+this is the probability-estimation logistic with ceiling 1). Pressure is on
+`threshold`'s 0–100 scale (schema §Type 2, 2026-10-12); the compiler evaluates
+each pressure expression at the state catalog's `baseline_2025` values and
+rejects the event outside `threshold ± 4·threshold_std`, or records a skip in
+`meta["notes"]` when a name it reads has no baseline (country variables do
+not, yet). Note that `probability-estimation.md`'s worked numbers for this
+logistic (p ≈ 1% at pressure 45 with threshold 65, k 0.15, floor 0.002) do
+not follow from its own formula, which gives ≈ 4.9%; the formula is what is
+implemented, the worked numbers are not. Type 3
 `p_base = window · resolution`, `gate = all(preconditions) ∧ all(counter ≥ years)`.
 
 **Sustained counters** are updated in step 8 from the same evaluation the
@@ -140,15 +148,14 @@ schema v0.2 backlog and are rejected with a message saying so.
 Found by compiling the five migrated events. None is patched here
 (guardrail 2): each is either a data-track item or a decision for the spec.
 
-1. **Type 2 pressure scale mismatch.** AMOC's and Pakistan's pressure
-   expressions are weighted sums of terms in [0, 1] (prose: "~45/100"), but
-   `threshold` is on a 0–100 scale (65 and 70). Evaluated at the 2025
-   baselines AMOC's pressure is 0.325, so `σ(0.15 · (0.325 − 65))` pins the
-   event at its floor forever (implied annual p = 0.00206, not the documented
-   1.0%). Either the expressions gain a `100 *` or the schema states the
-   expression scale; the compiler cannot tell which is intended.
-   Separately, `probability-estimation.md`'s own worked numbers for the
-   logistic (p ≈ 1% at pressure 45) do not follow from its formula (≈ 4.9%).
+1. **Type 2 pressure scale mismatch** — *resolved 2026-10-12.* AMOC's and
+   Pakistan's pressure expressions were weighted sums of terms in [0, 1]
+   while `threshold` is on a 0–100 scale, so AMOC's pressure at the 2025
+   baselines (0.325) pinned the event at its floor. The schema now states
+   that pressure shares `threshold`'s scale, both expressions are wrapped in
+   `100 * (...)`, and the compiler checks the value at the baselines (§3,
+   "Firing"). The probability-estimation doc's worked numbers remain
+   inconsistent with its formula (§3); the formula is unchanged.
 2. **`until: resolved` has no defined end.** No field in the schema and no
    sentence in the ADRs says when an event "resolves". The engine takes a
    required `until_resolved_years` parameter until the spec decides

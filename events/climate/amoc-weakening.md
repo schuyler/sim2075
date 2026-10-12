@@ -60,9 +60,11 @@ Not Type 3: Physical process, not actor-contingent
 ```yaml
 probability:
   pressure: |
-    0.50 * (global_temp_anomaly / 2.0) +
-    0.25 * (1.0 - arctic_sea_ice_sept / 4.5) +
-    0.25 * (1.0 - amoc_strength / 95)
+    100 * (
+      0.50 * (global_temp_anomaly / 2.0) +
+      0.25 * (1.0 - arctic_sea_ice_sept / 4.5) +
+      0.25 * (1.0 - amoc_strength / 95)
+    )
   threshold: 65
   threshold_std: 15
   sharpness: 0.15
@@ -314,6 +316,7 @@ research:
 | 2025-01-02 | Migrated to YAML-embedded schema | Task 4.2 format migration |
 | 2025-01-02 | Revised impacts to use observable state variables | Mortality via life_expectancy, not direct deaths |
 | 2025-01-03 | **Remediated**: Restored lost prose | Task 4.2.1 — Restored causal type rationale, threshold specification, loading interpretation, transmission channels detail, impact chains, comparison table, sources, changelog rationale |
+| 2026-10-12 | Pressure expression wrapped in `100 * (...)` | Schema now pins pressure to `threshold`'s 0–100 scale (event-yaml-schema changelog 2026-10-12); weights, threshold, std and sharpness unchanged. At the 2025 baselines the expression gives 32.5, the prose's "~45" is a judgment estimate, not the expression's value |
 
 ---
 

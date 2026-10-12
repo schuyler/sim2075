@@ -72,6 +72,16 @@ probability:
   confidence: low|medium|high
 ```
 
+**Pressure scale.** Pressure expressions are on the same 0–100 scale as
+`threshold`: an expression whose terms are each in [0, 1] must be wrapped in
+`100 * (...)`. The compiler evaluates every Type 2 pressure expression at the
+2025 baselines of the variables it reads (the `baseline_2025` field of the
+state catalog) and rejects the event if the value lies outside
+`[threshold − 4·threshold_std, threshold + 4·threshold_std]`, reporting the
+computed value; when a variable the expression reads has no recorded baseline
+(country variables, as of this version) the check is skipped and the skip is
+reported, not silent.
+
 #### Type 3 (Contingent)
 
 ```yaml
@@ -341,3 +351,4 @@ Expressions must be valid Python that returns a boolean (preconditions) or numer
 | 2025-01-01 | Initial draft during Task 4.2 schema design |
 | 2025-01-02 | Added Entity and Variable References section: entity ID conventions, wildcard syntax |
 | 2026-07-12 | Status promoted from "Draft — refining" to v0.1 engine/catalog contract (normative for migrations and the compiler; formal freeze at [[strategy/roadmap]] Phase 1) |
+| 2026-10-12 | Type 2 pressure scale pinned: pressure expressions share `threshold`'s 0–100 scale; compiler checks the pressure at the 2025 baselines against `threshold ± 4·threshold_std` (resolves sim/README.md §4 finding 1) |
