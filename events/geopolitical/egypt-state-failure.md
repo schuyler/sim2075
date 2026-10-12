@@ -19,16 +19,18 @@ tags:
 
 ---
 
-## Event Classification
+## Specification
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | EGYPT_STATE_FAILURE |
-| **Scale** | National (with regional consequences) |
-| **Domain** | Political |
-| **Causal Type** | **Type 2: Threshold** |
-| **Onset Speed** | Rapid (1-3 years from trigger to acute phase) |
-| **Reversibility** | Partial (recovery possible but incomplete) |
+```yaml
+id: EGYPT_STATE_FAILURE
+domain: political
+scale: national
+causal_type: 2
+onset: sudden
+reversibility: partial
+```
+
+*Scale: national, with regional consequences. Onset speed: rapid (1-3 years from trigger to acute phase). Reversibility: partial (recovery possible but incomplete).*
 
 ## Description
 
@@ -60,15 +62,7 @@ Uses state variables from [[methodology/reference/state-variables-country]]. Egy
 | `egy.protest_intensity_annual` | 0.15 | linear | Political stress indicator; 2011 driver |
 | `egy.years_since_irregular_transition` | 0.10 | inverse_log | Recent instability signals fragility |
 
-**Pressure calculation**:
-```
-pressure = 0.30 × egy.water_stress / 100
-         + 0.25 × egy.food_import_dependence / 100
-         + 0.20 × debt_threshold_function(egy.debt_external, 100)
-         + 0.15 × egy.protest_intensity_annual / 100
-         + 0.10 × inverse_log(egy.years_since_irregular_transition)
-```
-*Normalized to 0-100 scale*
+The YAML expression in the Probability section realizes these transforms in the expression language's subset: the linear terms divide each 0-100 variable by 100; the debt threshold(100) is a clipped linear ramp from 60% to 120% of GDP (`min(1, max(0, (debt − 60) / 60))`), which saturates once debt exceeds 120% of GDP and reproduces the prose's current-pressure estimate (~55/100) at the current values below; the transition-recency term is `1 / (1 + years / 5)`, the same realization of inverse_log that [[events/geopolitical/pakistan-state-failure]] uses. The original pressure calculation was the same weighted sum, normalized to the 0-100 scale.
 
 **Proxy note**: The pressure function cannot directly capture food prices (not tracked) or Nile water flow specifics (GERD effects). `food_import_dependence` proxies vulnerability to food shocks; `water_stress` captures Nile pressure. This is a known fidelity limitation.
 
@@ -97,6 +91,25 @@ Egypt's existential vulnerability deserves emphasis:
 
 ## Probability
 
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.30 * (egy.water_stress / 100) +
+      0.25 * (egy.food_import_dependence / 100) +
+      0.20 * min(1.0, max(0, (egy.debt_external - 60) / 60)) +
+      0.15 * (egy.protest_intensity_annual / 100) +
+      0.10 * (1.0 / (1 + egy.years_since_irregular_transition / 5))
+    )
+  threshold: 72
+  threshold_std: 10
+  sharpness: 0.20
+  floor: 0.005
+  annual: 0.015
+  range: [0.008, 0.025]
+  confidence: medium
+```
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability (current pressure)** | 1.5% |
@@ -107,7 +120,7 @@ Egypt's existential vulnerability deserves emphasis:
 
 ### Current Pressure Estimate
 
-Current pressure: ~55/100 (elevated but below threshold)
+Current pressure: ~55/100 (elevated but below threshold; the expression gives 55.5 at these values)
 - `egy.water_stress`: ~70 (severe, worsening from GERD)
 - `egy.food_import_dependence`: ~60% of calories imported
 - `egy.debt_external`: ~95% debt/GDP (IMF program)
@@ -166,26 +179,31 @@ For Type 2 events, probability varies with pressure accumulation.
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| **F_MENA** | 0.41 | Regional instability is primary driver; Egypt is MENA anchor |
-| **F_FOOD** | 0.29 | World's largest wheat importer; bread subsidies are social contract |
-| **F_CLIM** | 0.23 | Nile flow depends on Ethiopian rainfall; heat stress |
-| **F_FIN** | 0.18 | Chronic fiscal crisis; IMF dependency |
-| F_GPT | 0.09 | Great power competition affects aid flows |
-| F_SSA | 0.07 | Ethiopia (GERD), Sudan instability affect Egypt |
-| F_HLTH | 0.00 | No distinct pathway |
-| F_TECH | 0.00 | No significant pathway |
-| F_EUR | 0.00 | Migration is consequence, not driver |
-| F_EAS | 0.00 | No significant pathway |
-| F_SAS | 0.00 | No significant pathway |
-| F_LAM | 0.00 | No significant pathway |
+```yaml
+factors:
+  F_MENA: 0.41  # Regional instability is primary driver; Egypt is MENA anchor
+  F_FOOD: 0.29  # World's largest wheat importer; bread subsidies are social contract
+  F_CLIM: 0.23  # Nile flow depends on Ethiopian rainfall; heat stress
+  F_FIN: 0.18   # Chronic fiscal crisis; IMF dependency
+  F_GPT: 0.09   # Great power competition affects aid flows
+  F_SSA: 0.07   # Ethiopia (GERD), Sudan instability affect Egypt
+variance: 0.65  # Type 2 target
+```
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.58 from original loadings
+Factors with no loading: F_HLTH (no distinct pathway), F_TECH (no significant pathway), F_EUR (migration is consequence, not driver), F_EAS, F_SAS, F_LAM (no significant pathway).
+
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.58 from original loadings. The original (pre-allocation) loadings in the initial specification were F_MENA 0.70, F_FOOD 0.50, F_CLIM 0.40, F_FIN 0.30, F_GPT 0.15, F_SSA 0.12, with a sum of squared loadings of 0.97; Task 3.11 scaled them to the Type 2 target.
 
 ---
 
 ## Severity Branches
+
+```yaml
+branches:
+  - {id: managed, p: 0.40, desc: "Military maintains core control; government loses legitimacy; extended instability"}
+  - {id: collapse, p: 0.40, desc: "Government loses significant territory or functions; military fragments or turns predatory; mass displacement"}
+  - {id: catastrophic, p: 0.20, desc: "Complete state failure; Cairo loses control; mass starvation risk; Suez Canal threatened"}
+```
 
 ### Branch 1: Managed Crisis (40%)
 
@@ -205,32 +223,82 @@ Complete state failure. Military fragments into factions. Cairo loses control. M
 
 **Impact modifiers**: 5.0× baseline
 
+*The YAML `impacts:` block takes the managed branch as its explicit list and scales `collapse` from it at 2.5. The `catastrophic` branch is written out explicitly: every additive row carries the documented 5.0× multiplier, but `egy.gdp_real` is a fraction of current value and 5.0 × −25% = −125% cannot be applied (a multiplicative contribution at or below −1 is a run-time hard failure under [[methodology/reference/event-yaml-schema]] §Impact Fields), so that row is capped at −70% ± 10% — roughly Syria's 2011-2016 GDP loss, the closest analogue to complete state failure in a large, urbanized state.*
+
 ---
 
 ## Impact Vector
 
 ### Egypt Impacts (Baseline: Managed Crisis)
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `egy.gdp_real` | ↓ | -25% ± 10% | rapid(2yr) | decaying: half_life=8yr, floor=-15% |
-| `egy.internal_conflict_intensity` | ↑ | to 3-4 | immediate | decaying: half_life=8yr |
-| `egy.idp_population` | ↑ | +10M ± 5M | rapid(2yr) | decaying: half_life=15yr |
-| `egy.refugees_abroad` | ↑ | +3M ± 2M | rapid(3yr) | decaying: half_life=20yr |
-| `egy.unemployment_rate` | ↑ | +15 ± 6 pp | immediate | decaying: half_life=6yr |
+The managed-crisis baseline in the original specification: `egy.gdp_real` −25% ± 10% over 2 years, decaying with 8-year half-life to a −15% floor; `egy.internal_conflict_intensity` rising to 3-4 immediately, 8-year half-life; `egy.idp_population` +10M ± 5M over 2 years, 15-year half-life; `egy.refugees_abroad` +3M ± 2M over 3 years, 20-year half-life; `egy.unemployment_rate` +15 ± 6 pp immediately, 6-year half-life.
 
 ### Global Impacts
 
-| Variable | Direction | Magnitude | Onset | Durability |
-|----------|-----------|-----------|-------|------------|
-| `oil_brent` | ↑ | +15% ± 10% | immediate | decaying: half_life=1yr |
-| `global_trade_volume` | ↓ | -3% ± 2% | immediate | decaying: half_life=2yr |
+`oil_brent` +15% ± 10% immediately, 1-year half-life; `global_trade_volume` −3% ± 2% immediately, 2-year half-life.
 
 *Suez Canal disruption amplifies global impacts significantly in catastrophic branch*
+
+```yaml
+impacts:
+  managed:
+    # Egypt
+    - {var: egy.gdp_real,                    mag: [-0.25, 0.10], onset: {gradual: 2}, decay: 8}
+    - {var: egy.internal_conflict_intensity, mag: [2.5, 0.5],    onset: immediate, decay: 8}
+    - {var: egy.idp_population,              mag: [10, 5],       onset: {gradual: 2}, decay: 15}
+    - {var: egy.refugees_abroad,             mag: [3, 2],        onset: {gradual: 3}, decay: 20}
+    - {var: egy.unemployment_rate,           mag: [15, 6],       onset: immediate, decay: 6}
+
+    # Global
+    - {var: oil_brent,                       mag: [11.25, 7.5],  onset: immediate, decay: 1}
+    - {var: global_trade_volume,             mag: [-3, 2],       onset: immediate, decay: 2}
+
+  collapse:
+    inherit: managed
+    scale: 2.5
+
+  catastrophic:
+    # 5.0x the managed baseline on every additive row; gdp_real capped (see Severity Branches)
+    - {var: egy.gdp_real,                    mag: [-0.70, 0.10], onset: {gradual: 2}, decay: 8}
+    - {var: egy.internal_conflict_intensity, mag: [12.5, 2.5],   onset: immediate, decay: 8}
+    - {var: egy.idp_population,              mag: [50, 25],      onset: {gradual: 2}, decay: 15}
+    - {var: egy.refugees_abroad,             mag: [15, 10],      onset: {gradual: 3}, decay: 20}
+    - {var: egy.unemployment_rate,           mag: [75, 30],      onset: immediate, decay: 6}
+    - {var: oil_brent,                       mag: [56.25, 37.5], onset: immediate, decay: 1}
+    - {var: global_trade_volume,             mag: [-15, 10],     onset: immediate, decay: 2}
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (−25% ± 10% for the managed branch); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields). `egy.unemployment_rate` is in percentage points of the labor force (+15 ± 6 pp). `oil_brent` is in $/bbl: +15% ± 10% of the catalog's 2025 baseline of $75 is +11.25 ± 7.50. `global_trade_volume` is an index (2025 = 100): −3% ± 2% is −3 ± 2 index points. `egy.internal_conflict_intensity` is additive on the 0-4 scale: "rises to 3-4" from Egypt's current level of roughly 1 (Sinai insurgency) is +2.5 ± 0.5 in the managed branch; the branch multipliers push this row past the top of the scale in the heavier branches, as they do for the same variable in [[events/geopolitical/pakistan-state-failure]].*
+
+### Durability
+
+| Variable | Original durability | YAML form |
+|----------|--------------------|-----------|
+| `egy.gdp_real` | decaying: half_life=8yr, floor=-15% | `decay: 8` — decay-to-floor durability is schema v0.2 backlog; the −15% floor (permanent loss of ~15% of GDP) is dropped from the YAML |
+| `egy.internal_conflict_intensity` | decaying: half_life=8yr | `decay: 8` |
+| `egy.idp_population` | decaying: half_life=15yr | `decay: 15` |
+| `egy.refugees_abroad` | decaying: half_life=20yr | `decay: 20` |
+| `egy.unemployment_rate` | decaying: half_life=6yr | `decay: 6` |
+| `oil_brent` | decaying: half_life=1yr | `decay: 1` |
+| `global_trade_volume` | decaying: half_life=2yr | `decay: 2` |
+
+Onsets: "rapid (2yr)" and "rapid (3yr)" are `{gradual: 2}` and `{gradual: 3}`.
 
 ---
 
 ## Cascade Effects
+
+```yaml
+cascades:
+  triggers:
+    - {event: SAHEL_CATASTROPHE,       delta: 0.005, years: 5}
+    - {event: EU_FRAGMENTATION,        delta: 0.003, years: 5}
+    - {event: GLOBAL_FINANCIAL_CRISIS, delta: 0.005, years: 2}
+  triggered_by:
+    - {event: GLOBAL_FINANCIAL_CRISIS, delta: 0.008}
+    - {event: SEVERE_PANDEMIC,         delta: 0.005}
+    - {event: OIL_SUPPLY_SHOCK,        delta: 0.005}
+```
 
 ### State → Probability Cascades
 
@@ -262,13 +330,17 @@ Complete state failure. Military fragments into factions. Cairo loses control. M
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete (2025-12-30) |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | GERD hydrology data; food security modeling; military cohesion assessment |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
+
+**Critical review**: Complete (2025-12-30).
+
+**Upgrade rationale**: GERD hydrology data; food security modeling; military cohesion assessment.
 
 ## Open Questions
 
@@ -284,7 +356,9 @@ Complete state failure. Military fragments into factions. Cairo loses control. M
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2025-12-18 | Initial Level 1 specification | Type 2 state failure event |
+| 2025-12-30 | Variance allocation: scaled loadings to Type 2 target | Task 3.11 - Factor-explained variance reduced to Type 2 target (0.65) per variance allocation framework; scale factor 0.58 |
 | 2025-12-30 | Critical review complete | Task 2.4.9 - Added Case Against, Probability Evolution; fixed variable/event references |
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.6. Classification, pressure, threshold, probability, factor, branch, impact, cascade and research tables converted to YAML; all prose kept. Judgment calls: onset "rapid (1-3 years)" → `sudden`; confidence medium as written. Pressure transforms realized per the sentence under the pressure table (debt threshold(100) as a 60-120% ramp, inverse_log as `1/(1+years/5)`); expression wrapped `100 * (...)` and gives 55.5 at the prose's current values (country variables have no 2025 baseline, so the compiler's scale check is skipped). Unit conversions against [[sim/data/state_catalog]]: `egy.unemployment_rate` +15 ± 6 pp → `[15, 6]` (catalog units "% of labor force"); `oil_brent` +15% ± 10% of the $75 baseline → `[11.25, 7.5]`; `global_trade_volume` −3% ± 2% of index 100 → `[-3, 2]`; `egy.internal_conflict_intensity` "to 3-4" → additive `[2.5, 0.5]` from a current level of ~1. Durability: the GDP decay-to-floor (floor = −15%) is schema v0.2 backlog and became a plain `decay: 8`; original forms kept in the Durability table. Branches: `collapse` inherits at the documented 2.5; `catastrophic` is an explicit list at the documented 5.0 on every additive row with `egy.gdp_real` capped at −70% ± 10% because 5.0 × −25% is below −1 on a multiplicative variable. No `until: resolved` rows, so no `resolves_after`. All six cascade IDs exist as event files; none needed alias normalization; no variables needed a catalog alternative and no rows were dropped. Restored from history (f72d084): the original pre-allocation loadings (F_MENA 0.70, F_FOOD 0.50, F_CLIM 0.40, F_FIN 0.30, F_GPT 0.15, F_SSA 0.12) and the "sum of squared loadings 0.97" check that Task 3.11 replaced, and the Task 3.11 changelog row that commit did not add. |
 
 ---
 
