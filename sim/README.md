@@ -26,6 +26,12 @@ decisions they left open (§3) and what the build has found so far (§4).
 | — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; `p_base`, gate, fire mask in year 0 — grows with each stage | in suite |
 | E5–E10 | memory, impacts, dynamics, year loop, analysis | per guide §3 | not started |
 
+Data track (guide §2): D1 done; D2 at 28 of 29 events migrated and
+compiling (`US_CONSTITUTIONAL_CRISIS` is held back on the variance gate,
+§4 item 10). The full-catalog gate (`strict_cascades` on) is not yet green:
+cascade edges to the held-back event and to registry-only IDs are dropped
+with warnings until the catalog is complete.
+
 ```
 pip install -e ".[test]"
 pytest                               # the stage gates
@@ -221,7 +227,61 @@ Found by compiling the five migrated events. None is patched here
    −1 and the engines fail the run loudly when a drawn contribution is ≤ −1;
    with std 0.45 the draw lands at or below −1 about two-thirds of the time
    this branch fires. Data-track item: cap the scaled fraction, split the
-   nuclear branch's GDP row out of `inherit`, or re-express it.
+   nuclear branch's GDP row out of `inherit`, or re-express it. The same
+   shape recurs in the fan-out: Egypt's catastrophic branch was capped at
+   −0.70 at migration, Sahel's branches were written explicitly instead of
+   the 2.5×/5× multipliers, both recorded in the files' changelogs.
+
+Surfaced by the 24-event migration fan-out (2026-10-12), each also recorded
+in the file's changelog row:
+
+10. **`US_CONSTITUTIONAL_CRISIS` fails the variance gate.** Its documented
+    loadings achieve 0.409 against the declared hybrid target 0.55 (the
+    pre-scaling loadings give 0.523). Not patched (guardrail 6); the
+    migrated file is held outside the repo until a loading or target
+    decision is made. The compile-time cascade edges into it from seven
+    events are dropped with warnings meanwhile.
+11. **Sharpness convention is mixed.** `sharpness` is applied per point of
+    the 0–100 pressure scale (§3). AMOC and Pakistan use 0.15–0.20; the EU,
+    Chinese political, Chinese economic, dollar-reserve and US-constitutional
+    events document 8–15, which on this scale is a step at the drawn
+    threshold: with pressure below threshold their annual probability is
+    exactly the floor. Values were written as documented; one migration had
+    rescaled 8 to 0.08 and was reverted before commit so the convention is
+    decided once, here, not per file.
+12. **Unit convention for `unemployment_rate` and the index variables.** The
+    catalog gives `unemployment_rate` as "% of labor force" and
+    `global_trade_volume`, `semiconductor_supply` as indices (2025 = 100).
+    The January migrations (Taiwan, pandemic, Pakistan) wrote these as
+    fractions (−0.15, 0.04); the October migrations wrote points (−15, +4),
+    following the catalog. The three early files should be re-expressed, or
+    the schema should list which variables are fractional (today only
+    `gdp_real`).
+13. **`nuclear_status` is categorical with no encoding.** Saudi nuclear
+    acquisition's preconditions read `irn.nuclear_status` as an ordinal
+    (NONE 0, THRESHOLD 1, POSSESSED 2); the catalog records "Categorical"
+    and nothing else. The encoding needs to be stated in the state catalog
+    or the variable made numeric.
+14. **Rows exceeding their variable's range.** Permafrost's catastrophic
+    `permafrost_integrity` −100 on a 0–100 variable at 90; Amazon's
+    `bra.agricultural_climate_risk` +120 and `bra.water_stress` +80; Egypt
+    and Pakistan's scaled `internal_conflict_intensity` (0–4) and
+    `unemployment_rate` branches. The engine does not clip (guardrail 4), so
+    these produce out-of-range state. Data-track review item.
+15. **Cross-file `triggered_by` deltas disagree with the source's
+    `triggers`** (Pakistan lists India–Pakistan at +0.030, the source writes
+    +0.012; several events' `triggered_by` lists omit edges other files
+    declare). `triggered_by` is informational (§3), so nothing is wrong in
+    the engine, but the tables should be reconciled once.
+16. **Pressure expressions versus prose estimates.** Where a prose "current
+    pressure ~N" exists, the realized expression gives: AMOC 32.5 vs 45,
+    Amazon ~43 vs 58, Permafrost 28 vs 50, Chinese political ~17 vs 35–40,
+    Saudi regime ~12 vs 25, Russia ~66 vs 55, Iran nuclear 68 vs 50; the
+    rest agree within a few points. Each file notes its own gap. Combined
+    with item 11, several Type 2 events sit at their floor at the 2025
+    baselines.
+17. **`EU_COHESION_STRESS`** (Sahel cascade table) is in no registry
+    section; registry §5 asks for a disposition.
 
 ## 5. License
 

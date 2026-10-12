@@ -43,7 +43,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
-| **4.2** | **Event specification migration** (5/29 migrated and compiling; D1 remediation done): See detailed instructions below. | — | 🟡 |
+| **4.2** | **Event specification migration** (28/29 migrated and compiling; 4.2.19 held on the variance gate): See detailed instructions below. | — | 🟡 |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~196 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.3 | 🔲 |
 
@@ -124,8 +124,8 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.1 | [[events/climate/amoc-weakening]] | ✅ (remediated) |
-| 4.2.2 | [[events/climate/amazon-tipping-point]] | 🔲 |
-| 4.2.3 | [[events/climate/permafrost-methane-release]] | 🔲 |
+| 4.2.2 | [[events/climate/amazon-tipping-point]] | ✅ |
+| 4.2.3 | [[events/climate/permafrost-methane-release]] | ✅ |
 
 **Geopolitical Events**:
 
@@ -133,28 +133,28 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 |---------|-------|--------|
 | 4.2.4 | [[events/geopolitical/taiwan-conflict]] | ✅ |
 | 4.2.5 | [[events/geopolitical/pakistan-state-failure]] | ✅ (remediated) |
-| 4.2.6 | [[events/geopolitical/egypt-state-failure]] | 🔲 |
-| 4.2.7 | [[events/geopolitical/russia-state-failure]] | 🔲 |
-| 4.2.8 | [[events/geopolitical/saudi-regime-instability]] | 🔲 |
-| 4.2.9 | [[events/geopolitical/iran-regime-change]] | 🔲 |
-| 4.2.10 | [[events/geopolitical/turkey-political-breakdown]] | 🔲 |
-| 4.2.11 | [[events/geopolitical/chinese-political-crisis]] | 🔲 |
-| 4.2.12 | [[events/geopolitical/eu-fragmentation]] | 🔲 |
-| 4.2.13 | [[events/geopolitical/india-pakistan-military-conflict]] | 🔲 |
-| 4.2.14 | [[events/geopolitical/korean-peninsula-crisis]] | 🔲 |
-| 4.2.15 | [[events/geopolitical/us-china-economic-rupture]] | 🔲 |
-| 4.2.16 | [[events/geopolitical/iran-nuclear-acquisition]] | 🔲 |
-| 4.2.17 | [[events/geopolitical/sahel-catastrophe]] | 🔲 |
-| 4.2.18 | [[events/geopolitical/saudi-nuclear-acquisition]] | 🔲 |
-| 4.2.19 | [[events/geopolitical/us-constitutional-crisis]] | 🔲 |
+| 4.2.6 | [[events/geopolitical/egypt-state-failure]] | ✅ |
+| 4.2.7 | [[events/geopolitical/russia-state-failure]] | ✅ |
+| 4.2.8 | [[events/geopolitical/saudi-regime-instability]] | ✅ |
+| 4.2.9 | [[events/geopolitical/iran-regime-change]] | ✅ |
+| 4.2.10 | [[events/geopolitical/turkey-political-breakdown]] | ✅ |
+| 4.2.11 | [[events/geopolitical/chinese-political-crisis]] | ✅ |
+| 4.2.12 | [[events/geopolitical/eu-fragmentation]] | ✅ |
+| 4.2.13 | [[events/geopolitical/india-pakistan-military-conflict]] | ✅ |
+| 4.2.14 | [[events/geopolitical/korean-peninsula-crisis]] | ✅ |
+| 4.2.15 | [[events/geopolitical/us-china-economic-rupture]] | ✅ |
+| 4.2.16 | [[events/geopolitical/iran-nuclear-acquisition]] | ✅ |
+| 4.2.17 | [[events/geopolitical/sahel-catastrophe]] | ✅ |
+| 4.2.18 | [[events/geopolitical/saudi-nuclear-acquisition]] | ✅ |
+| 4.2.19 | [[events/geopolitical/us-constitutional-crisis]] | ⏸️ migrated, held back: documented loadings achieve (ΛΩΛᵀ)ᵢᵢ = 0.409 against the declared hybrid target 0.55 (compiler tolerance ±0.02); needs a loading or target decision before it can land |
 
 **Financial Events**:
 
 | Subtask | Event | Status |
 |---------|-------|--------|
-| 4.2.20 | [[events/financial/global-financial-crisis]] | 🔲 |
-| 4.2.21 | [[events/financial/dollar-reserve-crisis]] | 🔲 |
-| 4.2.22 | [[events/financial/chinese-economic-crisis]] | 🔲 |
+| 4.2.20 | [[events/financial/global-financial-crisis]] | ✅ |
+| 4.2.21 | [[events/financial/dollar-reserve-crisis]] | ✅ |
+| 4.2.22 | [[events/financial/chinese-economic-crisis]] | ✅ |
 
 **Health Events**:
 
@@ -166,21 +166,21 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 | Subtask | Event | Status |
 |---------|-------|--------|
-| 4.2.24 | [[events/energy/oil-supply-shock]] | 🔲 |
+| 4.2.24 | [[events/energy/oil-supply-shock]] | ✅ |
 
 **Breakthrough Events**:
 
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.25 | [[events/breakthrough/fusion-commercialization]] | ✅ (remediated) |
-| 4.2.26 | [[events/breakthrough/agricultural-yield-breakthrough]] | 🔲 |
-| 4.2.27 | [[events/breakthrough/cancer-treatment-breakthrough]] | 🔲 |
-| 4.2.28 | [[events/breakthrough/antimicrobial-platform]] | 🔲 |
-| 4.2.29 | [[events/breakthrough/energy-storage-breakthrough]] | 🔲 |
+| 4.2.26 | [[events/breakthrough/agricultural-yield-breakthrough]] | ✅ |
+| 4.2.27 | [[events/breakthrough/cancer-treatment-breakthrough]] | ✅ |
+| 4.2.28 | [[events/breakthrough/antimicrobial-platform]] | ✅ |
+| 4.2.29 | [[events/breakthrough/energy-storage-breakthrough]] | ✅ |
 
 **Status key**: ✅ Complete | ⚠️ Needs remediation (prose lost) | 🟡 In progress | 🔲 Not started
 
-**Progress**: 5/29 complete (taiwan-conflict, amoc-weakening; pakistan-state-failure, severe-pandemic and fusion-commercialization remediated at data-track step D1, Oct 2026 — all five compile under `python -m sim.catalog.cli events`), 24/29 not started
+**Progress**: 28/29 complete and compiling under `python -m sim.catalog.cli events` (Oct 12, 2026: D1 remediation of three, then the remaining 24 migrated one agent per event with a compile check and a full-git-history prose diff each); 1/29 held back (4.2.19, variance gate). Every migration's judgment calls are in its file's 2026-10-12 changelog row; the catalog-wide items they surfaced (sharpness convention, unit convention for `unemployment_rate` and the index variables, `nuclear_status` encoding, rows exceeding variable ranges, cross-file `triggered_by` deltas) are listed in `sim/README.md` §4.
 
 **Completed:** Tasks 4.1, 4.5 — see [[methodology/project/tasks-completed]]
 
@@ -284,4 +284,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: October 12, 2026 — engine stages E0–E4 landed (5.1, 5.8b, 5.3, 5.4); data-track D1 done; build findings cross-referenced from sim/README.md*
+*Last updated: October 12, 2026 — engine stages E0–E4 landed (5.1, 5.8b, 5.3, 5.4); data track at 28/29 migrated and compiling; build findings cross-referenced from sim/README.md*

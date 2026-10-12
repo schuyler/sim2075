@@ -85,6 +85,12 @@ Not event IDs, but the same discipline: a reference an event wanted to make and 
 
 | Referenced entity | Referenced in | Gap | Disposition |
 |---|---|---|---|
+| `yem` (Yemen) | iran-regime-change (`yem.internal_conflict_intensity` +1) | Yemen is in no country list or aggregate | Row dropped at migration (2026-10-12); channel in prose. Same revisit rule as Afghanistan |
+| `lbn`, `irq`, `syr` (Lebanon, Iraq, Syria) | iran-regime-change, turkey-political-breakdown | Countries inside the `levant_iraq` aggregate, not entities | Rows re-expressed on `levant_iraq` with share-weighted magnitudes (recorded in each file's changelog); no gap, listed so the weighting is findable |
+| `grc`, `bgr` (Greece, Bulgaria) | turkey-political-breakdown | Inside `eu_other` | Re-expressed on `eu_other`, GDP-weighted |
+| Azerbaijan | energy-storage-breakthrough (petrostate GDP row) | Not an entity; in no aggregate | Row dropped at migration (2026-10-12); channel in prose |
+| Georgia (phage legacy) | antimicrobial-platform | Not an entity | Modifier kept in prose only |
+| `EU_COHESION_STRESS` (event ID, not an entity) | sahel-catastrophe | Named in a cascade table; absent from this registry | Not written to `triggers:`; reads as an alias for `EU_FRAGMENTATION` — confirm and add to §3, or decline |
 | `afg` (Afghanistan) | pakistan-state-failure (regional contagion: `afg.internal_conflict_intensity` +0.5 ± 0.3, delayed 1yr, half-life 5yr) | Afghanistan is not one of the 40 countries and belongs to no Tier 1 or Tier 2 aggregate ([[methodology/reference/state-entities]]) | Row dropped at D1 remediation (2026-10-12); the channel stays in prose. Revisit at the next catalog release if an Afghanistan entity or a South/Central Asia aggregate that contains it is admitted |
 
 ---
