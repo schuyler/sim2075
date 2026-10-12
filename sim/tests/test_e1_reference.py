@@ -56,12 +56,17 @@ def test_fix_b_matches_hand_trace():
 
 def test_ledger_overflow_is_a_loud_failure():
     # FIX-B holds one slot from 2026 (gdp decay) and a second from 2028 (conflicts until-resolved)
-    p = SimParams(until_resolved_years=2, start_year=2025, years=fix_b.YEARS, max_active=1)
+    p = SimParams(start_year=2025, years=fix_b.YEARS, max_active=1)
     with pytest.raises(LedgerOverflow) as ei:
         ReferenceRun(fix_b.catalog(), fix_b.initial_conditions(), fix_b.dynamics(), p, fix_b.draws(), 0).run()
     assert ei.value.run_index == 0 and ei.value.year == 2028 and ei.value.count == 2
 
 
-def test_until_resolved_years_is_required():
-    with pytest.raises(TypeError):
-        SimParams()  # type: ignore[call-arg]
+def test_resolves_after_is_per_event_and_counts_the_firing_year():
+    """T3 fires in 2028 with resolves_after = 2: conflicts holds through 2029 and is 0 from 2030 (FIX-B trace).
+    With resolves_after = 1 the shock lasts the firing year only; with 3 it holds through 2030."""
+    for n, want in ((1, [0, 0, 0, 1, 0, 0]), (2, [0, 0, 0, 1, 1, 0]), (3, [0, 0, 0, 1, 1, 1])):
+        cat = fix_b.catalog()
+        cat.resolves_after = np.array([0, 0, n])
+        rec = ReferenceRun(cat, fix_b.initial_conditions(), fix_b.dynamics(), fix_b.params(), fix_b.draws(), 0).run()
+        assert rec.global_[1:, cat.index.global_var["conflicts"]].tolist() == want, n

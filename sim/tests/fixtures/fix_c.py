@@ -31,6 +31,7 @@ AMOC_LOADINGS = {"F_CLIM": 0.67, "F_FOOD": 0.16, "F_EUR": 0.12, "F_SSA": 0.08, "
 TAIWAN_TREE = (["military_conflict", "settlement"], [0.65, 0.35],
                [["limited", "full_invasion", "nuclear"], ["stable", "unstable"]], [[0.55, 0.30, 0.15], [0.40, 0.60]])
 N_ROWS_TAIWAN, N_ROWS_AMOC = 36, 21
+RESOLVES_AFTER = [3, 0]   # Taiwan declares resolves_after: 3; AMOC has no until: resolved rows
 AMOC_PRESSURE_AT_BASELINE = 32.5
 AMOC_BASELINE_NS = {"global_temp_anomaly": 1.3, "arctic_sea_ice_sept": 4.5, "amoc_strength": 95.0}
 # cascade targets of both events are unmigrated as of E0: all 5 edges are dropped with warnings

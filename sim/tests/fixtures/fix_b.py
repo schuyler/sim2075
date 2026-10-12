@@ -6,7 +6,7 @@ World:
   country x with vars stress, gdp; globals temp, conflicts
   dynamics: temp += 0.1/yr; x.stress += 0.5/yr (no mean-reverting variables: dyn_z has width 0)
   initial: x.stress = 0, x.gdp = 100, temp = 1.0, conflicts = 0
-  params: until_resolved_years = 2, start 2025, 6 years
+  params: start 2025, 6 years; T3 resolves_after = 2 (active the firing year and the next)
 
 Events (index: id):
   0: T1  Type 1, annual .05, loading FG .5 (σ_idio = √.75)
@@ -78,7 +78,8 @@ def catalog() -> CompiledCatalog:
     return CompiledCatalog(event_ids=EVENTS, lam=lam, sigma_idio=B.sigma_from(lam, OMEGA),
                            causal_type=np.array([1, 2, 3], dtype=np.int8), p_annual=np.array([0.05, np.nan, np.nan]),
                            type2=type2, type3=type3, resolution_tree=trees, impact_table=rows, cascade_edges=edges,
-                           index=idx, omega=OMEGA, meta={"fixture": "FIX-B", "state_catalog": sc})
+                           index=idx, omega=OMEGA, resolves_after=np.array([0, 0, 2]),
+                           meta={"fixture": "FIX-B", "state_catalog": sc})
 
 
 def initial_conditions() -> InitialConditions:
@@ -90,7 +91,7 @@ def dynamics() -> DynamicsSpec:
 
 
 def params() -> SimParams:
-    return SimParams(until_resolved_years=2, start_year=2025, years=YEARS)
+    return SimParams(start_year=2025, years=YEARS)
 
 
 def draws() -> ScriptedDraws:

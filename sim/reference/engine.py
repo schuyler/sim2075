@@ -256,7 +256,7 @@ class ReferenceRun:
                 br = self._draw_code(float(d["branch_u"][r, e]), tree.branch_p[res])
                 self.last_res[e], self.last_branch[e], self.last_fire_year[e] = res, br, year
                 self.active[e] = True
-                self.active_until[e] = year + P.until_resolved_years - 1
+                self.active_until[e] = year + int(cat.resolves_after[e]) - 1   # resolves_after counts the firing year
                 mags = []
                 rows = np.flatnonzero((cat.impact_table["event"] == e) & (cat.impact_table["res_code"] == res)
                                       & (cat.impact_table["branch_code"] == br))

@@ -10,7 +10,7 @@ from . import schema
 from .expr import ExprContext, compile_expression
 from .extract import extract_all, extract_record, event_id_from_filename
 from .omega import validate_omega
-from .types import (CascadeEdge, CatalogError, CatalogIndex, CompiledCatalog, ENTITY_GLOBAL,
+from .types import (CascadeEdge, CatalogError, CatalogIndex, CompiledCatalog, DUR_UNTIL_RESOLVED, ENTITY_GLOBAL,
                     IMPACT_DTYPE, ResolutionTree, StateCatalog, Type2Spec, Type3Spec)
 
 DEFAULT_VARIANCE_TOL = 0.02
@@ -98,6 +98,7 @@ def compile_event_records(records: list[dict], omega: np.ndarray, state: StateCa
     edges: list[CascadeEdge] = []
     warnings: list[str] = []
     declared_var = np.zeros(E, dtype=np.float64)
+    resolves_after = np.zeros(E, dtype=np.int64)
     meta_events: dict[str, dict] = {}
     pressure_at_baseline: dict[str, float | None] = {}
     notes: list[str] = []
@@ -140,11 +141,17 @@ def compile_event_records(records: list[dict], omega: np.ndarray, state: StateCa
                 float(p["window"]), float(p["resolution"]))
 
         impacts = schema.validate_impacts(rec, eid, res_ids, b_ids)
+        uses_until_resolved = False
         for (rc, bc), lst in impacts.items():
             for r in lst:
+                uses_until_resolved |= r["dur_kind"] == DUR_UNTIL_RESOLVED
                 for ent_i, var_i, _key in _resolve_var(r["var"], state, eid, f"impacts.{res_ids[rc]}.{b_ids[rc][bc]}"):
                     rows.append((i, rc, bc, ent_i, var_i, r["mean"], r["std"],
                                  r["onset_kind"], r["onset_years"], r["dur_kind"], r["dur_param"]))
+        if uses_until_resolved and "resolves_after" not in p:
+            raise CatalogError(f"{eid}: has an 'until: resolved' impact row but no probability.resolves_after "
+                               f"(years active per firing, counting the firing year; schema §Durability Shorthand)")
+        resolves_after[i] = int(p.get("resolves_after", 0))
 
         for c in schema.validate_cascades(rec, eid):
             # validate the edge fully (including its `if`) before deciding whether it can be kept
@@ -181,7 +188,7 @@ def compile_event_records(records: list[dict], omega: np.ndarray, state: StateCa
     return CompiledCatalog(
         event_ids=ids, lam=lam, sigma_idio=sigma_idio, causal_type=causal, p_annual=p_annual,
         type2=type2, type3=type3, resolution_tree=trees, impact_table=table, cascade_edges=edges,
-        index=index, omega=omega,
+        index=index, omega=omega, resolves_after=resolves_after,
         meta={"declared_variance": declared_var, "achieved_variance": achieved,
               "warnings": warnings, "notes": notes, "pressure_at_baseline": pressure_at_baseline,
               "events": meta_events, "state_catalog": state})

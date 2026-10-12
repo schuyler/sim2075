@@ -56,6 +56,10 @@ def validate_probability(rec: dict, event: str) -> dict:
     ct = rec["causal_type"]
     if "confidence" in p and p["confidence"] not in CONFIDENCE:
         raise CatalogError(f"{event}: probability.confidence must be one of {sorted(CONFIDENCE)}, got {p['confidence']!r}")
+    if "resolves_after" in p:
+        n = p["resolves_after"]
+        if isinstance(n, bool) or not isinstance(n, int) or n < 1:
+            raise CatalogError(f"{event}: probability.resolves_after must be an integer >= 1 (years, counting the firing year), got {n!r}")
     if "range" in p:
         r = p["range"]
         if not (isinstance(r, list) and len(r) == 2):

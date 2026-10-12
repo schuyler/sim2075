@@ -46,8 +46,7 @@ class DynamicsSpec:
 
 @dataclass
 class SimParams:
-    """Engine parameters. ``until_resolved_years`` has no default on purpose — see sim/README.md (open question)."""
-    until_resolved_years: int
+    """Engine parameters. The ``until: resolved`` window is per event (``CompiledCatalog.resolves_after``), not here."""
     start_year: int = 2025
     years: int = 50
     max_active: int = 256
@@ -55,8 +54,6 @@ class SimParams:
     block_size: int = 1024
 
     def __post_init__(self):
-        if self.until_resolved_years < 1:
-            raise ValueError("until_resolved_years must be >= 1")
         if self.years < 1 or self.max_active < 1:
             raise ValueError("years and max_active must be >= 1")
 

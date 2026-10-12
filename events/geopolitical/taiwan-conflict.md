@@ -54,10 +54,13 @@ probability:
       - expr: "F_GPT > 1.0"
         years: 2
   resolution: 0.65
+  resolves_after: 3
   annual: 0.020
   range: [0.010, 0.035]
   confidence: medium
 ```
+
+`resolves_after: 3` — the `until: resolved` rows (conflict involvement, active major conflicts) hold for three years per firing, counting the firing year: the war-interaction doc ([[strategy/sim2075-third-gulf-war-interaction]] §4 fix 3) found conflict resolution clocks run multi-year and outlast the main engagement, and a cross-strait war is not a weeks-long affair.
 
 ### Derivation
 
@@ -234,6 +237,7 @@ research:
 | 2025-12-30 | Critical review complete |
 | 2025-01-01 | Migrated to YAML-embedded schema |
 | 2025-01-02 | Fixed variable names to match state catalog |
+| 2026-10-12 | Added `resolves_after: 3` (schema change of the same date: `until: resolved` rows need an explicit window) |
 
 ---
 

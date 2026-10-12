@@ -56,10 +56,13 @@ probability:
   threshold_std: 10
   sharpness: 0.20
   floor: 0.003
+  resolves_after: 5
   annual: 0.015
   range: [0.008, 0.025]
   confidence: medium
 ```
+
+`resolves_after: 5` — `active_major_conflicts` counts the collapse for five years per firing, counting the firing year: state-failure civil conflicts in the reference class (Syria from 2011, Somalia from 1991, Yugoslavia from 1991) ran well past five years, and five is the shortest window consistent with the 8-year conflict-intensity half-life above.
 
 ### Current Pressure Estimate
 
@@ -230,6 +233,7 @@ research:
 | 2025-12-30 | Variance allocation: scaled loadings to Type 2 target |
 | 2025-12-30 | Critical review complete; replaced regime_stability with observables |
 | 2025-01-03 | Migrated to YAML-embedded schema |
+| 2026-10-12 | Added `resolves_after: 5` (schema change of the same date: `until: resolved` rows need an explicit window) |
 | 2026-10-12 | Pressure expression wrapped in `100 * (...)` per the schema's pressure-scale rule (event-yaml-schema changelog 2026-10-12); at the prose's current values the expression gives 53.7, consistent with "~55/100" |
 
 ---

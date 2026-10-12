@@ -44,9 +44,12 @@ reversibility: partial
 ```yaml
 probability:
   annual: 0.020
+  resolves_after: 3
   range: [0.015, 0.030]
   confidence: medium-high
 ```
+
+`resolves_after: 3` — `pandemic_status` stays elevated for three years per firing, counting the firing year: the severity definition counts excess deaths over the first 24 months, and COVID-19's acute phase (PHEIC January 2020 to May 2023) ran about three years.
 
 ### Base Rate Derivation
 
@@ -218,6 +221,7 @@ research:
 | 2025-12-30 | Critical review complete |
 | 2025-01-01 | Migrated to YAML-embedded schema |
 | 2025-01-02 | Fixed variable names; clarified mortality modeling via observables |
+| 2026-10-12 | Added `resolves_after: 3` (schema change of the same date: `until: resolved` rows need an explicit window) |
 
 ---
 

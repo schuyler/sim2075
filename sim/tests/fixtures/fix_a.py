@@ -49,7 +49,7 @@ def catalog() -> CompiledCatalog:
     return CompiledCatalog(event_ids=["SHOCK"], lam=lam, sigma_idio=np.array([0.8]), causal_type=np.array([1], dtype=np.int8),
                            p_annual=np.array([P_ANNUAL]), type2={}, type3={}, resolution_tree=[B.default_tree()],
                            impact_table=rows, cascade_edges=[], index=idx, omega=OMEGA,
-                           meta={"fixture": "FIX-A", "state_catalog": sc})
+                           resolves_after=np.array([0]), meta={"fixture": "FIX-A", "state_catalog": sc})
 
 
 def initial_conditions() -> InitialConditions:
@@ -69,7 +69,7 @@ def dynamics() -> DynamicsSpec:
 
 
 def params() -> SimParams:
-    return SimParams(until_resolved_years=1, start_year=2025, years=YEARS)
+    return SimParams(start_year=2025, years=YEARS)
 
 
 def draws() -> ScriptedDraws:

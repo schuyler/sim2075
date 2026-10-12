@@ -81,6 +81,8 @@ def test_fix_c_compiles_to_hand_built_structure(world):
     gbr = tab[(tab["event"] == 1) & (tab["entity_idx"] == en["gbr"]) & (tab["var_idx"] == cv["gdp_real"])]
     assert (gbr["onset_years"][0], gbr["dur_kind"][0], gbr["dur_param"][0]) == (15, DUR_DECAY, 25)
 
+    assert cat.resolves_after.tolist() == fix_c.RESOLVES_AFTER and cat.resolves_after.dtype == np.int64
+
     assert cat.cascade_edges == []
     assert len(cat.meta["warnings"]) == fix_c.N_DROPPED_EDGES
     assert all("not compiled (unmigrated)" in w for w in cat.meta["warnings"])
@@ -117,6 +119,7 @@ def test_strict_cascades_rejects_unmigrated_targets(world):
     ("banned_ast", "disallowed construct IfExp"),
     ("undeclared_resolution", "undeclared resolution name 'nope'"),
     ("pressure_scale", "pressure at the 2025 baselines is 0.325, outside [5, 125]"),
+    ("missing_resolves_after", "has an 'until: resolved' impact row but no probability.resolves_after"),
 ])
 def test_broken_variant_rejected_with_event_id(world, name, needle):
     sc, omega, known = world

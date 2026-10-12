@@ -144,6 +144,8 @@ class CompiledCatalog:
     cascade_edges: list[CascadeEdge]
     index: CatalogIndex
     omega: np.ndarray                           # float64 [K, K] (validated)
+    resolves_after: np.ndarray                  # int64 [E]; years an event stays active per firing (counting the
+                                                # firing year) for its `until: resolved` rows; 0 = event has none
     meta: dict = field(default_factory=dict)    # informational: variance targets, warnings, provenance
 
     # --- convenience -------------------------------------------------------

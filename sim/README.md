@@ -106,11 +106,14 @@ then is freed. A decaying shock is epsilon-culled when `|contribution| <
 slot freed. More than `max_active` slots is a `LedgerOverflow` naming the run
 and year.
 
-**`until: resolved`** (open question, §4): a firing sets the event active for
-`SimParams.until_resolved_years` years including the firing year; the flag
+**`until: resolved`.** A firing sets the event active for
+`CompiledCatalog.resolves_after[e]` years including the firing year (the
+event's required `probability.resolves_after`, schema 2026-10-12); the flag
 is cleared in step 8 of the last active year and the shock's contribution
-drops to zero the year after. Re-firing while active extends the window and
-pushes additional shocks. `until_resolved_years` has no default on purpose.
+drops to zero the year after. Re-firing while active restarts the window and
+pushes additional shocks. Events with no `until: resolved` rows carry 0 and
+are never active past the firing year's step 8. The array is a per-event
+field of the catalog, beyond the guide's §4.1 table (§4, item 2).
 
 **Expressions.** `years_since` is `year − last_fire_year`, a very large
 number for an event that has never fired. `branch` names usable in
@@ -156,11 +159,13 @@ Found by compiling the five migrated events. None is patched here
    `100 * (...)`, and the compiler checks the value at the baselines (§3,
    "Firing"). The probability-estimation doc's worked numbers remain
    inconsistent with its formula (§3); the formula is unchanged.
-2. **`until: resolved` has no defined end.** No field in the schema and no
-   sentence in the ADRs says when an event "resolves". The engine takes a
-   required `until_resolved_years` parameter until the spec decides
-   (candidates: a per-event field, a per-resolution duration, or a drawn
-   duration, which would add a draw category to §4.6).
+2. **`until: resolved` has no defined end** — *resolved 2026-10-12.* The
+   schema now requires `probability.resolves_after: N` on any event with an
+   `until: resolved` row (Taiwan 3, severe pandemic 3, Pakistan 5, each with
+   a one-line rationale in the event), the compiler rejects such an event
+   without it, and `CompiledCatalog.resolves_after` (`int64 [E]`) replaces
+   the engine parameter. Spec owners: the guide's §4.1 contract table should
+   list this field; it is not changed from here (guardrail 2).
 3. **Pakistan references names outside the state catalog**:
    `pak.refugee_outflow`, `ind.refugee_inflow` (the catalog has
    `refugees_abroad` / `refugees_hosted`) and entity `afg`, which is not one of

@@ -181,8 +181,24 @@ impacts:
 |-----------|---------|
 | `decay: N` | Half-life of N years |
 | `permanent: true` | Never recovers |
-| `until: resolved` | Persists until event resolves |
+| `until: resolved` | Persists until event resolves — requires `probability.resolves_after` (below) |
 | `until: policy_change` | Regime-dependent |
+
+**`resolves_after`.** Any event with an `until: resolved` impact row must
+carry `resolves_after: N` (integer ≥ 1, years) on its `probability` block;
+the compiler rejects the event without it. A firing sets the event active
+for `N` years counting the firing year, so `N = 1` means the firing year
+only. `until: resolved` rows contribute their full magnitude while the
+event is active and drop to zero the year after; a re-firing while active
+restarts the `N`-year window and pushes its own shocks. The one-line
+rationale for `N` belongs in the event's prose next to the probability block.
+
+```yaml
+probability:
+  window: 0.03
+  resolves_after: 3        # years active per firing, counting the firing year
+  ...
+```
 
 Full form when needed:
 ```yaml
@@ -351,4 +367,5 @@ Expressions must be valid Python that returns a boolean (preconditions) or numer
 | 2025-01-01 | Initial draft during Task 4.2 schema design |
 | 2025-01-02 | Added Entity and Variable References section: entity ID conventions, wildcard syntax |
 | 2026-07-12 | Status promoted from "Draft — refining" to v0.1 engine/catalog contract (normative for migrations and the compiler; formal freeze at [[strategy/roadmap]] Phase 1) |
+| 2026-10-12 | `until: resolved` end pinned: `probability.resolves_after: N` (years, counting the firing year) is required on any event with an `until: resolved` row; the compiler rejects the event without it (resolves sim/README.md §4 finding 2) |
 | 2026-10-12 | Type 2 pressure scale pinned: pressure expressions share `threshold`'s 0–100 scale; compiler checks the pressure at the 2025 baselines against `threshold ± 4·threshold_std` (resolves sim/README.md §4 finding 1) |
