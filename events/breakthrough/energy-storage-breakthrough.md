@@ -16,16 +16,9 @@ tags:
 
 # Energy Storage Breakthrough
 
-## Event Classification
+**Type 1 (Stochastic) Event** — Technological breakthrough with timing unpredictable; base rate from analog reference class.
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | ENERGY_STORAGE_BREAKTHROUGH |
-| **Scale** | Global |
-| **Domain** | Technological / Energy |
-| **Causal Type** | Type 1: Stochastic |
-| **Onset Speed** | Moderate (5-10 years from commercialization to material grid/transport impact) |
-| **Reversibility** | Irreversible (technology knowledge permanent; manufacturing capacity persists) |
+---
 
 ## Description
 
@@ -42,6 +35,21 @@ A step-change improvement in electrochemical energy storage that fundamentally a
 **Distinction from baseline**: Baseline trajectory already includes impressive progress—lithium-ion pack costs fell from $1,100/kWh (2010) to ~$130/kWh (2024), roughly 15% annual decline. The learning curve is expected to continue at 8-10%/year. This event captures acceleration beyond that curve—either a technology that jumps ahead of the curve or removes constraints that could otherwise slow it.
 
 **Scope exclusion**: Incremental improvements along the existing learning curve are NOT this event. A new factory announcement or gradual capacity expansion is baseline. This event requires a technology that changes the trajectory slope, not just extends it.
+
+---
+
+## Specification
+
+```yaml
+id: ENERGY_STORAGE_BREAKTHROUGH
+domain: technological
+scale: global
+causal_type: 1
+onset: gradual
+reversibility: irreversible
+```
+
+*Domain: technological / energy. Onset speed: moderate (5-10 years from commercialization to material grid/transport impact), recorded as `gradual` in YAML. Reversibility: irreversible (technology knowledge permanent; manufacturing capacity persists).*
 
 ---
 
@@ -121,6 +129,13 @@ Energy storage breakthrough is lower than other breakthroughs because the baseli
 
 ## Probability
 
+```yaml
+probability:
+  annual: 0.008
+  range: [0.004, 0.015]
+  confidence: medium
+```
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability** | 0.8% |
@@ -165,6 +180,16 @@ This ranking reflects that battery storage has fewer scientific unknowns but fac
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
 
+```yaml
+factors:
+  F_TECH: 0.57  # Battery technology clusters with materials science, manufacturing innovation, technology R&D
+  F_CLIM: 0.29  # Climate policy urgency drives investment and regulatory support for storage
+  F_FIN: 0.20   # Capital availability for expensive manufacturing scale-up
+  F_EAS: 0.12   # China dominates battery manufacturing; East Asian industrial policy
+  F_EUR: 0.08   # EU Battery Alliance, European manufacturing ambitions
+variance: 0.55  # Breakthrough target
+```
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
 | **F_TECH** | 0.57 | Primary driver: Battery technology clusters with broader materials science, manufacturing innovation, and technology R&D; high F_TECH year accelerates all frontier technologies |
@@ -180,7 +205,9 @@ This ranking reflects that battery storage has fewer scientific unknowns but fac
 | F_SSA | 0.00 | No pathway |
 | F_LAM | 0.00 | No pathway (Chile lithium doesn't affect breakthrough probability) |
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.82 from original loadings
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.82 from original loadings. With the catalog's Ω the loadings above achieve 0.5426, inside the compiler's ±0.02 tolerance.
+
+**Original loadings (pre-Task 3.11, restored from the initial specification)**: F_TECH 0.70, F_CLIM 0.35, F_FIN 0.25, F_EAS 0.15, F_EUR 0.10. Sum of squared loadings: 0.49 + 0.12 + 0.06 + 0.01 + 0.02 = 0.70 ✓ (the pre-scaling Ω = I calculation; with the correlated Ω those loadings give 0.82, which is why Task 3.11 scaled them down).
 
 ### Loading Interpretation (Type 1)
 
@@ -194,6 +221,13 @@ For Type 1 events, factors modify annual probability through correlated conditio
 ## Deployment Branches
 
 Once energy storage breakthrough occurs, deployment patterns vary:
+
+```yaml
+branches:
+  - {id: accelerated,        p: 0.45, desc: "Accelerated Transition: costs fall 15-20%/year; EV parity within 5 years; oil demand peaks"}
+  - {id: constraint_removal, p: 0.35, desc: "Constraint Removal: sodium-ion parity removes lithium/cobalt bottleneck; learning curve continues"}
+  - {id: grid_focused,       p: 0.20, desc: "Grid-Focused: iron-air/flow batteries enable high-renewable grids; transport unchanged"}
+```
 
 ### Accelerated Transition (45%)
 
@@ -294,6 +328,136 @@ Breakthrough occurs primarily in grid-scale storage (iron-air, flow batteries) r
 
 *Scale impacts by deployment branch: Accelerated Transition 1.0×; Constraint Removal 0.7×; Grid-Focused 0.5× for transport-related impacts, 1.5× for grid-related impacts*
 
+### Impact Rows
+
+The YAML below re-expresses the tables above in the schema's `[mean, std]` form: a prose range "X to Y" becomes its midpoint with half the range as the standard deviation, and percentages on variables with absolute units are converted against the 2025 baselines in the state catalog (`oil_brent` $75/bbl, `battery_cost_kwh` $130/kWh, `copper_price` $8,500/t, `lithium_price` $20,000/t, `renewable_cost_index` 100). The three branches are written out explicitly rather than with `inherit`/`scale`, because `lithium_price` changes sign by pathway and the Grid-Focused branch scales by row class: transport/oil rows (`oil_brent`, `lithium_price`, every country GDP row) 0.5×, grid rows (`renewable_cost_index`, `battery_cost_kwh`) 1.5×, and mixed rows (`global_co2_ppm`, `copper_price`) 1.0×. `lithium_price` has no Grid-Focused row: iron-air and flow chemistries do not use lithium and transport stays on its baseline trajectory.
+
+Entity mapping: "EU (aggregate)" is carried as the EU member countries in the catalog other than Germany (France, Italy, Spain, Netherlands, Poland) plus the Rest-of-EU aggregate `eu_other`, each at the aggregate value; Iraq is carried as `levant_iraq` at full magnitude (Iraq dominates that aggregate's GDP); Algeria as `maghreb` at full magnitude (Algeria and Libya hydrocarbon exports dominate it); Venezuela as `andean_caribbean` at half magnitude (Venezuela is roughly a tenth of that aggregate's GDP, with Colombia and Ecuador sharing some of the oil exposure). **Azerbaijan has no row**: it is not one of the 40 countries and belongs to no Tier 1 or Tier 2 aggregate (the Caucasus is outside the entity catalog), so its oil-and-gas-export channel (-0.3% to -0.6% GDP, gradual 12yr) stays in the table above only.
+
+```yaml
+impacts:
+  accelerated:
+    # Global energy and commodity variables
+    - {var: oil_brent,                       mag: [-21, 9],              onset: {gradual: 8},    permanent: true}  # -15% to -40% of $75/bbl; demand destruction
+    - {var: renewable_cost_index,            mag: [-17.5, 7.5],          onset: {gradual: 5},    permanent: true}  # -10% to -25% on the 2025=100 index; learning effects
+    - {var: battery_cost_kwh,                mag: [-65, 13],             onset: immediate,       permanent: true}  # -40% to -60% of $130/kWh; step change
+    - {var: global_co2_ppm,                  mag: [-10, 5],              onset: {gradual: 20},   permanent: true}  # -5 to -15 ppm below baseline by 2075
+    - {var: copper_price,                    mag: [1490, 640],           onset: {gradual: 5},    decay: 5}  # +10% to +25% of $8,500/t; supply response (floor dropped, v0.2)
+    - {var: lithium_price,                   mag: [4000, 2000],          onset: {gradual: 5},    decay: 5}  # +20% of $20,000/t (lithium-based pathway)
+
+    # Major beneficiaries (high energy import dependence, strong manufacturing capacity)
+    - {var: chn.gdp_real,                    mag: [0.006, 0.002],        onset: {gradual: 8},    permanent: true}  # +0.4% to +0.8%: manufacturing leadership; reduced oil dependence; export opportunity
+    - {var: kor.gdp_real,                    mag: [0.0045, 0.0015],      onset: {gradual: 8},    permanent: true}  # +0.3% to +0.6%: battery manufacturing leadership (LG, Samsung, SK)
+    - {var: jpn.gdp_real,                    mag: [0.0035, 0.0015],      onset: {gradual: 10},   permanent: true}  # +0.2% to +0.5%: technology leadership (Toyota solid-state); reduced energy dependence
+    - {var: deu.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 10},   permanent: true}  # +0.2% to +0.4%: auto industry transformation; reduced energy dependence
+    - {var: ind.gdp_real,                    mag: [0.0045, 0.0015],      onset: {gradual: 12},   permanent: true}  # +0.3% to +0.6%: massive oil import reduction; manufacturing opportunity
+    - {var: fra.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 10},   permanent: true}  # EU (aggregate) +0.2% to +0.4%: reduced energy dependence; grid decarbonization
+    - {var: ita.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: esp.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: nld.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: pol.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: eu_other.gdp_real,               mag: [0.003, 0.001],        onset: {gradual: 10},   permanent: true}  # EU (aggregate): Rest of EU
+
+    # Moderate beneficiaries (energy importers, limited manufacturing)
+    - {var: usa.gdp_real,                    mag: [0.002, 0.001],        onset: {gradual: 8},    permanent: true}  # +0.1% to +0.3%: consumer benefits; some manufacturing; offset by shale economics
+    - {var: gbr.gdp_real,                    mag: [0.002, 0.001],        onset: {gradual: 10},   permanent: true}  # +0.1% to +0.3%: energy import reduction; grid flexibility
+    - {var: tur.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 12},   permanent: true}  # +0.2% to +0.4%: major oil importer; manufacturing potential
+    - {var: idn.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 12},   permanent: true}  # +0.2% to +0.4%: oil importer; nickel for batteries (if lithium pathway)
+    - {var: tha.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 10},   permanent: true}  # +0.2% to +0.4%: auto manufacturing hub; EV transition
+
+    # Negatively affected (fossil fuel exporters)
+    - {var: sau.gdp_real,                    mag: [-0.014, 0.006],       onset: {gradual: 10},   permanent: true}  # -0.8% to -2.0%: oil demand destruction; stranded asset risk
+    - {var: rus.gdp_real,                    mag: [-0.01, 0.005],        onset: {gradual: 10},   permanent: true}  # -0.5% to -1.5%: oil/gas demand destruction; limited diversification
+    - {var: irn.gdp_real,                    mag: [-0.007, 0.003],       onset: {gradual: 12},   permanent: true}  # -0.4% to -1.0%: oil export revenue decline
+    - {var: nga.gdp_real,                    mag: [-0.0055, 0.0025],     onset: {gradual: 12},   permanent: true}  # -0.3% to -0.8%: oil export dependence
+    - {var: are.gdp_real,                    mag: [-0.0055, 0.0025],     onset: {gradual: 10},   permanent: true}  # -0.3% to -0.8%: oil exports (partially offset by sovereign wealth diversification)
+    - {var: andean_caribbean.gdp_real,       mag: [-0.0035, 0.0015],     onset: {gradual: 10},   permanent: true}  # Venezuela -0.4% to -1.0% at 0.5x: Venezuela is ~10% of the aggregate's GDP
+    - {var: levant_iraq.gdp_real,            mag: [-0.007, 0.003],       onset: {gradual: 12},   permanent: true}  # Iraq -0.4% to -1.0%: Iraq dominates the aggregate's GDP
+    - {var: maghreb.gdp_real,                mag: [-0.005, 0.002],       onset: {gradual: 12},   permanent: true}  # Algeria -0.3% to -0.7%: Algeria and Libya hydrocarbon exports
+    - {var: kaz.gdp_real,                    mag: [-0.0035, 0.0015],     onset: {gradual: 12},   permanent: true}  # -0.2% to -0.5%: oil exports
+
+  constraint_removal:
+    # Global energy and commodity variables
+    - {var: oil_brent,                       mag: [-14.7, 6.3],          onset: {gradual: 8},    permanent: true}  # -15% to -40% of $75/bbl; demand destruction
+    - {var: renewable_cost_index,            mag: [-12.25, 5.25],        onset: {gradual: 5},    permanent: true}  # -10% to -25% on the 2025=100 index; learning effects
+    - {var: battery_cost_kwh,                mag: [-45.5, 9.1],          onset: immediate,       permanent: true}  # -40% to -60% of $130/kWh; step change
+    - {var: global_co2_ppm,                  mag: [-7, 3.5],             onset: {gradual: 20},   permanent: true}  # -5 to -15 ppm below baseline by 2075
+    - {var: copper_price,                    mag: [1043, 448],           onset: {gradual: 5},    decay: 5}  # +10% to +25% of $8,500/t; supply response (floor dropped, v0.2)
+    - {var: lithium_price,                   mag: [-8000, 2000],         onset: {gradual: 5},    decay: 5}  # -30% to -50% of $20,000/t (sodium-ion displaces lithium)
+
+    # Major beneficiaries (high energy import dependence, strong manufacturing capacity)
+    - {var: chn.gdp_real,                    mag: [0.0042, 0.0014],      onset: {gradual: 8},    permanent: true}  # +0.4% to +0.8%: manufacturing leadership; reduced oil dependence; export opportunity
+    - {var: kor.gdp_real,                    mag: [0.00315, 0.00105],    onset: {gradual: 8},    permanent: true}  # +0.3% to +0.6%: battery manufacturing leadership (LG, Samsung, SK)
+    - {var: jpn.gdp_real,                    mag: [0.00245, 0.00105],    onset: {gradual: 10},   permanent: true}  # +0.2% to +0.5%: technology leadership (Toyota solid-state); reduced energy dependence
+    - {var: deu.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 10},   permanent: true}  # +0.2% to +0.4%: auto industry transformation; reduced energy dependence
+    - {var: ind.gdp_real,                    mag: [0.00315, 0.00105],    onset: {gradual: 12},   permanent: true}  # +0.3% to +0.6%: massive oil import reduction; manufacturing opportunity
+    - {var: fra.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 10},   permanent: true}  # EU (aggregate) +0.2% to +0.4%: reduced energy dependence; grid decarbonization
+    - {var: ita.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: esp.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: nld.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: pol.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: eu_other.gdp_real,               mag: [0.0021, 0.0007],      onset: {gradual: 10},   permanent: true}  # EU (aggregate): Rest of EU
+
+    # Moderate beneficiaries (energy importers, limited manufacturing)
+    - {var: usa.gdp_real,                    mag: [0.0014, 0.0007],      onset: {gradual: 8},    permanent: true}  # +0.1% to +0.3%: consumer benefits; some manufacturing; offset by shale economics
+    - {var: gbr.gdp_real,                    mag: [0.0014, 0.0007],      onset: {gradual: 10},   permanent: true}  # +0.1% to +0.3%: energy import reduction; grid flexibility
+    - {var: tur.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 12},   permanent: true}  # +0.2% to +0.4%: major oil importer; manufacturing potential
+    - {var: idn.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 12},   permanent: true}  # +0.2% to +0.4%: oil importer; nickel for batteries (if lithium pathway)
+    - {var: tha.gdp_real,                    mag: [0.0021, 0.0007],      onset: {gradual: 10},   permanent: true}  # +0.2% to +0.4%: auto manufacturing hub; EV transition
+
+    # Negatively affected (fossil fuel exporters)
+    - {var: sau.gdp_real,                    mag: [-0.0098, 0.0042],     onset: {gradual: 10},   permanent: true}  # -0.8% to -2.0%: oil demand destruction; stranded asset risk
+    - {var: rus.gdp_real,                    mag: [-0.007, 0.0035],      onset: {gradual: 10},   permanent: true}  # -0.5% to -1.5%: oil/gas demand destruction; limited diversification
+    - {var: irn.gdp_real,                    mag: [-0.0049, 0.0021],     onset: {gradual: 12},   permanent: true}  # -0.4% to -1.0%: oil export revenue decline
+    - {var: nga.gdp_real,                    mag: [-0.00385, 0.00175],   onset: {gradual: 12},   permanent: true}  # -0.3% to -0.8%: oil export dependence
+    - {var: are.gdp_real,                    mag: [-0.00385, 0.00175],   onset: {gradual: 10},   permanent: true}  # -0.3% to -0.8%: oil exports (partially offset by sovereign wealth diversification)
+    - {var: andean_caribbean.gdp_real,       mag: [-0.00245, 0.00105],   onset: {gradual: 10},   permanent: true}  # Venezuela -0.4% to -1.0% at 0.5x: Venezuela is ~10% of the aggregate's GDP
+    - {var: levant_iraq.gdp_real,            mag: [-0.0049, 0.0021],     onset: {gradual: 12},   permanent: true}  # Iraq -0.4% to -1.0%: Iraq dominates the aggregate's GDP
+    - {var: maghreb.gdp_real,                mag: [-0.0035, 0.0014],     onset: {gradual: 12},   permanent: true}  # Algeria -0.3% to -0.7%: Algeria and Libya hydrocarbon exports
+    - {var: kaz.gdp_real,                    mag: [-0.00245, 0.00105],   onset: {gradual: 12},   permanent: true}  # -0.2% to -0.5%: oil exports
+
+  grid_focused:
+    # Global energy and commodity variables
+    - {var: oil_brent,                       mag: [-10.5, 4.5],          onset: {gradual: 8},    permanent: true}  # -15% to -40% of $75/bbl; demand destruction
+    - {var: renewable_cost_index,            mag: [-26.25, 11.25],       onset: {gradual: 5},    permanent: true}  # -10% to -25% on the 2025=100 index; learning effects
+    - {var: battery_cost_kwh,                mag: [-97.5, 19.5],         onset: immediate,       permanent: true}  # -40% to -60% of $130/kWh; step change
+    - {var: global_co2_ppm,                  mag: [-10, 5],              onset: {gradual: 20},   permanent: true}  # -5 to -15 ppm below baseline by 2075
+    - {var: copper_price,                    mag: [1490, 640],           onset: {gradual: 5},    decay: 5}  # +10% to +25% of $8,500/t; supply response (floor dropped, v0.2)
+
+    # Major beneficiaries (high energy import dependence, strong manufacturing capacity)
+    - {var: chn.gdp_real,                    mag: [0.003, 0.001],        onset: {gradual: 8},    permanent: true}  # +0.4% to +0.8%: manufacturing leadership; reduced oil dependence; export opportunity
+    - {var: kor.gdp_real,                    mag: [0.00225, 0.00075],    onset: {gradual: 8},    permanent: true}  # +0.3% to +0.6%: battery manufacturing leadership (LG, Samsung, SK)
+    - {var: jpn.gdp_real,                    mag: [0.00175, 0.00075],    onset: {gradual: 10},   permanent: true}  # +0.2% to +0.5%: technology leadership (Toyota solid-state); reduced energy dependence
+    - {var: deu.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 10},   permanent: true}  # +0.2% to +0.4%: auto industry transformation; reduced energy dependence
+    - {var: ind.gdp_real,                    mag: [0.00225, 0.00075],    onset: {gradual: 12},   permanent: true}  # +0.3% to +0.6%: massive oil import reduction; manufacturing opportunity
+    - {var: fra.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 10},   permanent: true}  # EU (aggregate) +0.2% to +0.4%: reduced energy dependence; grid decarbonization
+    - {var: ita.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: esp.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: nld.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: pol.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 10},   permanent: true}  # EU (aggregate)
+    - {var: eu_other.gdp_real,               mag: [0.0015, 0.0005],      onset: {gradual: 10},   permanent: true}  # EU (aggregate): Rest of EU
+
+    # Moderate beneficiaries (energy importers, limited manufacturing)
+    - {var: usa.gdp_real,                    mag: [0.001, 0.0005],       onset: {gradual: 8},    permanent: true}  # +0.1% to +0.3%: consumer benefits; some manufacturing; offset by shale economics
+    - {var: gbr.gdp_real,                    mag: [0.001, 0.0005],       onset: {gradual: 10},   permanent: true}  # +0.1% to +0.3%: energy import reduction; grid flexibility
+    - {var: tur.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 12},   permanent: true}  # +0.2% to +0.4%: major oil importer; manufacturing potential
+    - {var: idn.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 12},   permanent: true}  # +0.2% to +0.4%: oil importer; nickel for batteries (if lithium pathway)
+    - {var: tha.gdp_real,                    mag: [0.0015, 0.0005],      onset: {gradual: 10},   permanent: true}  # +0.2% to +0.4%: auto manufacturing hub; EV transition
+
+    # Negatively affected (fossil fuel exporters)
+    - {var: sau.gdp_real,                    mag: [-0.007, 0.003],       onset: {gradual: 10},   permanent: true}  # -0.8% to -2.0%: oil demand destruction; stranded asset risk
+    - {var: rus.gdp_real,                    mag: [-0.005, 0.0025],      onset: {gradual: 10},   permanent: true}  # -0.5% to -1.5%: oil/gas demand destruction; limited diversification
+    - {var: irn.gdp_real,                    mag: [-0.0035, 0.0015],     onset: {gradual: 12},   permanent: true}  # -0.4% to -1.0%: oil export revenue decline
+    - {var: nga.gdp_real,                    mag: [-0.00275, 0.00125],   onset: {gradual: 12},   permanent: true}  # -0.3% to -0.8%: oil export dependence
+    - {var: are.gdp_real,                    mag: [-0.00275, 0.00125],   onset: {gradual: 10},   permanent: true}  # -0.3% to -0.8%: oil exports (partially offset by sovereign wealth diversification)
+    - {var: andean_caribbean.gdp_real,       mag: [-0.00175, 0.00075],   onset: {gradual: 10},   permanent: true}  # Venezuela -0.4% to -1.0% at 0.5x: Venezuela is ~10% of the aggregate's GDP
+    - {var: levant_iraq.gdp_real,            mag: [-0.0035, 0.0015],     onset: {gradual: 12},   permanent: true}  # Iraq -0.4% to -1.0%: Iraq dominates the aggregate's GDP
+    - {var: maghreb.gdp_real,                mag: [-0.0025, 0.001],      onset: {gradual: 12},   permanent: true}  # Algeria -0.3% to -0.7%: Algeria and Libya hydrocarbon exports
+    - {var: kaz.gdp_real,                    mag: [-0.00175, 0.00075],   onset: {gradual: 12},   permanent: true}  # -0.2% to -0.5%: oil exports
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (China +0.6% ± 0.2%, Saudi Arabia -1.4% ± 0.6% on the Accelerated branch); every other row is additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields). The `global_co2_ppm` row is kept as a direct row because the specification states it in ppm and the variable is in the catalog; the fusion event routes its climate effect through cascades instead, and whether the two should be harmonized is an open question below.*
+
 ### Exposure Variables for Differential Impact
 
 - **`energy_import_dependence`**: Higher import dependence → larger benefit from reduced fossil fuel costs
@@ -322,6 +486,8 @@ Energy storage breakthrough accelerates decarbonization:
 | Commodity price shifts | decaying | half_life: 5yr, floor: 0.3× | Supply response to price changes |
 | Manufacturing employment shifts | shock_vulnerable | reversal by trade policy | Jobs can relocate with policy changes |
 
+*YAML realization: the decay-to-floor form on commodity prices (`copper_price`, `lithium_price`) is schema v0.2 backlog, so the YAML carries a plain `decay: 5`; the country GDP rows are `permanent: true` (oil demand destruction and stranded assets are permanent, and the shock-vulnerable manufacturing-shift form is also v0.2 backlog). The original forms above remain the specification's intent.*
+
 ---
 
 ## Cascade Effects
@@ -336,12 +502,25 @@ Energy storage breakthrough accelerates decarbonization:
 
 ### Event Probability Cascades
 
+```yaml
+cascades:
+  triggers:
+    # "Permanent" in the table below is written as the 2025-2075 simulation horizon
+    - {event: SAUDI_REGIME_INSTABILITY, delta: 0.001,  years: 50}
+    - {event: RUSSIA_STATE_FAILURE,     delta: 0.0005, years: 50}
+  triggered_by:
+    - {event: OIL_SUPPLY_SHOCK,         delta: 0.002}   # +0.2%/year for 5 years after a shock
+    - {event: FUSION_COMMERCIALIZATION, delta: 0.001}   # energy technology momentum
+```
+
 | Pathway | Target Event | Probability Change | Duration | Mechanism |
 |---------|--------------|-------------------|----------|-----------|
 | Oil demand destruction | SAUDI_REGIME_INSTABILITY | +0.1%/year | Permanent | Revenue pressure; social contract stress |
 | Oil demand destruction | RUSSIA_STATE_FAILURE | +0.05%/year | Permanent | Commodity export dependence |
 | Energy independence | OIL_SUPPLY_SHOCK severity | -0.3× magnitude | Permanent | Reduced dependence limits transmission |
 | Grid stability | TAIWAN_CONFLICT impact | Reduced energy disruption | Conditional | Less oil trade vulnerability |
+
+*The OIL_SUPPLY_SHOCK and TAIWAN_CONFLICT rows modify those events' impact magnitudes, not their probabilities; the v0.1 cascade schema carries only probability deltas, so they stay here as prose (schema v0.2 backlog).*
 
 ### Impact Chains
 
@@ -399,6 +578,8 @@ regional power dynamics shift → Saudi/Iran balance changes
 **Affected variables**: `global_temp_anomaly` trajectory, `climate_variability`, `heat_exposure`
 **Differential exposure**: Climate vulnerability indices
 
+*At Level 1 the channels are carried as the GDP and commodity rows above; the channel-level variables listed here (`current_account`, `inflation_rate`, `energy_import_dependence`, `export_concentration`, `trade_openness`, `climate_variability`, `heat_exposure`) have no magnitudes in the specification and are not impact rows. `regime_stability` is not a state-catalog variable (see [[methodology/concepts/synthetic-variable-problem]]); the fiscal-pressure mechanism reaches the catalog through the SAUDI_REGIME_INSTABILITY and RUSSIA_STATE_FAILURE cascades.*
+
 ---
 
 ## Interactions with Other Events
@@ -426,6 +607,8 @@ regional power dynamics shift → Saudi/Iran balance changes
 | OIL_SUPPLY_SHOCK prior | +0.2%/year for 5 years | Urgency effect—shock demonstrates need for energy independence |
 | FUSION_COMMERCIALIZATION prior | +0.1%/year | Energy technology momentum; investment climate |
 | Major climate policy (global carbon price) | +0.2%/year | Policy support accelerates deployment and R&D |
+
+*The two event-conditioned rows are the `triggered_by` entries in the cascades block (informational in v0.1). The oil-price and carbon-price conditions are state conditions, not events, and have no cascade construct; they stay here as prose.*
 
 ---
 
@@ -539,14 +722,24 @@ Both within stated range. Analysts would likely agree on:
 | 5. Analyst agreement | ✅ Pass | Derivation auditable; reasonable disagreement within bounds |
 
 **Overall assessment**: Specification is complete for Level 1. Key question for Level 2: whether grid and transport storage should be separate events, and whether "breakthrough" framing is appropriate for a learning-curve-driven technology.
+
+---
+
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-28 |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Specific technology pathway probabilities (solid-state vs. sodium-ion vs. other); manufacturing cost curves; deployment rate historical comparisons |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-28
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+- Specific technology pathway probabilities (solid-state vs. sodium-ion vs. other)
+- Manufacturing cost curves
+- Deployment rate historical comparisons
 
 ## Sources
 
@@ -568,6 +761,7 @@ Both within stated range. Analysts would likely agree on:
 - **Grid vs. transport**: Are these genuinely different breakthrough events, or aspects of the same underlying technology wave?
 - **Timeline to impact**: How long from commercialization to material energy system transformation? 10 years? 15?
 - **Stranded asset dynamics**: How rapidly do fossil fuel assets become stranded post-breakthrough? Is it gradual or cliff-edge?
+- **Climate coupling**: Should the direct `global_co2_ppm` row be replaced by cascade deltas on the climate tipping-point events, as [[events/breakthrough/fusion-commercialization]] does, so the two energy breakthroughs treat emissions the same way?
 
 ---
 
@@ -576,6 +770,8 @@ Both within stated range. Analysts would likely agree on:
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2025-12-28 | Initial Level 1 specification | Task 2.2.5 - fifth Type 1 breakthrough event |
+| 2025-12-31 | Variance allocation: scaled loadings to breakthrough target | Task 3.11 — loadings scaled by 0.82 to (ΛΩΛᵀ)ᵢᵢ = 0.55 (F_TECH 0.70→0.57, F_CLIM 0.35→0.29, F_FIN 0.25→0.20, F_EAS 0.15→0.12, F_EUR 0.10→0.08). Row added retroactively at the 2026-10-12 migration: the rescale (commit a126d92) was not recorded at the time |
+| 2026-10-12 | Migrated to YAML-embedded schema; restored prose lost in the Task 3.11 rescale | Task 4.2.29. **Type and enums**: `causal_type: 1` (not hybrid); `variance: 0.55` breakthrough target, achieved 0.5426 with the catalog Ω; "Technological / Energy" → `technological`; onset "Moderate (5-10 years)" → `gradual`; confidence Medium → `medium`. **Magnitudes**: prose ranges "X to Y" become midpoint ± half-range; percentages on absolute-unit variables converted against 2025 baselines: `oil_brent` -15..-40% of $75 → [-21, 9]; `renewable_cost_index` -10..-25% of 100 → [-17.5, 7.5]; `battery_cost_kwh` -40..-60% of $130 → [-65, 13]; `copper_price` +10..+25% of $8,500 → [1490, 640]; `lithium_price` +20% of $20,000 → [4000, 2000] on Accelerated (std set at half the mean, the prose gives none), -30..-50% → [-8000, 2000] on Constraint Removal, no row on Grid-Focused; `global_co2_ppm` -5..-15 ppm → [-10, 5] kept as a direct row. **Branches** written explicitly (no `inherit`) because `lithium_price` flips sign by pathway and Grid-Focused scales 0.5× (oil/transport rows and all country GDP rows), 1.5× (`renewable_cost_index`, `battery_cost_kwh`), 1.0× (`global_co2_ppm`, `copper_price`). **Durability**: decaying-with-floor (0.3×) on commodity prices → `decay: 5`; lithium "varies by pathway" → `decay: 5`; GDP rows → `permanent: true` (oil demand destruction and stranded assets permanent; shock-vulnerable manufacturing shifts are v0.2 backlog); original forms kept in the durability table. **Entities**: EU (aggregate) → fra, ita, esp, nld, pol and `eu_other` at the aggregate value (Germany has its own row); Iraq → `levant_iraq` (full); Algeria → `maghreb` (full); Venezuela → `andean_caribbean` at 0.5×. **Dropped**: Azerbaijan row — no entity and no aggregate contains it; channel kept in the prose table. **Cascades**: "Permanent" → `years: 50` (2025-2075 horizon); OIL_SUPPLY_SHOCK "-0.3× magnitude" and TAIWAN_CONFLICT "reduced energy disruption" are impact-magnitude modifiers with no v0.1 construct, kept in prose; `triggered_by` OIL_SUPPLY_SHOCK 0.002 and FUSION_COMMERCIALIZATION 0.001 from the conditional-probability table; the oil-price and carbon-price conditions are not events, kept in prose. No `until: resolved` rows, so no `resolves_after`. **Restored from history** (f72d084): the original pre-scaling loadings and the "sum of squared loadings = 0.70" line; the 2025-12-31 changelog row. Classification table replaced by the specification block with its onset/reversibility wording kept in prose; all other tables retained |
 
 ---
 
