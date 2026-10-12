@@ -36,7 +36,10 @@ def default_tree() -> ResolutionTree:
 
 
 def impact_rows(rows) -> np.ndarray:
-    """rows: (event, res, branch, entity_idx|-1, var_idx, mean, std, onset_kind, onset_years, dur_kind, dur_param)"""
+    """rows: (event, res, branch, entity_idx|-1, var_idx, mean, std, onset_kind, onset_years, dur_kind, dur_param[, multiplicative])
+
+    ``multiplicative`` (fraction-of-current-value row, schema §Impact Fields Units) defaults to False."""
+    rows = [tuple(r) if len(r) == len(IMPACT_DTYPE) else tuple(r) + (False,) for r in rows]
     return np.array(rows, dtype=IMPACT_DTYPE)
 
 

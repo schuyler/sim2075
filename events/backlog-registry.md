@@ -79,6 +79,16 @@ Every ID below was extracted from the 29 specified event files (July 2026 sweep)
 
 ---
 
+## 5. Entity gaps surfaced by migration
+
+Not event IDs, but the same discipline: a reference an event wanted to make and the catalog cannot carry.
+
+| Referenced entity | Referenced in | Gap | Disposition |
+|---|---|---|---|
+| `afg` (Afghanistan) | pakistan-state-failure (regional contagion: `afg.internal_conflict_intensity` +0.5 ± 0.3, delayed 1yr, half-life 5yr) | Afghanistan is not one of the 40 countries and belongs to no Tier 1 or Tier 2 aggregate ([[methodology/reference/state-entities]]) | Row dropped at D1 remediation (2026-10-12); the channel stays in prose. Revisit at the next catalog release if an Afghanistan entity or a South/Central Asia aggregate that contains it is admitted |
+
+---
+
 ## Maintenance
 
 - New cascade references to uncataloged IDs are added here **in the same commit** that introduces them.

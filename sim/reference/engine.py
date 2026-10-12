@@ -17,7 +17,7 @@ from scipy.special import ndtr
 from ..catalog.types import (CompiledCatalog, DUR_DECAY, DUR_PERMANENT, DUR_UNTIL_RESOLVED,
                              ENTITY_GLOBAL, ONSET_DELAYED, ONSET_GRADUAL, ONSET_IMMEDIATE)
 from ..rng import DrawShapes
-from .model import DynamicsSpec, InitialConditions, LedgerOverflow, SimParams
+from .model import DynamicsSpec, ImpactOutOfRange, InitialConditions, LedgerOverflow, SimParams
 
 NEVER_FIRED = -(10 ** 6)   # last_fire_year sentinel; years_since is then huge (> any horizon)
 
@@ -45,6 +45,7 @@ class _Shock:
     dur_kind: int
     dur_param: float
     owner_event: int
+    mult: bool                # multiplicative (fraction of current value) vs additive in the variable's units
     age: int = 0
     prev: float = 0.0
 
@@ -265,7 +266,8 @@ class ReferenceRun:
                     M = float(ir["mean"] + ir["std"] * d["impact_z"][r, row])
                     mags.append((int(row), M))
                     new_shocks.append(_Shock(int(row), int(ir["entity_idx"]), int(ir["var_idx"]), M, int(ir["onset_kind"]),
-                                             int(ir["onset_years"]), int(ir["dur_kind"]), float(ir["dur_param"]), int(e)))
+                                             int(ir["onset_years"]), int(ir["dur_kind"]), float(ir["dur_param"]), int(e),
+                                             bool(ir["multiplicative"])))
                 rec.events.append(EventFiring(year, int(e), res, br, float(p_base[e]), float(p_eff[e]), int(mask[e]), mags))
                 ens = self._event_ns(ns, int(e), year)
                 for edge in cat.cascade_edges:
@@ -277,7 +279,7 @@ class ReferenceRun:
             for s in self.ledger:
                 s.age += 1
                 cur = shock_contribution(s, bool(self.active[s.owner_event]))
-                self._apply(s, cur - s.prev)
+                self._apply(s, s.prev, cur, year)
                 s.prev = cur
                 keep.append(s)
                 if s.dur_kind == DUR_UNTIL_RESOLVED and not self.active[s.owner_event]:
@@ -286,12 +288,12 @@ class ReferenceRun:
                     keep.pop()                                   # fully onset: level shift stays in state, slot freed
                 elif s.dur_kind == DUR_DECAY and s.age > _onset_end(s.onset_kind, s.onset_years) \
                         and abs(cur) < P.epsilon_cull * abs(s.M):
-                    self._apply(s, -cur)                         # epsilon-cull: return to exactly zero, free slot
+                    self._apply(s, cur, 0.0, year)               # epsilon-cull: return to exactly zero, free slot
                     keep.pop()
             self.ledger = keep
             for s in new_shocks:
                 cur = shock_contribution(s, True)
-                self._apply(s, cur)
+                self._apply(s, 0.0, cur, year)
                 s.prev = cur
                 if s.dur_kind == DUR_PERMANENT and s.onset_kind == ONSET_IMMEDIATE:
                     continue                                     # folded into state at firing; no slot (ADR-6 rule 1)
@@ -335,9 +337,25 @@ class ReferenceRun:
             rec.country[t + 1], rec.global_[t + 1] = self.c, self.g
         return rec
 
-    def _apply(self, s: _Shock, increment: float) -> None:
-        if increment == 0.0:
+    def _apply(self, s: _Shock, prev: float, cur: float, year: int) -> None:
+        """Move a shock's contribution from ``prev`` to ``cur`` (the increment model, README §3).
+
+        Additive rows: ``state += cur - prev``. Multiplicative rows (fraction of current value):
+        ``state *= (1 + cur) / (1 + prev)``, which is ``state *= 1 + cur`` at firing (prev = 0) and returns the
+        state to its pre-shock level when the contribution returns to zero. A contribution <= -1 is a hard failure.
+        """
+        if cur == prev:
             return
+        if s.mult:
+            if cur <= -1.0:
+                raise ImpactOutOfRange(self.run_index, year, s.row, cur)
+            factor = (1.0 + cur) / (1.0 + prev)
+            if s.entity_idx == ENTITY_GLOBAL:
+                self.g[s.var_idx] *= factor
+            else:
+                self.c[s.entity_idx, s.var_idx] *= factor
+            return
+        increment = cur - prev
         if s.entity_idx == ENTITY_GLOBAL:
             self.g[s.var_idx] += increment
         else:

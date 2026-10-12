@@ -99,7 +99,16 @@ additive in the variable's own units):
 
 `contribution = M · ramp(age)` until onset completes; `decay: h` then
 multiplies by `0.5^((age − onset_end) / h)`. Magnitude `M = mean + std · z`
-is drawn at firing. `permanent` + `immediate` folds into state at firing and
+is drawn at firing. Rows the compiler tags `multiplicative` (`gdp_real`:
+fractions of the entity's current value, schema §Impact Fields "Units",
+2026-10-12) move the state by the ratio `(1 + contribution) / (1 +
+previous contribution)` instead of the difference: `state *= 1 +
+contribution` at firing, and a contribution that decays to zero returns the
+state to its no-shock path (a literal `state *= 1 + increment` would not).
+A multiplicative contribution ≤ −1 is an `ImpactOutOfRange` hard failure
+naming the run, year and row. Because multiplicativity is a property of the
+variable, additive and multiplicative shocks never share a target, so the
+order in which a year's shocks are applied is immaterial. `permanent` + `immediate` folds into state at firing and
 takes no slot; `permanent` with a ramp holds a slot until the ramp completes,
 then is freed. A decaying shock is epsilon-culled when `|contribution| <
 1e-4 · |M|`: its remaining contribution is returned exactly to zero and the
@@ -166,20 +175,18 @@ Found by compiling the five migrated events. None is patched here
    without it, and `CompiledCatalog.resolves_after` (`int64 [E]`) replaces
    the engine parameter. Spec owners: the guide's §4.1 contract table should
    list this field; it is not changed from here (guardrail 2).
-3. **Pakistan references names outside the state catalog**:
-   `pak.refugee_outflow`, `ind.refugee_inflow` (the catalog has
-   `refugees_abroad` / `refugees_hosted`) and entity `afg`, which is not one of
-   the 40 countries. Task 4.2 remediation item.
-4. **`confidence` enum.** `severe-pandemic` (`medium-high`) and
-   `fusion-commercialization` (`low-medium`) use values outside
-   `low|medium|high`. Either the events or the enum should change; the
-   compiler enforces the schema as written.
-5. **Impact units are implicit.** `twn.gdp_real mag [-0.40, 0.15]` reads as
-   −40%, `global_credit_spread mag [200, 80]` as +200 bps, both applied
-   additively in the variable's units by every document that describes shock
-   application. The data track should confirm that `gdp_real` impacts are
-   meant as fractions and, if so, whether the catalog's `gdp_real` unit ($T)
-   or the schema should change.
+3. **Pakistan references names outside the state catalog** — *resolved
+   2026-10-12 (D1).* Renamed to `pak.refugees_abroad` / `ind.refugees_hosted`;
+   the `afg` row is dropped (Afghanistan is in no aggregate) and the gap is
+   recorded in `events/backlog-registry.md` §5.
+4. **`confidence` enum** — *resolved 2026-10-12 (D1).* The YAML uses `medium`
+   (severe pandemic) and `low` (fusion); the original wording stays in prose.
+5. **Impact units are implicit** — *resolved 2026-10-12 (D1).* The schema now
+   states that `gdp_real` impacts are fractions of the entity's current value
+   and everything else is additive; the compiler tags such rows
+   `multiplicative` (a twelfth `impact_table` column, beyond the guide's §4.1
+   row layout — spec owners, see item 2) and both engines apply them by ratio
+   (§3, "Shock schedule").
 6. **Variance tolerance** is unspecified; the compiler uses ±0.02 against the
    declared `variance:` field (Taiwan achieves 0.4537 vs 0.45, AMOC 0.6557
    vs 0.65).
@@ -191,6 +198,14 @@ Found by compiling the five migrated events. None is patched here
    "~18 variables" should be read as the former.
 8. **Re-firing** of an event that is already active is allowed and additive;
    no document says otherwise.
+9. **A fractional impact below −100%.** Taiwan's `military_conflict.nuclear`
+   branch scales `twn.gdp_real [-0.40, 0.15]` by 3.0 to a mean of −1.2, which
+   a multiplicative row cannot apply (the state would go negative). The
+   compiler records a `WARNING` note for any multiplicative row with mean ≤
+   −1 and the engines fail the run loudly when a drawn contribution is ≤ −1;
+   with std 0.45 the draw lands at or below −1 about two-thirds of the time
+   this branch fires. Data-track item: cap the scaled fraction, split the
+   nuclear branch's GDP row out of `inherit`, or re-express it.
 
 ## 5. License
 

@@ -10,8 +10,9 @@ World:
   countries a, b; country vars gdp_per_capita ($K), gdp_growth (%/yr), life_expectancy (yr); global oil_brent
   event SHOCK: Type 1, annual 0.10, loading FA 0.6 -> factor-explained variance 0.36, σ_idio = 0.8
      impacts (default.default):
-        row 0: a.gdp_growth  mag [-4, 1], immediate, decay half-life 1
-        row 1: oil_brent     mag [20, 0], immediate, permanent
+        row 0: a.gdp_growth      mag [-4, 1],    immediate, decay half-life 1
+        row 1: oil_brent         mag [20, 0],    immediate, permanent
+        row 2: a.gdp_per_capita  mag [-0.10, 0], immediate, decay half-life 1, multiplicative (fraction of current value)
   dynamics: gdp_growth mean-reverts to 2 with half-life 1 (θ = ln 2), σ = 0, for a and b;
             gdp_per_capita *= 1 + gdp_growth/100 (growth-rate-first); life_expectancy += 0.2 (a), 0.1 (b);
             oil_brent mean-reverts to 75 with half-life 2, σ = 0.
@@ -20,7 +21,11 @@ World:
 Scripted draws (R = 1): factor z = 0 every year, so F = 0 and Z = 0.8·ε.
   year 1: ε = -2  -> Z = -1.6 -> U = Φ(-1.6) ≈ 0.0548 < 0.10 -> fires
   other years: ε = +1 -> U ≈ 0.79 -> no fire
-  impact_z row 0 = 1 (so M = -4 + 1·1 = -3), row 1 = 0 (M = 20).
+  impact_z row 0 = 1 (so M = -4 + 1·1 = -3), row 1 = 0 (M = 20), row 2 = 0 (M = -0.10).
+
+Multiplicative row (README §3): contribution c(age) = M · 0.5^age; the state is multiplied by
+(1 + c(age)) / (1 + c(age − 1)) each year, i.e. ×0.9 at firing, then ×0.95/0.9, ×0.975/0.95, ×0.9875/0.975;
+step 6 precedes the step-7 compounding by gdp_growth. Both decaying rows hold a slot (max_active_seen = 2).
 """
 from __future__ import annotations
 
@@ -45,6 +50,7 @@ def catalog() -> CompiledCatalog:
     rows = B.impact_rows([
         (0, 0, 0, idx.entity["a"], idx.country_var["gdp_growth"], -4.0, 1.0, ONSET_IMMEDIATE, 0, DUR_DECAY, 1.0),
         (0, 0, 0, B.GLOBAL, idx.global_var["oil_brent"], 20.0, 0.0, ONSET_IMMEDIATE, 0, DUR_PERMANENT, math.nan),
+        (0, 0, 0, idx.entity["a"], idx.country_var["gdp_per_capita"], -0.10, 0.0, ONSET_IMMEDIATE, 0, DUR_DECAY, 1.0, True),
     ])
     return CompiledCatalog(event_ids=["SHOCK"], lam=lam, sigma_idio=np.array([0.8]), causal_type=np.array([1], dtype=np.int8),
                            p_annual=np.array([P_ANNUAL]), type2={}, type3={}, resolution_tree=[B.default_tree()],
@@ -73,12 +79,12 @@ def params() -> SimParams:
 
 
 def draws() -> ScriptedDraws:
-    shapes = DrawShapes(K=2, E=1, E_type2=0, n_impact_rows=2, n_noisy_vars=3)
+    shapes = DrawShapes(K=2, E=1, E_type2=0, n_impact_rows=3, n_noisy_vars=3)
     years = []
     for t in range(YEARS):
         eps = -2.0 if t == 1 else 1.0
         years.append({"factor": np.zeros((1, 2)), "idio": np.array([[eps]]), "res_u": np.array([[0.5]]),
-                      "branch_u": np.array([[0.5]]), "impact_z": np.array([[1.0, 0.0]]), "dyn_z": np.zeros((1, 3))})
+                      "branch_u": np.array([[0.5]]), "impact_z": np.array([[1.0, 0.0, 0.0]]), "dyn_z": np.zeros((1, 3))})
     return ScriptedDraws({"t2_offset": np.zeros((1, 0))}, years, shapes)
 
 
@@ -89,15 +95,18 @@ def expected() -> dict:
     b_pc, b_g, b_le = 10.0, 2.0, 70.0
     oil = 75.0
     M = -3.0                       # drawn magnitude of the gdp_growth shock
+    Mq = -0.10                     # drawn magnitude of the multiplicative gdp_per_capita shock
     traj = []
     for t in range(YEARS):
         # step 6: shock contributions (fires in year 1; contribution(age) = M * 0.5**age; increments applied)
         if t == 1:
             a_g += M                      # age 0 contribution
             oil += 20.0                   # permanent, immediate: folded at firing
+            a_pc *= 1.0 + Mq              # multiplicative: ×(1 + c(0))
         elif t > 1:
             age = t - 1
             a_g += M * 0.5 ** age - M * 0.5 ** (age - 1)
+            a_pc *= (1.0 + Mq * 0.5 ** age) / (1.0 + Mq * 0.5 ** (age - 1))
         # step 7: mean reversion first (θ = ln2 / half-life), then stocks and drifts
         a_g = a_g + ln2 * (2.0 - a_g)
         b_g = b_g + ln2 * (2.0 - b_g)
@@ -108,5 +117,5 @@ def expected() -> dict:
         b_le += 0.1
         traj.append(dict(a=(a_pc, a_g, a_le), b=(b_pc, b_g, b_le), oil=oil))
     events = [dict(year=2026, event=0, resolution=0, branch=0, p_base=P_ANNUAL, p_eff=P_ANNUAL, cascade_mask=0,
-                   magnitudes=[(0, -3.0), (1, 20.0)])]
+                   magnitudes=[(0, -3.0), (1, 20.0), (2, -0.10)])]
     return {"trajectory": traj, "events": events}

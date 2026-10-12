@@ -17,8 +17,5 @@ jobs:
       - run: pip install -e ".[test]"
       # Stage gates (implementation guide §3): E0 fixtures, E1 reference oracle, E2 compiler.
       - run: pytest -q
-      # Data-track report: every migrated event compiles; unmigrated files are listed, not failed.
-      # Report-only until data-track step D1 lands (three remediation-flagged events currently fail);
-      # drop continue-on-error at that point so the compile becomes a blocking gate.
+      # Data-track gate (guide §2): every migrated event compiles; unmigrated files are listed, not failed.
       - run: python -m sim.catalog.cli events
-        continue-on-error: true

@@ -11,7 +11,7 @@ from .expr import ExprContext, compile_expression
 from .extract import extract_all, extract_record, event_id_from_filename
 from .omega import validate_omega
 from .types import (CascadeEdge, CatalogError, CatalogIndex, CompiledCatalog, DUR_UNTIL_RESOLVED, ENTITY_GLOBAL,
-                    IMPACT_DTYPE, ResolutionTree, StateCatalog, Type2Spec, Type3Spec)
+                    IMPACT_DTYPE, MULTIPLICATIVE_VARS, ResolutionTree, StateCatalog, Type2Spec, Type3Spec)
 
 DEFAULT_VARIANCE_TOL = 0.02
 PRESSURE_BASELINE_SIGMAS = 4.0   # schema §Type 2: pressure at the 2025 baselines must lie within threshold ± 4·threshold_std
@@ -145,9 +145,15 @@ def compile_event_records(records: list[dict], omega: np.ndarray, state: StateCa
         for (rc, bc), lst in impacts.items():
             for r in lst:
                 uses_until_resolved |= r["dur_kind"] == DUR_UNTIL_RESOLVED
-                for ent_i, var_i, _key in _resolve_var(r["var"], state, eid, f"impacts.{res_ids[rc]}.{b_ids[rc][bc]}"):
+                where = f"impacts.{res_ids[rc]}.{b_ids[rc][bc]}"
+                mult = "." in r["var"] and r["var"].split(".", 1)[1] in MULTIPLICATIVE_VARS
+                if mult and r["mean"] <= -1.0:
+                    # a fractional impact at or below -100% cannot be applied; the engine fails the run loudly
+                    notes.append(f"{eid}: WARNING {where} {r['var']} mean {r['mean']:g} is <= -1 on a multiplicative "
+                                 f"(fraction-of-current-value) variable; any run drawing a contribution <= -1 fails")
+                for ent_i, var_i, _key in _resolve_var(r["var"], state, eid, where):
                     rows.append((i, rc, bc, ent_i, var_i, r["mean"], r["std"],
-                                 r["onset_kind"], r["onset_years"], r["dur_kind"], r["dur_param"]))
+                                 r["onset_kind"], r["onset_years"], r["dur_kind"], r["dur_param"], mult))
         if uses_until_resolved and "resolves_after" not in p:
             raise CatalogError(f"{eid}: has an 'until: resolved' impact row but no probability.resolves_after "
                                f"(years active per firing, counting the firing year; schema §Durability Shorthand)")

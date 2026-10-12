@@ -36,7 +36,14 @@ def test_fix_a_matches_hand_trace():
     from scipy.special import ndtr
     assert rec.propensity_u[1, 0] == pytest.approx(ndtr(-1.6))
     assert rec.propensity_u[0, 0] == pytest.approx(ndtr(0.8))
-    assert rec.max_active_seen == 1          # the decaying shock holds one slot; the permanent one none
+    assert rec.max_active_seen == 2          # the two decaying shocks hold a slot each; the permanent one none
+    # the multiplicative row leaves gdp_per_capita at 0.9 × its no-shock compounding path only at age 0; by the end
+    # of the horizon the ratio to the no-shock path is (1 + c(3)) = 0.9875 — decay is recovery for both row kinds
+    ia = cat.index.entity["a"]
+    base = 50.0
+    for t, w in enumerate(want["trajectory"]):
+        base *= 1.0 + w["a"][1] / 100.0
+    assert rec.country[-1, ia, 0] / base == pytest.approx(1.0 - 0.10 * 0.5 ** 3, rel=1e-12)
 
 
 def test_fix_b_matches_hand_trace():
@@ -60,6 +67,15 @@ def test_ledger_overflow_is_a_loud_failure():
     with pytest.raises(LedgerOverflow) as ei:
         ReferenceRun(fix_b.catalog(), fix_b.initial_conditions(), fix_b.dynamics(), p, fix_b.draws(), 0).run()
     assert ei.value.run_index == 0 and ei.value.year == 2028 and ei.value.count == 2
+
+
+def test_multiplicative_contribution_at_or_below_minus_one_is_a_loud_failure():
+    from sim.reference import ImpactOutOfRange
+    cat = fix_a.catalog()
+    cat.impact_table["mean"][2] = -1.0          # a -100% fraction-of-current-value shock
+    with pytest.raises(ImpactOutOfRange) as ei:
+        ReferenceRun(cat, fix_a.initial_conditions(), fix_a.dynamics(), fix_a.params(), fix_a.draws(), 0).run()
+    assert (ei.value.run_index, ei.value.year, ei.value.row) == (0, 2026, 2)
 
 
 def test_resolves_after_is_per_event_and_counts_the_firing_year():

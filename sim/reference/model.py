@@ -64,3 +64,12 @@ class LedgerOverflow(RuntimeError):
     def __init__(self, run_index: int, year: int, count: int, max_active: int):
         self.run_index, self.year, self.count, self.max_active = run_index, year, count, max_active
         super().__init__(f"ledger overflow in run {run_index}, year {year}: {count} active shocks > max_active={max_active}")
+
+
+class ImpactOutOfRange(RuntimeError):
+    """A multiplicative shock's contribution reached <= -1 (state would go to zero or negative): hard failure, never a clamp."""
+
+    def __init__(self, run_index: int, year: int, row: int, contribution: float):
+        self.run_index, self.year, self.row, self.contribution = run_index, year, row, contribution
+        super().__init__(f"multiplicative impact out of range in run {run_index}, year {year}: impact_table row {row} "
+                         f"contribution {contribution:.6g} <= -1")

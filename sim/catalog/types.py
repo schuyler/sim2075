@@ -109,7 +109,7 @@ class CascadeEdge:
 # impact_table column names, in row-layout order (implementation guide §4.1)
 IMPACT_COLUMNS = (
     "event", "res_code", "branch_code", "entity_idx", "var_idx",
-    "mean", "std", "onset_kind", "onset_years", "dur_kind", "dur_param",
+    "mean", "std", "onset_kind", "onset_years", "dur_kind", "dur_param", "multiplicative",
 )
 IMPACT_DTYPE = np.dtype([
     ("event", np.int16), ("res_code", np.int16), ("branch_code", np.int16),
@@ -117,7 +117,11 @@ IMPACT_DTYPE = np.dtype([
     ("mean", np.float64), ("std", np.float64),
     ("onset_kind", np.int8), ("onset_years", np.int8),
     ("dur_kind", np.int8), ("dur_param", np.float64),
+    ("multiplicative", np.bool_),   # schema §Impact Fields "Units": contribution is a fraction of current value
 ])
+
+# Country variables whose impacts are fractions of the entity's current value (schema §Impact Fields, Units).
+MULTIPLICATIVE_VARS = frozenset({"gdp_real"})
 
 
 @dataclass

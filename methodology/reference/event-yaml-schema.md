@@ -169,6 +169,14 @@ impacts:
 | `onset` | Yes | See below | When impact begins |
 | Durability | Yes | One of: `decay`, `permanent`, `until`, or full form | How impact persists |
 
+**Units.** An impact's `mag` is in the target variable's own units and is
+applied additively (a `global_credit_spread` row of `[200, 80]` adds 200 bps),
+with one exception: `gdp_real` impacts are **fractions of the entity's current
+value** (`[-0.40, 0.15]` means −40% ± 15%). The compiler tags such rows
+`multiplicative` and the engines apply `state *= 1 + contribution` for them
+instead of `state += contribution`; a multiplicative contribution at or below
+−1 is a run-time hard failure, never a clamp.
+
 #### Onset Values
 
 - `immediate` — Instant effect
@@ -367,5 +375,6 @@ Expressions must be valid Python that returns a boolean (preconditions) or numer
 | 2025-01-01 | Initial draft during Task 4.2 schema design |
 | 2025-01-02 | Added Entity and Variable References section: entity ID conventions, wildcard syntax |
 | 2026-07-12 | Status promoted from "Draft — refining" to v0.1 engine/catalog contract (normative for migrations and the compiler; formal freeze at [[strategy/roadmap]] Phase 1) |
+| 2026-10-12 | Impact units stated: `mag` is additive in the variable's units except `gdp_real`, whose impacts are fractions of the entity's current value and are applied multiplicatively (resolves sim/README.md §4 finding 5) |
 | 2026-10-12 | `until: resolved` end pinned: `probability.resolves_after: N` (years, counting the firing year) is required on any event with an `until: resolved` row; the compiler rejects the event without it (resolves sim/README.md §4 finding 2) |
 | 2026-10-12 | Type 2 pressure scale pinned: pressure expressions share `threshold`'s 0–100 scale; compiler checks the pressure at the 2025 baselines against `threshold ± 4·threshold_std` (resolves sim/README.md §4 finding 1) |

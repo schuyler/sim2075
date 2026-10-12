@@ -80,6 +80,11 @@ def test_fix_c_compiles_to_hand_built_structure(world):
     assert (amoc["onset_kind"][0], amoc["onset_years"][0], amoc["dur_kind"][0]) == (ONSET_GRADUAL, 5, DUR_PERMANENT)
     gbr = tab[(tab["event"] == 1) & (tab["entity_idx"] == en["gbr"]) & (tab["var_idx"] == cv["gdp_real"])]
     assert (gbr["onset_years"][0], gbr["dur_kind"][0], gbr["dur_param"][0]) == (15, DUR_DECAY, 25)
+    # units (schema §Impact Fields): gdp_real rows are fractions of current value, everything else additive
+    assert tab["multiplicative"].sum() == fix_c.N_MULTIPLICATIVE_ROWS
+    assert (tab["multiplicative"] == (tab["var_idx"] == cv["gdp_real"]) & (tab["entity_idx"] != ENTITY_GLOBAL)).all()
+    # Taiwan's nuclear branch scales twn.gdp_real -0.40 by 3.0 to -1.2: compiles, with a loud note (README §4)
+    assert any("WARNING" in n and "twn.gdp_real mean -1.2" in n for n in cat.meta["notes"])
 
     assert cat.resolves_after.tolist() == fix_c.RESOLVES_AFTER and cat.resolves_after.dtype == np.int64
 
@@ -139,27 +144,23 @@ def test_known_event_ids_cover_the_catalog(world):
     assert "OIL_SUPPLY_SHOCK" in known and "US_CHINA_ECONOMIC_RUPTURE" in known
 
 
-@pytest.mark.parametrize("stem", ["geopolitical/taiwan-conflict", "climate/amoc-weakening"])
+@pytest.mark.parametrize("stem", [
+    "geopolitical/taiwan-conflict", "climate/amoc-weakening",
+    # data-track step D1 (2026-10-12) remediated the three Task 4.2 "needs remediation" events
+    "geopolitical/pakistan-state-failure", "health/severe-pandemic", "breakthrough/fusion-commercialization",
+])
 def test_completed_migrations_compile(world, stem):
     sc, omega, known = world
     compile_catalog([REPO / "events" / f"{stem}.md"], omega, sc, known_event_ids=known, strict_cascades=False)
 
 
-@pytest.mark.parametrize("stem,reason", [
-    ("geopolitical/pakistan-state-failure", "references variables/entities absent from the state catalog (refugee_outflow, refugee_inflow, afg)"),
-    ("health/severe-pandemic", "probability.confidence 'medium-high' is not in the schema enum"),
-    ("breakthrough/fusion-commercialization", "probability.confidence 'low-medium' is not in the schema enum"),
-])
-def test_remediation_flagged_migrations(world, stem, reason):
-    """Task 4.2 marks these three as 'migrated but needs remediation'. The compiler agrees: each fails
-    for a data reason. The xfail is strict, so the day the data track fixes one, this test flips and the
-    row must be moved to test_completed_migrations_compile."""
-    sc, omega, known = world
-    try:
-        compile_catalog([REPO / "events" / f"{stem}.md"], omega, sc, known_event_ids=known, strict_cascades=False)
-    except CatalogError as e:
-        pytest.xfail(f"{reason}: {e}")
-    pytest.fail(f"{stem} now compiles; move it to the completed list")
+def test_every_migrated_event_compiles(world):
+    """The data-track gate (guide §2): every file under events/ with an id block compiles. Unmigrated files are
+    listed, not failed. Mirrors `python -m sim.catalog.cli events`, which CI runs as a blocking step."""
+    from sim.catalog import compile_events_dir
+    sc, omega, _ = world
+    cat = compile_events_dir(REPO / "events", omega, sc, strict_cascades=False)
+    assert len(cat.event_ids) + len(cat.meta["unmigrated"]) == 29
 
 
 # ------------------------------------------------------- expression unit ----

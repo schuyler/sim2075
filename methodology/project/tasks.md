@@ -43,7 +43,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
-| **4.2** | **Event specification migration** (5/29 migrated, of which 3 still need prose remediation): See detailed instructions below. | — | 🟡 |
+| **4.2** | **Event specification migration** (5/29 migrated and compiling; D1 remediation done): See detailed instructions below. | — | 🟡 |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~196 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.3 | 🔲 |
 
@@ -132,7 +132,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 | Subtask | Event | Status |
 |---------|-------|--------|
 | 4.2.4 | [[events/geopolitical/taiwan-conflict]] | ✅ |
-| 4.2.5 | [[events/geopolitical/pakistan-state-failure]] | ⚠️ Needs remediation |
+| 4.2.5 | [[events/geopolitical/pakistan-state-failure]] | ✅ (remediated) |
 | 4.2.6 | [[events/geopolitical/egypt-state-failure]] | 🔲 |
 | 4.2.7 | [[events/geopolitical/russia-state-failure]] | 🔲 |
 | 4.2.8 | [[events/geopolitical/saudi-regime-instability]] | 🔲 |
@@ -160,7 +160,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 | Subtask | Event | Status |
 |---------|-------|--------|
-| 4.2.23 | [[events/health/severe-pandemic]] | ⚠️ Needs remediation |
+| 4.2.23 | [[events/health/severe-pandemic]] | ✅ (remediated) |
 
 **Energy Events**:
 
@@ -172,7 +172,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 | Subtask | Event | Status |
 |---------|-------|--------|
-| 4.2.25 | [[events/breakthrough/fusion-commercialization]] | ⚠️ Needs remediation |
+| 4.2.25 | [[events/breakthrough/fusion-commercialization]] | ✅ (remediated) |
 | 4.2.26 | [[events/breakthrough/agricultural-yield-breakthrough]] | 🔲 |
 | 4.2.27 | [[events/breakthrough/cancer-treatment-breakthrough]] | 🔲 |
 | 4.2.28 | [[events/breakthrough/antimicrobial-platform]] | 🔲 |
@@ -180,7 +180,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 **Status key**: ✅ Complete | ⚠️ Needs remediation (prose lost) | 🟡 In progress | 🔲 Not started
 
-**Progress**: 2/29 complete (taiwan-conflict, amoc-weakening), 3/29 migrated but need prose remediation (pakistan-state-failure, severe-pandemic, fusion-commercialization), 24/29 not started
+**Progress**: 5/29 complete (taiwan-conflict, amoc-weakening; pakistan-state-failure, severe-pandemic and fusion-commercialization remediated at data-track step D1, Oct 2026 — all five compile under `python -m sim.catalog.cli events`), 24/29 not started
 
 **Completed:** Tasks 4.1, 4.5 — see [[methodology/project/tasks-completed]]
 
