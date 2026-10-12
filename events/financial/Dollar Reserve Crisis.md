@@ -17,14 +17,16 @@ tags:
 
 ## Event Classification
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | DOLLAR_RESERVE_CRISIS |
-| **Scale** | Global |
-| **Domain** | Economic |
-| **Causal Type** | Type 2: Threshold |
-| **Onset Speed** | Rapid (1-3 years for full impact transmission) |
-| **Reversibility** | Partial (can stabilize at new equilibrium but not fully reverse) |
+```yaml
+id: DOLLAR_RESERVE_CRISIS
+domain: economic
+scale: global
+causal_type: 2
+onset: sudden
+reversibility: partial
+```
+
+*Onset speed: rapid (1-3 years for full impact transmission), recorded as `sudden` (the schema enum is `sudden|gradual`). Reversibility: partial (can stabilize at new equilibrium but not fully reverse).*
 
 ## Description
 
@@ -50,12 +52,16 @@ This event exhibits classic threshold behavior: pressure accumulates through mul
 
 *Note: Variables in italics are not in current state-specification and would need to be added or derived. `foreign_treasury_holdings_pct` could be derived from TIC data; `fiscal_deficit_pct_gdp` could be derived from `debt_public` changes plus interest payments.*
 
+The YAML expression below realizes these transforms in the expression language's subset as clipped linear ramps: the dollar-share term as `(70 − share) / 30` (zero at a 70% share, one at 40%, so "approaching 50%" reads as two-thirds pressure); the debt term as `debt_public / 200`; the CIPS term as `cips_share / 40`. The two variables the state catalog lacks are replaced by catalog observables of the same channel: `foreign_treasury_holdings_pct` by `us_10yr_yield` (the auction-risk symptom of weaker structural Treasury demand, ramp `(yield − 2) / 5` from 2% to 7%; note this variable is also an impact target of the event, so a firing raises its own subsequent pressure) and `fiscal_deficit_pct_gdp` by `usa.current_account` (the external financing need that deficits create — the twin-deficit observable; ramp `−current_account / 8`, zero at balance, one at an 8%-of-GDP deficit). The weights are unchanged.
+
 **Current pressure estimate (2025)**: ~45 on 0-100 scale
 - Dollar share: 57.7% (moderate pressure)
 - Debt-to-GDP: 124% (elevated)
 - Foreign Treasury holdings: 30% (declining from 50%+ in 2008)
 - Deficit: 6.4% of GDP (high)
 - BRICS infrastructure: Early operational (mBridge pilot, SGEI vaults)
+
+At the catalog's 2025 baselines (dollar share 58%, 10-year yield 4.5%, CIPS 8%) with debt at 124% of GDP and a current-account deficit of ~3.8% of GDP, the expression gives ~46.5, consistent with the "~45" estimate. The compiler's pressure-scale check is skipped for this event because the expression reads country variables, which carry no recorded baseline.
 
 ### Threshold Specification
 
@@ -65,6 +71,8 @@ This event exhibits classic threshold behavior: pressure accumulates through mul
 | **Uncertainty** | ±10 (range 60-80) | No historical precedent for reserve currency crisis of this magnitude |
 | **Sharpness (k)** | 8 | Moderately sharp—crisis dynamics accelerate near threshold |
 | **Historical calibration** | Partial analogs only | UK sterling decline (gradual), Asian crisis 1997 (acute but different), Greek crisis 2010 (acute, smaller scale) |
+
+*The sharpness of 8 was written against a 0–1 pressure scale (the same convention as the original [0, 1] pressure weights). The engine's logistic, `floor + (1 − floor) / (1 + exp(−k · (pressure − threshold)))`, takes k per unit of the 0–100 scale ([[methodology/reference/probability-estimation]]), on which 8 is a step function at the drawn threshold rather than "moderately sharp". The YAML carries the documented 8 unchanged: the sharpness convention is mixed across the catalog (0.15–0.25 in AMOC and Pakistan, 8–15 here and in the EU, Chinese and US political events) and is recorded as an open data-track item in sim/README.md §4 rather than re-tuned file by file.*
 
 ### Minimum Probability
 
@@ -76,12 +84,31 @@ Rationale: Black swan Treasury auction failure possible even with healthy fundam
 
 ## Probability
 
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.30 * clip((70 - usd_reserve_share) / 30, 0, 1) +
+      0.25 * clip(usa.debt_public / 200, 0, 1) +
+      0.20 * clip((us_10yr_yield - 2) / 5, 0, 1) +
+      0.15 * clip(-usa.current_account / 8, 0, 1) +
+      0.10 * clip(cips_share / 40, 0, 1)
+    )
+  threshold: 70
+  threshold_std: 10
+  sharpness: 8
+  floor: 0.003
+  annual: 0.015
+  range: [0.008, 0.030]
+  confidence: medium
+```
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability** | 1.5% |
 | **Low bound** | 0.8% |
 | **High bound** | 3.0% |
-| **Confidence** | Medium-Low |
+| **Confidence** | Medium-Low (recorded as `medium` in YAML: the schema enum is `low|medium|high`) |
 | **25-year cumulative** | ~31% at point estimate |
 
 ### Derivation
@@ -180,22 +207,22 @@ For Type 2 events, probability varies with pressure accumulation.
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| F_CLIM | 0.00 | No direct climate linkage |
-| **F_FIN** | 0.48 | **Primary driver**: Financial fragility directly affects Treasury market stress, yield dynamics, reserve demand |
-| F_HLTH | 0.00 | No direct health linkage |
-| **F_GPT** | 0.27 | **Secondary**: Geopolitical tensions accelerate reserve diversification, sanctions concerns |
-| F_FOOD | 0.00 | No direct food system linkage |
-| **F_TECH** | 0.14 | **Tertiary**: Alternative payment infrastructure (mBridge, CBDC) maturity |
-| **F_EUR** | 0.14 | European stress affects euro as alternative; European positioning matters |
-| **F_MENA** | 0.07 | Petrodollar dynamics; Gulf state positioning |
-| F_SAS | 0.00 | Minimal direct linkage |
-| **F_EAS** | 0.14 | Chinese infrastructure development; yuan internationalization pace |
-| F_SSA | 0.00 | Minimal direct linkage |
-| F_LAM | 0.00 | Minimal direct linkage |
+```yaml
+factors:
+  F_FIN: 0.48   # Primary driver: financial fragility directly affects Treasury market stress, yield dynamics, reserve demand
+  F_GPT: 0.27   # Secondary: geopolitical tensions accelerate reserve diversification, sanctions concerns
+  F_TECH: 0.14  # Tertiary: alternative payment infrastructure (mBridge, CBDC) maturity
+  F_EUR: 0.14   # European stress affects euro as alternative; European positioning matters
+  F_EAS: 0.14   # Chinese infrastructure development; yuan internationalization pace
+  F_MENA: 0.07  # Petrodollar dynamics; Gulf state positioning
+variance: 0.65  # Type 2 target
+```
+
+F_CLIM, F_HLTH and F_FOOD carry no loading (no direct climate, health or food system linkage); F_SAS, F_SSA and F_LAM carry none (minimal direct linkage).
 
 **Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.68 from original loadings
+
+**Original (pre-scaling) loadings**: F_FIN 0.7, F_GPT 0.4, F_TECH 0.2, F_EUR 0.2, F_MENA 0.1, F_EAS 0.2. **Sum of squared loadings**: 0.49 + 0.16 + 0.04 + 0.04 + 0.01 + 0.04 = **0.78** ✓ (the pre-allocation check; the scaled loadings above achieve 0.655 under the inter-factor correlation matrix Ω)
 
 ### Loading Rationale
 
@@ -214,6 +241,8 @@ Factors operate by shocking state variables that feed the pressure function:
 ---
 
 ## Impact Vector
+
+The tables in this section are the original (pre-migration) impact specification, kept because they record forms the YAML block at the end of the section had to re-express: percentage magnitudes on index/price variables, sub-year onset delays, decay-to-floor durabilities, and variables the state catalog lacks. The YAML is the compiled record; where the two differ, the differences are listed under "Impact Specification (YAML)" below and in the changelog.
 
 ### Global Impacts
 
@@ -294,6 +323,8 @@ Transition disruption but strategic positioning for multipolar system; relativel
 
 **Effect**: Countries with high US export dependence (>15% of exports to US) experience larger GDP impacts proportional to exposure.
 
+*Neither exposure variable is in the state catalog; the differential exposure is carried in prose only (the high-exposure country list is what the explicit emerging-market rows in the YAML implement).*
+
 ### Durability Specifications
 
 | Impact Category | Durability Type | Parameters | Rationale |
@@ -305,6 +336,8 @@ Transition disruption but strategic positioning for multipolar system; relativel
 | Dollar depreciation | permanent | — | New equilibrium at more competitive level |
 | Reserve composition | permanent | — | Structural shift to multipolar system |
 | Trade disruption | decaying | half_life=2yr | Settlement systems adapt |
+
+*Decay-to-floor durability (the −3% GDP floor, the −2% trade floor, the −0.5 pp global-growth floor) is schema v0.2 backlog; the YAML uses plain half-lives. The interest-rate row's "permanent (new equilibrium +150 bps)" is an acute +350 bps shock settling to a permanent +150 bps: the YAML carries it as two rows, a permanent +150 bps and an acute +200 bps with a 2-year half-life (the managed-crisis trajectory's "recovery begins within 2 years"), which expresses the floor with v0.1 constructs. The dollar-depreciation row has no catalog variable (see below).*
 
 ### Impact Derivation
 
@@ -323,11 +356,93 @@ Transition disruption but strategic positioning for multipolar system; relativel
 
 **Transmission analysis**: See Section below for channel-by-channel breakdown.
 
+### Impact Specification (YAML)
+
+The `managed` branch (×1.0) is the explicit list; the other two aftermath branches scale it (see "Aftermath Branches" below). Re-expressions relative to the tables above:
+
+- **Units**: `global_trade_volume` −8% → −8 index points (2025 = 100); `gold_price` +40% → +$800/oz on the $2,000 baseline; `us_10yr_yield` +350 bps → +3.5 in the variable's % units. `gdp_real` rows are fractions of the entity's current value (−10% ± 4% for the US); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields).
+- **Onsets**: the sub-year delays (3mo, 6mo) become `immediate` on the annual timestep; delayed(1yr) becomes `{delayed: 1}`.
+- **Proxies**: `global_financial_volatility` (+80% ± 30%, VIX equivalent) is carried on `global_credit_spread`, the catalog's financial-stress variable, as +96 ± 36 bps (80% of the 120 bps baseline) with the 1-year half-life. The emerging-market `regime_stability` row (−10 ± 5) is carried on `protest_intensity_annual` (+10 ± 5, sign flipped), the observable that replaced the synthetic stability index per [[methodology/concepts/synthetic-variable-problem]]. The Gulf aggregate's catalog ID is `gulf_states`.
+- **Dropped rows (channel kept in prose)**: `global_gdp_growth` (−2.0 ± 0.8 pp) is not a state variable; global growth is the aggregate of the country rows. `dxy_index` (−30 ± 10%, permanent −20%): the catalog has no exchange-rate variable; the depreciation's inflation effect is in the `usa.inflation_rate` row. `usa.debt_service_pct_revenue` (+8 ± 3 pp): `debt_service_ratio` is a derived variable and cannot be an impact target; it moves with the `us_10yr_yield` rows.
+- `cny_reserve_share` appears in both the global and the China tables; it is one row.
+
+```yaml
+impacts:
+  managed:
+    # Global
+    - {var: global_trade_volume,        mag: [-8, 3],       onset: immediate,    decay: 2}
+    - {var: gold_price,                 mag: [800, 300],    onset: immediate,    permanent: true}
+    - {var: global_credit_spread,       mag: [96, 36],      onset: immediate,    decay: 1}
+    - {var: usd_reserve_share,          mag: [-12, 5],      onset: {gradual: 3}, permanent: true}
+    - {var: gold_reserve_share,         mag: [5, 2],        onset: {gradual: 3}, permanent: true}
+    - {var: cny_reserve_share,          mag: [3, 2],        onset: {gradual: 5}, permanent: true}
+    - {var: eur_reserve_share,          mag: [3, 1.5],      onset: {gradual: 3}, permanent: true}
+
+    # United States
+    - {var: usa.gdp_real,               mag: [-0.10, 0.04], onset: {gradual: 2}, decay: 5}
+    - {var: us_10yr_yield,              mag: [1.5, 0.5],    onset: immediate,    permanent: true}
+    - {var: us_10yr_yield,              mag: [2.0, 0.9],    onset: immediate,    decay: 2}
+    - {var: usa.unemployment_rate,      mag: [6, 2],        onset: immediate,    decay: 4}
+    - {var: usa.inflation_rate,         mag: [3, 1.5],      onset: immediate,    decay: 2}
+
+    # Eurozone + Rest of EU
+    - {var: deu.gdp_growth,             mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: fra.gdp_growth,             mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: ita.gdp_growth,             mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: esp.gdp_growth,             mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: nld.gdp_growth,             mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: pol.gdp_growth,             mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: eu_other.gdp_growth,        mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+
+    # China
+    - {var: chn.gdp_growth,             mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+
+    # Emerging markets with high dollar debt
+    - {var: tur.debt_external,          mag: [15, 8],       onset: immediate,    decay: 3}
+    - {var: tur.gdp_growth,             mag: [-2.5, 1.5],   onset: immediate,    decay: 3}
+    - {var: tur.protest_intensity_annual, mag: [10, 5],     onset: {delayed: 1}, decay: 4}
+    - {var: egy.debt_external,          mag: [15, 8],       onset: immediate,    decay: 3}
+    - {var: egy.gdp_growth,             mag: [-2.5, 1.5],   onset: immediate,    decay: 3}
+    - {var: egy.protest_intensity_annual, mag: [10, 5],     onset: {delayed: 1}, decay: 4}
+    - {var: pak.debt_external,          mag: [15, 8],       onset: immediate,    decay: 3}
+    - {var: pak.gdp_growth,             mag: [-2.5, 1.5],   onset: immediate,    decay: 3}
+    - {var: pak.protest_intensity_annual, mag: [10, 5],     onset: {delayed: 1}, decay: 4}
+    - {var: arg.debt_external,          mag: [15, 8],       onset: immediate,    decay: 3}
+    - {var: arg.gdp_growth,             mag: [-2.5, 1.5],   onset: immediate,    decay: 3}
+    - {var: arg.protest_intensity_annual, mag: [10, 5],     onset: {delayed: 1}, decay: 4}
+    - {var: zaf.debt_external,          mag: [15, 8],       onset: immediate,    decay: 3}
+    - {var: zaf.gdp_growth,             mag: [-2.5, 1.5],   onset: immediate,    decay: 3}
+    - {var: zaf.protest_intensity_annual, mag: [10, 5],     onset: {delayed: 1}, decay: 4}
+    - {var: idn.debt_external,          mag: [15, 8],       onset: immediate,    decay: 3}
+    - {var: idn.gdp_growth,             mag: [-2.5, 1.5],   onset: immediate,    decay: 3}
+    - {var: idn.protest_intensity_annual, mag: [10, 5],     onset: {delayed: 1}, decay: 4}
+
+    # Gulf States aggregate
+    - {var: gulf_states.gdp_growth,     mag: [-0.5, 0.3],   onset: immediate,    decay: 2}
+
+  disorderly:
+    inherit: managed
+    scale: 1.8
+
+  bretton_woods_iii:
+    inherit: managed
+    scale: 0.6
+```
+
 ---
 
 ## Aftermath Branches
 
 The crisis event triggers one of three post-event trajectories, determined by policy response and external conditions.
+
+```yaml
+branches:
+  - {id: disorderly, p: 0.35, desc: "Disorderly Collapse: failed policy response; dollar to 30-35% of reserves; depression-level US contraction"}
+  - {id: managed, p: 0.55, desc: "Managed Crisis: Fed/Treasury stabilize acute phase; orderly fiscal adjustment; multipolar context"}
+  - {id: bretton_woods_iii, p: 0.10, desc: "Bretton Woods III: negotiated transition to multipolar reserve system"}
+```
+
+*The YAML `impacts:` block takes the managed branch (×1.0) as its explicit list and scales the others from it with single-scale inheritance: `disorderly` 1.8 and `bretton_woods_iii` 0.6, the branches' GDP multipliers. The per-variable modifiers below (unemployment ×2.0, half-lives ±50%/−30%, moderated permanent impacts) are not representable under single-scale inheritance and remain documented here; the uniform scales reproduce the branch trajectories (dollar share ~36% / ~46% / ~51%, US GDP −18% / −10% / −6%, acute yield +630 / +350 / +210 bps) to first order.*
 
 ### Branch Probability Calibration Note
 
@@ -414,9 +529,29 @@ This ordering suggests P(Bretton Woods III) < P(Managed) < P(Disorderly), with B
 - F_FIN: +0.05 loading for 2 years (mild residual stress)
 - F_GPT: -0.1 loading for 5 years (reduced tensions from successful cooperation)
 
+*Aftermath factor-loading modifications (time-limited changes to the event's loadings after firing) are not a v0.1 schema construct; they are kept here as specification intent.*
+
 ---
 
 ## Cascade Effects
+
+```yaml
+cascades:
+  triggers:
+    - {event: EU_FRAGMENTATION,           delta: 0.015,  years: 3}
+    - {event: CHINESE_POLITICAL_CRISIS,   delta: 0.005,  years: 2}
+    - {event: EGYPT_STATE_FAILURE,        delta: 0.010,  years: 3}
+    - {event: PAKISTAN_STATE_FAILURE,     delta: 0.010,  years: 3}
+    - {event: TURKEY_POLITICAL_BREAKDOWN, delta: 0.008,  years: 3}
+    - {event: GLOBAL_FINANCIAL_CRISIS,    delta: 0.020,  years: 2}
+    - {event: OIL_SUPPLY_SHOCK,           delta: -0.005, years: 5}
+  triggered_by:
+    - {event: GLOBAL_FINANCIAL_CRISIS,    delta: 0.020}
+    - {event: US_CONSTITUTIONAL_CRISIS,   delta: 0.015}
+    - {event: TAIWAN_CONFLICT,            delta: 0.015}
+    - {event: CHINESE_ECONOMIC_CRISIS,    delta: -0.010}
+    - {event: IRAN_REGIME_CHANGE,         delta: 0.003}
+```
 
 ### State → Probability Cascades
 
@@ -426,7 +561,7 @@ This ordering suggests P(Bretton Woods III) < P(Managed) < P(Disorderly), with B
 | CHINESE_POLITICAL_CRISIS | +0.5% | 2 years | Export collapse creates economic pressure; legitimacy challenge |
 | EGYPT_STATE_FAILURE | +1.0% | 3 years | Dollar debt burden; import cost surge; forex crisis |
 | PAKISTAN_STATE_FAILURE | +1.0% | 3 years | Dollar debt burden; import cost surge; IMF conditionality |
-| TURKEY_POLITICAL_CRISIS | +0.8% | 3 years | Lira crisis amplification; dollar debt exposure |
+| TURKEY_POLITICAL_BREAKDOWN (originally written `TURKEY_POLITICAL_CRISIS`; alias normalized per [[events/backlog-registry]] §3) | +0.8% | 3 years | Lira crisis amplification; dollar debt exposure |
 | GLOBAL_FINANCIAL_CRISIS | +2.0% | 2 years | Systemic stress; contagion through financial system |
 | OIL_SUPPLY_SHOCK | -0.5% | 5 years | Dollar pricing disruption reduces incentive for supply manipulation |
 
@@ -527,9 +662,19 @@ This ordering suggests P(Bretton Woods III) < P(Managed) < P(Disorderly), with B
 
 **Affected variables**: `usa.fdi_inflows`, `usa.risk_premium`, `usa.business_confidence`
 
+*The "affected variables" named in this section are the channels' descriptive variables, most of which are not state-catalog variables; the compiled impacts are the YAML rows above.*
+
 ---
 
 ## Research Status
+
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
 
 | Field | Value |
 |-------|-------|
@@ -578,3 +723,4 @@ This ordering suggests P(Bretton Woods III) < P(Managed) < P(Disorderly), with B
 |------|--------|-----------|
 | 2025-12-30 | Verified critical review complete | Task 2.4 systematic review |
 | 2025-12-30 | Full Level 1 specification with critical review | Task 2.1 financial crisis events |
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.21. Classification, probability, factor, branch, impact, cascade and research tables converted; all prose kept; the original impact and durability tables kept as the record of pre-migration forms. Judgment calls: (1) pressure proxies for the two variables the catalog lacks — `foreign_treasury_holdings_pct` → `us_10yr_yield` (auction-risk observable; also an impact target, so a firing raises its own later pressure), `fiscal_deficit_pct_gdp` → `usa.current_account` (external financing need; sign inverted) — with transforms realized as clipped linear ramps (documented under the pressure table); weights unchanged; the expression gives ~46.5 at the prose's 2025 values; the compiler's baseline check is skipped (country variables). (2) Sharpness 8 kept as documented although the engine's logistic takes k on the 0–100 scale, where 8 is a step function; the catalog-wide sharpness convention is an open item in sim/README.md §4. (3) Confidence Medium-Low → `medium`. (4) Sub-year onset delays (3mo, 6mo) → `immediate`; delayed(1yr) → `{delayed: 1}`. (5) Durability: decay-to-floor GDP (floor −3%) and trade (floor −2%) rows → plain `decay: 5` / `decay: 2` (v0.2 backlog); the yield row "permanent (new equilibrium +150 bps)" → a permanent +150 bps row plus an acute +200 bps row with 2-year half-life. (6) Unit conversions: trade −8% → −8 index points (baseline 100); gold +40% → +$800/oz (baseline $2,000); yield +350 bps → +3.5 (% units). (7) `global_financial_volatility` (+80% VIX) → `global_credit_spread` +96 ± 36 bps (80% of the 120 bps baseline). (8) `[country].regime_stability` −10 → `protest_intensity_annual` +10 (sign flipped; observable replacement); `gulf` → `gulf_states`. (9) Dropped rows, channel kept in prose: `global_gdp_growth` (aggregate of country rows, not a state variable), `dxy_index` (no FX variable in catalog), `usa.debt_service_pct_revenue` (`debt_service_ratio` is derived, not an impact target). (10) Branches via single-scale inheritance from `managed`: `disorderly` ×1.8, `bretton_woods_iii` ×0.6 (the GDP multipliers; per-variable multipliers and half-life changes kept in prose). (11) Cascade `TURKEY_POLITICAL_CRISIS` → `TURKEY_POLITICAL_BREAKDOWN` (registry §3 alias). (12) No `until: resolved` rows, so no `resolves_after`. Restored from history: the original pre-scaling loadings and the "Sum of squared loadings = 0.78" line removed on 2025-12-31. Achieved variance 0.6552 against the declared 0.65 |
