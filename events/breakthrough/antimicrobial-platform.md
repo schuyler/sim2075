@@ -17,16 +17,24 @@ tags:
 
 # Antimicrobial Platform
 
-## Event Classification
+**Type 1 (Stochastic) Event** — Technological breakthrough with timing unpredictable; base rate from analog reference class.
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | ANTIMICROBIAL_PLATFORM |
-| **Scale** | Global |
-| **Domain** | Technological / Health |
-| **Causal Type** | Type 1: Stochastic |
-| **Onset Speed** | Moderate (5-15 years from regulatory approval to material population health impact) |
-| **Reversibility** | Irreversible (platform knowledge permanent; bacterial evolution may reduce efficacy over decades) |
+---
+
+## Specification
+
+```yaml
+id: ANTIMICROBIAL_PLATFORM
+domain: technological
+scale: global
+causal_type: 1
+onset: gradual
+reversibility: irreversible
+```
+
+*Domain: technological / health (recorded as `technological` in YAML: the schema enum takes one value, and the breakthrough mechanism is a technology platform; the health dimension is carried by the F_HLTH loading and the impact rows). Onset speed: moderate (5-15 years from regulatory approval to material population health impact; recorded as `gradual`). Reversibility: irreversible (platform knowledge permanent; bacterial evolution may reduce efficacy over decades).*
+
+---
 
 ## Description
 
@@ -114,6 +122,13 @@ Net assessment: Scientific barriers lower, institutional barriers higher. Roughl
 
 ## Probability
 
+```yaml
+probability:
+  annual: 0.012
+  range: [0.006, 0.020]
+  confidence: medium
+```
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability** | 1.2% |
@@ -157,6 +172,16 @@ This ranking reflects that antimicrobial platform has fewer scientific barriers 
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
 
+```yaml
+factors:
+  F_TECH: 0.50  # Biotechnology R&D, AI drug discovery, synthetic biology cluster together
+  F_HLTH: 0.37  # Health system stress from resistance; pandemic-era regulatory adaptation precedent
+  F_FIN: 0.21   # Capital availability for expensive clinical development
+  F_GPT: 0.08   # Biodefense framing drives some government investment
+  F_FOOD: 0.04  # Agricultural antibiotic pressure creates some urgency for human alternatives
+variance: 0.55  # Breakthrough target
+```
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
 | **F_TECH** | 0.50 | Primary driver: Biotechnology R&D, AI drug discovery, synthetic biology cluster together; high F_TECH year means accelerated progress across frontier technologies including antimicrobial platforms |
@@ -172,7 +197,7 @@ This ranking reflects that antimicrobial platform has fewer scientific barriers 
 | F_SSA | 0.00 | No pathway |
 | F_LAM | 0.00 | No pathway |
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.83 from original loadings
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.83 from original loadings. The original (pre-scaling) loadings of the 2025-12-26 specification were F_TECH 0.60, F_HLTH 0.45, F_FIN 0.25, F_GPT 0.10, F_FOOD 0.05, with sum of squared loadings 0.36 + 0.20 + 0.06 + 0.01 + 0.0025 = 0.63; Task 3.11 scaled them to the breakthrough target. With the factor correlation matrix the scaled loadings achieve 0.556.
 
 ### Loading Interpretation (Type 1)
 
@@ -191,6 +216,13 @@ Per [[events/breakthrough/cancer-treatment-breakthrough]], Cancer Treatment Brea
 ## Deployment Branches
 
 Once antimicrobial platform breakthrough occurs, deployment patterns vary:
+
+```yaml
+branches:
+  - {id: gradual, p: 0.50, desc: "Diffusion over 10-20 years within existing regulatory frameworks"}
+  - {id: rapid, p: 0.30, desc: "Regulatory paradigm shift plus manufacturing innovation; 8-10 years (mRNA pattern)"}
+  - {id: concentrated, p: 0.20, desc: "Platform works but stays complex and expensive; two-tier global access"}
+```
 
 ### Gradual Diffusion (50%)
 
@@ -305,6 +337,71 @@ Unlike Cancer Treatment Breakthrough (which benefits aging populations most), An
 
 *Scale impacts by 1.6× for Rapid Transformation branch; scale by 0.5× for Economically Concentrated branch (with wealthy country impacts at 1.3×)*
 
+```yaml
+impacts:
+  gradual:
+    # Global: resistance trajectory reversal (-20 to -40 index points in the prose; mean -30, range endpoints as ±1 std)
+    - {var: antibiotic_resistance,  mag: [-30, 10],       onset: {gradual: 10}, permanent: true}
+
+    # High benefit (high infection burden + adequate health systems)
+    - {var: ind.life_expectancy,    mag: [1.2, 0.5],      onset: {gradual: 12}, permanent: true}
+    - {var: ind.gdp_real,           mag: [0.008, 0.004],  onset: {gradual: 12}, permanent: true}
+    - {var: chn.life_expectancy,    mag: [0.8, 0.3],      onset: {gradual: 12}, permanent: true}
+    - {var: chn.gdp_real,           mag: [0.005, 0.003],  onset: {gradual: 12}, permanent: true}
+    - {var: bra.life_expectancy,    mag: [0.7, 0.3],      onset: {gradual: 15}, permanent: true}
+    - {var: bra.gdp_real,           mag: [0.004, 0.002],  onset: {gradual: 15}, permanent: true}
+    - {var: rus.life_expectancy,    mag: [0.9, 0.4],      onset: {gradual: 12}, permanent: true}
+    - {var: rus.gdp_real,           mag: [0.005, 0.003],  onset: {gradual: 12}, permanent: true}
+    - {var: tur.life_expectancy,    mag: [0.6, 0.3],      onset: {gradual: 15}, permanent: true}
+    - {var: tur.gdp_real,           mag: [0.004, 0.002],  onset: {gradual: 15}, permanent: true}
+    - {var: zaf.life_expectancy,    mag: [0.8, 0.4],      onset: {gradual: 18}, permanent: true}
+    - {var: zaf.gdp_real,           mag: [0.005, 0.003],  onset: {gradual: 18}, permanent: true}
+    - {var: tha.life_expectancy,    mag: [0.5, 0.2],      onset: {gradual: 15}, permanent: true}
+    - {var: tha.gdp_real,           mag: [0.003, 0.002],  onset: {gradual: 15}, permanent: true}
+
+    # Moderate benefit (lower infection burden or health system constraints)
+    - {var: usa.life_expectancy,    mag: [0.4, 0.2],      onset: {gradual: 10}, permanent: true}
+    - {var: usa.gdp_real,           mag: [0.003, 0.002],  onset: {gradual: 10}, permanent: true}
+    - {var: deu.life_expectancy,    mag: [0.3, 0.1],      onset: {gradual: 10}, permanent: true}
+    - {var: deu.gdp_real,           mag: [0.002, 0.001],  onset: {gradual: 10}, permanent: true}
+    - {var: jpn.life_expectancy,    mag: [0.3, 0.1],      onset: {gradual: 10}, permanent: true}
+    - {var: jpn.gdp_real,           mag: [0.002, 0.001],  onset: {gradual: 10}, permanent: true}
+    - {var: gbr.life_expectancy,    mag: [0.4, 0.2],      onset: {gradual: 10}, permanent: true}
+    - {var: gbr.gdp_real,           mag: [0.003, 0.002],  onset: {gradual: 10}, permanent: true}
+    - {var: fra.life_expectancy,    mag: [0.3, 0.1],      onset: {gradual: 12}, permanent: true}
+    - {var: fra.gdp_real,           mag: [0.002, 0.001],  onset: {gradual: 12}, permanent: true}
+    - {var: ita.life_expectancy,    mag: [0.4, 0.2],      onset: {gradual: 12}, permanent: true}
+    - {var: ita.gdp_real,           mag: [0.003, 0.002],  onset: {gradual: 12}, permanent: true}
+    - {var: egy.life_expectancy,    mag: [0.6, 0.3],      onset: {gradual: 20}, permanent: true}
+    - {var: egy.gdp_real,           mag: [0.003, 0.002],  onset: {gradual: 20}, permanent: true}
+    - {var: idn.life_expectancy,    mag: [0.5, 0.2],      onset: {gradual: 18}, permanent: true}
+    - {var: idn.gdp_real,           mag: [0.003, 0.002],  onset: {gradual: 18}, permanent: true}
+
+    # High need, limited access (high burden but health system constraints)
+    - {var: pak.life_expectancy,    mag: [0.5, 0.3],      onset: {gradual: 22}, permanent: true}
+    - {var: pak.gdp_real,           mag: [0.002, 0.001],  onset: {gradual: 22}, permanent: true}
+    - {var: bgd.life_expectancy,    mag: [0.6, 0.3],      onset: {gradual: 22}, permanent: true}
+    - {var: bgd.gdp_real,           mag: [0.003, 0.002],  onset: {gradual: 22}, permanent: true}
+    - {var: nga.life_expectancy,    mag: [0.5, 0.3],      onset: {gradual: 25}, permanent: true}
+    - {var: nga.gdp_real,           mag: [0.002, 0.001],  onset: {gradual: 25}, permanent: true}
+    - {var: sahel.life_expectancy,  mag: [0.3, 0.2],      onset: {gradual: 25}, permanent: true}
+    - {var: sahel.gdp_real,         mag: [0.001, 0.001],  onset: {gradual: 25}, permanent: true}
+    - {var: cod.life_expectancy,    mag: [0.3, 0.2],      onset: {gradual: 25}, permanent: true}
+    - {var: cod.gdp_real,           mag: [0.001, 0.001],  onset: {gradual: 25}, permanent: true}
+    - {var: eth.life_expectancy,    mag: [0.4, 0.2],      onset: {gradual: 22}, permanent: true}
+    - {var: eth.gdp_real,           mag: [0.002, 0.001],  onset: {gradual: 22}, permanent: true}
+
+  rapid:
+    inherit: gradual
+    scale: 1.6
+
+  concentrated:
+    inherit: gradual
+    scale: 0.5
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (India +0.8% ± 0.4% for the gradual branch); `life_expectancy` rows are additive in years and `antibiotic_resistance` in index points ([[methodology/reference/event-yaml-schema]] §Impact Fields). The 25yr+ onsets in the Sahel and DRC rows are carried as `gradual: 25`. The `concentrated` branch inherits at the 0.5× global average; the 1.3× sub-multiplier for wealthy countries in that branch, the historical phage-therapy country modifiers above (Georgia is not a state-catalog entity; Poland is `pol` but has no base row), and the conditional `pandemic_severity` row are not carried as YAML rows and stay in prose.*
+
 ### Exposure Variables for Differential Impact
 
 - **`antibiotic_resistance` (country-specific if modeled)**: Higher resistance → larger benefit from breakthrough
@@ -329,16 +426,32 @@ This is a meaningful interaction—antimicrobial platform substantially reduces 
 | Impact Type | Durability | Parameters | Rationale |
 |-------------|------------|------------|-----------|
 | Platform knowledge | permanent | N/A | Medical knowledge doesn't un-invent |
-| `antibiotic_resistance` reduction | durable but not permanent | gradual_erosion: 1%/decade | Bacteria may eventually evolve phage resistance, though platform can adapt |
+| `antibiotic_resistance` reduction | durable but not permanent (original); `permanent: true` in YAML | gradual_erosion: 1%/decade | Bacteria may eventually evolve phage resistance, though platform can adapt; a 1%/decade erosion (half-life ~690 years) is nearer to permanent than to any compilable decay, and gradual-erosion durability is schema v0.2 backlog |
 | Life expectancy gains | permanent | N/A | Deaths avoided are permanent |
 | Productivity gains | permanent | N/A | Workers surviving infection remain productive |
-| Pandemic severity reduction | conditional | only_if: pandemic concurrent | Benefit only manifests if pandemic occurs |
+| Pandemic severity reduction | conditional (not a YAML row) | only_if: pandemic concurrent | Benefit only manifests if pandemic occurs; conditional impacts are schema v0.2 backlog, so the `pandemic_severity` modifier stays in prose |
 
 **Note on platform durability**: Unlike traditional antibiotics (which bacteria defeat within 10-20 years), phage therapy is a platform that can adapt—new phages can be isolated against resistant bacteria. However, if bacteria develop broad anti-phage mechanisms, platform efficacy could erode over decades. Model as slow erosion (1%/decade) rather than catastrophic failure.
 
 ---
 
 ## Cascade Effects
+
+```yaml
+cascades:
+  triggers:
+    # Biotech platform success -> other health breakthroughs (the catalog's other health breakthrough event)
+    - {event: CANCER_TREATMENT_BREAKTHROUGH, delta: 0.001, years: 10}
+    # Reduced infection mortality -> state capacity/legitimacy in high-burden countries (prose: permanent; carried to the 2075 horizon)
+    - {event: PAKISTAN_STATE_FAILURE,        delta: -0.0005, years: 50}
+    - {event: EGYPT_STATE_FAILURE,           delta: -0.0005, years: 50}
+    - {event: SAHEL_CATASTROPHE,             delta: -0.0005, years: 50}
+  triggered_by:
+    - {event: CANCER_TREATMENT_BREAKTHROUGH, delta: 0.0015}  # +0.15%/year for 10 years (specified in Cancer Breakthrough)
+    - {event: SEVERE_PANDEMIC,               delta: 0.002}   # +0.2%/year for 5 years (urgency effect)
+```
+
+*The "state failures (select countries)" cascade is written against the catalog's state-failure events whose entity the impact tables list as a high-burden beneficiary with health-system constraints (Pakistan, Egypt, Sahel); its "permanent" duration is carried as 50 years, the simulation horizon. The pandemic-severity modifier below is a conditional impact, not a probability cascade, and stays in prose; "major regulatory reform" is not an event and stays in the conditional-effects table.*
 
 ### State Variable Cascades
 
@@ -552,12 +665,20 @@ Both within stated range. Analysts would likely agree on:
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-26 |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Specific phage therapy trial results (FDA breakthrough designations); AI antibiotic discovery pipeline; detailed manufacturing cost analysis; regulatory framework evolution tracking |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-26
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+- Specific phage therapy trial results (FDA breakthrough designations)
+- AI antibiotic discovery pipeline
+- Detailed manufacturing cost analysis
+- Regulatory framework evolution tracking
 
 ## Sources
 
@@ -588,6 +709,8 @@ Both within stated range. Analysts would likely agree on:
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2025-12-26 | Initial Level 1 specification | Task 2.2.4 - fourth Type 1 breakthrough event |
+| 2025-12-30 | Variance allocation: scaled loadings to Breakthrough target | Task 3.11 - Factor-explained variance reduced to Breakthrough target (0.55); original loadings and their sum of squares (0.63) restored to prose at migration |
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.28. Judgment calls: `domain: technological` for the prose's "Technological / Health"; "Moderate" onset recorded as `gradual`; `antibiotic_resistance` "-20 to -40 index points" carried as `[-30, 10]` (range endpoints as ±1 std); its 1%/decade gradual-erosion durability carried as `permanent: true` (v0.2 backlog, original form kept in the durability table); the conditional `pandemic_severity` modifier (-15% to -25%, only if a pandemic is concurrent) dropped as a row and kept in prose (no conditional-impact construct in v0.1); country GDP percentages carried as `gdp_real` fractions, life-expectancy years additive; "gradual(25yr+)" onsets carried as `gradual: 25`; `concentrated` branch carried as `inherit: gradual, scale: 0.5` with the 1.3× wealthy-country sub-multiplier kept in prose; Georgia/Poland/Russia phage-legacy modifiers kept in prose (Georgia is not a catalog entity); "Other health breakthroughs" trigger written against CANCER_TREATMENT_BREAKTHROUGH, "State failures (select countries)" against PAKISTAN_STATE_FAILURE, EGYPT_STATE_FAILURE and SAHEL_CATASTROPHE with the "permanent" duration carried as 50 years; "Major regulatory reform" is not an event and stays in prose; research review recorded `complete` (critical review performed 2025-12-26). No cascade IDs needed alias normalization. Achieved variance 0.556 against the declared 0.55 |
 
 ---
 
