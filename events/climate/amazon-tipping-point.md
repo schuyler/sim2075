@@ -21,16 +21,18 @@ This specification addresses a well-studied climate tipping point with significa
 
 ---
 
-## Event Classification
+## Specification
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | AMAZON_TIPPING_POINT |
-| **Scale** | Regional (with global consequences) |
-| **Domain** | Environmental |
-| **Causal Type** | **Type 2: Threshold** |
-| **Onset Speed** | Gradual (decades for full transition, but tipping point crossing is discrete) |
-| **Reversibility** | Irreversible (on human timescales; centuries to millennia for recovery) |
+```yaml
+id: AMAZON_TIPPING_POINT
+domain: environmental
+scale: regional
+causal_type: 2
+onset: gradual
+reversibility: irreversible
+```
+
+*Scale: regional (with global consequences via carbon release). Onset speed: gradual (decades for full transition, but tipping point crossing is discrete). Reversibility: irreversible on human timescales (centuries to millennia for recovery).*
 
 ## Description
 
@@ -68,7 +70,9 @@ The pressure function uses global state variables from [[methodology/reference/s
 | `global_co2_ppm` | 0.05 | linear | CO2 fertilization partially offsets stress (minor positive effect) |
 | `bra.protest_intensity_annual` | 0.05 | inverse | Proxy for governance/enforcement capacity; high protest → weak enforcement |
 
-**Pressure calculation**:
+The YAML expression below realizes these transforms in the expression language's subset: the forest-cover `inverse_threshold(80)` as a clipped linear ramp that is zero at 95% cover and saturates at 75% cover (`min(1, max(0, (95 − cover) / 20))`, reaching 0.75 at the 80% mark and 1.0 at the 25%-deforestation end of the Lovejoy & Nobre band), and every other term as the linear normalization written in the original calculation below.
+
+**Pressure calculation** (original specification):
 ```
 pressure = 0.40 × inverse_threshold(amazon_forest_cover, 80)  # danger accelerates below 80%
          + 0.25 × (global_temp_anomaly - 1.0) / 3.0  # normalized: 1°C baseline, 4°C danger
@@ -108,6 +112,26 @@ The 70/100 pressure threshold reflects the combined interaction, with current pr
 
 ## Probability
 
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.40 * min(1.0, max(0.0, (95 - amazon_forest_cover) / 20)) +
+      0.25 * ((global_temp_anomaly - 1.0) / 3.0) +
+      0.15 * (climate_variability / 150) +
+      0.10 * (bra.gdp_share_agriculture / 15) -
+      0.05 * ((global_co2_ppm - 420) / 200) +
+      0.05 * (bra.protest_intensity_annual / 100)
+    )
+  threshold: 70
+  threshold_std: 15
+  sharpness: 0.25
+  floor: 0.002
+  annual: 0.010
+  range: [0.002, 0.080]
+  confidence: medium
+```
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability (current pressure)** | 1.0% |
@@ -124,6 +148,8 @@ Current pressure: ~58/100 (elevated, approaching danger zone)
 - `climate_variability`: elevated (major droughts 2005, 2010, 2015-16, 2023-24)
 - `bra.gdp_share_agriculture`: ~5%
 - `global_co2_ppm`: ~425 ppm (slight offsetting effect)
+
+*The ~58 figure is a judgment estimate of the combined-interaction pressure, not the expression's value: at the state catalog's 2025 baselines (forest cover 85, 1.3°C, variability index 100, 425 ppm) with Brazil's agriculture share at 5% and protest intensity at ~30, the YAML expression gives ~37; at the prose's 82% cover it gives ~43, and it reaches ~57 only at 75% cover. The expression tracks the drivers' direction and the 70 ± 15 threshold is calibrated against the literature, not against this arithmetic (see Proxy limitations above).*
 
 ### Derivation
 
@@ -193,13 +219,20 @@ For Type 2 events, probability varies with pressure accumulation over the simula
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
 
+```yaml
+factors:
+  F_CLIM: 0.54  # Dominant: warming, drought, precipitation changes are primary drivers
+  F_FOOD: 0.34  # Agricultural expansion (soy, cattle) drives deforestation
+  F_LAM: 0.15   # Regional instability affects governance capacity; imperfect proxy for environmental policy
+  F_FIN: 0.11   # Commodity prices affect deforestation economics
+  F_GPT: 0.08   # International pressure/trade policy affects deforestation incentives
+variance: 0.65  # Type 2 target
+```
+
+Factors carrying no loading:
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
-| **F_CLIM** | 0.54 | Dominant: warming, drought, precipitation changes are primary drivers |
-| **F_FOOD** | 0.34 | Agricultural expansion (soy, cattle) drives deforestation |
-| **F_LAM** | 0.15 | Regional instability affects governance capacity; imperfect proxy for environmental policy |
-| **F_FIN** | 0.11 | Commodity prices affect deforestation economics |
-| **F_GPT** | 0.08 | International pressure/trade policy affects deforestation incentives |
 | F_TECH | 0.00 | No significant pathway |
 | F_HLTH | 0.00 | No significant pathway |
 | F_EUR | 0.00 | No direct pathway (EU deforestation regulation effect is via F_GPT/F_FIN) |
@@ -208,7 +241,7 @@ For Type 2 events, probability varies with pressure accumulation over the simula
 | F_MENA | 0.00 | No significant pathway |
 | F_SSA | 0.00 | No significant pathway |
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.77 from original loadings
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.77 from original loadings. The original (2025-12-18) loadings were F_CLIM 0.70, F_FOOD 0.45, F_LAM 0.20, F_FIN 0.15, F_GPT 0.10, with sum of squared loadings 0.49 + 0.20 + 0.04 + 0.02 + 0.01 = 0.76; the scaled loadings above achieve 0.648 against the Ω matrix.
 
 ### Loading Interpretation (Type 2)
 
@@ -223,6 +256,13 @@ Factors shock state variables that feed into pressure function:
 ## Severity Branches
 
 Once tipping point is crossed, the extent and speed of dieback varies:
+
+```yaml
+branches:
+  - {id: partial, p: 0.45, desc: "Eastern/southern Amazon to savanna; ~40-50% of basin; 30-50 Gt C"}
+  - {id: major, p: 0.40, desc: "50-70% of basin; only wettest northwest keeps closed forest; 50-80 Gt C"}
+  - {id: catastrophic, p: 0.15, desc: "Near-complete collapse (>80%); 80-120 Gt C; regional desertification"}
+```
 
 ### Branch 1: Partial Dieback
 
@@ -279,6 +319,8 @@ Once tipping point is crossed, the extent and speed of dieback varies:
 - PERMAFROST_METHANE_RELEASE: +0.5%/year probability
 - AMOC_WEAKENING: +0.2%/year probability (altered Atlantic circulation)
 
+*The aftermath factor modifications are not part of the v0.1 impact schema (factor loadings are static per event); they are retained here as specification intent for a later schema version.*
+
 ### Branch Calibration Rationale
 
 Distribution based on process model outputs and spatial heterogeneity:
@@ -291,6 +333,8 @@ Distribution based on process model outputs and spatial heterogeneity:
 ## Impact Vector
 
 ### Global Impacts
+
+Original specification (partial-dieback baseline):
 
 | Variable | Direction | Magnitude | Onset | Durability |
 |----------|-----------|-----------|-------|------------|
@@ -309,6 +353,40 @@ Distribution based on process model outputs and spatial heterogeneity:
 | `bra.water_stress` | ↑ | +20 ± 8 | gradual(15yr) | permanent |
 
 **Note**: Many intuitive impacts (biodiversity loss, ecosystem service collapse, specific rainfall changes) are not tracked in the v1.0 state model. The impacts above capture what can be expressed through available variables. The carbon/temperature effects are the primary global transmission mechanism.
+
+```yaml
+impacts:
+  partial:
+    # Global climate state
+    - {var: amazon_forest_cover,         mag: [-45, 10],    onset: {gradual: 30}, permanent: true}
+    - {var: global_co2_ppm,              mag: [20, 5],      onset: {gradual: 50}, permanent: true}
+    - {var: global_temp_anomaly,         mag: [0.15, 0.05], onset: {gradual: 50}, permanent: true}
+
+    # Brazil
+    - {var: bra.gdp_growth,              mag: [-1.0, 0.5],  onset: {gradual: 10}, permanent: true}
+    - {var: bra.agricultural_climate_risk, mag: [30, 10],   onset: {gradual: 10}, permanent: true}
+    - {var: bra.water_stress,            mag: [20, 8],      onset: {gradual: 15}, permanent: true}
+
+  major:
+    # 2.0x baseline, except forest cover, which takes the branch description's 50-70% loss
+    - {var: amazon_forest_cover,         mag: [-60, 10],    onset: {gradual: 30}, permanent: true}
+    - {var: global_co2_ppm,              mag: [40, 10],     onset: {gradual: 50}, permanent: true}
+    - {var: global_temp_anomaly,         mag: [0.30, 0.10], onset: {gradual: 50}, permanent: true}
+    - {var: bra.gdp_growth,              mag: [-2.0, 1.0],  onset: {gradual: 10}, permanent: true}
+    - {var: bra.agricultural_climate_risk, mag: [60, 20],   onset: {gradual: 10}, permanent: true}
+    - {var: bra.water_stress,            mag: [40, 16],     onset: {gradual: 15}, permanent: true}
+
+  catastrophic:
+    # 4.0x baseline, except forest cover, which takes the branch description's >80% loss
+    - {var: amazon_forest_cover,         mag: [-85, 8],     onset: {gradual: 30}, permanent: true}
+    - {var: global_co2_ppm,              mag: [80, 20],     onset: {gradual: 50}, permanent: true}
+    - {var: global_temp_anomaly,         mag: [0.60, 0.20], onset: {gradual: 50}, permanent: true}
+    - {var: bra.gdp_growth,              mag: [-4.0, 2.0],  onset: {gradual: 10}, permanent: true}
+    - {var: bra.agricultural_climate_risk, mag: [120, 40],  onset: {gradual: 10}, permanent: true}
+    - {var: bra.water_stress,            mag: [80, 32],     onset: {gradual: 15}, permanent: true}
+```
+
+*Units: every row is additive in the variable's units (`amazon_forest_cover` in percentage points of the 2000 baseline, `global_co2_ppm` in ppm, `global_temp_anomaly` in °C, `bra.gdp_growth` in percentage points per year, the two Brazil indices on their 0-100 scales); no `gdp_real` rows. The `major` and `catastrophic` lists are written out rather than inherited because a uniform 2.0×/4.0× scale would take the forest-cover row to −90 and −180 points, beyond the variable's range; the forest-cover rows therefore use the branch descriptions' own 50-70% and >80% loss figures, and the other rows carry the stated multipliers. Ranges in the original tables (+15-25 ppm, +0.1-0.2°C) are written as mean ± half-range.*
 
 ### Durability Specifications
 
@@ -335,6 +413,19 @@ Central estimates based on Lovejoy & Nobre synthesis; uncertainty reflects model
 ---
 
 ## Cascade Effects
+
+```yaml
+cascades:
+  triggers:
+    - {event: PERMAFROST_METHANE_RELEASE, delta: 0.003, years: 50, if: "branch == 'major'"}
+    - {event: PERMAFROST_METHANE_RELEASE, delta: 0.005, years: 50, if: "branch == 'catastrophic'"}
+    - {event: AMOC_WEAKENING,             delta: 0.002, years: 50, if: "branch == 'catastrophic'"}
+  triggered_by:
+    - {event: PERMAFROST_METHANE_RELEASE, delta: 0.003}
+    - {event: AMOC_WEAKENING}  # direction uncertain (±); no delta assigned
+```
+
+*"Permanent" cascade durations are written as 50 years, the full simulation horizon from firing. The partial-dieback branch carries no cascade, per the branch specifications above.*
 
 ### State → Probability Cascades
 
@@ -380,13 +471,17 @@ No direct analog for Amazon-scale dieback. Partial analogs:
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete (2025-12-30) |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Rich scientific literature; Level 2 could add Amazon-specific tracking (regional temperature, drought indices, fire data) |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+Rich scientific literature; Level 2 could add Amazon-specific tracking (regional temperature, drought indices, fire data). Critical review complete 2025-12-30.
 
 ## Sources
 
@@ -413,6 +508,8 @@ No direct analog for Amazon-scale dieback. Partial analogs:
 |------|--------|-----------|
 | 2025-12-18 | Initial Level 1 specification | Task 2.1.4 - Type 2 climate tipping point |
 | 2025-12-30 | Critical review complete | Task 2.4.6 - Added Case Against, Probability Evolution; fixed variable references to catalog |
+| 2025-12-30 | Variance allocation: scaled loadings | Task 3.11 - Factor-explained variance reduced to Type 2 target (0.65); scale factor 0.77 |
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.2. Classification, pressure, threshold, factor, branch, impact, cascade and research tables converted to YAML; all prose kept, original tables kept where they carry rationale or magnitudes the YAML re-expresses. Judgment calls: (1) `inverse_threshold(80)` realized as a clipped ramp zero at 95% cover and saturating at 75%; at the catalog's 2025 baselines (with Brazil agriculture share 5, protest ~30) the expression gives ~37 and at the prose's 82% cover ~43, so the prose's "~58" is a judgment estimate, not the expression's value — threshold, std and sharpness unchanged; the compiler's baseline check is skipped because the two `bra.*` terms have no catalog baseline. (2) `range` set to [0.002, 0.080] from the floor and the "5-8% at high pressure" row. (3) `major` and `catastrophic` impacts written as explicit lists instead of `inherit`/`scale` 2.0/4.0: a uniform scale takes `amazon_forest_cover` to −90/−180 points, so those rows use the branch descriptions' 50-70% and >80% losses; all other rows carry the stated multipliers (the catastrophic `bra.agricultural_climate_risk` +120 and `bra.water_stress` +80 rows exceed 0-100 headroom and are left as the prose states, flagged for review). (4) Range magnitudes written as mean ± half-range (+15-25 ppm → [20, 5]; +0.1-0.2°C → [0.15, 0.05]). (5) "Permanent" cascade durations written as `years: 50`; branch-conditional cascades via `if: "branch == '…'"`; both targets exist as files (no aliases, no backlog-registry IDs involved); AMOC `triggered_by` entry carries no delta (direction uncertain). (6) Aftermath factor modifications (F_CLIM/F_FOOD/F_LAM boosts) have no v0.1 schema form; kept in prose. (7) No durability substitutions (all rows permanent), no `until: resolved` rows so no `resolves_after`, no unit conversions, no dropped rows, no catalog gaps. Restored from history (061d516): the original 2025-12-18 loadings (F_CLIM 0.70, F_FOOD 0.45, F_LAM 0.20, F_FIN 0.15, F_GPT 0.10) and their sum-of-squares line (0.76), plus the missing 2025-12-30 variance-allocation changelog row |
 
 ---
 
