@@ -16,16 +16,9 @@ tags:
 
 # Cancer Treatment Breakthrough
 
-## Event Classification
+**Type 1 (Stochastic) Event** — Technological/medical breakthrough with timing unpredictable; base rate from analog reference class.
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | CANCER_TREATMENT_BREAKTHROUGH |
-| **Scale** | Global |
-| **Domain** | Technological / Health |
-| **Causal Type** | Type 1: Stochastic |
-| **Onset Speed** | Gradual (10-20 years from first approvals to material population health impact) |
-| **Reversibility** | Irreversible (medical knowledge permanent; access may vary) |
+---
 
 ## Description
 
@@ -36,6 +29,21 @@ A treatment platform technology achieves broad efficacy across multiple solid tu
 **Distinction from baseline**: Baseline trajectory includes continued incremental progress—new targeted therapies, improved checkpoint inhibitor combinations, and expanding indications. This event captures *platform* breakthrough—a technology that works across cancer types rather than one cancer at a time, analogous to how mRNA technology became a platform rather than a single vaccine.
 
 **Scope exclusion**: Early detection breakthroughs (liquid biopsy achieving reliable pan-cancer screening) would be a separate event with different impact mechanisms—detection changes *when* we treat rather than *how effectively* we treat.
+
+---
+
+## Specification
+
+```yaml
+id: CANCER_TREATMENT_BREAKTHROUGH
+domain: technological
+scale: global
+causal_type: 1
+onset: gradual
+reversibility: irreversible
+```
+
+*Domain: technological / health (recorded as `technological` in YAML: the breakthrough mechanism is technological and F_TECH carries the dominant loading; the health consequences are carried by the impact rows). Onset speed: gradual (10-20 years from first approvals to material population health impact). Reversibility: irreversible (medical knowledge permanent; access may vary).*
 
 ---
 
@@ -89,12 +97,19 @@ Adjustment for platform vs. single-indication: Checkpoint inhibitors (2010s) wer
 
 ## Probability
 
+```yaml
+probability:
+  annual: 0.010
+  range: [0.005, 0.020]
+  confidence: low
+```
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability** | 1.0% |
 | **Low bound** | 0.5% |
 | **High bound** | 2.0% |
-| **Confidence** | Low-Medium |
+| **Confidence** | Low-Medium (recorded as `low` in YAML: the schema enum is `low|medium|high`) |
 | **25-year cumulative** | ~22% at point estimate |
 | **50-year cumulative** | ~39% at point estimate |
 
@@ -160,6 +175,15 @@ As a Type 1 stochastic event, probability is relatively stable but influenced by
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Breakthrough target (ΛΩΛᵀ)ᵢᵢ = 0.55*
 
+```yaml
+factors:
+  F_TECH: 0.60  # Biotechnology, AI/ML and pharma R&D cluster together
+  F_HLTH: 0.26  # Health system stress accelerates medical research (COVID → mRNA)
+  F_FIN: 0.17   # Capital availability for clinical development and manufacturing scale-up
+  F_GPT: 0.04   # Minor: biosecurity framing of national health research
+variance: 0.55  # Breakthrough target
+```
+
 | Factor | Loading | Rationale |
 |--------|---------|-----------|
 | **F_TECH** | 0.60 | Primary driver: Biotechnology, AI/ML, and pharmaceutical R&D cluster together; high F_TECH year means accelerated progress across frontier technologies including oncology |
@@ -175,7 +199,9 @@ As a Type 1 stochastic event, probability is relatively stable but influenced by
 | F_SSA | 0.00 | No pathway |
 | F_LAM | 0.00 | No pathway |
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.86 from original loadings
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Breakthrough target); scale factor = 0.86 from original loadings. Against the catalog's Ω ([[methodology/reference/factor-correlation-matrix]]) the scaled loadings give (ΛΩΛᵀ)ᵢᵢ = 0.541, within the compiler's ±0.02 tolerance of the declared 0.55.
+
+*Original (pre-scaling, 2025-12-26) loadings for the record: F_TECH 0.70, F_HLTH 0.30, F_FIN 0.20, F_GPT 0.05. Sum of squared loadings: 0.49 + 0.09 + 0.04 + 0.0025 = 0.62 ✓ (the pre-Task-3.11 check, which ignored inter-factor correlation).*
 
 ### Loading Interpretation (Type 1)
 
@@ -189,6 +215,13 @@ For Type 1 events, factors modify annual probability through correlated conditio
 ## Deployment Branches
 
 Once cancer treatment breakthrough occurs, deployment patterns vary:
+
+```yaml
+branches:
+  - {id: gradual, p: 0.50, desc: "Gradual diffusion: standard pathways, 15-25 years, wealthy countries first"}
+  - {id: rapid, p: 0.30, desc: "Rapid transformation: mRNA-style rollout, 10-12 years to material global impact"}
+  - {id: concentrated, p: 0.20, desc: "Economically concentrated: works but stays unaffordable outside wealthy countries"}
+```
 
 ### Gradual Diffusion (50%)
 
@@ -233,6 +266,8 @@ Technology works but remains extremely expensive. Benefits concentrate in wealth
 - **Rapid transformation (0.30)**: mRNA vaccine deployment demonstrated that platform technologies can scale rapidly when urgency and investment align. If a cancer platform proves highly manufacturable (unlike current cell therapies), cost curves could decline faster than historical analogs suggest.
 
 - **Economically concentrated (0.20)**: Reflects the realistic possibility that treatment works but never becomes affordable. CAR-T therapies ($400K+) set a concerning precedent. If the platform requires individualized manufacturing at scale, costs may not decline.
+
+*The YAML `impacts:` block takes the gradual branch as its explicit list and scales the others from it: `rapid` 1.8 and `concentrated` 0.6. Single-level inherit/scale carries one multiplier per branch, so the concentrated branch's 1.5× for wealthy countries and the branch-specific deployment timelines (10-12 years rapid, 25+ years concentrated) are differential-exposure coefficients kept here in prose, per the schema's wildcard/exposure convention, not in the YAML.*
 
 ---
 
@@ -287,6 +322,82 @@ No direct global health variables for cancer exist in the state specification. I
 
 *Scale life expectancy and GDP impacts by 1.8× for rapid transformation branch; scale by 0.6× for economically concentrated branch (with wealthy country impacts at 1.5×)*
 
+**How the tables map onto the YAML rows.** Life expectancy columns are `life_expectancy` rows in years. GDP columns are `gdp_real` rows as fractions. The fiscal column has no variable of its own; the Fiscal/Health Budget Channel below names `debt_public`, so each fiscal cost of X% of GDP is carried as a `debt_public` row of +X percentage points of GDP (sign flipped: a cost raises debt) with the 20-year half-life from the durability table — a level shock, which understates the cumulative debt a sustained annual cost would build. The low-benefit table carries no onset column; its rows use `gradual: 25`, the slowest timeline in the table above (moderate regions 20-22 years). "Rest of EU" is `eu_other`; "Sahel" is `sahel`; "Sub-Saharan Africa (other)" is not one catalog entity and is carried as the same row on each of the three remaining SSA aggregates (`east_africa`, `southern_africa_other`, `west_central_africa_other`); the individual SSA countries beyond Nigeria have no row, as in the original table. Sahel's "~0%" GDP cell is not a row.
+
+```yaml
+impacts:
+  gradual:
+    # High benefit: aging populations with strong health systems
+    - {var: jpn.life_expectancy,  mag: [3.5, 1.0],      onset: {gradual: 15}, permanent: true}
+    - {var: jpn.gdp_real,         mag: [0.015, 0.008],  onset: {gradual: 15}, permanent: true}
+    - {var: jpn.debt_public,      mag: [1.0, 0.5],      onset: {gradual: 15}, decay: 20}
+    - {var: deu.life_expectancy,  mag: [3.0, 0.8],      onset: {gradual: 15}, permanent: true}
+    - {var: deu.gdp_real,         mag: [0.012, 0.006],  onset: {gradual: 15}, permanent: true}
+    - {var: deu.debt_public,      mag: [0.8, 0.4],      onset: {gradual: 15}, decay: 20}
+    - {var: ita.life_expectancy,  mag: [3.0, 0.8],      onset: {gradual: 15}, permanent: true}
+    - {var: ita.gdp_real,         mag: [0.010, 0.005],  onset: {gradual: 15}, permanent: true}
+    - {var: ita.debt_public,      mag: [1.0, 0.5],      onset: {gradual: 15}, decay: 20}
+    - {var: kor.life_expectancy,  mag: [2.8, 0.8],      onset: {gradual: 15}, permanent: true}
+    - {var: kor.gdp_real,         mag: [0.013, 0.006],  onset: {gradual: 15}, permanent: true}
+    - {var: kor.debt_public,      mag: [0.7, 0.4],      onset: {gradual: 15}, decay: 20}
+    - {var: usa.life_expectancy,  mag: [2.5, 0.8],      onset: {gradual: 12}, permanent: true}
+    - {var: usa.gdp_real,         mag: [0.010, 0.005],  onset: {gradual: 12}, permanent: true}
+    - {var: usa.debt_public,      mag: [0.5, 0.3],      onset: {gradual: 12}, decay: 20}
+    - {var: gbr.life_expectancy,  mag: [2.5, 0.7],      onset: {gradual: 15}, permanent: true}
+    - {var: gbr.gdp_real,         mag: [0.010, 0.005],  onset: {gradual: 15}, permanent: true}
+    - {var: gbr.debt_public,      mag: [0.6, 0.3],      onset: {gradual: 15}, decay: 20}
+    - {var: fra.life_expectancy,  mag: [2.5, 0.7],      onset: {gradual: 15}, permanent: true}
+    - {var: fra.gdp_real,         mag: [0.010, 0.005],  onset: {gradual: 15}, permanent: true}
+    - {var: fra.debt_public,      mag: [0.7, 0.4],      onset: {gradual: 15}, decay: 20}
+    - {var: eu_other.life_expectancy, mag: [2.3, 0.6],  onset: {gradual: 18}, permanent: true}
+    - {var: eu_other.gdp_real,    mag: [0.008, 0.004],  onset: {gradual: 18}, permanent: true}
+    - {var: eu_other.debt_public, mag: [0.6, 0.3],      onset: {gradual: 18}, decay: 20}
+
+    # Moderate benefit
+    - {var: chn.life_expectancy,  mag: [2.0, 0.8],      onset: {gradual: 20}, permanent: true}
+    - {var: chn.gdp_real,         mag: [0.008, 0.005],  onset: {gradual: 20}, permanent: true}
+    - {var: chn.debt_public,      mag: [0.5, 0.3],      onset: {gradual: 20}, decay: 20}
+    - {var: rus.life_expectancy,  mag: [1.8, 0.7],      onset: {gradual: 20}, permanent: true}
+    - {var: rus.gdp_real,         mag: [0.006, 0.004],  onset: {gradual: 20}, permanent: true}
+    - {var: rus.debt_public,      mag: [0.4, 0.3],      onset: {gradual: 20}, decay: 20}
+    - {var: bra.life_expectancy,  mag: [1.5, 0.6],      onset: {gradual: 22}, permanent: true}
+    - {var: bra.gdp_real,         mag: [0.005, 0.003],  onset: {gradual: 22}, permanent: true}
+    - {var: bra.debt_public,      mag: [0.3, 0.2],      onset: {gradual: 22}, decay: 20}
+    - {var: tur.life_expectancy,  mag: [1.2, 0.5],      onset: {gradual: 22}, permanent: true}
+    - {var: tur.gdp_real,         mag: [0.004, 0.003],  onset: {gradual: 22}, permanent: true}
+    - {var: tur.debt_public,      mag: [0.3, 0.2],      onset: {gradual: 22}, decay: 20}
+    - {var: arg.life_expectancy,  mag: [1.5, 0.6],      onset: {gradual: 22}, permanent: true}
+    - {var: arg.gdp_real,         mag: [0.005, 0.003],  onset: {gradual: 22}, permanent: true}
+    - {var: arg.debt_public,      mag: [0.3, 0.2],      onset: {gradual: 22}, decay: 20}
+
+    # Low benefit: young populations and/or weak health systems
+    - {var: ind.life_expectancy,  mag: [0.8, 0.4],      onset: {gradual: 25}, permanent: true}
+    - {var: ind.gdp_real,         mag: [0.003, 0.002],  onset: {gradual: 25}, permanent: true}
+    - {var: pak.life_expectancy,  mag: [0.4, 0.2],      onset: {gradual: 25}, permanent: true}
+    - {var: pak.gdp_real,         mag: [0.001, 0.001],  onset: {gradual: 25}, permanent: true}
+    - {var: bgd.life_expectancy,  mag: [0.5, 0.3],      onset: {gradual: 25}, permanent: true}
+    - {var: bgd.gdp_real,         mag: [0.002, 0.001],  onset: {gradual: 25}, permanent: true}
+    - {var: nga.life_expectancy,  mag: [0.3, 0.2],      onset: {gradual: 25}, permanent: true}
+    - {var: nga.gdp_real,         mag: [0.001, 0.001],  onset: {gradual: 25}, permanent: true}
+    - {var: sahel.life_expectancy, mag: [0.2, 0.1],     onset: {gradual: 25}, permanent: true}
+    - {var: east_africa.life_expectancy, mag: [0.3, 0.2], onset: {gradual: 25}, permanent: true}
+    - {var: east_africa.gdp_real, mag: [0.001, 0.001],  onset: {gradual: 25}, permanent: true}
+    - {var: southern_africa_other.life_expectancy, mag: [0.3, 0.2], onset: {gradual: 25}, permanent: true}
+    - {var: southern_africa_other.gdp_real, mag: [0.001, 0.001], onset: {gradual: 25}, permanent: true}
+    - {var: west_central_africa_other.life_expectancy, mag: [0.3, 0.2], onset: {gradual: 25}, permanent: true}
+    - {var: west_central_africa_other.gdp_real, mag: [0.001, 0.001], onset: {gradual: 25}, permanent: true}
+
+  rapid:
+    inherit: gradual
+    scale: 1.8
+
+  concentrated:
+    inherit: gradual
+    scale: 0.6
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (Japan +1.5% ± 0.8% in the gradual branch); `life_expectancy` rows are years and `debt_public` rows are percentage points of GDP, additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields). The inherited branches scale every row, including the `debt_public` rows, though the scaling note above names only life expectancy and GDP.*
+
 ### Exposure Variables for Differential Impact
 
 - **Median age / dependency ratio**: Older → higher cancer burden → larger life expectancy benefit
@@ -322,6 +433,8 @@ Net effect is positive for most countries (+0.5% to +1.5% GDP) because productiv
 | Health inequality effects | shock_vulnerable | vulnerable_to: [health system reform, technology diffusion] | Could narrow with policy intervention |
 | Working-age survival gains | permanent | N/A | Deaths avoided are permanent |
 
+*The `shock_vulnerable` form is schema v0.2 backlog; health inequality has no state variable of its own, so that row has no YAML counterpart and the within-branch inequality is carried by the economically concentrated branch's prose multipliers. The other rows map directly: `life_expectancy` and `gdp_real` permanent, `debt_public` decay 20.*
+
 ### Impact Derivation
 
 **Primary method**: Structural reasoning + historical analog
@@ -336,6 +449,14 @@ Net effect is positive for most countries (+0.5% to +1.5% GDP) because productiv
 
 ## Cascade Effects
 
+```yaml
+cascades:
+  triggers:
+    - {event: SEVERE_PANDEMIC,        delta: -0.001,  years: 15}
+    - {event: ANTIMICROBIAL_PLATFORM, delta: 0.0015, years: 10}
+  triggered_by: []  # Breakthrough timing is fundamentally stochastic
+```
+
 ### State → Probability Cascades
 
 | Pathway | Target Event | Probability Change | Duration | Mechanism |
@@ -343,6 +464,8 @@ Net effect is positive for most countries (+0.5% to +1.5% GDP) because productiv
 | Extended lifespan → dependency ratio increase | (State trajectory effect) | N/A | Permanent | More elderly survivors increases old-age dependency ratio |
 | Health system strengthening | SEVERE_PANDEMIC | -0.1%/year | 15 years | Cancer treatment infrastructure (mRNA manufacturing, clinical trial capacity) transfers to pandemic preparedness |
 | Biotechnology platform maturation | ANTIMICROBIAL_PLATFORM | +0.15%/year | 10 years | Platform technologies often transfer; mRNA success enables other applications |
+
+*The dependency-ratio row is a state-trajectory effect, not an event, so it has no `triggers:` entry; it flows from the `life_expectancy` rows through the engine's population dynamics (`dependency_ratio` is a derived variable).*
 
 ### Impact Chains
 
@@ -406,6 +529,8 @@ pressure for universal coverage, international technology transfer
 **Affected variables**: `life_expectancy` (distribution), `protest_activity` (if inequality becomes salient), `institutional_quality`
 **Differential exposure**: Existing inequality, universal coverage status
 
+*Of the variables named in these channels, only `life_expectancy`, `gdp_real` and `debt_public` carry YAML rows. `institutional_quality`, `state_capacity` and `protest_activity` are not state-catalog names (the catalog's observables are `tax_revenue_gdp`, `budget_execution_rate`, `public_investment_efficiency` and `protest_intensity_annual`), and the original specification attached no magnitudes to them, so the channels stay descriptive.*
+
 ---
 
 ## Interactions with Other Events
@@ -433,6 +558,8 @@ pressure for universal coverage, international technology transfer
 | Prior mRNA platform success (COVID vaccines) | +probability (incorporated in baseline) | Proof of concept and manufacturing scale-up |
 | High F_HLTH + F_TECH co-occurrence | +probability | Combined health urgency and technology progress |
 | Regulatory harmonization | +probability of Rapid Transformation branch | Faster global deployment |
+
+*These interactions carry no probability deltas in the original specification, so `triggered_by:` is empty; the F_HLTH/F_TECH co-occurrence is already the factor-loading pathway.*
 
 ---
 
@@ -520,13 +647,19 @@ Both within stated range. Analysts would likely agree on:
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Specific mRNA cancer vaccine trial results; CAR-T solid tumor progress; detailed cost modeling for fiscal impacts |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+- Specific mRNA cancer vaccine trial results
+- CAR-T solid tumor progress
+- Detailed cost modeling for fiscal impacts
 
 ## Sources
 
@@ -555,8 +688,10 @@ Both within stated range. Analysts would likely agree on:
 
 | Date | Change | Rationale |
 |------|--------|-----------|
-| 2025-12-30 | Critical review: added Case Against and Probability Evolution sections | Task 2.4 systematic review |
 | 2025-12-26 | Initial Level 1 specification | Task 2.2.3 - third Type 1 breakthrough event |
+| 2025-12-30 | Critical review: added Case Against and Probability Evolution sections | Task 2.4 systematic review |
+| 2025-12-31 | Variance allocation: scaled loadings to breakthrough target | Task 3.11 - loadings 0.70/0.30/0.20/0.05 scaled by 0.86 to (ΛΩΛᵀ)ᵢᵢ = 0.55; the earlier "sum of squared loadings = 0.62" check replaced (row added at migration from git history; the original changelog did not record this edit) |
+| 2026-10-12 | Migrated to YAML-embedded schema; `domain: technological`, `confidence: low` | Task 4.2.27 — All prose preserved; classification, probability, loadings, branch, impact, cascade and research tables converted. Judgment calls: (1) `domain` is `technological` for the prose's "Technological / Health" (dominant mechanism; F_TECH loading); "Low-Medium" confidence is `low` (schema enum). (2) The fiscal-cost column, which names no variable, is carried as `debt_public` +X pp of GDP (sign flipped: a cost raises debt; the transmission channel names `debt_public`), `decay: 20` from the durability table — a level shock, not an accumulating annual flow. (3) Low-benefit rows, whose table has no onset column, use `gradual: 25`. (4) "Rest of EU" → `eu_other`, "Sahel" → `sahel`, "Sub-Saharan Africa (other)" → the same row on `east_africa`, `southern_africa_other`, `west_central_africa_other` (no single catalog entity); Sahel's "~0%" GDP cell and the "no direct effect" global rows (`antibiotic_resistance`, `pandemic_status`) are not rows. (5) `rapid` and `concentrated` inherit the gradual list at 1.8 and 0.6; the concentrated branch's 1.5× wealthy-country multiplier and the per-branch deployment timelines stay in prose as differential-exposure coefficients (single-level inherit/scale carries one multiplier), and the inherited `debt_public` rows scale with the branch like every other row. (6) Durability: `shock_vulnerable` health-inequality effects (v0.2 backlog) have no state variable and no row; other forms map directly. (7) Cascades: SEVERE_PANDEMIC −0.001/15y and ANTIMICROBIAL_PLATFORM +0.0015/10y written as `triggers:`; the dependency-ratio "state trajectory effect" is not an event and stays in prose; the interactions tables carry no deltas, so `triggered_by: []`. (8) Prose variables `institutional_quality`, `state_capacity`, `protest_activity` are not catalog names and carried no magnitudes; noted under Transmission Channels, no rows. Restored from git history: the pre-scaling loadings (0.70/0.30/0.20/0.05) and the "sum of squared loadings = 0.62" line removed at Task 3.11. Achieved (ΛΩΛᵀ)ᵢᵢ = 0.541 vs declared 0.55 |
 
 ---
 
