@@ -15,16 +15,20 @@ tags:
 
 # Chinese Economic Crisis
 
-## Event Classification
+**Type 2 (Threshold) Event** — Probability rises as property, debt, demographic and external pressures accumulate past the state's capacity to manage them.
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | CHINESE_ECONOMIC_CRISIS |
-| **Scale** | Global |
-| **Domain** | Economic |
-| **Causal Type** | Type 2: Threshold |
-| **Onset Speed** | Rapid (6-18 months from trigger to full crisis) |
-| **Reversibility** | Partial (structural damage persists but acute phase resolves) |
+## Specification
+
+```yaml
+id: CHINESE_ECONOMIC_CRISIS
+domain: economic
+scale: global
+causal_type: 2
+onset: sudden
+reversibility: partial
+```
+
+*Onset speed: rapid (6-18 months from trigger to full crisis), recorded as `sudden` in the schema's `sudden|gradual` enum. Reversibility: partial (structural damage persists but acute phase resolves).*
 
 ## Description
 
@@ -54,6 +58,8 @@ Uses universal state variables per [[methodology/reference/state-variables-count
 | `chn.unemployment_rate` | 0.10 | linear | Labor market stress; elevated unemployment signals domestic demand weakness |
 | Working-age population growth (derived) | 0.05 | inverse | Demographic pressure; negative growth increases fiscal burden, reduces dynamism |
 
+The YAML expression in the Probability section below realizes these transforms in the expression language's subset: the debt logistic exactly as specified (`1 / (1 + exp(-0.1 * (debt - 80)))`); the four "inverse" terms as clipped linear ramps that read 0 at a comfortable level and 1 at a crisis level (growth 8% → 0%, current account +4% → −4% of GDP, reserves 20 → 4 months of imports, FDI +2% → −2% of GDP); unemployment as linear to 15%; and the demographic term, which needs a growth rate the namespace cannot see (no history), as the cumulative decline of the derived `chn.pop_working_age` from its ~980M 2025 level, saturating at 800M (the UN medium projection for ~2050).
+
 **Proxy limitations**: The universal variable set cannot directly capture China's distinctive vulnerabilities (property sector = 25-30% of GDP, LGFV hidden debt = 50-60% of GDP, true NPL ratio 3-5× official figures). The pressure function proxies these through their downstream effects: `debt_public` captures fiscal stress, `gdp_growth` captures real economy impact, `current_account` and `fdi_net` capture capital confidence. This is a known fidelity limitation; probability is calibrated primarily via reference class reasoning rather than mechanical pressure calculation.
 
 **Current pressure estimate (2025)**: ~55 on 0-100 scale
@@ -64,6 +70,8 @@ Uses universal state variables per [[methodology/reference/state-variables-count
 - FDI: Net negative in recent quarters (unprecedented)
 - Unemployment: Official 5%, true urban rate likely 8-10%
 - Demographics: Working-age population declining ~0.5% annually
+
+At the official figures above the YAML expression gives ~39/100; at the "true" figures the prose already prices in (debt ~120% of GDP including LGFV, urban unemployment ~9%) it gives ~54, consistent with the ~55 judgment estimate. The compiler's pressure-scale check is skipped for this event because every term reads country variables, which carry no 2025 baseline in the state catalog.
 
 ### Threshold Specification
 
@@ -84,12 +92,35 @@ Rationale: Black swan triggers possible even with healthy fundamentals—major g
 
 ## Probability
 
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.25 * (1.0 / (1.0 + exp(-0.1 * (chn.debt_public - 80)))) +
+      0.20 * clip((8.0 - chn.gdp_growth) / 8.0, 0.0, 1.0) +
+      0.15 * clip((4.0 - chn.current_account) / 8.0, 0.0, 1.0) +
+      0.15 * clip((20.0 - chn.reserves_foreign) / 16.0, 0.0, 1.0) +
+      0.10 * clip((2.0 - chn.fdi_net) / 4.0, 0.0, 1.0) +
+      0.10 * clip(chn.unemployment_rate / 15.0, 0.0, 1.0) +
+      0.05 * clip((980.0 - chn.pop_working_age) / 180.0, 0.0, 1.0)
+    )
+  threshold: 75
+  threshold_std: 10
+  sharpness: 10
+  floor: 0.005
+  annual: 0.020
+  range: [0.012, 0.035]
+  confidence: medium
+```
+
+No impact row uses `until: resolved`, so the block carries no `resolves_after`. The sharpness value is the prose's documented k = 10; the engine applies it as `expit(k · (pressure − threshold))` on the 0–100 scale, which is a far sharper transition than the 0.15–0.20 the AMOC and Pakistan events use — see the 2026-10-12 changelog row.
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability** | 2.0% |
 | **Low bound** | 1.2% |
 | **High bound** | 3.5% |
-| **Confidence** | Medium-Low |
+| **Confidence** | Medium-Low (recorded as `medium` in YAML: the schema enum is `low|medium|high`) |
 | **25-year cumulative** | ~40% at point estimate |
 
 ### Derivation
@@ -235,6 +266,24 @@ For Type 2 events, probability varies with pressure accumulation over the simula
 | F_LAM | 0.0 | Minimal direct linkage |
 
 **Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.74 from original loadings
+
+**Original (pre-allocation) loadings**, as first specified on 2025-12-29: F_FIN 0.55, F_EAS 0.45, F_GPT 0.30, F_TECH 0.20, F_CLIM 0.10, F_EUR 0.10, F_HLTH 0.05, F_FOOD 0.05, F_SAS 0.05 (F_MENA, F_SSA, F_LAM 0.0). Sum of squared loadings: 0.3025 + 0.2025 + 0.09 + 0.04 + 0.01 + 0.01 + 0.0025 + 0.0025 + 0.0025 = **0.66** ✓ — the pre-Ω check the 2025-12-31 variance allocation replaced; the Loading Rationale below still quotes these original values.
+
+```yaml
+factors:
+  F_FIN: 0.40   # Primary: global financial conditions, capital flows, contagion; exogenous to China
+  F_EAS: 0.33   # Secondary: non-China regional stress (Korea, Japan, Taiwan) via trade/investment
+  F_GPT: 0.22   # Secondary: trade tensions, tech restrictions, geopolitical risk premium
+  F_TECH: 0.15  # Semiconductor restrictions, tech war
+  F_CLIM: 0.07  # Agricultural output, infrastructure costs, regional development
+  F_EUR: 0.07   # European demand for exports; European financial stress
+  F_HLTH: 0.04  # Pandemic aftermath, consumer confidence
+  F_FOOD: 0.04  # Food security adds fiscal pressure, rural stability
+  F_SAS: 0.04   # Regional trade linkages
+variance: 0.65  # Type 2 target
+```
+
+F_MENA, F_SSA and F_LAM carry no loading (minimal direct linkage; China is creditor to SSA, not affected by it). With the catalog's Ω the listed loadings achieve (ΛΩΛᵀ)ᵢᵢ = 0.645.
 
 ### Loading Rationale
 
@@ -413,11 +462,174 @@ Crisis may force China to restructure BRI loans, providing debt relief to Africa
 
 **Commodity price transmission**: China consumes ~50% of global copper, ~55% of iron ore, ~15% of oil. Demand collapse of 20-30% implies severe price impact.
 
+### Impact Specification
+
+The YAML below re-expresses the tables above in state-catalog names and units; the tables keep the original magnitudes, sub-year onsets and durability floors. Mapping decisions:
+
+- **Units**: `chn.gdp_real` is a fraction of current value (−8% ± 3% → `[-0.08, 0.03]`); every other row is additive in the variable's units. Percentages on absolute-unit variables are converted against the catalog's 2025 baselines: `global_trade_volume` −6 ± 3% of index 100 → −6 ± 3 points; `oil_price` −20 ± 10% of Brent $75 → `oil_brent` −15 ± 7.5 $/bbl; `copper_price` −30 ± 12% of $8,500/t → −2,550 ± 1,020 $/t.
+- **Onset**: the schema's onset is annual; the tables' 3- and 6-month delays are written `immediate`, the 2- and 3-year ramps as `{gradual: N}`.
+- **Entities**: `[country]` East Asia → `jpn`, `kor`, `twn`; `asean` (not a catalog aggregate) → `vnm`, `tha`, `phl`, `sgp` and `southeast_asia_other`, with Indonesia carried under the commodity-exporter rows instead (the larger of its two memberships); `[eu_countries]` → `fra`, `ita`, `esp`, `nld`, `pol` and `eu_other` (Germany has its own row; the UK is not an EU member); Chile (not an entity) → the `andean_caribbean` aggregate that contains it and Peru.
+- **Variables**: `[country].fiscal_balance` is not in the catalog; the row is carried on `tax_revenue_gdp` (same units, % of GDP, same durability), since the stated mechanism is "reduced resource revenues". `usa.inflation_rate` is included although the table starred it: the catalog does track `inflation_rate`.
+- **Rows kept in prose only**: starred illustrative variables (`global_gdp_growth`, `commodity_price_index`, `global_financial_volatility`, `chn.youth_unemployment`, `cny_usd_rate`, `chn.fx_reserves_usd`, `chn.property_prices`, `chn.household_wealth`, `asean.fdi_inflows`, `aus.terms_of_trade`, `usa.corporate_profits_china_exposed`, `bri_debt_relief_probability`, all Hong Kong rows); `[country].exports` (no exports variable in the catalog); and the conditional reset of `chn.years_since_irregular_transition` to 0 on the Hard Landing branch, which is a value reset rather than an additive impact and has no v0.1 form.
+- **Branches**: the Japan-style Stagnation branch is the ×1.0 base. Hard Landing and Reform Breakthrough are written as explicit lists rather than `inherit`/`scale` because their modifiers are per-category: Hard Landing multiplies GDP rows ×1.8, unemployment ×2.0, currency (`chn.inflation_rate`, the depreciation proxy) ×1.6 and every non-China country row ×1.5 (regional transmission), leaving global and other China rows at ×1.0; Reform Breakthrough multiplies GDP rows ×0.7 and shortens every half-life by 40% (×0.6), leaving magnitudes otherwise unchanged. The post-event factor-loading modifications in the branch descriptions are not a v0.1 construct and stay in prose.
+
+```yaml
+impacts:
+  stagnation:
+    # Global
+    - {var: global_trade_volume,             mag: [-6, 3],         onset: immediate,     decay: 2}
+    - {var: oil_brent,                       mag: [-15, 7.5],      onset: immediate,     decay: 2}
+    - {var: copper_price,                    mag: [-2550, 1020],   onset: immediate,     decay: 3}
+    - {var: cny_reserve_share,               mag: [-1.5, 0.8],     onset: {gradual: 3},  permanent: true}
+    # China
+    - {var: chn.gdp_real,                    mag: [-0.08, 0.03],   onset: {gradual: 2},  decay: 5}
+    - {var: chn.gdp_growth,                  mag: [-4, 1.5],       onset: immediate,     decay: 3}
+    - {var: chn.unemployment_rate,           mag: [6, 2],          onset: immediate,     decay: 4}
+    - {var: chn.inflation_rate,              mag: [4, 2],          onset: immediate,     decay: 2}
+    - {var: chn.debt_public,                 mag: [15, 5],         onset: {gradual: 2},  permanent: true}
+    - {var: chn.reserves_foreign,            mag: [-6, 2],         onset: {gradual: 2},  permanent: true}
+    - {var: chn.fdi_net,                     mag: [-3, 1],         onset: immediate,     decay: 3}
+    - {var: chn.protest_intensity_annual,    mag: [25, 10],        onset: immediate,     decay: 3}
+    # East Asia
+    - {var: jpn.gdp_growth,                  mag: [-2, 0.8],       onset: immediate,     decay: 2}
+    - {var: kor.gdp_growth,                  mag: [-2, 0.8],       onset: immediate,     decay: 2}
+    - {var: twn.gdp_growth,                  mag: [-2, 0.8],       onset: immediate,     decay: 2}
+    # Southeast Asia (ASEAN members in the catalog; Indonesia carried under commodity exporters)
+    - {var: vnm.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 2}
+    - {var: tha.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 2}
+    - {var: phl.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 2}
+    - {var: sgp.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 2}
+    - {var: southeast_asia_other.gdp_growth, mag: [-1.5, 0.6],     onset: immediate,     decay: 2}
+    # Australia
+    - {var: aus.gdp_growth,                  mag: [-2.5, 1],       onset: immediate,     decay: 2}
+    # Europe
+    - {var: deu.gdp_growth,                  mag: [-1, 0.4],       onset: immediate,     decay: 2}
+    - {var: fra.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 2}
+    - {var: ita.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 2}
+    - {var: esp.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 2}
+    - {var: nld.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 2}
+    - {var: pol.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 2}
+    - {var: eu_other.gdp_growth,             mag: [-0.6, 0.3],     onset: immediate,     decay: 2}
+    # United States
+    - {var: usa.gdp_growth,                  mag: [-0.5, 0.3],     onset: immediate,     decay: 2}
+    - {var: usa.inflation_rate,              mag: [-0.5, 0.3],     onset: immediate,     decay: 1}
+    # Commodity exporters (Chile via the Andean/Caribbean aggregate)
+    - {var: bra.gdp_growth,                  mag: [-2, 1],         onset: immediate,     decay: 2}
+    - {var: zaf.gdp_growth,                  mag: [-2, 1],         onset: immediate,     decay: 2}
+    - {var: idn.gdp_growth,                  mag: [-2, 1],         onset: immediate,     decay: 2}
+    - {var: rus.gdp_growth,                  mag: [-2, 1],         onset: immediate,     decay: 2}
+    - {var: andean_caribbean.gdp_growth,     mag: [-2, 1],         onset: immediate,     decay: 2}
+    - {var: bra.tax_revenue_gdp,             mag: [-3, 1.5],       onset: immediate,     decay: 3}
+    - {var: zaf.tax_revenue_gdp,             mag: [-3, 1.5],       onset: immediate,     decay: 3}
+    - {var: idn.tax_revenue_gdp,             mag: [-3, 1.5],       onset: immediate,     decay: 3}
+    - {var: rus.tax_revenue_gdp,             mag: [-3, 1.5],       onset: immediate,     decay: 3}
+    - {var: andean_caribbean.tax_revenue_gdp, mag: [-3, 1.5],      onset: immediate,     decay: 3}
+
+  hard_landing:
+    # Global (x1.0)
+    - {var: global_trade_volume,             mag: [-6, 3],         onset: immediate,     decay: 2}
+    - {var: oil_brent,                       mag: [-15, 7.5],      onset: immediate,     decay: 2}
+    - {var: copper_price,                    mag: [-2550, 1020],   onset: immediate,     decay: 3}
+    - {var: cny_reserve_share,               mag: [-1.5, 0.8],     onset: {gradual: 3},  permanent: true}
+    # China (GDP x1.8, unemployment x2.0, currency x1.6, other x1.0)
+    - {var: chn.gdp_real,                    mag: [-0.144, 0.054], onset: {gradual: 2},  decay: 5}
+    - {var: chn.gdp_growth,                  mag: [-7.2, 2.7],     onset: immediate,     decay: 3}
+    - {var: chn.unemployment_rate,           mag: [12, 4],         onset: immediate,     decay: 4}
+    - {var: chn.inflation_rate,              mag: [6.4, 3.2],      onset: immediate,     decay: 2}
+    - {var: chn.debt_public,                 mag: [15, 5],         onset: {gradual: 2},  permanent: true}
+    - {var: chn.reserves_foreign,            mag: [-6, 2],         onset: {gradual: 2},  permanent: true}
+    - {var: chn.fdi_net,                     mag: [-3, 1],         onset: immediate,     decay: 3}
+    - {var: chn.protest_intensity_annual,    mag: [25, 10],        onset: immediate,     decay: 3}
+    # Regional transmission (x1.5)
+    - {var: jpn.gdp_growth,                  mag: [-3, 1.2],       onset: immediate,     decay: 2}
+    - {var: kor.gdp_growth,                  mag: [-3, 1.2],       onset: immediate,     decay: 2}
+    - {var: twn.gdp_growth,                  mag: [-3, 1.2],       onset: immediate,     decay: 2}
+    - {var: vnm.gdp_growth,                  mag: [-2.25, 0.9],    onset: immediate,     decay: 2}
+    - {var: tha.gdp_growth,                  mag: [-2.25, 0.9],    onset: immediate,     decay: 2}
+    - {var: phl.gdp_growth,                  mag: [-2.25, 0.9],    onset: immediate,     decay: 2}
+    - {var: sgp.gdp_growth,                  mag: [-2.25, 0.9],    onset: immediate,     decay: 2}
+    - {var: southeast_asia_other.gdp_growth, mag: [-2.25, 0.9],    onset: immediate,     decay: 2}
+    - {var: aus.gdp_growth,                  mag: [-3.75, 1.5],    onset: immediate,     decay: 2}
+    - {var: deu.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 2}
+    - {var: fra.gdp_growth,                  mag: [-0.9, 0.45],    onset: immediate,     decay: 2}
+    - {var: ita.gdp_growth,                  mag: [-0.9, 0.45],    onset: immediate,     decay: 2}
+    - {var: esp.gdp_growth,                  mag: [-0.9, 0.45],    onset: immediate,     decay: 2}
+    - {var: nld.gdp_growth,                  mag: [-0.9, 0.45],    onset: immediate,     decay: 2}
+    - {var: pol.gdp_growth,                  mag: [-0.9, 0.45],    onset: immediate,     decay: 2}
+    - {var: eu_other.gdp_growth,             mag: [-0.9, 0.45],    onset: immediate,     decay: 2}
+    - {var: usa.gdp_growth,                  mag: [-0.75, 0.45],   onset: immediate,     decay: 2}
+    - {var: usa.inflation_rate,              mag: [-0.75, 0.45],   onset: immediate,     decay: 1}
+    - {var: bra.gdp_growth,                  mag: [-3, 1.5],       onset: immediate,     decay: 2}
+    - {var: zaf.gdp_growth,                  mag: [-3, 1.5],       onset: immediate,     decay: 2}
+    - {var: idn.gdp_growth,                  mag: [-3, 1.5],       onset: immediate,     decay: 2}
+    - {var: rus.gdp_growth,                  mag: [-3, 1.5],       onset: immediate,     decay: 2}
+    - {var: andean_caribbean.gdp_growth,     mag: [-3, 1.5],       onset: immediate,     decay: 2}
+    - {var: bra.tax_revenue_gdp,             mag: [-4.5, 2.25],    onset: immediate,     decay: 3}
+    - {var: zaf.tax_revenue_gdp,             mag: [-4.5, 2.25],    onset: immediate,     decay: 3}
+    - {var: idn.tax_revenue_gdp,             mag: [-4.5, 2.25],    onset: immediate,     decay: 3}
+    - {var: rus.tax_revenue_gdp,             mag: [-4.5, 2.25],    onset: immediate,     decay: 3}
+    - {var: andean_caribbean.tax_revenue_gdp, mag: [-4.5, 2.25],   onset: immediate,     decay: 3}
+
+  reform:
+    # Global (x1.0, half-lives x0.6)
+    - {var: global_trade_volume,             mag: [-6, 3],         onset: immediate,     decay: 1.2}
+    - {var: oil_brent,                       mag: [-15, 7.5],      onset: immediate,     decay: 1.2}
+    - {var: copper_price,                    mag: [-2550, 1020],   onset: immediate,     decay: 1.8}
+    - {var: cny_reserve_share,               mag: [-1.5, 0.8],     onset: {gradual: 3},  permanent: true}
+    # China (GDP x0.7, half-lives x0.6)
+    - {var: chn.gdp_real,                    mag: [-0.056, 0.021], onset: {gradual: 2},  decay: 3}
+    - {var: chn.gdp_growth,                  mag: [-2.8, 1.05],    onset: immediate,     decay: 1.8}
+    - {var: chn.unemployment_rate,           mag: [6, 2],          onset: immediate,     decay: 2.4}
+    - {var: chn.inflation_rate,              mag: [4, 2],          onset: immediate,     decay: 1.2}
+    - {var: chn.debt_public,                 mag: [15, 5],         onset: {gradual: 2},  permanent: true}
+    - {var: chn.reserves_foreign,            mag: [-6, 2],         onset: {gradual: 2},  permanent: true}
+    - {var: chn.fdi_net,                     mag: [-3, 1],         onset: immediate,     decay: 1.8}
+    - {var: chn.protest_intensity_annual,    mag: [25, 10],        onset: immediate,     decay: 1.8}
+    # Regional transmission (x1.0, half-lives x0.6)
+    - {var: jpn.gdp_growth,                  mag: [-2, 0.8],       onset: immediate,     decay: 1.2}
+    - {var: kor.gdp_growth,                  mag: [-2, 0.8],       onset: immediate,     decay: 1.2}
+    - {var: twn.gdp_growth,                  mag: [-2, 0.8],       onset: immediate,     decay: 1.2}
+    - {var: vnm.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 1.2}
+    - {var: tha.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 1.2}
+    - {var: phl.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 1.2}
+    - {var: sgp.gdp_growth,                  mag: [-1.5, 0.6],     onset: immediate,     decay: 1.2}
+    - {var: southeast_asia_other.gdp_growth, mag: [-1.5, 0.6],     onset: immediate,     decay: 1.2}
+    - {var: aus.gdp_growth,                  mag: [-2.5, 1],       onset: immediate,     decay: 1.2}
+    - {var: deu.gdp_growth,                  mag: [-1, 0.4],       onset: immediate,     decay: 1.2}
+    - {var: fra.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 1.2}
+    - {var: ita.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 1.2}
+    - {var: esp.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 1.2}
+    - {var: nld.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 1.2}
+    - {var: pol.gdp_growth,                  mag: [-0.6, 0.3],     onset: immediate,     decay: 1.2}
+    - {var: eu_other.gdp_growth,             mag: [-0.6, 0.3],     onset: immediate,     decay: 1.2}
+    - {var: usa.gdp_growth,                  mag: [-0.5, 0.3],     onset: immediate,     decay: 1.2}
+    - {var: usa.inflation_rate,              mag: [-0.5, 0.3],     onset: immediate,     decay: 0.6}
+    - {var: bra.gdp_growth,                  mag: [-2, 1],         onset: immediate,     decay: 1.2}
+    - {var: zaf.gdp_growth,                  mag: [-2, 1],         onset: immediate,     decay: 1.2}
+    - {var: idn.gdp_growth,                  mag: [-2, 1],         onset: immediate,     decay: 1.2}
+    - {var: rus.gdp_growth,                  mag: [-2, 1],         onset: immediate,     decay: 1.2}
+    - {var: andean_caribbean.gdp_growth,     mag: [-2, 1],         onset: immediate,     decay: 1.2}
+    - {var: bra.tax_revenue_gdp,             mag: [-3, 1.5],       onset: immediate,     decay: 1.8}
+    - {var: zaf.tax_revenue_gdp,             mag: [-3, 1.5],       onset: immediate,     decay: 1.8}
+    - {var: idn.tax_revenue_gdp,             mag: [-3, 1.5],       onset: immediate,     decay: 1.8}
+    - {var: rus.tax_revenue_gdp,             mag: [-3, 1.5],       onset: immediate,     decay: 1.8}
+    - {var: andean_caribbean.tax_revenue_gdp, mag: [-3, 1.5],      onset: immediate,     decay: 1.8}
+```
+
+*Durability note: the tables' decay-to-floor forms (China GDP level floor −4%, global trade floor −2%, global GDP growth floor −0.3 pp) are schema v0.2 backlog; the YAML uses plain half-lives. The differential-exposure multipliers (1.5× for >15% China export share; commodity share scaling) remain an implementation coefficient documented in prose, as in [[events/health/severe-pandemic]].*
+
 ---
 
 ## Aftermath Branches
 
 The crisis event triggers one of three post-event trajectories, determined by policy response and structural adaptation.
+
+```yaml
+branches:
+  - {id: hard_landing, p: 0.30, desc: "Policy intervention fails; banking recapitalization beyond fiscal capacity; capital flight overwhelms controls"}
+  - {id: stagnation,   p: 0.55, desc: "Japan-style: acute collapse prevented but structural issues unaddressed; decade-plus near-zero growth"}
+  - {id: reform,       p: 0.15, desc: "Crisis forces genuine structural reform; sharp contraction then V-shaped recovery"}
+```
 
 ### Branch Probability Calibration Note
 
@@ -520,6 +732,28 @@ The crisis event is the discrete threshold-crossing; the stagnation branch descr
 
 ## Cascade Effects
 
+```yaml
+cascades:
+  triggers:
+    - {event: CHINESE_POLITICAL_CRISIS,  delta: 0.020,  years: 5}
+    - {event: GLOBAL_FINANCIAL_CRISIS,   delta: 0.015,  years: 2}
+    - {event: DOLLAR_RESERVE_CRISIS,     delta: -0.010, years: 5}
+    - {event: TAIWAN_CONFLICT,           delta: 0.004,  years: 3}
+    - {event: PAKISTAN_STATE_FAILURE,    delta: 0.005,  years: 3}
+    - {event: EGYPT_STATE_FAILURE,       delta: 0.003,  years: 3}
+    - {event: RUSSIA_STATE_FAILURE,      delta: 0.003,  years: 3}
+    - {event: SAUDI_REGIME_INSTABILITY,  delta: 0.003,  years: 3}
+    - {event: KOREAN_PENINSULA_CRISIS,   delta: 0.004,  years: 3}
+  triggered_by:
+    - {event: GLOBAL_FINANCIAL_CRISIS,   delta: 0.020}
+    - {event: TAIWAN_CONFLICT,           delta: 0.030}
+    - {event: US_CHINA_ECONOMIC_RUPTURE, delta: 0.010}   # prose: US_CHINA_TRADE_WAR, registry alias
+    - {event: SEVERE_PANDEMIC,           delta: 0.008}
+    - {event: DOLLAR_RESERVE_CRISIS,     delta: 0.010}
+```
+
+The TAIWAN_CONFLICT edge is the unconditional net +0.4%; the branch-dependent variants discussed in the special case below (+1.0% or more under Hard Landing, −0.5% under Reform Breakthrough) are hedged illustrations, not specification, and stay in prose.
+
 ### State → Probability Cascades
 
 | Target Event | Probability Change | Duration | Mechanism |
@@ -562,7 +796,7 @@ However, uncertainty is high because this depends heavily on leadership faction 
 |--------------|---------------------|-----------|
 | GLOBAL_FINANCIAL_CRISIS | +2.0% | Capital flight; external demand collapse; contagion |
 | TAIWAN_CONFLICT | +3.0% | Sanctions, trade disruption, investor flight |
-| US_CHINA_TRADE_WAR | +1.0% | Export collapse; supply chain disruption; tech restrictions |
+| US_CHINA_TRADE_WAR (alias; canonical `US_CHINA_ECONOMIC_RUPTURE` per [[events/backlog-registry]] §3) | +1.0% | Export collapse; supply chain disruption; tech restrictions |
 | SEVERE_PANDEMIC | +0.8% | Demand shock; healthcare spending; confidence |
 | DOLLAR_RESERVE_CRISIS | +1.0% | Global financial disruption; but yuan gains may partially offset |
 
@@ -659,13 +893,19 @@ However, uncertainty is high because this depends heavily on leadership faction 
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-29 |
-| **Critical review** | Complete (2025-12-29) |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | High-impact event with extensive existing research; Level 2 could add China-specific tracking variables (property sector, LGFV debt, NPL ratios) for mechanical pressure calculation rather than reference-class calibration |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-29
+  review: complete
+  upgrade: true
+```
+
+Critical review completed 2025-12-29.
+
+### Upgrade Rationale
+
+High-impact event with extensive existing research; Level 2 could add China-specific tracking variables (property sector, LGFV debt, NPL ratios) for mechanical pressure calculation rather than reference-class calibration.
 
 ## Sources
 
@@ -706,6 +946,8 @@ However, uncertainty is high because this depends heavily on leadership faction 
 |------|--------|-----------|
 | 2025-12-30 | Verified critical review complete | Task 2.4 systematic review |
 | 2025-12-29 | Full Level 1 specification with critical review | Task 2.1 financial crisis events |
+| 2025-12-31 | Variance allocation: scaled loadings to Type 2 target | Task 3.11 — scale factor 0.74; replaced the original sum-of-squares check (0.66) with (ΛΩΛᵀ)ᵢᵢ = 0.65 |
+| 2026-10-12 | Migrated to YAML-embedded schema; restored lost prose | Task 4.2 format migration. Prose restored from history: the original pre-allocation loadings and their sum-of-squares line (0.66), condensed away on 2025-12-31, now sit beside the factor YAML; the 2025-12-31 change itself gained a changelog row. Judgment calls: (1) `onset: sudden` for the prose's "rapid (6-18 months)"; `confidence: medium` for "Medium-Low" (enum), wording kept. (2) Pressure transforms realized with `exp`/`clip` (sentence under the pressure table); the demographic term reads the derived `chn.pop_working_age` as cumulative decline from 980M because a growth rate needs history the namespace lacks; expression gives ~39 at official 2025 figures, ~54 at the prose's "true" figures. Compiler's baseline check skipped (country variables). (3) `sharpness: 10` kept as documented although the engine's `expit(k·Δ)` makes it a near-step versus 0.15–0.20 elsewhere — flagged for review, not changed. (4) No `until: resolved` rows, so no `resolves_after`. (5) Durability: decay-to-floor rows (China GDP floor −4%, trade floor −2%) written as plain decays; the conditional `years_since_irregular_transition` reset and the aftermath factor-loading modifications are not v0.1 constructs and stay in prose. (6) Unit conversions against 2025 baselines: trade −6% → −6 index points; oil −20% → `oil_brent` −15 ± 7.5 $/bbl; copper −30% → −2,550 ± 1,020 $/t; sub-year onsets → `immediate`. (7) Entity alternatives: `asean` → `vnm`/`tha`/`phl`/`sgp`/`southeast_asia_other` (Indonesia under commodity exporters); `[eu_countries]` → `fra`/`ita`/`esp`/`nld`/`pol`/`eu_other`; Chile → `andean_caribbean`. (8) Variable alternatives: `fiscal_balance` → `tax_revenue_gdp` (same units; mechanism is revenue loss); `usa.inflation_rate` included despite the table's asterisk (the catalog tracks it). (9) Dropped rows, kept in prose: `[country].exports` (no catalog variable), all starred illustrative variables, Hong Kong (not an entity), BRI debt-relief probability. (10) Branches explicit per branch rather than `inherit`/`scale` because Hard Landing and Reform modifiers are per-category (GDP ×1.8/×0.7, unemployment ×2.0, currency ×1.6, regional ×1.5, Reform half-lives ×0.6); unlisted categories ×1.0. (11) Cascades: all nine targets exist as files; `US_CHINA_TRADE_WAR` normalized to `US_CHINA_ECONOMIC_RUPTURE` (registry alias); Taiwan edge unconditional at +0.4%. Achieved variance 0.645 against the 0.65 target |
 
 ---
 
