@@ -21,17 +21,6 @@ This specification follows the pattern established in [[events/geopolitical/paki
 
 ---
 
-## Event Classification
-
-| Attribute | Value |
-|-----------|-------|
-| **ID** | RUSSIA_STATE_FAILURE |
-| **Scale** | National (with global consequences) |
-| **Domain** | Political |
-| **Causal Type** | **Type 2: Threshold** |
-| **Onset Speed** | Rapid (1-3 years from trigger to acute phase) |
-| **Reversibility** | Partial (some form of Russian state likely persists; territorial integrity uncertain) |
-
 ## Description
 
 Collapse or severe fragmentation of effective Russian state authority, characterized by loss of central control over regions, military fragmentation or coup, elite faction warfare, potential territorial disintegration, and/or loss of control over nuclear arsenal. Russia's vulnerability is distinctive: extreme personalization of power in Putin, ongoing war exhaustion, unprecedented sanctions isolation, severe demographic decline, and nuclear weapons complexity.
@@ -39,6 +28,21 @@ Collapse or severe fragmentation of effective Russian state authority, character
 This is a **state transition**: accumulated pressure crosses failure threshold, triggering shift from "authoritarian but functional" regime to "failed/fragmented state" regime. Observable via `internal_conflict_intensity` rising to 3-4, displacement flows activating, and GDP collapse.
 
 **What marks occurrence**: Central government loses ability to command obedience from military/security services across territory; elite factions engage in open conflict; regions assert de facto independence; or nuclear command and control becomes uncertain.
+
+---
+
+## Specification
+
+```yaml
+id: RUSSIA_STATE_FAILURE
+domain: political
+scale: national
+causal_type: 2
+onset: sudden
+reversibility: partial
+```
+
+*Scale: national (with global consequences). Onset speed: rapid (1-3 years from trigger to acute phase), recorded as `sudden` in the schema enum. Reversibility: partial (some form of Russian state likely persists; territorial integrity uncertain).*
 
 ---
 
@@ -64,7 +68,7 @@ Russia state failure exhibits threshold dynamics:
 | `rus.gdp_growth` | 0.10 | inverse | Economic stress indicator |
 | `rus.emigration_skilled_rate` | 0.10 | linear | Brain drain / elite exit signal |
 
-**Pressure calculation**:
+**Pressure calculation** (original specification):
 ```
 pressure = 0.25 × external_conflict_involvement / 4
          + 0.15 × military_spending_deviation / 3  # normalized to ~3 std dev max
@@ -75,6 +79,8 @@ pressure = 0.25 × external_conflict_involvement / 4
          + 0.10 × emigration_skilled_rate / 5  # normalized to ~5% max
 ```
 *Normalized to 0-100 scale*
+
+The YAML expression below realizes these transforms in the expression language's subset: the spending-deviation, negative-growth and emigration terms are clipped linear ramps capped at 1 (`min(1, max(0, x / scale))`), the transition-recency "inverse" term is `1 − min(1, years / 50)` so it floors at zero beyond 50 years, the tenure threshold is `where(rus.leadership_tenure_years > 20, 1, 0)` in place of the ternary, and the whole weighted sum is wrapped `100 * (...)` to sit on `threshold`'s 0-100 scale.
 
 **Proxy limitations**: True "war exhaustion," "elite cohesion," and "military morale" are unobservable. We proxy through measurable indicators: conflict involvement level, spending deviation, sanctions severity, and emigration rates. The key unobservable—elite factional dynamics—cannot be captured directly; probability calibration relies on reference class reasoning from Soviet collapse and comparable authoritarian stress cases.
 
@@ -106,12 +112,36 @@ A succession crisis alone could trigger state failure even if other pressures ar
 
 ## Probability
 
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.25 * (rus.external_conflict_involvement / 4) +
+      0.15 * min(1.0, max(0, rus.military_spending_deviation / 3)) +
+      0.20 * (rus.sanctions_level / 100) +
+      0.10 * (1.0 - min(1.0, rus.years_since_irregular_transition / 50)) +
+      0.10 * where(rus.leadership_tenure_years > 20, 1.0, 0.0) +
+      0.10 * min(1.0, max(0, -rus.gdp_growth) / 10) +
+      0.10 * min(1.0, rus.emigration_skilled_rate / 5)
+    )
+  threshold: 75
+  threshold_std: 8
+  sharpness: 0.25
+  floor: 0.004
+  resolves_after: 5
+  annual: 0.010
+  range: [0.005, 0.018]
+  confidence: medium
+```
+
+`resolves_after: 5` — `active_major_conflicts` counts the failure for five years per firing, counting the firing year: Russian state collapses in the reference class ran about that long (Russian Civil War 1917-22; the late-Soviet unravelling 1989-91 followed by the 1990s chaos; the Yugoslav dissolution wars 1991-95), and five is the shortest window consistent with the 10-year conflict-intensity half-life below.
+
 | Metric | Value |
 |--------|-------|
 | **Annual probability (current pressure)** | 1.0% |
 | **Low bound** | 0.5% |
 | **High bound** | 1.8% |
-| **Confidence** | Medium-Low |
+| **Confidence** | Medium-Low (recorded as `medium` in YAML: the schema enum is `low|medium|high`) |
 | **25-year cumulative** | ~22% at point estimate |
 
 ### Current Pressure Estimate
@@ -124,6 +154,8 @@ Current pressure: ~55/100 (elevated but below threshold)
 - `leadership_tenure_years`: 25 years (Putin era)
 - `gdp_growth`: ~-2% to +1% (volatile, sanctions-constrained)
 - `emigration_skilled_rate`: ~2-3% (accelerated post-2022)
+
+*The "~55" is a judgment estimate: evaluated at the midpoints of the values listed above (conflict 3.5, deviation +2, sanctions 75, 32 years, tenure 25, growth −0.5%, emigration 2.5%), the YAML expression gives ~66, inside the threshold band (75 ± 8) but not yet at it. The compiler's baseline check is skipped for this event because every term reads a country variable, which the state catalog carries without a 2025 baseline.*
 
 ### Derivation
 
@@ -186,22 +218,21 @@ As a Type 2 event, probability depends on pressure trajectory:
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2 target (ΛΩΛᵀ)ᵢᵢ = 0.65*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| **F_GPT** | 0.49 | Great power competition is existential; Ukraine war is US/NATO proxy conflict |
-| **F_EUR** | 0.33 | European regional dynamics; Ukraine, NATO expansion, energy relationship |
-| **F_FIN** | 0.20 | Sanctions, SWIFT exclusion, reserve seizure, trade disruption |
-| F_CLIM | 0.10 | Permafrost infrastructure degradation; Arctic access; agricultural shifts |
-| F_TECH | 0.07 | Technology sanctions; semiconductor access; military modernization blocked |
-| F_FOOD | 0.03 | Russia is net food exporter; minimal vulnerability |
-| F_HLTH | 0.00 | No distinct pathway |
-| F_MENA | 0.00 | Limited direct linkage |
-| F_SAS | 0.00 | No significant pathway |
-| F_EAS | 0.03 | China relationship provides economic/diplomatic buffer |
-| F_SSA | 0.00 | Wagner presence but not state-stability relevant |
-| F_LAM | 0.00 | No significant pathway |
+```yaml
+factors:
+  F_GPT: 0.49   # Great power competition is existential; Ukraine war is US/NATO proxy conflict
+  F_EUR: 0.33   # European regional dynamics; Ukraine, NATO expansion, energy relationship
+  F_FIN: 0.20   # Sanctions, SWIFT exclusion, reserve seizure, trade disruption
+  F_CLIM: 0.10  # Permafrost infrastructure degradation; Arctic access; agricultural shifts
+  F_TECH: 0.07  # Technology sanctions; semiconductor access; military modernization blocked
+  F_FOOD: 0.03  # Russia is net food exporter; minimal vulnerability
+  F_EAS: 0.03   # China relationship provides economic/diplomatic buffer
+variance: 0.65  # Type 2 target
+```
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings
+Factors with no loading: F_HLTH (no distinct pathway), F_MENA (limited direct linkage), F_SAS (no significant pathway), F_SSA (Wagner presence but not state-stability relevant), F_LAM (no significant pathway).
+
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.65 (Type 2 target); scale factor = 0.66 from original loadings. The original Level 1 loadings (before Task 3.11 scaling) were F_GPT 0.75, F_EUR 0.50, F_FIN 0.30, F_CLIM 0.15, F_TECH 0.10, F_FOOD 0.05, F_EAS 0.05, with the same rationales; that specification recorded "Sum of squared loadings: 0.93 ✓" (the pre-Ω check in use at the time).
 
 ### Loading Interpretation (Type 2)
 
@@ -219,158 +250,95 @@ Factors shock state variables that feed into pressure function:
 Once threshold is crossed, the depth of dysfunction varies. All branches represent genuine state failure—smooth succession scenarios are not modeled here, as they occur without the event firing.
 
 ```yaml
-severity_branches:
-
-  - id: regional_fragmentation
-    probability: 0.45
-    description: |
-      Center weakens significantly but doesn't fully collapse. Regional power 
-      centers gain de facto autonomy (Chechnya, Siberian regions, Far East).
-      Multiple elite factions compete openly. Formal unity nominally maintained
-      but effective central control severely reduced. "Late Soviet" pattern
-      before formal dissolution. Nuclear command stressed but probably intact.
-      Economic dysfunction but not collapse.
-      
-    impact_multiplier: 1.0  # baseline for this event
-    
-    factor_modifications:
-      F_GPT: +0.30
-      F_EUR: +0.25
-      F_EAS: +0.15
-      
-    duration:
-      type: decaying
-      half_life_years: 8
-      floor: 0.15
-      
-    cascade_triggers:
-      # Note: CENTRAL_ASIA_INSTABILITY and CAUCASUS_CONFLICT not yet in catalog
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 1.5
-        rationale: "Energy supply disruption"
-
-  - id: civil_conflict
-    probability: 0.35
-    description: |
-      Elite faction fighting escalates to armed conflict. Military units
-      align with different factions. Wagner-style mutiny but successful
-      or prolonged. Territorial control actively contested. Some regions
-      assert independence. Nuclear command and control stressed; military
-      professionals likely maintain security but uncertainty is high.
-      Significant population displacement.
-      
-    impact_multiplier: 2.0
-    
-    factor_modifications:
-      F_GPT: +0.50
-      F_EUR: +0.40
-      F_FIN: +0.30
-      
-    duration:
-      type: decaying
-      half_life_years: 12
-      floor: 0.20
-      
-    cascade_triggers:
-      # Note: NUCLEAR_SECURITY_CRISIS, UKRAINE_CONFLICT_RESOLUTION, EUROPEAN_REFUGEE_CRISIS not in catalog
-      - event_id: GLOBAL_FINANCIAL_CRISIS
-        probability_modifier: 1.5
-        rationale: "Market panic from major power instability"
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 2.0
-        rationale: "Russian energy export disruption"
-
-  - id: catastrophic_collapse
-    probability: 0.20
-    description: |
-      State disintegration comparable to Soviet collapse but more chaotic.
-      Multiple successor states emerge. Nuclear arsenal disposition becomes
-      international crisis. Moscow loses control over Far East, Caucasus,
-      possibly Siberian regions. Mass displacement. Great power intervention
-      likely (nuclear security). Economic collapse. "Yugoslavia with nukes"
-      worst-case scenario.
-      
-    impact_multiplier: 3.5
-    
-    factor_modifications:
-      F_GPT: +0.80
-      F_EUR: +0.60
-      F_FIN: +0.45
-      F_EAS: +0.30
-      
-    duration:
-      type: decaying
-      half_life_years: 20
-      floor: 0.30
-      
-    cascade_triggers:
-      # Note: NUCLEAR_SECURITY_CRISIS, GREAT_POWER_INTERVENTION, CHINA_FAR_EAST_ASSERTION not in catalog
-      - event_id: GLOBAL_FINANCIAL_CRISIS
-        probability_modifier: 2.0
-        rationale: "Systemic shock from major power collapse"
-      - event_id: OIL_SUPPLY_SHOCK
-        probability_modifier: 2.5
-        rationale: "Severe energy supply disruption"
-      - event_id: TAIWAN_CONFLICT
-        probability_modifier: 1.3
-        rationale: "Strategic distraction; US attention divided"
-
-severity_probability_rationale: |
-  Distribution reflects Russia's structural features, conditional on actual
-  state failure occurring (smooth successions don't trigger this event):
-  
-  - Regional fragmentation (0.45): Most likely failure mode. Historical 
-    pattern—late Soviet period showed gradual weakening before formal 
-    collapse. Regional governors and security figures have power bases.
-    Nuclear deterrent prevents external regime change, allowing prolonged
-    dysfunction short of complete collapse.
-    
-  - Civil conflict (0.35): Wagner mutiny showed fragility exists beneath
-    surface. Elite factions are suppressed but present. Military has shown
-    unity so far but is degraded by war. Succession crisis without clear
-    winner could trigger factional fighting.
-    
-  - Catastrophic collapse (0.20): Russia's security apparatus is robust,
-    and nuclear weapons create strong incentives for all parties (domestic
-    and international) to prevent complete collapse. However, once civil
-    conflict begins, cascades can accelerate beyond control. Historical
-    Russian state collapses (1917, 1991) were severe.
+branches:
+  - {id: regional_fragmentation, p: 0.45, desc: "Center weakens but does not collapse; regions gain de facto autonomy; late-Soviet pattern"}
+  - {id: civil_conflict,         p: 0.35, desc: "Elite faction fighting escalates to armed conflict; territorial control contested"}
+  - {id: catastrophic_collapse,  p: 0.20, desc: "State disintegration; successor states; nuclear arsenal disposition becomes international crisis"}
 ```
+
+### Branch 1: Regional Fragmentation (45%)
+
+Center weakens significantly but doesn't fully collapse. Regional power centers gain de facto autonomy (Chechnya, Siberian regions, Far East). Multiple elite factions compete openly. Formal unity nominally maintained but effective central control severely reduced. "Late Soviet" pattern before formal dissolution. Nuclear command stressed but probably intact. Economic dysfunction but not collapse.
+
+**Impact multiplier**: 1.0× (baseline for this event). **Factor modifications**: F_GPT +0.30, F_EUR +0.25, F_EAS +0.15. **Duration**: decaying, half-life 8 years, floor 0.15.
+
+### Branch 2: Civil Conflict (35%)
+
+Elite faction fighting escalates to armed conflict. Military units align with different factions. Wagner-style mutiny but successful or prolonged. Territorial control actively contested. Some regions assert independence. Nuclear command and control stressed; military professionals likely maintain security but uncertainty is high. Significant population displacement.
+
+**Impact multiplier**: 2.0×. **Factor modifications**: F_GPT +0.50, F_EUR +0.40, F_FIN +0.30. **Duration**: decaying, half-life 12 years, floor 0.20.
+
+### Branch 3: Catastrophic Collapse (20%)
+
+State disintegration comparable to Soviet collapse but more chaotic. Multiple successor states emerge. Nuclear arsenal disposition becomes international crisis. Moscow loses control over Far East, Caucasus, possibly Siberian regions. Mass displacement. Great power intervention likely (nuclear security). Economic collapse. "Yugoslavia with nukes" worst-case scenario.
+
+**Impact multiplier**: 3.5×. **Factor modifications**: F_GPT +0.80, F_EUR +0.60, F_FIN +0.45, F_EAS +0.30. **Duration**: decaying, half-life 20 years, floor 0.30.
+
+*The branch-level factor modifications and the decaying-to-floor branch durations above come from the original severity-branch block. Neither is a v0.1 schema construct (post-firing factor shifts and decay-to-floor durability are schema v0.2 backlog), so they stay here as prose; the YAML `impacts:` block carries the impact multipliers as `inherit`/`scale` and per-row half-lives. The branch-level cascade modifiers from the same block are tabulated under Cascade Effects.*
+
+### Severity Probability Rationale
+
+Distribution reflects Russia's structural features, conditional on actual state failure occurring (smooth successions don't trigger this event):
+
+- **Regional fragmentation (0.45)**: Most likely failure mode. Historical pattern—late Soviet period showed gradual weakening before formal collapse. Regional governors and security figures have power bases. Nuclear deterrent prevents external regime change, allowing prolonged dysfunction short of complete collapse.
+- **Civil conflict (0.35)**: Wagner mutiny showed fragility exists beneath surface. Elite factions are suppressed but present. Military has shown unity so far but is degraded by war. Succession crisis without clear winner could trigger factional fighting.
+- **Catastrophic collapse (0.20)**: Russia's security apparatus is robust, and nuclear weapons create strong incentives for all parties (domestic and international) to prevent complete collapse. However, once civil conflict begins, cascades can accelerate beyond control. Historical Russian state collapses (1917, 1991) were severe.
 
 ---
 
-## Impact Vector
+## Impacts
 
-### Russia Impacts (Baseline: Regional Fragmentation Branch)
+The explicit list is the regional-fragmentation branch (the 1.0× baseline); `civil_conflict` and `catastrophic_collapse` inherit it at the 2.0× and 3.5× impact multipliers above.
 
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `rus.gdp_real` | ↓ | -20% ± 10% | rapid(2yr) | decaying (half_life: 8yr, floor: -10%) |
-| `rus.gdp_growth` | ↓ | -8% ± 4% | immediate | decaying (half_life: 3yr) |
-| `rus.internal_conflict_intensity` | ↑ | to 3-4 | immediate | decaying (half_life: 10yr) |
-| `rus.sanctions_level` | — | complex | — | May decrease if regime changes |
-| `rus.net_migration_rate` | ↓ | -2% ± 1% | rapid(2yr) | decaying (half_life: 5yr) |
-| `rus.emigration_skilled_rate` | ↑ | +3% ± 1.5% | immediate | decaying (half_life: 5yr) |
-| `rus.refugees_abroad` | ↑ | +2M ± 1M | rapid(3yr) | decaying (half_life: 15yr) |
-| `rus.idp_population` | ↑ | +3M ± 2M | rapid(2yr) | decaying (half_life: 10yr) |
+```yaml
+impacts:
+  regional_fragmentation:
+    # Russia
+    - {var: rus.gdp_real,                    mag: [-0.20, 0.10], onset: {gradual: 2}, decay: 8}
+    - {var: rus.gdp_growth,                  mag: [-8, 4],       onset: immediate,    decay: 3}
+    - {var: rus.internal_conflict_intensity, mag: [2, 0.5],      onset: immediate,    decay: 10}
+    - {var: rus.net_migration_rate,          mag: [-2, 1],       onset: {gradual: 2}, decay: 5}
+    - {var: rus.emigration_skilled_rate,     mag: [3, 1.5],      onset: immediate,    decay: 5}
+    - {var: rus.refugees_abroad,             mag: [2, 1],        onset: {gradual: 3}, decay: 15}
+    - {var: rus.idp_population,              mag: [3, 2],        onset: {gradual: 2}, decay: 10}
 
-### Global Impacts
+    # Global
+    - {var: oil_brent,                       mag: [22.5, 15],    onset: immediate,    decay: 2}
+    - {var: gas_europe_ttf,                  mag: [17.5, 10.5],  onset: immediate,    decay: 2}
+    - {var: global_credit_spread,            mag: [50, 30],      onset: immediate,    decay: 1}
+    - {var: active_major_conflicts,          mag: [1, 0],        onset: immediate,    until: resolved}
 
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `oil_brent` | ↑ | +30% ± 20% | immediate | decaying (half_life: 2yr) |
-| `gas_europe_ttf` | ↑ | +50% ± 30% | immediate | decaying (half_life: 2yr) |
-| `global_credit_spread` | ↑ | +50bps ± 30bps | immediate | decaying (half_life: 1yr) |
-| `active_major_conflicts` | ↑ | +1 | immediate | event-dependent |
+    # Regional
+    - {var: ukr.external_conflict_involvement, mag: [-2, 0],     onset: {gradual: 1}, permanent: true}
+    - {var: kaz.internal_conflict_intensity, mag: [1, 0],        onset: {gradual: 2}, decay: 5}
+    - {var: deu.gdp_growth,                  mag: [-1, 0.5],     onset: {gradual: 1}, decay: 2}
 
-### Regional Impacts (Selected Countries)
+  civil_conflict:
+    inherit: regional_fragmentation
+    scale: 2.0
 
-| Variable | Direction | Magnitude (mean ± std) | Onset | Durability |
-|----------|-----------|------------------------|-------|------------|
-| `ukr.external_conflict_involvement` | ↓ | -2 levels | rapid(1yr) | persistent |
-| `kaz.internal_conflict_intensity` | ↑ | +1 level | rapid(2yr) | decaying |
-| `deu.gdp_growth` | ↓ | -1% ± 0.5% | rapid(1yr) | decaying (half_life: 2yr) |
-| `chn.trade_share_china` | — | regional reorientation | gradual | persistent |
+  catastrophic_collapse:
+    inherit: regional_fragmentation
+    scale: 3.5
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (−20% ± 10% for the regional-fragmentation branch); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields). "Rapid (N yr)" onsets in the original tables are written `{gradual: N}`.*
+
+### Rows re-expressed or dropped at migration
+
+The original impact tables gave some rows in forms the YAML cannot carry directly; the original wording is kept here.
+
+| Variable | Original specification | In YAML |
+|----------|------------------------|---------|
+| `rus.gdp_real` | −20% ± 10%, rapid (2yr), decaying (half_life: 8yr, floor: −10%) | −0.20 ± 0.10 fraction, half-life 8; the −10% recovery floor is schema v0.2 backlog |
+| `rus.internal_conflict_intensity` | ↑ to 3-4, immediate, decaying (half_life: 10yr) | +2 ± 0.5 from Russia's ~1 baseline (minor North Caucasus conflict), reaching ~3 in the baseline branch; the inherited branches scale it higher |
+| `rus.sanctions_level` | complex; may decrease if regime changes | Dropped: no magnitude or direction is specifiable. Sanctions relief on regime change is a channel the sanctions-level variable carries only through later policy, not an event impact |
+| `oil_brent` | +30% ± 20%, immediate, half-life 2yr | +22.5 ± 15 $/bbl against the 2025 baseline of $75/bbl |
+| `gas_europe_ttf` | +50% ± 30%, immediate, half-life 2yr | +17.5 ± 10.5 €/MWh against the 2025 baseline of €35/MWh |
+| `active_major_conflicts` | +1, immediate, event-dependent | `until: resolved` with `resolves_after: 5` |
+| `ukr.external_conflict_involvement` | −2 levels, rapid (1yr), persistent | −2 ± 0 (no std given), `permanent: true` |
+| `kaz.internal_conflict_intensity` | +1 level, rapid (2yr), decaying (no half-life given) | +1 ± 0, half-life 5 years (judgment: a spillover shorter-lived than Russia's own 10-year conflict decay) |
+| `chn.trade_share_china` | — regional reorientation, gradual, persistent | Dropped: no magnitude; the channel (Russia's trade reorienting toward China, which would read on `rus.trade_share_china`) stays in the Strategic realignment pathway below |
 
 **Note**: Many intuitive impact channels (nuclear security indices, great power stability measures) are derived outputs, not state variables. The simulation tracks observable impacts on GDP, conflict levels, commodity prices, and displacement—interpretive assessments are computed from these.
 
@@ -385,7 +353,7 @@ Nuclear security concerns dominate international response calculus and create st
 
 ### Durability Rationale
 
-- **GDP**: Decaying; Russia has recovered from crises before (1998, 2014) but structural damage accumulates
+- **GDP**: Decaying; Russia has recovered from crises before (1998, 2014) but structural damage accumulates. The original specification carried a −10% floor on the GDP recovery; decay-to-floor durability is schema v0.2 backlog, so the YAML uses a plain 8-year half-life.
 - **Military capability**: Long-term degradation from war losses, sanctions on technology
 - **Population**: Permanent emigration losses; demographic trajectory was already severe
 - **Nuclear security**: Maintenance-required; depends on successor regime's capacity and intent
@@ -409,13 +377,35 @@ Russia state failure would trigger significant cascade effects, but most target 
 
 ### Specified Event Cascades
 
+```yaml
+cascades:
+  triggers:
+    - {event: OIL_SUPPLY_SHOCK,        delta: 0.030, years: 3}
+    - {event: GLOBAL_FINANCIAL_CRISIS, delta: 0.010, years: 2}
+    - {event: IRAN_REGIME_CHANGE,      delta: 0.005, years: 5}
+  triggered_by: []  # no inbound cascades specified; Type 2 event driven by pressure accumulation
+```
+
 | Pathway | Target Event | Probability Change | Mechanism |
 |---------|--------------|-------------------|-----------|
 | Energy disruption | OIL_SUPPLY_SHOCK | +3%/year for 3 years | Russian supply uncertainty |
 | Financial contagion | GLOBAL_FINANCIAL_CRISIS | +1%/year for 2 years | Market panic, commodity volatility |
 | Regional instability | IRAN_REGIME_CHANGE | +0.5%/year for 5 years | Russian support withdrawn |
 
-**Note**: Many intuitive cascade targets (Central Asian instability, Caucasus conflicts, nuclear security crisis) are not yet specified in the event catalog. These should be considered for future event development.
+### Branch-Level Cascade Modifiers
+
+The original severity-branch block also carried per-branch multiplicative modifiers on target-event probabilities. The schema's `triggers:` take an absolute annual `delta`, and converting a multiplier needs the target's own baseline, so these stay as prose rather than being invented into YAML; the `delta` rows above are the specified cascades.
+
+| Branch | Target Event | Probability modifier | Rationale |
+|--------|--------------|---------------------|-----------|
+| Regional fragmentation | OIL_SUPPLY_SHOCK | ×1.5 | Energy supply disruption |
+| Civil conflict | GLOBAL_FINANCIAL_CRISIS | ×1.5 | Market panic from major power instability |
+| Civil conflict | OIL_SUPPLY_SHOCK | ×2.0 | Russian energy export disruption |
+| Catastrophic collapse | GLOBAL_FINANCIAL_CRISIS | ×2.0 | Systemic shock from major power collapse |
+| Catastrophic collapse | OIL_SUPPLY_SHOCK | ×2.5 | Severe energy supply disruption |
+| Catastrophic collapse | TAIWAN_CONFLICT | ×1.3 | Strategic distraction; US attention divided |
+
+**Note**: Many intuitive cascade targets (Central Asian instability, Caucasus conflicts, nuclear security crisis) are not yet specified in the event catalog. These should be considered for future event development. The original branch block named them as `CENTRAL_ASIA_INSTABILITY` and `CAUCASUS_CONFLICT` (regional fragmentation), `NUCLEAR_SECURITY_CRISIS`, `UKRAINE_CONFLICT_RESOLUTION` and `EUROPEAN_REFUGEE_CRISIS` (civil conflict), and `NUCLEAR_SECURITY_CRISIS`, `GREAT_POWER_INTERVENTION` and `CHINA_FAR_EAST_ASSERTION` (catastrophic collapse); each has a disposition in [[events/backlog-registry]] (promotions: NUCLEAR_SECURITY_CRISIS, UKRAINE_CONFLICT_RESOLUTION, EUROPEAN_MIGRATION_CRISIS; fold: CHINA_FAR_EAST_ASSERTION into this event's aftermath; declined: CENTRAL_ASIA_INSTABILITY, CAUCASUS_CONFLICT, GREAT_POWER_INTERVENTION) and none is written into `triggers:` until a file exists.
 
 ---
 
@@ -482,13 +472,17 @@ Russia state failure would trigger significant cascade effects, but most target 
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | War trajectory assessment; elite cohesion analysis; nuclear security deep-dive; succession scenario modeling |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
+
+### Upgrade Rationale
+
+War trajectory assessment; elite cohesion analysis; nuclear security deep-dive; succession scenario modeling.
 
 ## Sources
 
@@ -518,10 +512,12 @@ Russia state failure would trigger significant cascade effects, but most target 
 
 | Date | Change | Rationale |
 |------|--------|-----------|
-| 2025-12-30 | Critical review: replaced synthetic variables with observables; added Case Against and Probability Evolution; fixed cascade/impact references | Task 2.4 systematic review |
-| 2025-12-18 | Revised severity branches; removed "managed succession" | Smooth succession isn't state failure; all branches should represent genuine dysfunction |
-| 2025-12-18 | Adjusted probability to 1.0% (from 1.2%) | Reflects that event now only fires for actual failure, not regime transitions |
 | 2025-12-18 | Initial Level 1 specification | Task 2.1.7 - Type 2 state failure event |
+| 2025-12-18 | Adjusted probability to 1.0% (from 1.2%) | Reflects that event now only fires for actual failure, not regime transitions |
+| 2025-12-18 | Revised severity branches; removed "managed succession" | Smooth succession isn't state failure; all branches should represent genuine dysfunction |
+| 2025-12-30 | Critical review: replaced synthetic variables with observables; added Case Against and Probability Evolution; fixed cascade/impact references | Task 2.4 systematic review |
+| 2025-12-30 | Variance allocation: scaled loadings to Type 2 target | Task 3.11 - Factor-explained variance reduced to Type 2 target (0.65); original loadings and the "sum of squared loadings 0.93" line are restored in prose above |
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.7. `causal_type: 2` (not a hybrid). Enums: onset "rapid (1-3 years)" → `sudden`; confidence "Medium-Low" → `medium` (wording kept in prose). Pressure: transforms realized with `min`/`max`/`where` and wrapped `100 * (...)`; at the prose's current values the expression gives ~66 against the "~55" judgment estimate; baseline check skipped (country variables only). `resolves_after: 5` (rationale under the probability block). Legacy `severity_branches` block merged into `branches:`; its factor modifications, decay-to-floor durations and multiplicative cascade modifiers kept in prose (no v0.1 construct). Impacts: regional_fragmentation explicit, civil_conflict `scale: 2.0`, catastrophic_collapse `scale: 3.5` per the impact multipliers; inherited rows on bounded scales (conflict levels) exceed their range in the upper branches, as in pakistan-state-failure. Unit conversions: `oil_brent` +30% ± 20% → +22.5 ± 15 $/bbl (baseline 75); `gas_europe_ttf` +50% ± 30% → +17.5 ± 10.5 €/MWh (baseline 35); `rus.internal_conflict_intensity` "to 3-4" → +2 ± 0.5 from a ~1 baseline. Durability: GDP decay-to-floor(−10%) → `decay: 8`; "persistent" → `permanent: true`; "event-dependent" → `until: resolved`; `kaz` "decaying" with no half-life → `decay: 5` (judgment). Dropped rows (kept in prose): `rus.sanctions_level` ("complex"), `chn.trade_share_china` (no magnitude). Cascades: the three specified delta rows written to `triggers:`; branch-level multipliers kept in prose; `NUCLEAR_SECURITY_CRISIS`, `UKRAINE_CONFLICT_RESOLUTION`, `EUROPEAN_REFUGEE_CRISIS`, `CHINA_FAR_EAST_ASSERTION`, `CENTRAL_ASIA_INSTABILITY`, `CAUCASUS_CONFLICT`, `GREAT_POWER_INTERVENTION` not written (registry promotions/fold/declines). Restored from history: original pre-scaling loadings and sum-of-squares line |
 
 ---
 
