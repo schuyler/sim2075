@@ -17,20 +17,24 @@ tags:
 
 # Saudi Nuclear Acquisition
 
+**Type 3 (Contingent) Event** — Decision-dependent proliferation, triggered by Iranian acquisition and executed through the Pakistan pathway.
+
 ## Event Classification
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | SAUDI_NUCLEAR_ACQUISITION |
-| **Scale** | Regional (with global consequences) |
-| **Domain** | Political / Strategic |
-| **Causal Type** | Type 3: Contingent (decision-dependent, triggered by Iranian acquisition) |
-| **Onset Speed** | Rapid (1-3 years from decision to confirmed capability, given Pakistan assistance) |
-| **Reversibility** | Irreversible (knowledge cannot be undone; weapons can be dismantled but capability persists) |
+```yaml
+id: SAUDI_NUCLEAR_ACQUISITION
+domain: political
+scale: regional
+causal_type: 3
+onset: sudden
+reversibility: irreversible
+```
+
+*Scale: regional (with global consequences). Domain: political / strategic. Causal type: Type 3, contingent (decision-dependent, triggered by Iranian acquisition). Onset speed: rapid (1-3 years from decision to confirmed capability, given Pakistan assistance) — recorded as `sudden`, the nearer schema value. Reversibility: irreversible (knowledge cannot be undone; weapons can be dismantled but capability persists).*
 
 ## Description
 
-Saudi Arabia acquires nuclear weapons capability, representing a transition in `saudi_arabia.nuclear_status` from `None` to `Possessed`. This event is primarily contingent on Iranian nuclear acquisition and represents the second stage of a Middle East proliferation cascade.
+Saudi Arabia acquires nuclear weapons capability, representing a transition in `saudi_arabia.nuclear_status` from `None` to `Possessed` (catalog name `sau.nuclear_status`, categories `NONE`/`THRESHOLD`/`POSSESSED`). This event is primarily contingent on Iranian nuclear acquisition and represents the second stage of a Middle East proliferation cascade.
 
 **What marks occurrence**: Confirmed nuclear capability through test, credible intelligence of assembled weapons, or Saudi declaration. The event requires actual weapons capability, not just nuclear energy infrastructure.
 
@@ -65,59 +69,40 @@ Saudi nuclear acquisition is fundamentally contingent rather than threshold-base
 
 **Note**: The primary window is Iranian possession. The secondary window (Iran at threshold with low pressure) captures anticipatory acquisition if Saudi leadership concludes prevention has failed.
 
+**Realization in the YAML `preconditions` block (under Probability)**: the two Iran rows are one boolean expression, `irn.nuclear_status >= 2 or (irn.nuclear_status >= 1 and irn.sanctions_level < 50)`, which reads `nuclear_status` as the ordinal `NONE = 0`, `THRESHOLD = 1`, `POSSESSED = 2` in the order [[methodology/reference/state-variables-country]] lists the categories (the expression language has no string comparison for country categoricals, only for the owning event's `resolution`/`branch`). The two `regime_stability` rows are realized as `sau.internal_conflict_intensity < 3` and `pak.internal_conflict_intensity < 3`: `regime_stability` is a composite not in the state catalog ([[methodology/concepts/synthetic-variable-problem]]), and "functional enough to execute / stable enough to assist" is, observably, the absence of civil war or state collapse (levels 3-4 of the 0-4 conflict scale; [[events/geopolitical/pakistan-state-failure]] sets Pakistan's to 4).
+
 ### Resolution Branches
 
 Once the window opens (Iran acquires or is clearly about to acquire), Saudi Arabia faces a decision:
 
 ```yaml
 resolutions:
-
   - id: rapid_acquisition
-    probability: 0.55
-    description: |
-      Saudi Arabia executes the Pakistan pathway rapidly. Pakistan provides
-      either complete weapons, weapons components, or comprehensive technical
-      assistance enabling fast assembly. Saudi Arabia becomes nuclear-armed
-      within 1-3 years of Iranian acquisition. Official acknowledgment may
-      be delayed for diplomatic reasons.
-      
+    p: 0.55
+    desc: "Pakistan pathway executed rapidly; nuclear-armed within 1-3 years of Iranian acquisition"
   - id: extended_hedging
-    probability: 0.30
-    description: |
-      Saudi Arabia begins acquisition process but proceeds cautiously.
-      Develops or receives components; maintains ambiguity about final
-      assembly. May take 5-10 years to confirm capability. Attempts to
-      maintain US security relationship while hedging. "Threshold" status
-      rather than confirmed possession.
-      
+    p: 0.30
+    desc: "Cautious acquisition; threshold status, 5-10 years to confirmed capability"
   - id: alternative_security_arrangement
-    probability: 0.15
-    description: |
-      Saudi Arabia accepts alternative security guarantee rather than
-      pursuing nuclear weapons. US extended deterrence (explicit nuclear
-      umbrella), Israeli tacit alliance, or international guarantee.
-      Acquisition process suspended or terminated. Regional nuclear
-      competition limited to Iran.
-
-resolution_probability_rationale: |
-  Rapid acquisition (55%): Stated policy is explicit. Pakistan relationship
-  is long-standing (Saudi funding for Pakistan's program; extensive military
-  ties). Leadership has indicated willingness to act. MBS has demonstrated
-  high tolerance for international criticism.
-  
-  Extended hedging (30%): Some probability that execution is slower than
-  intention. Pakistan may be reluctant; US may apply pressure; Saudi may
-  prefer ambiguity. But ultimate acquisition still occurs.
-  
-  Alternative security (15%): Requires credible US commitment that may not
-  be available. Post-Trump, Saudi confidence in US extended deterrence is
-  reduced. However, acquisition costs (sanctions, international isolation,
-  US relationship damage) may be sufficient deterrent if alternative is
-  credible. Lower than entropy default due to stated policy and reduced
-  US credibility.
-  
-  Sum: 100%
+    p: 0.15
+    desc: "US extended deterrence or other guarantee accepted; acquisition suspended or terminated"
 ```
+
+**Rapid acquisition (55%)**: Saudi Arabia executes the Pakistan pathway rapidly. Pakistan provides either complete weapons, weapons components, or comprehensive technical assistance enabling fast assembly. Saudi Arabia becomes nuclear-armed within 1-3 years of Iranian acquisition. Official acknowledgment may be delayed for diplomatic reasons.
+
+**Extended hedging (30%)**: Saudi Arabia begins acquisition process but proceeds cautiously. Develops or receives components; maintains ambiguity about final assembly. May take 5-10 years to confirm capability. Attempts to maintain US security relationship while hedging. "Threshold" status rather than confirmed possession.
+
+**Alternative security arrangement (15%)**: Saudi Arabia accepts alternative security guarantee rather than pursuing nuclear weapons. US extended deterrence (explicit nuclear umbrella), Israeli tacit alliance, or international guarantee. Acquisition process suspended or terminated. Regional nuclear competition limited to Iran.
+
+#### Resolution Probability Rationale
+
+Rapid acquisition (55%): Stated policy is explicit. Pakistan relationship is long-standing (Saudi funding for Pakistan's program; extensive military ties). Leadership has indicated willingness to act. MBS has demonstrated high tolerance for international criticism.
+
+Extended hedging (30%): Some probability that execution is slower than intention. Pakistan may be reluctant; US may apply pressure; Saudi may prefer ambiguity. But ultimate acquisition still occurs.
+
+Alternative security (15%): Requires credible US commitment that may not be available. Post-Trump, Saudi confidence in US extended deterrence is reduced. However, acquisition costs (sanctions, international isolation, US relationship damage) may be sufficient deterrent if alternative is credible. Lower than entropy default due to stated policy and reduced US credibility.
+
+Sum: 100%
 
 ### Annual Probability (Conditional)
 
@@ -133,6 +118,22 @@ resolution_probability_rationale: |
 ---
 
 ## Probability
+
+```yaml
+probability:
+  window: 0.35
+  preconditions:
+    all:
+      - "irn.nuclear_status >= 2 or (irn.nuclear_status >= 1 and irn.sanctions_level < 50)"
+      - "sau.internal_conflict_intensity < 3"
+      - "pak.internal_conflict_intensity < 3"
+  resolution: 0.70
+  annual: 0.005
+  range: [0.002, 0.010]
+  confidence: medium
+```
+
+**Reading the Type 3 parameters.** The engine fires a Type 3 event at `window × resolution` per year while the preconditions hold ([[methodology/reference/simulator-architecture]] ADR-5), so here the product is the *conditional* hazard, not the unconditional rate. `window: 0.35` is the conditional table's year-1 figure — the probability that Riyadh reaches its go/no-go decision point in a given year once the trigger is in place; `resolution: 0.70` is the probability that the decision point produces one of the three declared resolutions rather than deferral. The product, 0.245/year, times the 85% share of firings that are acquisition outcomes gives ≈0.21/year, i.e. a cumulative ≈69% at 5 years and ≈90% at 10 years, bracketing the 70%/85% in the conditional table; a constant hazard cannot also reproduce the declining profile (35% in year 1), which is why the 5-year anchor was chosen. `annual: 0.005` is the *unconditional* point estimate from the table below, kept for reference; it is not `window × resolution` because the preconditions gate on Iranian possession, itself ≈1.5%/year.
 
 | Metric | Value |
 |--------|-------|
@@ -178,22 +179,20 @@ resolution_probability_rationale: |
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 3 target (ΛΩΛᵀ)ᵢᵢ = 0.45*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| **F_MENA** | 0.47 | Regional dynamics; Iran-Saudi competition; Gulf security architecture |
-| **F_GPT** | 0.31 | US security commitment credibility; great power competition affects alternatives |
-| F_SAS | 0.19 | Pakistan's decision is critical; South Asian stability affects willingness to assist |
-| F_FIN | 0.09 | Saudi fiscal capacity for program; sanctions risk calculation |
-| F_EUR | 0.06 | European role in nonproliferation pressure; alternative security architecture |
-| F_EAS | 0.03 | Minor; China role in any alternative arrangements |
-| F_CLIM | 0.00 | No pathway |
-| F_HLTH | 0.00 | No pathway |
-| F_SSA | 0.00 | No pathway |
-| F_LAM | 0.00 | No pathway |
-| F_TECH | 0.00 | Capability comes from Pakistan, not indigenous development |
-| F_FOOD | 0.00 | No pathway |
+```yaml
+factors:
+  F_MENA: 0.47  # Regional dynamics; Iran-Saudi competition; Gulf security architecture
+  F_GPT: 0.31   # US security commitment credibility; great power competition affects alternatives
+  F_SAS: 0.19   # Pakistan's decision is critical; South Asian stability affects willingness to assist
+  F_FIN: 0.09   # Saudi fiscal capacity for program; sanctions risk calculation
+  F_EUR: 0.06   # European role in nonproliferation pressure; alternative security architecture
+  F_EAS: 0.03   # Minor; China role in any alternative arrangements
+variance: 0.45  # Type 3 target
+```
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.63 from original loadings
+F_CLIM, F_HLTH, F_SSA, F_LAM and F_FOOD carry no loading (no pathway). F_TECH carries no loading because capability comes from Pakistan, not indigenous development.
+
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.63 from original loadings. The original (pre-scaling) Level 1 loadings were F_MENA 0.75, F_GPT 0.50, F_SAS 0.30, F_FIN 0.15, F_EUR 0.10, F_EAS 0.05, with sum of squared loadings 0.56 + 0.25 + 0.09 + 0.02 + 0.01 + 0.003 = 0.93 ✓ (the pre-Task-3.11 check, before variance allocation replaced it).
 
 ### Loading Interpretation (Type 3)
 
@@ -241,6 +240,49 @@ Factors affect preconditions and resolution probabilities:
 | Extended hedging | 0.7× | Gradual; less shock to system |
 | Alternative security | 0.0× | No acquisition; no nuclear impacts |
 
+### Machine-Readable Impacts
+
+The tables above are the Level 1 specification; the YAML below is what the compiler reads, with the three resolution modifiers applied directly (rapid acquisition rows are the table magnitudes × 1.2, extended hedging rows × 0.7, alternative security carries no rows). The `nuclear_status` row is a categorical assignment and is not scaled: rapid acquisition moves Saudi Arabia from `NONE` (0) to `POSSESSED` (2), extended hedging to `THRESHOLD` (1), matching the branch descriptions.
+
+Name and unit substitutions against [[sim/data/state_catalog.yaml]]:
+
+- `saudi_arabia.alliance_west` is not a catalog variable; the row targets `sau.arms_import_share_west` (% of total arms imports), the observable backbone of the US-Saudi security relationship (see the US Alliance Channel below), at the table's −25 ± 15 points.
+- `saudi_arabia.regime_stability` is a composite not in the catalog; the nationalist-rally effect (+5 ± 5 stability) is carried as −5 ± 5 on `sau.protest_intensity_annual` (0-100 index).
+- `saudi_arabia.reserves_foreign` −5% ± 3% is converted to the catalog's months-of-import-cover units against the ~16-month Saudi baseline recorded in [[events/geopolitical/saudi-regime-instability]]: −0.8 ± 0.48 months.
+- `global.oil_brent` +10% ± 8% is converted against the catalog's 2025 baseline of $75/bbl: +$7.5 ± $6/bbl.
+- Three rows have no catalog target and are **not** in the YAML; their channels stay in this prose: Gulf States `alliance_saudi` (no alliance-with-Saudi variable exists for the `gulf_states` aggregate), `global.nuclear_stability` (no global nuclear-stability variable; the systemic proliferation count is a round-2 derived output, [[methodology/reference/state-variables-round-2]]), and the NPT regime row (same gap — it is the subject of the round-2 `NPT_REGIME_COLLAPSE` event).
+- The two `nuclear_reconsideration` rows are cascade entries, not impacts (see Cascade Effects).
+- Onset: rapid(6mo) → `immediate`; rapid(1yr) and rapid(2yr) → `{gradual: 1}` / `{gradual: 2}`.
+
+```yaml
+impacts:
+  rapid_acquisition.default:
+    # Saudi Arabia (table × 1.2; nuclear_status assigned, not scaled)
+    - {var: sau.nuclear_status,                mag: [2, 0],         onset: immediate,    permanent: true}
+    - {var: sau.sanctions_level,               mag: [30, 18],       onset: immediate,    permanent: true}
+    - {var: sau.arms_import_share_west,        mag: [-30, 18],      onset: immediate,    decay: 10}
+    - {var: sau.protest_intensity_annual,      mag: [-6, 6],        onset: {gradual: 1}, decay: 3}
+    - {var: sau.reserves_foreign,              mag: [-0.96, 0.58],  onset: {gradual: 2}, decay: 5}
+    # Regional
+    - {var: irn.external_conflict_involvement, mag: [-0.36, 0.24],  onset: {gradual: 2}, decay: 5}
+    # Global
+    - {var: oil_brent,                         mag: [9, 7.2],       onset: immediate,    decay: 1}
+
+  extended_hedging.default:
+    # table × 0.7; nuclear_status moves to THRESHOLD (1), not POSSESSED
+    - {var: sau.nuclear_status,                mag: [1, 0],         onset: immediate,    permanent: true}
+    - {var: sau.sanctions_level,               mag: [17.5, 10.5],   onset: immediate,    permanent: true}
+    - {var: sau.arms_import_share_west,        mag: [-17.5, 10.5],  onset: immediate,    decay: 10}
+    - {var: sau.protest_intensity_annual,      mag: [-3.5, 3.5],    onset: {gradual: 1}, decay: 3}
+    - {var: sau.reserves_foreign,              mag: [-0.56, 0.34],  onset: {gradual: 2}, decay: 5}
+    - {var: irn.external_conflict_involvement, mag: [-0.21, 0.14],  onset: {gradual: 2}, decay: 5}
+    - {var: oil_brent,                         mag: [5.25, 4.2],    onset: immediate,    decay: 1}
+
+  alternative_security_arrangement.default: []   # 0×: no acquisition, no nuclear impacts
+```
+
+*Units: all rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields); no `gdp_real` row is specified.*
+
 ### Durability Specifications
 
 | Impact Type | Durability | Parameters | Rationale |
@@ -250,6 +292,8 @@ Factors affect preconditions and resolution probabilities:
 | Alliance damage | decaying | half_life: 10yr, floor: 0.3 | Relationships may partially recover |
 | Oil risk premium | decaying | half_life: 1yr | Markets adjust to new normal |
 | NPT erosion | permanent | N/A | Proliferation precedent persists |
+
+*The v0.1 engine compiles only `decay`, `permanent` and `until: resolved`: the sanctions row's maintenance_required form (10% annual failure) is written `permanent: true`, and the alliance row's decay-to-floor (floor 0.3) is written as a plain 10-year half-life; both original forms are schema v0.2 backlog. The two rows the table gives as "decaying" without a half-life (reserves drawdown; Iran's deterrence-driven restraint) are written with a 5-year half-life.*
 
 ---
 
@@ -275,6 +319,19 @@ Further proliferation (Stage 3+)
 | NATO member reassessment | TURKEY_NUCLEAR_RECONSIDERATION | +4%/year | 10 years | Regional dynamics; NATO credibility |
 | NPT regime collapse | Additional proliferators | Cascading | Permanent | Nonproliferation norm erosion |
 | Gulf security architecture | GCC nuclear sharing | +2%/year | 10 years | Smaller Gulf states seek inclusion |
+
+None of these targets is a compiled event yet: [[events/backlog-registry]] §2 folds `EGYPT_NUCLEAR_PROGRAM` and `TURKEY_NUCLEAR_RECONSIDERATION` into the round-2 promotion `NPT_REGIME_COLLAPSE` (its "which states go next" branch), which also absorbs the "additional proliferators" row; "GCC nuclear sharing" is not an event ID. The YAML `triggers:` list is therefore empty and this table is the record of the outgoing cascades until `NPT_REGIME_COLLAPSE` is specified.
+
+```yaml
+cascades:
+  triggers: []   # every downstream target folds into the round-2 NPT_REGIME_COLLAPSE (no file yet); see table above
+  triggered_by:
+    - {event: IRAN_NUCLEAR_ACQUISITION, delta: 0.065}   # +5-8%/year for 10 years per the Iran spec (midpoint)
+    - {event: SAUDI_REGIME_INSTABILITY}                 # sign-ambiguous interaction; see Interaction with Related Events
+    - {event: US_CONSTITUTIONAL_CRISIS}                 # via US extended-deterrence credibility; unquantified
+```
+
+*The Iran cascade delta is layered on top of the gated conditional hazard in the Probability block once IRAN_NUCLEAR_ACQUISITION is migrated (0.245 + 0.065 per year while both apply); the two are the same mechanism counted from both ends, and the overlap is a known over-statement to revisit when the Iran spec migrates.*
 
 ### Impact Chains
 
@@ -517,14 +574,18 @@ Both within stated bounds (0.2%-1.0%).
 | 5. Analyst agreement | ✅ Pass | Established in proliferation literature |
 
 **Overall assessment**: Specification is complete for Level 1. Key question for Level 2: detailed investigation of Pakistan pathway mechanics and US extended deterrence credibility.
+
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-28 |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Pakistan pathway detailed investigation; Saudi nuclear infrastructure assessment; US extended deterrence credibility analysis |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-28
+  review: complete
+  upgrade: true
+```
+
+**Upgrade rationale**: Pakistan pathway detailed investigation; Saudi nuclear infrastructure assessment; US extended deterrence credibility analysis
 
 ## Sources
 
@@ -553,6 +614,8 @@ Both within stated bounds (0.2%-1.0%).
 | Date | Change | Rationale |
 |------|--------|-----------|
 | 2025-12-28 | Initial Level 1 specification | Task 2.3 - cascade event from Iran Nuclear Acquisition |
+| 2025-12-30 | Variance allocation: scaled loadings to Type 3 target | Task 3.11 - loadings scaled by 0.63 to (ΛΩΛᵀ)ᵢᵢ = 0.45; the original loadings and their sum-of-squares check are restored in prose under Factor Loadings (this row was not written at the time) |
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.18. Classification, probability, factors, resolutions, impacts, cascades and research converted; all prose kept, the legacy `resolutions` YAML block (with `probability`/`description`/`resolution_probability_rationale`) merged into the schema form with its descriptions and rationale moved to prose. Enums: "Political / Strategic" → `political`; "Regional (with global consequences)" → `regional`; "Rapid (1-3 years)" → `sudden`; "Irreversible" → `irreversible`. **Type 3 parameters**: `window: 0.35` (the conditional table's year-1 decision probability) × `resolution: 0.70` = 0.245/year conditional hazard, calibrated to the 5-year cumulative 70%; `annual: 0.005` kept as the unconditional reference. **Preconditions**: `nuclear_status` read as the ordinal NONE=0/THRESHOLD=1/POSSESSED=2 (no string comparison exists for country categoricals); `saudi_arabia.regime_stability > 30` and `pakistan.regime_stability > 25` realized as `sau.internal_conflict_intensity < 3` and `pak.internal_conflict_intensity < 3` (regime_stability is not a catalog variable). **Variable alternatives**: `saudi_arabia.alliance_west` → `sau.arms_import_share_west`; `saudi_arabia.regime_stability` +5 ± 5 → `sau.protest_intensity_annual` −5 ± 5. **Unit conversions**: `reserves_foreign` −5% ± 3% → −0.8 ± 0.48 months against the ~16-month baseline in saudi-regime-instability; `oil_brent` +10% ± 8% → +7.5 ± 6 $/bbl against the catalog's $75 baseline. **Resolution modifiers** applied in the YAML (rapid ×1.2 explicit, hedging ×0.7 explicit, alternative security an empty list); `nuclear_status` rows assigned (+2 / +1), not scaled. **Dropped rows** (kept in prose): Gulf States `alliance_saudi`, `global.nuclear_stability`, NPT regime — no catalog variable. **Durability**: sanctions maintenance_required → `permanent: true`; alliance decay-to-floor (floor 0.3) → `decay: 10`; the two "decaying" rows without a half-life (reserves, Iran conflict involvement) → `decay: 5`; original forms kept in the durability table. **Onset**: rapid(6mo) → immediate; rapid(1yr)/rapid(2yr) → gradual 1/2. **Cascades**: `triggers` empty — `EGYPT_NUCLEAR_PROGRAM` and `TURKEY_NUCLEAR_RECONSIDERATION` are registry folds into the unspecified round-2 `NPT_REGIME_COLLAPSE`, and "Additional proliferators"/"GCC nuclear sharing" are not IDs; the outgoing table stays in prose. `triggered_by` lists IRAN_NUCLEAR_ACQUISITION (delta 0.065, midpoint of +5-8%) plus SAUDI_REGIME_INSTABILITY and US_CONSTITUTIONAL_CRISIS as unquantified interactions. No `until: resolved` row, so no `resolves_after`. Research review recorded `complete` (critical review 2025-12-28). |
 
 ---
 
