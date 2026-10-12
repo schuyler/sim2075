@@ -15,16 +15,9 @@ tags:
 
 # Chinese Political Crisis
 
-## Event Classification
+**Type 2/3 Hybrid Event** — Threshold pressure (Type 2) with contingent resolution (Type 3); declared as Type 2 in YAML because the probability block implements a pressure function, threshold and floor.
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | CHINESE_POLITICAL_CRISIS |
-| **Scale** | Global |
-| **Domain** | Political |
-| **Causal Type** | Type 2/3 Hybrid: Threshold + Contingent Resolution |
-| **Onset Speed** | Rapid (crisis unfolds over 6-18 months) |
-| **Reversibility** | Irreversible (all resolutions produce permanent regime change) |
+---
 
 ## Description
 
@@ -33,6 +26,21 @@ CCP regime discontinuity: the party-state either transforms into a fundamentally
 The event fires only when regime change becomes inevitable. Severe crises that the CCP weathers through repression, purges, or extraordinary measures are sub-threshold — they represent the regime functioning under stress, not discontinuity. Tiananmen 1989 is the canonical example: extraordinary measures, but the same regime continued governing the same territory with the same institutional form.
 
 **Discontinuity requirement**: All resolutions produce a different regime governing China. "More repressive CCP" or "isolated CCP" is not a discontinuity.
+
+---
+
+## Specification
+
+```yaml
+id: CHINESE_POLITICAL_CRISIS
+domain: political
+scale: global
+causal_type: 2
+onset: sudden
+reversibility: irreversible
+```
+
+*Original classification: Causal Type "Type 2/3 Hybrid: Threshold + Contingent Resolution" (one causal type per event in YAML; see below). Onset speed: rapid (crisis unfolds over 6-18 months). Reversibility: irreversible (all resolutions produce permanent regime change).*
 
 ---
 
@@ -51,6 +59,8 @@ Pressure accumulates → Threshold crossed → Regime change inevitable →
 Resolution sampled → Aftermath branches
 ```
 
+**YAML declaration**: `causal_type: 2`. The probability block implements the Type 2 mechanism (pressure function, threshold, sharpness, floor); the Type 3 component is carried by the `resolutions:` block, which the engine samples at firing. The variance target stays at the hybrid's documented 0.45 (Type 3 target) per Task 4.2 validation rule 0; loadings are not rescaled.
+
 ### Pressure Function
 
 Per [[methodology/concepts/synthetic-variable-problem]], we use observable indicators rather than synthetic indices like `regime_stability` or `institutional_quality`. Chinese political crisis pressure is proxied through observable economic and political stress indicators:
@@ -63,6 +73,8 @@ Per [[methodology/concepts/synthetic-variable-problem]], we use observable indic
 | `chn.years_since_irregular_transition` | 0.15 | inverse | Proxy for succession risk; longer tenure creates succession uncertainty |
 | `chn.inflation_rate` | 0.10 | linear | Economic stress; affects popular grievance |
 | `chn.fdi_net` | 0.05 | inverse | Elite confidence proxy; capital flight signals loss of confidence |
+
+The YAML expression below realizes these transforms in the expression language's subset: the growth term as a clipped ramp that is zero at 3% growth and saturates at −3% (`min(1, max(0, (3 − growth) / 6))`), the unemployment and inflation terms as linear ramps saturating at 15% and 10% respectively, the protest term as linear on its 0-100 index, the transition-recency term as `1 / (1 + years / 5)` (the same realization as PAKISTAN_STATE_FAILURE), and the FDI term as a ramp that is zero at net inflows of 2% of GDP and saturates at net outflows of 2% of GDP. All six terms lie in [0, 1], so the weighted sum is wrapped `100 * (...)` to sit on `threshold`'s 0-100 scale.
 
 **Proxy limitations**: True regime stability depends on unobservable factors: elite cohesion, military loyalty, internal party dynamics. These cannot be directly measured. We proxy through their downstream effects: economic performance (legitimacy), protest activity (popular discontent), and FDI flows (elite/business confidence). The pressure function captures stress symptoms rather than underlying political dynamics. Probability calibration relies primarily on reference class reasoning from other authoritarian regime transitions.
 
@@ -91,6 +103,8 @@ Per [[methodology/concepts/synthetic-variable-problem]], we use observable indic
 
 Distance to threshold (~45-50 points) is substantial.
 
+*Expression check*: at plausible 2025 values (`chn.gdp_growth` ≈ 4.8, `chn.unemployment_rate` ≈ 5.2, `chn.protest_intensity_annual` ≈ 30, `chn.years_since_irregular_transition` = 76, `chn.inflation_rate` ≈ 0.5, `chn.fdi_net` ≈ 0) the YAML expression gives ~17/100. The "~35-40" above is a judgment estimate that includes the components the observable proxy cannot see (elite cohesion, succession); the compiler's baseline check is skipped for country-variable pressures, so the gap is recorded here rather than mechanically enforced.
+
 ### Minimum Probability
 
 **Floor**: 0.15% annually even at low pressure
@@ -100,6 +114,26 @@ Black swan triggers: sudden leader incapacitation without succession plan, milit
 ---
 
 ## Probability
+
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.30 * min(1.0, max(0.0, (3.0 - chn.gdp_growth) / 6.0)) +
+      0.20 * min(1.0, max(0.0, chn.unemployment_rate / 15.0)) +
+      0.20 * (chn.protest_intensity_annual / 100.0) +
+      0.15 * (1.0 / (1.0 + chn.years_since_irregular_transition / 5.0)) +
+      0.10 * min(1.0, max(0.0, chn.inflation_rate / 10.0)) +
+      0.05 * min(1.0, max(0.0, (2.0 - chn.fdi_net) / 4.0))
+    )
+  threshold: 85
+  threshold_std: 10
+  sharpness: 15
+  floor: 0.0015
+  annual: 0.004
+  range: [0.002, 0.008]
+  confidence: low
+```
 
 | Metric | Value |
 |--------|-------|
@@ -192,10 +226,27 @@ Once the threshold is crossed, one of two resolutions occurs:
 
 ### Resolution Branches
 
+```yaml
+resolutions:
+  - id: transformation
+    p: 0.40
+    branches:
+      - {id: liberalization, p: 0.40, desc: "Successful liberalization: genuine democratization; 10-20 year transition"}
+      - {id: unstable, p: 0.60, desc: "Unstable transition: reform opens space for further instability; potential collapse within 5 years"}
+  - id: collapse
+    p: 0.60
+    branches:
+      - {id: revolutionary, p: 0.35, desc: "Revolutionary transition: new unified regime emerges; character uncertain"}
+      - {id: fragmentation, p: 0.35, desc: "State fragmentation: regional power centers emerge; civil conflict"}
+      - {id: military, p: 0.30, desc: "Military takeover: PLA assumes direct control"}
+```
+
 | Resolution | Probability | Description |
 |------------|-------------|-------------|
 | **Regime Transformation** | 40% | Crisis forces genuine system change; CCP rule ends but state continuity preserved |
 | **Regime Collapse** | 60% | CCP loses power entirely; state continuity uncertain |
+
+The branches under each resolution are the aftermath branches specified below (their probabilities, durations and factor modifications are in the Aftermath Branches section); their IDs are unique across resolutions so that cascade conditions can name them with `branch == '...'`.
 
 ### Resolution Probability Rationale
 
@@ -234,22 +285,23 @@ Collapse doesn't mean China disappears — successor regime(s) emerge with uncer
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 3 target (ΛΩΛᵀ)ᵢᵢ = 0.45*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| F_CLIM | 0.08 | Climate stress affects rural stability, food security |
-| **F_FIN** | 0.30 | **Primary**: Economic conditions are core legitimacy input |
-| F_HLTH | 0.08 | Pandemic management affects governance perceptions |
-| **F_GPT** | 0.26 | **Secondary**: Great power tension affects legitimacy and elite cohesion |
-| F_FOOD | 0.11 | Food security affects rural stability |
-| F_TECH | 0.08 | Technology competition affects development narrative |
-| F_EUR | 0.04 | Limited direct impact |
-| F_MENA | 0.00 | No direct linkage |
-| F_SAS | 0.04 | Border tensions create external pressure |
-| **F_EAS** | 0.23 | Regional dynamics affect legitimacy |
-| F_SSA | 0.00 | No direct linkage |
-| F_LAM | 0.00 | No direct linkage |
+```yaml
+factors:
+  F_FIN: 0.30   # Primary: Economic conditions are core legitimacy input
+  F_GPT: 0.26   # Secondary: Great power tension affects legitimacy and elite cohesion
+  F_EAS: 0.23   # Regional dynamics affect legitimacy
+  F_FOOD: 0.11  # Food security affects rural stability
+  F_CLIM: 0.08  # Climate stress affects rural stability, food security
+  F_HLTH: 0.08  # Pandemic management affects governance perceptions
+  F_TECH: 0.08  # Technology competition affects development narrative
+  F_EUR: 0.04   # Limited direct impact
+  F_SAS: 0.04   # Border tensions create external pressure
+variance: 0.45  # Type 3 target (documented hybrid target; Task 4.2 validation rule 0)
+```
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.75 from original loadings
+F_MENA, F_SSA and F_LAM carry no loading (no direct linkage).
+
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.45 (Type 3 target); scale factor = 0.75 from original loadings. The original (pre-scaling, 2025-12-18) loadings were F_FIN 0.40, F_GPT 0.35, F_EAS 0.30, F_FOOD 0.15, F_CLIM 0.10, F_HLTH 0.10, F_TECH 0.10, F_EUR 0.05, F_SAS 0.05, F_MENA/F_SSA/F_LAM 0.0 — sum of squared loadings 0.43. Lower loading sum reflects that Chinese regime change is primarily domestically-driven.
 
 ---
 
@@ -347,6 +399,119 @@ Hong Kong is not separately modeled. Its fate:
 - **Transformation**: Possible restoration of some autonomy
 - **Collapse (Fragmentation)**: Status contested; possible de facto independence
 
+### Impacts (YAML)
+
+The tables above are the original specification; the YAML re-expresses them against the state catalog. Each outcome's list carries the global, China (all resolutions) and regional rows plus its resolution-specific rows; `transformation.unstable` and `collapse.military` inherit their resolution's list at scale 1.0 because the original specification distinguishes those aftermath branches by factor modifications and duration (prose below), not by impact rows. `collapse.fragmentation` repeats the collapse list because inheritance cannot add rows.
+
+```yaml
+impacts:
+  transformation.liberalization:
+    # Global (all resolutions)
+    - {var: global_trade_volume,            mag: [-6, 3],       onset: immediate,    decay: 3}
+    - {var: global_credit_spread,           mag: [80, 40],      onset: immediate,    decay: 1}
+    - {var: semiconductor_supply,           mag: [-8, 4],       onset: immediate,    decay: 2}
+    # China (all resolutions)
+    - {var: chn.gdp_growth,                 mag: [-4, 2],       onset: immediate,    decay: 2}
+    - {var: chn.protest_intensity_annual,   mag: [35, 12],      onset: immediate,    decay: 2}
+    - {var: chn.tax_revenue_gdp,            mag: [-4, 2],       onset: immediate,    decay: 3}
+    - {var: chn.reserves_foreign,           mag: [-6, 3],       onset: {gradual: 1}, decay: 3}
+    - {var: chn.current_account,            mag: [-4, 2],       onset: immediate,    decay: 2}
+    - {var: chn.fdi_net,                    mag: [-3, 1.5],     onset: immediate,    decay: 3}
+    # Regional (all resolutions)
+    - {var: jpn.gdp_growth,                 mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: kor.gdp_growth,                 mag: [-2.0, 1.0],   onset: immediate,    decay: 2}
+    - {var: jpn.military_spending,          mag: [0.4, 0.2],    onset: {gradual: 2}, permanent: true}
+    - {var: kor.military_spending,          mag: [0.5, 0.3],    onset: {gradual: 2}, permanent: true}
+    - {var: twn.gdp_growth,                 mag: [-3.0, 1.5],   onset: immediate,    decay: 2}
+    - {var: twn.trade_share_west,           mag: [10, 5],       onset: {gradual: 1}, permanent: true}
+    - {var: usa.gdp_growth,                 mag: [-0.6, 0.3],   onset: immediate,    decay: 2}
+    - {var: usa.military_spending,          mag: [0.3, 0.2],    onset: {gradual: 2}, permanent: true}
+    # Transformation-specific
+    - {var: chn.tax_revenue_gdp,            mag: [-2, 1.6],     onset: {gradual: 2}, decay: 3}
+    - {var: chn.sanctions_level,            mag: [-15, 8],      onset: {delayed: 1}, permanent: true}
+    - {var: chn.gdp_growth,                 mag: [0.5, 1.5],    onset: {gradual: 3}, permanent: true}
+
+  transformation.unstable:
+    inherit: transformation.liberalization
+    scale: 1.0
+
+  collapse.revolutionary:
+    # Global (all resolutions)
+    - {var: global_trade_volume,            mag: [-6, 3],       onset: immediate,    decay: 3}
+    - {var: global_credit_spread,           mag: [80, 40],      onset: immediate,    decay: 1}
+    - {var: semiconductor_supply,           mag: [-8, 4],       onset: immediate,    decay: 2}
+    # China (all resolutions)
+    - {var: chn.gdp_growth,                 mag: [-4, 2],       onset: immediate,    decay: 3}
+    - {var: chn.protest_intensity_annual,   mag: [35, 12],      onset: immediate,    decay: 3}
+    - {var: chn.tax_revenue_gdp,            mag: [-4, 2],       onset: immediate,    decay: 10}
+    - {var: chn.reserves_foreign,           mag: [-6, 3],       onset: {gradual: 1}, decay: 3}
+    - {var: chn.current_account,            mag: [-4, 2],       onset: immediate,    decay: 2}
+    - {var: chn.fdi_net,                    mag: [-3, 1.5],     onset: immediate,    decay: 3}
+    # Regional (all resolutions)
+    - {var: jpn.gdp_growth,                 mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: kor.gdp_growth,                 mag: [-2.0, 1.0],   onset: immediate,    decay: 2}
+    - {var: jpn.military_spending,          mag: [0.4, 0.2],    onset: {gradual: 2}, permanent: true}
+    - {var: kor.military_spending,          mag: [0.5, 0.3],    onset: {gradual: 2}, permanent: true}
+    - {var: twn.gdp_growth,                 mag: [-3.0, 1.5],   onset: immediate,    decay: 2}
+    - {var: twn.trade_share_west,           mag: [10, 5],       onset: {gradual: 1}, permanent: true}
+    - {var: usa.gdp_growth,                 mag: [-0.6, 0.3],   onset: immediate,    decay: 2}
+    - {var: usa.military_spending,          mag: [0.3, 0.2],    onset: {gradual: 2}, permanent: true}
+    # Collapse-common
+    - {var: chn.gdp_real,                   mag: [-0.20, 0.08], onset: {gradual: 3}, permanent: true}
+    - {var: chn.tax_revenue_gdp,            mag: [-8, 3],       onset: immediate,    decay: 10}
+    - {var: chn.public_investment_efficiency, mag: [-30, 10],   onset: immediate,    decay: 15}
+
+  collapse.military:
+    inherit: collapse.revolutionary
+    scale: 1.0
+
+  collapse.fragmentation:
+    # Global (all resolutions)
+    - {var: global_trade_volume,            mag: [-6, 3],       onset: immediate,    decay: 3}
+    - {var: global_credit_spread,           mag: [80, 40],      onset: immediate,    decay: 1}
+    - {var: semiconductor_supply,           mag: [-8, 4],       onset: immediate,    decay: 2}
+    # China (all resolutions)
+    - {var: chn.gdp_growth,                 mag: [-4, 2],       onset: immediate,    decay: 3}
+    - {var: chn.protest_intensity_annual,   mag: [35, 12],      onset: immediate,    decay: 3}
+    - {var: chn.tax_revenue_gdp,            mag: [-4, 2],       onset: immediate,    decay: 10}
+    - {var: chn.reserves_foreign,           mag: [-6, 3],       onset: {gradual: 1}, decay: 3}
+    - {var: chn.current_account,            mag: [-4, 2],       onset: immediate,    decay: 2}
+    - {var: chn.fdi_net,                    mag: [-3, 1.5],     onset: immediate,    decay: 3}
+    # Regional (all resolutions)
+    - {var: jpn.gdp_growth,                 mag: [-1.5, 0.8],   onset: immediate,    decay: 2}
+    - {var: kor.gdp_growth,                 mag: [-2.0, 1.0],   onset: immediate,    decay: 2}
+    - {var: jpn.military_spending,          mag: [0.4, 0.2],    onset: {gradual: 2}, permanent: true}
+    - {var: kor.military_spending,          mag: [0.5, 0.3],    onset: {gradual: 2}, permanent: true}
+    - {var: twn.gdp_growth,                 mag: [-3.0, 1.5],   onset: immediate,    decay: 2}
+    - {var: twn.trade_share_west,           mag: [10, 5],       onset: {gradual: 1}, permanent: true}
+    - {var: usa.gdp_growth,                 mag: [-0.6, 0.3],   onset: immediate,    decay: 2}
+    - {var: usa.military_spending,          mag: [0.3, 0.2],    onset: {gradual: 2}, permanent: true}
+    # Collapse-common
+    - {var: chn.gdp_real,                   mag: [-0.20, 0.08], onset: {gradual: 3}, permanent: true}
+    - {var: chn.tax_revenue_gdp,            mag: [-8, 3],       onset: immediate,    decay: 10}
+    - {var: chn.public_investment_efficiency, mag: [-30, 10],   onset: immediate,    decay: 15}
+    # Fragmentation-specific
+    - {var: active_major_conflicts,         mag: [2, 1],        onset: {delayed: 1}, decay: 10}
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (−20% ± 8% for collapse); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields). `global_trade_volume` and `semiconductor_supply` are indices (2025 = 100), so the original −6% and −8% are −6 and −8 index points against the baseline of 100. Sub-year onsets (delayed 3mo / 6mo) are `immediate` in the annual-step engine.*
+
+#### Variable Substitutions and Dropped Rows
+
+The state catalog eliminated the synthetic indices the original tables used ([[methodology/reference/state-variables-country]] §4.1, [[methodology/reference/state-variables-global]] §9). The YAML maps them as follows:
+
+| Original row | YAML row | Mapping |
+|--------------|----------|---------|
+| `chn.regime_stability` −35 ± 12 (all resolutions) | `chn.protest_intensity_annual` +35 ± 12 | The catalog replaces regime stability with observable stress indicators; mass unrest is the observable face of the crisis (0-100 index, same magnitude) |
+| `chn.state_capacity` −20 / −10 / −40 points | `chn.tax_revenue_gdp` −4 / −2 / −8 pp of GDP | State capacity → governance metrics; revenue extraction is the capacity proxy SEVERE_PANDEMIC also uses. Conversion: 1 index point ≈ 0.2 pp of GDP (the 0-100 index spanning roughly China's ~20%-of-GDP tax take) |
+| `chn.institutional_quality` −1.5 ± 0.5 (collapse) | `chn.public_investment_efficiency` −30 ± 10 index points | Institutional quality → governance metrics; −1.5 on a WGI-style ±2.5 scale ≈ 30% below the country-average index of 100 |
+| `twn.alliance_west` +10 ± 5 points | `twn.trade_share_west` +10 ± 5 pp of total trade | Alignment scores → observable alignment indicators; "accelerated engagement" realized as trade redirection westward (Taiwan has no UN vote; its arms imports are already ~all Western) |
+| `us_china_tension` +25 ± 10 (all resolutions) | *dropped* | Derived output, not a state variable; no observable in the catalog carries "instability increases uncertainty" — the channel stays in prose |
+| `nuclear_stability` −15 ± 8 (all) and −35 ± 15 (fragmentation) | *dropped* | Derived output, not a state variable; the nuclear security channel stays in prose (Transmission Channel 5, Open Question 3) |
+| `chn.regime_stability` 40 ± 15 short-term (transformation) and "falls to <20" (collapse) | *dropped* | Level statements, not deltas; the all-resolutions protest row carries the delta. The engine should also reset `chn.years_since_irregular_transition` on firing (an irregular transition by definition) — a reset is not expressible as an additive impact row in v0.1 |
+| `chn.civil_liberties` +25 ± 15 (transformation) | *dropped* | The catalog captures civil liberties in `regime_type`, which is categorical and cannot take an additive magnitude; liberalization gains stay in prose |
+| `twn.regime_stability` resolution-dependent | *dropped* | No magnitude in the original; the resolution-dependent Taiwan effects are carried by the TAIWAN_CONFLICT cascade conditions |
+
 ### Cascade Effects on Territorial Outcomes
 
 State Fragmentation branch triggers:
@@ -366,9 +531,13 @@ State Fragmentation branch triggers:
 | Institutional quality (Collapse) | decaying | half_life=15yr | Slow rebuild |
 | State capacity (Collapse) | decaying | half_life=10yr | Gradual recovery |
 
+*v0.1 realization*: `maintenance_required` and `shock_vulnerable` are schema v0.2 backlog. In the YAML, the maintenance-required sanctions relief is `permanent: true`; the shock-vulnerable growth-path shift (−1 to +2 pp, written as +0.5 ± 1.5) is `permanent: true`; the shock-vulnerable "short-term" restructuring cost on state capacity is `decay: 3` (its "short-term" qualifier contradicts a permanent reading); `resolution_dependent` rows take a half-life per resolution — 2 years under transformation and 3 under collapse for growth, protest and FDI (the "GDP disruption 2-3yr" row above), and 3 years under transformation versus 10 under collapse for the tax-revenue (state-capacity) row, matching the collapse state-capacity half-life. The original forms stay in the tables above.
+
 ---
 
 ## Aftermath Branches
+
+*Factor modifications and the unstable-transition collapse hazard below are not expressible in the v0.1 schema; they stay here as the specification of record.*
 
 ### Regime Transformation — Aftermath
 
@@ -442,6 +611,27 @@ State Fragmentation branch triggers:
 ---
 
 ## Cascade Effects
+
+```yaml
+cascades:
+  triggers:
+    - {event: GLOBAL_FINANCIAL_CRISIS,  delta: 0.015,  years: 2}
+    - {event: DOLLAR_RESERVE_CRISIS,    delta: -0.005, years: 3}
+    - {event: KOREAN_PENINSULA_CRISIS,  delta: 0.010,  years: 3}
+    - {event: PAKISTAN_STATE_FAILURE,   delta: 0.005,  years: 3, if: "branch != 'fragmentation'"}
+    - {event: PAKISTAN_STATE_FAILURE,   delta: 0.010,  years: 5, if: "branch == 'fragmentation'"}
+    - {event: TAIWAN_CONFLICT,          delta: -0.005, years: 5, if: "resolution == 'transformation'"}
+    - {event: TAIWAN_CONFLICT,          delta: 0.003,  years: 3, if: "branch == 'revolutionary'"}
+    - {event: TAIWAN_CONFLICT,          delta: -0.015, years: 5, if: "branch == 'fragmentation'"}
+    - {event: TAIWAN_CONFLICT,          delta: 0.010,  years: 5, if: "branch == 'military'"}
+  triggered_by:
+    - {event: CHINESE_ECONOMIC_CRISIS,  delta: 0.020}
+    - {event: TAIWAN_CONFLICT,          delta: 0.030}   # defeat; +0.010 stalemate, -0.010 victory (see below)
+    - {event: SEVERE_PANDEMIC,          delta: 0.010}   # China-origin pandemic
+    - {event: GLOBAL_FINANCIAL_CRISIS,  delta: 0.005}
+```
+
+The PAKISTAN_STATE_FAILURE edge is written as two mutually exclusive conditional rows so the fragmentation branch's stronger effect (Cascade Effects on Territorial Outcomes, above) replaces rather than stacks on the general +0.5%/3yr effect; both tables describe the same mechanism (Chinese support eliminated).
 
 ### Triggered By
 
@@ -523,14 +713,19 @@ Economic crisis does NOT automatically produce political crisis — regime may s
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-30 |
-| **Critical review** | Complete |
-| **Revision note** | Replaced synthetic variables (regime_stability, institutional_quality) with observables in pressure function. Added Case Against and Probability Evolution sections. |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | High-impact event; Level 2 could model succession scenarios and military loyalty. Impact vector synthetic variables (state_capacity, civil_liberties) need replacement in Level 2. |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-30
+  review: complete
+  upgrade: true
+```
+
+**Revision note (2025-12-30)**: Replaced synthetic variables (regime_stability, institutional_quality) with observables in pressure function. Added Case Against and Probability Evolution sections.
+
+### Upgrade Rationale
+
+High-impact event; Level 2 could model succession scenarios and military loyalty. Impact vector synthetic variables (state_capacity, civil_liberties) need replacement in Level 2.
 
 ## Sources
 
@@ -565,6 +760,7 @@ Economic crisis does NOT automatically produce political crisis — regime may s
 
 | Date | Change | Rationale |
 |------|--------|-----------|
+| 2026-10-12 | Migrated to YAML-embedded schema | Task 4.2.11. **Causal type**: `causal_type: 2` for the Type 2/3 hybrid (the probability block implements pressure/threshold/floor; the Type 3 component is the `resolutions:` block); `variance: 0.45` kept as the documented hybrid target (rule 0), loadings not rescaled. **Pressure**: transforms realized with `min`/`max` ramps (growth zero at 3%, saturating at −3%; unemployment saturating at 15%; inflation at 10%; FDI ramp +2% → −2% of GDP; recency `1/(1+years/5)`), wrapped `100 * (...)`; gives ~17 at plausible 2025 values against the prose's judgment estimate of ~35-40; sharpness kept at the documented 15. **Resolutions**: the two resolutions carry the aftermath branches as `branches:` (liberalization/unstable; revolutionary/fragmentation/military); `transformation.unstable` and `collapse.military` inherit at scale 1.0. **Variable substitutions**: `chn.regime_stability` → `chn.protest_intensity_annual`; `chn.state_capacity` → `chn.tax_revenue_gdp` (1 index point ≈ 0.2 pp GDP); `chn.institutional_quality` → `chn.public_investment_efficiency` (−1.5 → −30 index points); `twn.alliance_west` → `twn.trade_share_west`. **Dropped rows** (channels kept in prose): `us_china_tension`, `nuclear_stability` (both derived outputs), `chn.civil_liberties` (categorical `regime_type`), the two `chn.regime_stability` level statements, `twn.regime_stability` (no magnitude). **Unit conversions**: `global_trade_volume` −6% and `semiconductor_supply` −8% → −6 / −8 index points (baseline 100). **Onsets**: delayed 3mo/6mo → `immediate`. **Durability**: maintenance_required and shock_vulnerable permanent effects → `permanent: true`; shock_vulnerable "short-term" state-capacity cost → `decay: 3`; resolution_dependent → per-resolution half-lives (2/3 yr growth, protest, FDI; 3/10 yr tax revenue); growth-path range −1 to +2 pp → +0.5 ± 1.5. No `until: resolved` rows, so no `resolves_after`. **Cascades**: all targets exist as files (no registry aliases needed); PAKISTAN_STATE_FAILURE split into two mutually exclusive branch-conditional rows; TAIWAN_CONFLICT written as four resolution/branch-conditional rows; `triggered_by` carries the Taiwan defeat value with the stalemate/victory values in a comment. **Restored from history**: the pre-scaling loadings (commit 061d516 replaced them), their sum of squared loadings (0.43) and the "primarily domestically-driven" rationale |
 | 2025-12-30 | Critical review: replaced synthetic variables in pressure function with observables; added Case Against and Probability Evolution sections; noted impact vector synthetic variables for Level 2 | Task 2.4 systematic review |
 | 2025-12-20 | Removed Stabilization resolution; tightened discontinuity requirement; lowered probability to 0.4% | Consistency with "discontinuity means discontinuity" principle |
 | 2025-12-18 | Initial Level 1 specification | Task 2.1 geopolitical events |
