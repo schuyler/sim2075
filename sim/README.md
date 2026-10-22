@@ -23,8 +23,9 @@ decisions they left open (§3) and what the build has found so far (§4).
 | E2 | catalog compiler `sim/catalog/` | compiles the completed migrations; rejects each broken variant naming the event | done |
 | E3 | `sim/engine/factors.py`: Ω validation, Cholesky, correlated draws, propensity, copula uniforms | R=100k: factor correlation within ±0.02 of Ω; per-event Z variance within ±0.02 of 1 | done |
 | E4 | `sim/engine/firing.py`: per-type `p_base` and gates, per-run Type 2 thresholds, fire mask | R=100k: Type 1 frequency within 3σ for every fixture event; Type 2 monotone in pressure; Type 3 never fires while gated off | done |
-| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; `p_base`, gate, fire mask in year 0 — grows with each stage | in suite |
-| E5–E10 | memory, impacts, dynamics, year loop, analysis | per guide §3 | not started |
+| E5 | `sim/engine/memory.py`: sustained counters, cascade slots, `EventState` updates, resolution/branch code draw | hand-built FIX-B factor path opens the sustained gate in exactly the specified year and resets on interruption; cascade delta present for exactly `years` years after firing; conditional cascade respects its `if`; 257th live cascade raises `LedgerOverflow` | done |
+| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters — grows with each stage | in suite |
+| E6–E10 | impacts, dynamics, year loop, analysis | per guide §3 | not started |
 
 Data track (guide §2): D1 and D2 done — all 29 events compile and the
 full-catalog gate (`strict_cascades` on) is green with no dropped edges
@@ -45,7 +46,7 @@ sim/
 ├── reference/    scalar reference engine (ADR-1): model.py (inputs) · engine.py (the year step)
 ├── rng.py        draw schedule contract (guide §4.6), shared by both engines
 ├── data/         state_catalog.yaml (generated from the markdown catalogs) · omega.yaml (Ω, transcribed)
-├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · E5+ pending
+├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · memory.py (E5) · E6+ pending
 ├── analysis/     E9 (empty)
 └── tests/        fixtures/ (fix_a, fix_b, fix_c, broken/) and one test module per gate
 ```
@@ -137,7 +138,7 @@ number for an event that has never fired. `branch` names usable in
 expressions must be unique across the event's resolutions. Multi-line YAML
 block scalars are parsed as one parenthesized expression.
 
-**Vectorized modules** (E3, E4) consume whole §4.6 blocks and reproduce
+**Vectorized modules** (E3–E5) consume whole §4.6 blocks and reproduce
 the reference's steps 1–4 for every run of the block: `FactorModel.year`
 gives `F = z Lᵀ` and `U = Φ(F Λᵀ + σ_idio ε)`; `FiringModel.thresholds`
 takes the init-time `t2_offset` block; `FiringModel.base` evaluates the §4.3
@@ -147,8 +148,13 @@ plus per-event `resolution`/`branch`/`years_since` columns of an
 evaluations for step 8; `FiringModel.fire` is `gate & (U < p_eff)`. Type 2
 uses `scipy.special.expit`, which agrees with the reference's `1/(1+e^{−x})`
 to rounding (the oracle diff's rtol 1e-9 covers it). Per-run memory
-(`EventState`, sustained counters, cascade deltas) is read here and will be
-owned by E5.
+(`EventState`, sustained counters, cascade deltas) is read there and owned by
+E5: `MemoryModel` holds the counters, the `EventState` it updates where an
+event fires, and the cascade slots (`[R, max_active]` arrays `active`,
+`dst_event`, `delta`, `years_remaining`, `src_event`, recycled lowest-free
+first; overflow raises `LedgerOverflow` with the list of overflowing run
+indices); `draw_codes` is the step-5 resolution/branch draw for every run and
+event, which E6 reuses for impact rows.
 
 **Draws** (guide §4.6). One `SeedSequence(master_seed)`, one child per block
 of `block_size` runs; within a block, `t2_offset` once, then per year

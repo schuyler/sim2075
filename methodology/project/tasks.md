@@ -239,7 +239,7 @@ Build simulation prototype. **Execution plan: [[methodology/project/implementati
 | **5.2** | Implement state vector management | ⏸️ | 5.1, 4.3 |
 | **5.3** | Implement factor sampling with correlations | ✅ `sim/engine/factors.py` (guide E3 gate passes at R=100k) | 5.1 |
 | **5.4** | Implement event firing logic (incl. catalog compiler + expression compiler) | ✅ compiler half (`sim/catalog/`, guide E2) and engine half (`sim/engine/firing.py`, guide E4 gate at R=100k; §5.2 oracle diff in suite) | 5.3, 4.2 |
-| **5.4b** | Implement per-run memory: sustained counters + cascade delta buffers (ADR-5) | ⏸️ | 5.4 |
+| **5.4b** | Implement per-run memory: sustained counters + cascade delta buffers (ADR-5) | ✅ `sim/engine/memory.py` (guide E5 gate; §5.2 oracle diff extended to every year) | 5.4 |
 | **5.5** | Implement impact transmission (active-shock ledger, ADR-6) | ⏸️ | 5.2, 5.4 |
 | **5.6** | Implement aftermath tracking | ⏸️ | 5.4b, 5.5 |
 | **5.7** | Implement baseline dynamics | ⏸️ | 5.2, 4.4 |
@@ -284,4 +284,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: October 22, 2026 — Task 4.2 complete (29/29, full-catalog gate green); engine stages E0–E4 landed (5.1, 5.8b, 5.3, 5.4); build findings cross-referenced from sim/README.md*
+*Last updated: October 22, 2026 — Task 4.2 complete (29/29, full-catalog gate green); engine stages E0–E5 landed (5.1, 5.8b, 5.3, 5.4, 5.4b); build findings cross-referenced from sim/README.md*
