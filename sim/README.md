@@ -26,11 +26,10 @@ decisions they left open (§3) and what the build has found so far (§4).
 | — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; `p_base`, gate, fire mask in year 0 — grows with each stage | in suite |
 | E5–E10 | memory, impacts, dynamics, year loop, analysis | per guide §3 | not started |
 
-Data track (guide §2): D1 done; D2 at 28 of 29 events migrated and
-compiling (`US_CONSTITUTIONAL_CRISIS` is held back on the variance gate,
-§4 item 10). The full-catalog gate (`strict_cascades` on) is not yet green:
-cascade edges to the held-back event and to registry-only IDs are dropped
-with warnings until the catalog is complete.
+Data track (guide §2): D1 and D2 done — all 29 events compile and the
+full-catalog gate (`strict_cascades` on) is green with no dropped edges
+(2026-10-22, after `US_CONSTITUTIONAL_CRISIS` landed; §4 item 10). D3 and
+D4 (initial conditions, dynamics defaults) are not started.
 
 ```
 pip install -e ".[test]"
@@ -235,12 +234,14 @@ Found by compiling the five migrated events. None is patched here
 Surfaced by the 24-event migration fan-out (2026-10-12), each also recorded
 in the file's changelog row:
 
-10. **`US_CONSTITUTIONAL_CRISIS` fails the variance gate.** Its documented
-    loadings achieve 0.409 against the declared hybrid target 0.55 (the
-    pre-scaling loadings give 0.523). Not patched (guardrail 6); the
-    migrated file is held outside the repo until a loading or target
-    decision is made. The compile-time cascade edges into it from seven
-    events are dropped with warnings meanwhile.
+10. **`US_CONSTITUTIONAL_CRISIS` fails the variance gate** — *resolved
+    2026-10-22.* Its documented loadings achieved 0.409 against the declared
+    hybrid target 0.55 because the file's "scale factor 0.89 from original
+    loadings" had been applied in the wrong direction: the originals already
+    explained 0.516, below the target. The migration multiplies the originals
+    by 1.03 (achieved 0.558), keeps the target, and records both prior
+    loading sets in the event's Factor Loadings section. With it landed the
+    full-catalog strict compile passes with no dropped edges.
 11. **Sharpness convention is mixed.** `sharpness` is applied per point of
     the 0–100 pressure scale (§3). AMOC and Pakistan use 0.15–0.20; the EU,
     Chinese political, Chinese economic, dollar-reserve and US-constitutional

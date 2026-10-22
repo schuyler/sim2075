@@ -29,7 +29,7 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 Key insight driving Section 4: **progress is continuous, catastrophe is discontinuous**. Without baseline dynamics capturing gradual improvement (GDP growth, life expectancy gains, technology cost declines), the simulation produces only decline. The "progress engine" is essential, not optional.
 
-Task 4.1 (MVP dynamics scope) is complete — see [[methodology/project/tasks-completed]]. Start with parallel work on 4.2 (event migration) and 4.3 (initial conditions); engine task 5.1 is also ready now.
+Tasks 4.1 (MVP dynamics scope) and 4.2 (event migration — all 29 events compile and the full-catalog gate is green as of Oct 22, 2026) are complete — see [[methodology/project/tasks-completed]]. The data track's next step is 4.3 (initial conditions); on the engine track E5 (task 5.4b) is ready.
 ## Upcoming Priorities
 
 ### Pre-Implementation Preparation (Section 4)
@@ -43,13 +43,13 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
-| **4.2** | **Event specification migration** (28/29 migrated and compiling; 4.2.19 held on the variance gate): See detailed instructions below. | — | 🟡 |
+| **4.2** | **Event specification migration** (29/29 migrated; full-catalog compile gate green, Oct 22, 2026): See detailed instructions below — they stay here because the Phase 0 war events (task 6.1) are migrated by the same process and join the subtask table. | — | ✅ |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~196 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.3 | 🔲 |
 
 **Dependency graph:**
 ```
-4.2 Event Catalog (ready to start)
+4.2 Event Catalog (complete)
 4.3 Initial Conditions + Trends (ready to start)
  └── 4.4 Dynamics Defaults
 ```
@@ -146,7 +146,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 | 4.2.16 | [[events/geopolitical/iran-nuclear-acquisition]] | ✅ |
 | 4.2.17 | [[events/geopolitical/sahel-catastrophe]] | ✅ |
 | 4.2.18 | [[events/geopolitical/saudi-nuclear-acquisition]] | ✅ |
-| 4.2.19 | [[events/geopolitical/us-constitutional-crisis]] | ⏸️ migrated, held back: documented loadings achieve (ΛΩΛᵀ)ᵢᵢ = 0.409 against the declared hybrid target 0.55 (compiler tolerance ±0.02); needs a loading or target decision before it can land |
+| 4.2.19 | [[events/geopolitical/us-constitutional-crisis]] | ✅ (loadings corrected: the documented 0.89 rescale had been applied in the wrong direction; originals × 1.03 reach the documented 0.55 target, achieved 0.558) |
 
 **Financial Events**:
 
@@ -180,9 +180,9 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 **Status key**: ✅ Complete | ⚠️ Needs remediation (prose lost) | 🟡 In progress | 🔲 Not started
 
-**Progress**: 28/29 complete and compiling under `python -m sim.catalog.cli events` (Oct 12, 2026: D1 remediation of three, then the remaining 24 migrated one agent per event with a compile check and a full-git-history prose diff each); 1/29 held back (4.2.19, variance gate). Every migration's judgment calls are in its file's 2026-10-12 changelog row; the catalog-wide items they surfaced (sharpness convention, unit convention for `unemployment_rate` and the index variables, `nuclear_status` encoding, rows exceeding variable ranges, cross-file `triggered_by` deltas) are listed in `sim/README.md` §4.
+**Progress**: 29/29 complete and compiling under `python -m sim.catalog.cli events`, and the full-catalog compile with `strict_cascades` on passes with no dropped edges — the data track's final gate per [[methodology/project/implementation-guide]] §2 (Oct 12, 2026: D1 remediation of three, then 24 migrated one agent per event with a compile check and a full-git-history prose diff each; Oct 22, 2026: 4.2.19 landed after the loading correction recorded in its file). Every migration's judgment calls are in its file's 2026-10-12 changelog row; the catalog-wide items they surfaced (sharpness convention, unit convention for `unemployment_rate` and the index variables, `nuclear_status` encoding, rows exceeding variable ranges, cross-file `triggered_by` deltas) are listed in `sim/README.md` §4.
 
-**Completed:** Tasks 4.1, 4.5 — see [[methodology/project/tasks-completed]]
+**Completed:** Tasks 4.1, 4.2, 4.5 — see [[methodology/project/tasks-completed]]
 
 ### Validation
 
@@ -284,4 +284,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: October 12, 2026 — engine stages E0–E4 landed (5.1, 5.8b, 5.3, 5.4); data track at 28/29 migrated and compiling; build findings cross-referenced from sim/README.md*
+*Last updated: October 22, 2026 — Task 4.2 complete (29/29, full-catalog gate green); engine stages E0–E4 landed (5.1, 5.8b, 5.3, 5.4); build findings cross-referenced from sim/README.md*

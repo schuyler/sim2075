@@ -15,16 +15,20 @@ tags:
 
 # US Constitutional Crisis
 
-## Event Classification
+**Type 2/3 Hybrid Event** — Threshold pressure (Type 2) with contingent resolution (Type 3); declared as Type 2 in YAML because the probability block implements a pressure function, threshold and floor.
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | US_CONSTITUTIONAL_CRISIS |
-| **Scale** | Global |
-| **Domain** | Political |
-| **Causal Type** | Type 2/3 Hybrid: Threshold + Contingent Resolution |
-| **Onset Speed** | Rapid (crisis unfolds over 6-24 months) |
-| **Reversibility** | Irreversible (all resolutions produce fundamental regime change) |
+## Specification
+
+```yaml
+id: US_CONSTITUTIONAL_CRISIS
+domain: political
+scale: global
+causal_type: 2
+onset: sudden
+reversibility: irreversible
+```
+
+*Original classification: Causal Type "Type 2/3 Hybrid: Threshold + Contingent Resolution" (one causal type per event in YAML; see below). Onset speed: rapid (crisis unfolds over 6-24 months). Reversibility: irreversible (all resolutions produce fundamental regime change).*
 
 ## Description
 
@@ -51,6 +55,8 @@ Pressure accumulates → Threshold crossed → Constitutional breakdown inevitab
 Resolution sampled → Aftermath branches
 ```
 
+**YAML declaration**: `causal_type: 2`. The probability block implements the Type 2 mechanism (pressure function, threshold, sharpness, floor); the Type 3 component is carried by the `resolutions:` block, which the engine samples at firing. The variance target stays at the hybrid's documented 0.55 per Task 4.2 validation rule 0 (see Factor Loadings for the loading correction this migration made to actually reach it).
+
 ### Pressure Function
 
 | State Variable | Weight | Transform | Rationale |
@@ -60,6 +66,18 @@ Resolution sampled → Aftermath branches
 | `usa.internal_conflict_intensity` | 0.20 | linear | Observable political violence, armed confrontation |
 | `usa.protest_activity` | 0.15 | linear | Civil unrest; cross-partisan coordination multiplies impact |
 | `usa.gdp_growth` | 0.10 | deviation from 2% baseline | Economic stress historically correlates with instability |
+
+The two synthetic indices in this table (`regime_stability`, `institutional_quality`) and `protest_activity` are not state-catalog variables ([[methodology/concepts/synthetic-variable-problem]] §3; [[methodology/reference/state-variables-country]] §4). The YAML expression below realizes the table on observables, in the expression language's subset:
+
+| Table term | Weight | Realization | Why |
+|---|---|---|---|
+| `usa.regime_stability` (inverse) | 0.30 | 0.15 × ramp of `usa.press_freedom_events` saturating at 50/yr + 0.15 × `1 / (1 + usa.years_since_irregular_transition / 5)` | The composite's two observable faces: norm erosion against the press (CPJ/RSF counts; a 2020-scale year of journalist arrests is full weight) and transition recency, the succession/legitimacy proxy the Pakistan, Chinese and EU events already use |
+| `usa.institutional_quality` (inverse) | 0.25 | ramp of `(100 − usa.public_investment_efficiency) / 50` | Institutional quality → governance metrics, the same mapping the Chinese event uses for its impact rows (20 index points per WGI unit) |
+| `usa.internal_conflict_intensity` (linear) | 0.20 | `/ 4` | Linear on the 0-4 scale |
+| `usa.protest_activity` (linear) | 0.15 | `usa.protest_intensity_annual / 100` | The catalog's 0-100 unrest index |
+| `usa.gdp_growth` (deviation from 2%) | 0.10 | ramp of `(2 − growth) / 6`, zero at 2% and saturating at −4% | Only shortfalls add pressure |
+
+All six terms lie in [0, 1], so the weighted sum is wrapped `100 * (...)` to sit on `threshold`'s 0-100 scale. Polarization, elite cohesion and federal-state tension — three of the six components assessed below — have no observable in the catalog and are carried only through their downstream effects (unrest, political violence, press-freedom events).
 
 *Note: Additional pressure from GLOBAL_FINANCIAL_CRISIS (+1.5% for 3 years) and cascades from contested elections.*
 
@@ -87,6 +105,8 @@ Resolution sampled → Aftermath branches
 
 Distance to threshold (~35-40 points) is substantial but narrower than most other democracies.
 
+*Expression check*: at plausible 2025 values (`usa.press_freedom_events` ≈ 15, `usa.years_since_irregular_transition` ≥ 160, `usa.public_investment_efficiency` ≈ 100, `usa.internal_conflict_intensity` = 1, `usa.protest_intensity_annual` ≈ 30, `usa.gdp_growth` ≈ 2.5) the YAML expression gives ~14/100. The "~45-50" above is a judgment estimate that includes the components the observable proxy cannot see (polarization, elite cohesion, federal-state tension); the compiler's baseline check is skipped for country-variable pressures, so the gap is recorded here rather than mechanically enforced. With sharpness 12 per point, the annual probability sits at the floor until pressure approaches the drawn threshold (sim/README.md §4 item 11).
+
 ### Minimum Probability
 
 **Floor**: 0.15% annually even at low pressure
@@ -96,6 +116,29 @@ Black swan triggers: assassination of major political figure, military refusing 
 ---
 
 ## Probability
+
+```yaml
+probability:
+  pressure: |
+    100 * (
+      0.15 * min(1.0, max(0.0, usa.press_freedom_events / 50.0)) +
+      0.15 * (1.0 / (1.0 + usa.years_since_irregular_transition / 5.0)) +
+      0.25 * min(1.0, max(0.0, (100.0 - usa.public_investment_efficiency) / 50.0)) +
+      0.20 * (usa.internal_conflict_intensity / 4.0) +
+      0.15 * (usa.protest_intensity_annual / 100.0) +
+      0.10 * min(1.0, max(0.0, (2.0 - usa.gdp_growth) / 6.0))
+    )
+  threshold: 85
+  threshold_std: 10
+  sharpness: 12
+  floor: 0.0015
+  resolves_after: 10
+  annual: 0.005
+  range: [0.002, 0.010]
+  confidence: low
+```
+
+*`resolves_after: 10`*: the Prolonged Instability resolution's "sustained for the duration of instability" rows are written `until: resolved`, and the specification puts that duration at 5-15 years; 10 is the midpoint. The window applies to every firing (the engine keeps one per event), but only the Prolonged Instability rows read it.
 
 | Metric | Value |
 |--------|-------|
@@ -184,12 +227,39 @@ Once the threshold is crossed, one of four resolutions occurs:
 
 ### Resolution Branches
 
+```yaml
+resolutions:
+  - id: authoritarian
+    p: 0.30
+    branches:
+      - {id: stable_autocracy,       p: 0.45, desc: "Authoritarian regime consolidates and stabilizes; possible economic stabilization"}
+      - {id: unstable_autocracy,     p: 0.55, desc: "Authoritarian regime faces ongoing resistance; economic decline"}
+  - id: fragmentation
+    p: 0.25
+    branches:
+      - {id: peaceful_separation,    p: 0.25, desc: "Successor states establish sovereignty without major armed conflict"}
+      - {id: violent_fragmentation,  p: 0.75, desc: "Armed conflict between successor entities"}
+  - id: prolonged_instability
+    p: 0.30
+    branches:
+      - {id: eventual_consolidation, p: 0.40, desc: "One faction eventually gains control (5-15 years)"}
+      - {id: eventual_fragmentation, p: 0.35, desc: "Prolonged conflict leads to effective partition (5-15 years)"}
+      - {id: eventual_settlement,    p: 0.25, desc: "Exhaustion leads to negotiated new order (10-20 years)"}
+  - id: negotiated
+    p: 0.15
+    branches:
+      - {id: successful_order,       p: 0.50, desc: "New constitutional arrangement proves durable"}
+      - {id: failed_restructuring,   p: 0.50, desc: "New order fails; transitions to another resolution within 3-7 years"}
+```
+
 | Resolution | Probability | Description |
 |------------|-------------|-------------|
 | **Authoritarian Consolidation** | 30% | One faction gains control; constitutional order replaced |
 | **Federal Fragmentation** | 25% | Federal authority not recognized; effective secession |
 | **Prolonged Instability** | 30% | No faction gains control; extended period of conflict |
 | **Negotiated Restructuring** | 15% | Constitutional convention produces new order |
+
+The branches under each resolution are the aftermath branches specified below (their probabilities, durations, factor modifications and transition hazards are in the Aftermath Branches section); their IDs are unique across resolutions so that cascade conditions can name them with `branch == '...'`.
 
 ### Resolution Probability Rationale
 
@@ -253,22 +323,28 @@ Historical models: South Africa 1990-1994 (successful transition), France 1958 (
 
 *Loadings scaled per [[methodology/reference/variance-allocation]] to achieve Type 2/3 Hybrid target (ΛΩΛᵀ)ᵢᵢ = 0.55*
 
-| Factor | Loading | Rationale |
-|--------|---------|-----------|
-| **F_FIN** | 0.36 | **Primary**: Economic crises historically correlate with political instability |
-| **F_GPT** | 0.22 | **Secondary**: External pressure could unite or divide; historically unifying |
-| F_EAS | 0.13 | China tensions affect domestic politics; rally/polarize effects |
-| F_TECH | 0.09 | Technology platforms affect information environment; polarization channel |
-| F_EUR | 0.09 | European instability affects transatlantic alliance; modest feedback |
-| F_CLIM | 0.04 | Climate stress may exacerbate regional tensions; limited direct impact |
-| F_HLTH | 0.04 | Pandemic management became politically polarized; limited ongoing impact |
-| F_FOOD | 0.04 | Food security not a major US vulnerability |
-| F_MENA | 0.04 | Limited direct impact |
-| F_LAM | 0.04 | Migration politics create pressure; limited magnitude |
-| F_SAS | 0.00 | No direct linkage |
-| F_SSA | 0.00 | No direct linkage |
+```yaml
+factors:
+  F_FIN: 0.42   # Primary: Economic crises historically correlate with political instability
+  F_GPT: 0.26   # Secondary: External pressure could unite or divide; historically unifying
+  F_EAS: 0.15   # China tensions affect domestic politics; rally/polarize effects
+  F_TECH: 0.10  # Technology platforms affect information environment; polarization channel
+  F_EUR: 0.10   # European instability affects transatlantic alliance; modest feedback
+  F_CLIM: 0.05  # Climate stress may exacerbate regional tensions; limited direct impact
+  F_HLTH: 0.05  # Pandemic management became politically polarized; limited ongoing impact
+  F_FOOD: 0.05  # Food security not a major US vulnerability
+  F_MENA: 0.05  # Limited direct impact
+  F_LAM: 0.05   # Migration politics create pressure; limited magnitude
+variance: 0.55  # Type 2/3 Hybrid target (validation rule 0), not the Type 2 table value
+```
 
-**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.55 (Type 2/3 Hybrid target); scale factor = 0.89 from original loadings
+F_SAS and F_SSA carry no loading (no direct linkage).
+
+**Variance allocation**: (ΛΩΛᵀ)ᵢᵢ = 0.558 under the catalog Ω against the 0.55 target (compiler tolerance ±0.02); scale factor 1.03 from the original loadings.
+
+**Correction (2026-10-22).** The 2025-12-21 specification documented loadings of F_FIN 0.36, F_GPT 0.22, F_EAS 0.13, F_TECH 0.09, F_EUR 0.09, F_CLIM/F_HLTH/F_FOOD/F_MENA/F_LAM 0.04, described as "scale factor = 0.89 from original loadings" to reach 0.55. Under Ω those loadings explain 0.409 of unit variance, and the original loadings they were scaled from (F_FIN 0.40, F_GPT 0.25, F_EAS 0.15, F_TECH 0.10, F_EUR 0.10, F_CLIM/F_HLTH/F_FOOD/F_MENA/F_LAM 0.045 — sum of squared loadings ≈ 0.28) explain 0.516 — or 0.523 if their minor loadings are read as 0.05 rather than 0.04/0.89, the reconstruction sim/README.md §4 item 10 first reported; the originals were never committed, so both are reconstructions from the documented set — and either way the originals were already *below* the target, so the 0.89 scaling moved them further from it. The scaling was applied in the wrong direction. The loadings above multiply the originals by √(0.55 / 0.516) ≈ 1.03 (equivalently the documented loadings by 1.16), which preserves the relative structure the rationale column argues for and reaches the documented target. The target itself is unchanged.
+
+The lower loading sum reflects that US constitutional crisis is primarily domestically driven. External factors operate through domestic political channels rather than directly.
 
 Lower loading sum reflects that US constitutional crisis is primarily domestically driven. External factors operate through domestic political channels rather than directly.
 
@@ -419,9 +495,262 @@ This is the least damaging resolution but also the least likely historically.
 | Remittance disruption | `remittance_dependence` (derived) | Linear | Higher US remittance share → larger income shock |
 | Dollar exposure | `reserves_foreign` composition | Linear | Higher USD reserve share → larger reserve value impact |
 
+### Impacts (YAML)
+
+The tables above are the original specification; the YAML re-expresses them against the state catalog. Each resolution's list carries the global, US and regional "all resolutions" rows plus its resolution-specific rows (they stack, as in CHINESE_POLITICAL_CRISIS — the resolution-specific tables add to, not replace, the all-resolutions tables). The first aftermath branch under each resolution carries the explicit list and the other branches inherit it at scale 1.0, because the specification distinguishes aftermath branches by factor modifications, duration and transition hazards (prose below), not by impact rows.
+
+```yaml
+impacts:
+  authoritarian.stable_autocracy:
+    # Global (all resolutions)
+    - {var: usd_reserve_share,                   mag: [-15, 8],      onset: {delayed: 1}, permanent: true}
+    - {var: global_credit_spread,                mag: [150, 60],     onset: immediate,    decay: 2}
+    - {var: us_10yr_yield,                       mag: [2.0, 1.0],    onset: immediate,    permanent: true}
+    - {var: global_trade_volume,                 mag: [-8, 4],       onset: immediate,    decay: 3}
+    - {var: semiconductor_supply,                mag: [-5, 3],       onset: immediate,    decay: 2}
+    # United States (all resolutions)
+    - {var: usa.gdp_growth,                      mag: [-6, 3],       onset: immediate,    decay: 2}
+    - {var: usa.public_investment_efficiency,    mag: [-30, 10],     onset: immediate,    permanent: true}
+    - {var: usa.tax_revenue_gdp,                 mag: [-6, 3],       onset: immediate,    decay: 5}
+    - {var: usa.internal_conflict_intensity,     mag: [2, 1],        onset: immediate,    decay: 5}
+    - {var: usa.reserves_foreign,                mag: [-3, 2],       onset: {gradual: 1}, decay: 3}
+    - {var: usa.fdi_net,                         mag: [-2, 1],       onset: immediate,    decay: 2}
+    # US treaty allies (all resolutions)
+    - {var: can.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: deu.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: gbr.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: fra.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: ita.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: esp.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: nld.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: pol.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: eu_other.military_spending,          mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: tur.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: aus.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: jpn.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: kor.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: can.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: deu.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: gbr.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: fra.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: ita.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: esp.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: nld.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: pol.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: eu_other.un_voting_alignment_us,     mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: tur.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: aus.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: jpn.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: kor.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    # Trade/financial contagion (all resolutions)
+    - {var: deu.gdp_growth,                      mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+    - {var: jpn.gdp_growth,                      mag: [-1.5, 0.7],   onset: immediate,    decay: 2}
+    - {var: chn.gdp_growth,                      mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+    # Authoritarian Consolidation
+    - {var: usa.gdp_real,                        mag: [-0.10, 0.05], onset: {gradual: 5}, permanent: true}
+    - {var: usd_reserve_share,                   mag: [-20, 10],     onset: {gradual: 5}, permanent: true}
+
+  authoritarian.unstable_autocracy:
+    inherit: authoritarian.stable_autocracy
+    scale: 1.0
+
+  fragmentation.peaceful_separation:
+    # Global (all resolutions)
+    - {var: usd_reserve_share,                   mag: [-15, 8],      onset: {delayed: 1}, permanent: true}
+    - {var: global_credit_spread,                mag: [150, 60],     onset: immediate,    decay: 2}
+    - {var: us_10yr_yield,                       mag: [2.0, 1.0],    onset: immediate,    permanent: true}
+    - {var: global_trade_volume,                 mag: [-8, 4],       onset: immediate,    decay: 3}
+    - {var: semiconductor_supply,                mag: [-5, 3],       onset: immediate,    decay: 2}
+    # United States (all resolutions)
+    - {var: usa.gdp_growth,                      mag: [-6, 3],       onset: immediate,    decay: 3}
+    - {var: usa.public_investment_efficiency,    mag: [-30, 10],     onset: immediate,    permanent: true}
+    - {var: usa.tax_revenue_gdp,                 mag: [-6, 3],       onset: immediate,    decay: 10}
+    - {var: usa.internal_conflict_intensity,     mag: [2, 1],        onset: immediate,    decay: 10}
+    - {var: usa.reserves_foreign,                mag: [-3, 2],       onset: {gradual: 1}, decay: 3}
+    - {var: usa.fdi_net,                         mag: [-2, 1],       onset: immediate,    decay: 3}
+    # US treaty allies (all resolutions)
+    - {var: can.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: deu.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: gbr.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: fra.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: ita.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: esp.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: nld.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: pol.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: eu_other.military_spending,          mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: tur.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: aus.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: jpn.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: kor.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: can.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: deu.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: gbr.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: fra.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: ita.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: esp.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: nld.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: pol.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: eu_other.un_voting_alignment_us,     mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: tur.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: aus.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: jpn.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    - {var: kor.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    permanent: true}
+    # Trade/financial contagion (all resolutions)
+    - {var: deu.gdp_growth,                      mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+    - {var: jpn.gdp_growth,                      mag: [-1.5, 0.7],   onset: immediate,    decay: 2}
+    - {var: chn.gdp_growth,                      mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+    # Federal Fragmentation
+    - {var: usa.gdp_real,                        mag: [-0.25, 0.10], onset: {gradual: 5}, permanent: true}
+    - {var: usd_reserve_share,                   mag: [-25, 10],     onset: {gradual: 3}, permanent: true}
+    - {var: global_trade_volume,                 mag: [-15, 6],      onset: {delayed: 1}, decay: 5}
+
+  fragmentation.violent_fragmentation:
+    inherit: fragmentation.peaceful_separation
+    scale: 1.0
+
+  prolonged_instability.eventual_consolidation:
+    # Global (all resolutions)
+    - {var: usd_reserve_share,                   mag: [-15, 8],      onset: {delayed: 1}, decay: 10}
+    - {var: global_credit_spread,                mag: [150, 60],     onset: immediate,    decay: 2}
+    - {var: us_10yr_yield,                       mag: [2.0, 1.0],    onset: immediate,    decay: 10}
+    - {var: global_trade_volume,                 mag: [-8, 4],       onset: immediate,    decay: 3}
+    - {var: semiconductor_supply,                mag: [-5, 3],       onset: immediate,    decay: 2}
+    # United States (all resolutions)
+    - {var: usa.gdp_growth,                      mag: [-6, 3],       onset: immediate,    decay: 3}
+    - {var: usa.public_investment_efficiency,    mag: [-30, 10],     onset: immediate,    decay: 10}
+    - {var: usa.tax_revenue_gdp,                 mag: [-6, 3],       onset: immediate,    decay: 10}
+    - {var: usa.internal_conflict_intensity,     mag: [2, 1],        onset: immediate,    decay: 10}
+    - {var: usa.reserves_foreign,                mag: [-3, 2],       onset: {gradual: 1}, decay: 3}
+    - {var: usa.fdi_net,                         mag: [-2, 1],       onset: immediate,    decay: 3}
+    # US treaty allies (all resolutions)
+    - {var: can.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: deu.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: gbr.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: fra.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: ita.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: esp.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: nld.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: pol.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: eu_other.military_spending,          mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: tur.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: aus.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: jpn.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: kor.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: can.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: deu.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: gbr.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: fra.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: ita.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: esp.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: nld.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: pol.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: eu_other.un_voting_alignment_us,     mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: tur.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: aus.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: jpn.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    - {var: kor.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 10}
+    # Trade/financial contagion (all resolutions)
+    - {var: deu.gdp_growth,                      mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+    - {var: jpn.gdp_growth,                      mag: [-1.5, 0.7],   onset: immediate,    decay: 2}
+    - {var: chn.gdp_growth,                      mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+    # Prolonged Instability (sustained for the duration; resolves_after: 10)
+    - {var: usa.gdp_growth,                      mag: [-4, 2],       onset: immediate,    until: resolved}
+    - {var: global_credit_spread,                mag: [200, 80],     onset: immediate,    until: resolved}
+
+  prolonged_instability.eventual_fragmentation:
+    inherit: prolonged_instability.eventual_consolidation
+    scale: 1.0
+
+  prolonged_instability.eventual_settlement:
+    inherit: prolonged_instability.eventual_consolidation
+    scale: 1.0
+
+  negotiated.successful_order:
+    # Global (all resolutions)
+    - {var: usd_reserve_share,                   mag: [-15, 8],      onset: {delayed: 1}, decay: 10}
+    - {var: global_credit_spread,                mag: [150, 60],     onset: immediate,    decay: 2}
+    - {var: us_10yr_yield,                       mag: [2.0, 1.0],    onset: immediate,    decay: 5}
+    - {var: global_trade_volume,                 mag: [-8, 4],       onset: immediate,    decay: 3}
+    - {var: semiconductor_supply,                mag: [-5, 3],       onset: immediate,    decay: 2}
+    # United States (all resolutions)
+    - {var: usa.gdp_growth,                      mag: [-6, 3],       onset: immediate,    decay: 2}
+    - {var: usa.public_investment_efficiency,    mag: [-30, 10],     onset: immediate,    decay: 5}
+    - {var: usa.tax_revenue_gdp,                 mag: [-6, 3],       onset: immediate,    decay: 3}
+    - {var: usa.internal_conflict_intensity,     mag: [2, 1],        onset: immediate,    decay: 3}
+    - {var: usa.reserves_foreign,                mag: [-3, 2],       onset: {gradual: 1}, decay: 3}
+    - {var: usa.fdi_net,                         mag: [-2, 1],       onset: immediate,    decay: 2}
+    # US treaty allies (all resolutions)
+    - {var: can.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: deu.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: gbr.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: fra.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: ita.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: esp.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: nld.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: pol.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: eu_other.military_spending,          mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: tur.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: aus.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: jpn.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: kor.military_spending,               mag: [0.8, 0.4],    onset: {gradual: 3}, permanent: true}
+    - {var: can.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: deu.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: gbr.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: fra.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: ita.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: esp.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: nld.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: pol.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: eu_other.un_voting_alignment_us,     mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: tur.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: aus.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: jpn.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    - {var: kor.un_voting_alignment_us,          mag: [-0.2, 0.1],   onset: immediate,    decay: 5}
+    # Trade/financial contagion (all resolutions)
+    - {var: deu.gdp_growth,                      mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+    - {var: jpn.gdp_growth,                      mag: [-1.5, 0.7],   onset: immediate,    decay: 2}
+    - {var: chn.gdp_growth,                      mag: [-1.0, 0.5],   onset: immediate,    decay: 2}
+    # Negotiated Restructuring
+    - {var: usa.public_investment_efficiency,    mag: [-10, 6],      onset: immediate,    decay: 5}
+    - {var: usa.gdp_growth,                      mag: [-2, 1],       onset: immediate,    decay: 3}
+    - {var: usd_reserve_share,                   mag: [-8, 5],       onset: {gradual: 5}, permanent: true}
+
+  negotiated.failed_restructuring:
+    inherit: negotiated.successful_order
+    scale: 1.0
+```
+
+*Units: `gdp_real` rows are fractions of the entity's current value (−10% ± 5% under authoritarian consolidation, −25% ± 10% under fragmentation); all other rows are additive in the variable's units ([[methodology/reference/event-yaml-schema]] §Impact Fields). `global_trade_volume` and `semiconductor_supply` are indices (2025 = 100), so the original −8% / −15% / −5% are −8 / −15 / −5 index points. `us_10yr_yield` is in percent, so +200 ± 100 bps is +2.0 ± 1.0. Sub-year onsets (delayed 3mo / 6mo) are `immediate` in the annual-step engine.*
+
+#### Variable Substitutions and Dropped Rows
+
+The state catalog eliminated the synthetic indices the original tables used ([[methodology/reference/state-variables-country]] §4, [[methodology/reference/state-variables-global]] §9). The YAML maps them as follows:
+
+| Original row | YAML row | Mapping |
+|--------------|----------|---------|
+| `usa.institutional_quality` −1.5 ± 0.5 (all) and −0.5 ± 0.3 (negotiated) | `usa.public_investment_efficiency` −30 ± 10 and −10 ± 6 index points | Institutional quality → governance metrics, at 20 index points per WGI unit (the CHINESE_POLITICAL_CRISIS mapping) |
+| `usa.state_capacity` −25 ± 12 points | `usa.tax_revenue_gdp` −6 ± 3 pp of GDP | State capacity → fiscal extraction capacity ([[methodology/concepts/synthetic-variable-problem]] §3.3). Conversion: 1 index point ≈ 0.25 pp of GDP, the 0-100 index spanning roughly the US general-government ~27%-of-GDP tax take (the Chinese event uses 0.2 for China's ~20%) |
+| `usa.gdp_per_capita` −10 ± 5% cumulative (authoritarian) | `usa.gdp_real` −0.10 ± 0.05 | Per-capita and aggregate real GDP coincide absent a population change; only `gdp_real` carries the fraction-of-current-value convention, and `gdp_per_capita` is in $K with no stated baseline |
+| ally `alliance_west` −20 ± 10 points | ally `un_voting_alignment_us` −0.2 ± 0.1 | Alignment scores → observable alignment indicators (the IRAN_NUCLEAR_ACQUISITION mapping); −20 on a 0-100 score is −0.2 on the −1 to +1 scale |
+| "All NATO allies" rows | `can`, `deu`, `gbr`, `fra`, `ita`, `esp`, `nld`, `pol`, `eu_other`, `tur`, `aus`, `jpn`, `kor` | The specification's list (Europe, Canada, Australia, Japan, South Korea) realized on the catalog's entities; Turkey is included as a NATO member under "Europe" |
+| `usd_reserve_share` −15 ± 8 (all, resolution_dependent) | kept, durability per resolution | Permanent under authoritarian and fragmentation per the durability table; `decay: 10` under prolonged instability (duration of instability) and under negotiated restructuring ("damaged but recoverable"), where the negotiated-specific −8 ± 5 row is the permanent structural loss. Stacked totals: −35 pp (authoritarian), −40 (fragmentation), −15 then recovering (prolonged), −23 of which −8 permanent (negotiated), against the catalog's 58% baseline |
+| `nato_cohesion` −30 ± 12 (all), −40 ± 15, "falls to <20", −15 ± 8 | *dropped* | No catalog variable (the EU_FRAGMENTATION migration drops it the same way); the alliance channel is carried by the ally `military_spending` and `un_voting_alignment_us` rows |
+| `nuclear_stability` −20 ± 10 (all), −35 ± 15 (fragmentation), −25 ± 12 (prolonged) | *dropped* | Derived output, not a state variable; the nuclear security channel stays in prose (Transmission Channel 3, Nuclear Security Cascade, Open Question 4) |
+| `us_china_tension` | *dropped* | Derived output, not a state variable; resolution-dependent sign stays in prose |
+| `usa.regime_stability` "falls to <30", 50 ± 15, "falls to <15", 15-30 range, 45 ± 15 | *dropped* | Level statements, not deltas (the Chinese event's "falls to <20" is dropped the same way). The engine should also reset `usa.years_since_irregular_transition` on firing — a reset is not expressible as an additive impact row in v0.1 |
+| `usa.regime_type` changes (authoritarian, negotiated) and `usa.civil_liberties` −40 ± 15 / ±10 | *dropped* | `regime_type` is categorical and cannot take an additive magnitude; the catalog has no civil-liberties variable. Suppression and liberalization stay in prose |
+| `usa.internal_conflict_intensity` "reaches 3-4" (prolonged) | *dropped* | Level statement; the all-resolutions +2 ± 1 row (held with a 10-year half-life under prolonged instability) carries it |
+| `twn.regime_stability` −15 ± 8 | *dropped* | No observable in the catalog carries "security guarantee questioned"; the Taiwan effect is carried by the TAIWAN_CONFLICT cascade conditions |
+| `chn.alliance_china` "regional states reassess" | *dropped* | No magnitude in the original |
+| Global South rows (commodity exporters, dollar-indebted, remittance-dependent) | *dropped* | Differential-exposure classes, not entities; the exposure functions below stay in prose |
+
+*Durability realization (v0.1)*: `maintenance_required` and `shock_vulnerable` are schema v0.2 backlog; the shock-vulnerable dollar row under negotiated restructuring is `permanent: true` (the CHINESE_POLITICAL_CRISIS realization). Rows the tables mark `resolution_dependent` take a durability per resolution: growth and FDI flows decay with the durability table's 2-3 year GDP half-life (2 under authoritarian and negotiated, 3 under fragmentation and prolonged instability); stock variables (yield, alignment, investment efficiency) are permanent under authoritarian consolidation and fragmentation, `decay: 10` under prolonged instability (the 5-15 year duration) and `decay: 5` under negotiated restructuring (the half-life the negotiated-specific rows use); tax revenue and conflict intensity take 5 / 10 / 10 / 3 years (authoritarian / fragmentation / prolonged / negotiated), the Chinese event's 3-year transformation and 10-year collapse half-lives bracketing them. The prolonged-instability "duration of instability" rows are `until: resolved` with `resolves_after: 10`. The original forms stay in the tables above.
+
 ---
 
 ## Aftermath Branches
+
+*Factor modifications, the 10%-per-year transition hazard out of Prolonged Instability, the Unstable Autocracy and Failed Restructuring breakdown hazards, and the transition probabilities between resolutions are not expressible in the v0.1 schema; they stay here as the specification of record.*
 
 ### Authoritarian Consolidation — Aftermath
 
@@ -537,6 +866,24 @@ This is the least damaging resolution but also the least likely historically.
 ---
 
 ## Cascade Effects
+
+```yaml
+cascades:
+  triggers:
+    - {event: GLOBAL_FINANCIAL_CRISIS,   delta: 0.020,  years: 2}
+    - {event: DOLLAR_RESERVE_CRISIS,     delta: 0.030,  years: 3}
+    - {event: TAIWAN_CONFLICT,           delta: 0.015,  years: 3, if: "(resolution == 'fragmentation') or (resolution == 'prolonged_instability')"}
+    - {event: TAIWAN_CONFLICT,           delta: -0.010, years: 3, if: "resolution == 'authoritarian'"}
+    - {event: EU_FRAGMENTATION,          delta: 0.010,  years: 3}
+    - {event: CHINESE_POLITICAL_CRISIS,  delta: -0.005, years: 5}
+    - {event: KOREAN_PENINSULA_CRISIS,   delta: 0.015,  years: 3}
+  triggered_by:
+    - {event: GLOBAL_FINANCIAL_CRISIS,   delta: 0.015}
+    - {event: SEVERE_PANDEMIC,           delta: 0.008}   # US origin or mishandled
+    - {event: TAIWAN_CONFLICT,           delta: 0.010}   # US involvement; taiwan-conflict's own triggers list writes 0.005
+```
+
+The TAIWAN_CONFLICT edge is written as two mutually exclusive resolution-conditional rows; negotiated restructuring carries no edge, per the table below. `triggered_by` is informational (the source events' `triggers` lists are what the compiler reads): DOLLAR_RESERVE_CRISIS declares a +1.5% edge into this event that the table below does not list, and TAIWAN_CONFLICT declares +0.5% against the +1.0% here — a cross-file reconciliation item (sim/README.md §4 item 15).
 
 ### Triggered By
 
@@ -686,13 +1033,19 @@ Per critical review methodology, explicitly stating the strongest counterargumen
 
 ## Research Status
 
-| Field | Value |
-|-------|-------|
-| **Tier** | Level 1 |
-| **Last updated** | 2025-12-21 |
-| **Revision note** | Initial specification |
-| **Upgrade candidate** | Yes |
-| **Upgrade rationale** | Highest-stakes event in catalog; Level 2 could model specific scenarios (contested election, secession, military crisis) |
+```yaml
+research:
+  tier: 1
+  updated: 2025-12-21
+  review: complete
+  upgrade: true
+```
+
+**Revision note (2025-12-21)**: Initial specification. The critical review ("Case Against This Specification") was written into the initial specification rather than as a separate pass.
+
+### Upgrade Rationale
+
+Highest-stakes event in catalog; Level 2 could model specific scenarios (contested election, secession, military crisis).
 
 ## Sources
 
@@ -726,3 +1079,12 @@ Per critical review methodology, explicitly stating the strongest counterargumen
 ---
 
 *Cross-references*: [[events/financial/global-financial-crisis]], [[events/financial/dollar-reserve-crisis]], [[events/geopolitical/taiwan-conflict]], [[events/geopolitical/eu-fragmentation]], [[methodology/reference/causal-types]], [[methodology/reference/type-3-calibration]]
+
+---
+
+## Changelog
+
+| Date | Change | Rationale |
+|------|--------|-----------|
+| 2026-10-22 | Migrated to YAML-embedded schema; factor loadings corrected | Task 4.2.19. **Loadings**: the documented loadings achieved 0.409 against the declared hybrid target 0.55 because the 2025-12-21 "scale factor 0.89" was applied in the wrong direction (the originals already explained 0.516, below the target); loadings are now the originals × 1.03 (achieved 0.558), the target is unchanged, and both prior sets are recorded under Factor Loadings (sim/README.md §4 item 10). **Causal type**: `causal_type: 2` for the Type 2/3 hybrid (the probability block implements pressure/threshold/sharpness/floor; the Type 3 component is the `resolutions:` block). **Pressure**: the synthetic `regime_stability` (0.30) realized as 0.15 × `press_freedom_events` ramp (saturating at 50/yr) + 0.15 × transition recency `1/(1+years/5)`; `institutional_quality` → `public_investment_efficiency` ramp (zero at 100, saturating at 50); `protest_activity` → `protest_intensity_annual`; growth as a shortfall ramp below 2%; wrapped `100 * (...)`; gives ~14 at plausible 2025 values against the prose's ~45-50 (gap recorded); sharpness 12, threshold 85 ± 10 and floor 0.15% written as documented. **Resolutions**: four resolutions carry their aftermath branches as `branches:` (45/55, 25/75, 40/35/25, 50/50); the first branch of each carries the explicit impact list, the others inherit at scale 1.0. **Impacts**: all-resolutions and resolution-specific rows stack; `resolution_dependent` durabilities realized per resolution (table under Impacts (YAML)); the prolonged-instability "duration of instability" rows are `until: resolved` with `resolves_after: 10` (midpoint of 5-15 years). **Substitutions**: `institutional_quality` → `public_investment_efficiency` (20 points per WGI unit); `state_capacity` → `tax_revenue_gdp` (0.25 pp per point); `gdp_per_capita` −10% → `gdp_real` −0.10; ally `alliance_west` → `un_voting_alignment_us`; the ally list realized as can/deu/gbr/fra/ita/esp/nld/pol/eu_other/tur/aus/jpn/kor. **Dropped rows** (channels kept in prose): `nato_cohesion`, `nuclear_stability`, `us_china_tension`, all `regime_stability` level statements, `regime_type` and `civil_liberties` (categorical / no variable), the prolonged "reaches 3-4" conflict level, `twn.regime_stability`, `chn.alliance_china`, the Global South exposure classes. **Units**: `global_trade_volume` −8% / −15% and `semiconductor_supply` −5% → index points; `us_10yr_yield` +200 bps → +2.0. **Onsets**: delayed 3mo/6mo → `immediate`. **Cascades**: all seven targets exist as files; TAIWAN_CONFLICT written as two resolution-conditional rows; cross-file `triggered_by` deltas (Dollar Reserve Crisis +1.5%, Taiwan +0.5%) noted, not reconciled. Research review recorded `complete` (the Case Against section is the critical review). No prose removed; git history holds a single prior commit (the initial specification), so nothing needed restoring |
+| 2025-12-21 | Initial Level 1 specification | Task 2.1 geopolitical events (Additional Events round) |
