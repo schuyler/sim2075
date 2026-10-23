@@ -86,3 +86,25 @@ def test_resolves_after_is_per_event_and_counts_the_firing_year():
         cat.resolves_after = np.array([0, 0, n])
         rec = ReferenceRun(cat, fix_b.initial_conditions(), fix_b.dynamics(), fix_b.params(), fix_b.draws(), 0).run()
         assert rec.global_[1:, cat.index.global_var["conflicts"]].tolist() == want, n
+
+
+@pytest.mark.parametrize("half_life", [0.0, -1.0, float("nan"), float("inf")])
+def test_mean_revert_half_life_must_be_finite_and_positive(half_life):
+    from sim.reference import VarDynamics
+    with pytest.raises(ValueError, match="'a.gdp_growth'.*half_life"):
+        VarDynamics("a.gdp_growth", "mean_revert", mu=2.0, half_life=half_life)
+
+
+@pytest.mark.parametrize("kind", ["mean_revert", "additive"])
+def test_dynamics_sigma_must_be_non_negative(kind):
+    from sim.reference import VarDynamics
+    with pytest.raises(ValueError, match="'oil_brent'.*sigma"):
+        VarDynamics("oil_brent", kind, mu=75.0, half_life=2.0, sigma=-0.5)
+
+
+def test_dynamics_duplicate_key_is_rejected():
+    from sim.reference import DynamicsSpec, VarDynamics
+    with pytest.raises(ValueError, match="'oil_brent'.*duplicate"):
+        DynamicsSpec([VarDynamics("oil_brent", "mean_revert", mu=75.0, half_life=2.0),
+                      VarDynamics("a.gdp_growth", "mean_revert", mu=2.0),
+                      VarDynamics("oil_brent", "additive", rate=1.0)])

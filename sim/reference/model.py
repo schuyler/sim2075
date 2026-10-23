@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import math
 
 import numpy as np
 
@@ -20,10 +21,14 @@ class VarDynamics:
     kind:
       "additive"       X += rate                       (slow drift, additive: temperature, LE)
       "multiplicative" X *= 1 + rate                   (slow drift, multiplicative: tech costs)
-      "mean_revert"    X += theta*(mu - X) + sigma*z   (Tier 2; theta = ln2/half_life; z from dyn_z)
+      "mean_revert"    X += theta*(mu - X) + sigma*z   (Tier 2; theta = 1 - 0.5**(1/half_life), the exact one-year
+                                                        discretization, so a sigma = 0 displacement halves every
+                                                        half_life years; sigma is the sd of the one-year innovation,
+                                                        not of the stationary distribution; z from dyn_z)
       "gdp_stock"      X *= 1 + growth/100             (growth variable named by ``growth_key``, in % per year,
                                                         already updated this year — growth-rate-first ordering)
-    key is "global_var" or "entity.var".
+    key is "global_var" or "entity.var". A mean_revert ``half_life`` must be finite and > 0 and every ``sigma``
+    >= 0 (``ValueError`` naming the key).
     """
     key: str
     kind: str
@@ -33,10 +38,25 @@ class VarDynamics:
     sigma: float = 0.0
     growth_key: str = ""
 
+    def __post_init__(self):
+        if self.kind == "mean_revert" and not (math.isfinite(self.half_life) and self.half_life > 0):
+            raise ValueError(f"dynamics {self.key!r}: mean_revert half_life must be finite and > 0, got {self.half_life!r}")
+        if not self.sigma >= 0:
+            raise ValueError(f"dynamics {self.key!r}: sigma must be >= 0, got {self.sigma!r}")
+
 
 @dataclass
 class DynamicsSpec:
+    """Dynamics entries in declaration order. Keys are unique: entries apply sequentially and a mean_revert key
+    maps to its ``dyn_z`` column through a dict, so a repeated key would be order-dependent and silently wrong."""
     vars: list[VarDynamics] = field(default_factory=list)
+
+    def __post_init__(self):
+        seen = set()
+        for v in self.vars:
+            if v.key in seen:
+                raise ValueError(f"dynamics {v.key!r}: duplicate key in DynamicsSpec.vars")
+            seen.add(v.key)
 
     @property
     def noisy_keys(self) -> list[str]:

@@ -141,7 +141,7 @@ Variables **not** mean-reverting (handled differently):
 | `global_credit_spread` | 1 year | Financial markets revert faster than real economy |
 | `fdi_net` | 3 years | Investment decisions have longer cycles |
 
-**Implementation:** Half-life τ converts to reversion speed θ via: θ = ln(2) / τ
+**Implementation:** Half-life τ converts to the per-annual-step reversion fraction via θ = 1 − 0.5^(1/τ) (the exact one-year discretization of the OU process; the continuous-time θ = ln 2/τ applied as an annual step would make the realized half-life shorter than τ).
 
 ### 3.2 Equilibrium Defaults
 
@@ -174,6 +174,8 @@ For v0.1, use placeholder volatilities based on typical ranges:
 | `unemployment_rate` | 1 percentage point | Relatively stable |
 | `oil_brent` | $15/barrel | ~20% of baseline |
 | `global_credit_spread` | 50 bps | Can spike much higher in crises |
+
+σ is the standard deviation of the one-year innovation ε, not of the stationary distribution.
 
 **Simplification:** v0.1 uses single default volatility per variable class. Sensitivity analysis will reveal if country-specific volatilities matter.
 
@@ -265,7 +267,7 @@ For each year t from 2025 to 2075:
     5. MEAN REVERSION (Tier 2)
        For mean-reverting variables:
            X(t) = X_shocked(t) + θ × (μ - X_shocked(t)) + ε
-           where θ = ln(2)/half_life, μ = equilibrium, ε ~ N(0, σ²)
+           where θ = 1 − 0.5^(1/half_life), μ = equilibrium, ε ~ N(0, σ²)
     
     6. TRANSMISSION (Simplified)
        inflation(t) = f(oil_price, food_price, import_dependence)
@@ -401,6 +403,7 @@ The MVP dynamics implementation is successful if:
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0 | December 2025 | Initial specification |
+| 1.1 | 2026-10-23 | θ = 1 − 0.5^(1/τ) (exact annual discretization); σ defined as innovation sd; transmission deferred to E7b (see sim/README.md §4) |
 
 ---
 

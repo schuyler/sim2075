@@ -127,7 +127,7 @@ X(t+1) = X(t) + θ(μ - X(t)) + ε
 where ε ~ N(0, σ²)
 ```
 
-Half-life relationship: `half_life = ln(2) / θ`
+Half-life relationship: `half_life = ln(2)/θ` for the continuous process; for the annual discrete step above use `θ = 1 − 0.5^(1/half_life)`.
 
 ### Examples
 

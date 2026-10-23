@@ -308,7 +308,7 @@ class ReferenceRun:
             for v in self.dyn.vars:
                 if v.kind == "mean_revert":
                     x = self._get(self._loc[v.key])
-                    theta = math.log(2.0) / v.half_life
+                    theta = 1.0 - 0.5 ** (1.0 / v.half_life)   # exact one-year step: README §3 "Dynamics"
                     z = float(d["dyn_z"][r, self.noisy_col[v.key]])
                     self._set(self._loc[v.key], x + theta * (v.mu - x) + v.sigma * z)
             for v in self.dyn.vars:

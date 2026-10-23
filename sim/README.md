@@ -188,12 +188,20 @@ else. The reference engine replays run *r* by generating block `r //
 block_size` at full width and consuming row `r % block_size`.
 
 **Dynamics** (reference engine, pending E7 for the vectorized engine):
-mean-reverting variables update first (`x += θ(μ − x) + σ z`, `θ = ln 2 /
-half_life`, one `dyn_z` column per mean-reverting variable in declaration
-order, drawn even when σ = 0), then `gdp_stock` variables compound by the
-updated growth rate (growth in % per year), then additive and multiplicative
-drifts. The oil/food → inflation transmission of MVP scope §5.1 step 6 is not
-yet implemented (E7).
+mean-reverting variables update first (`x += θ(μ − x) + σ z`, `θ = 1 −
+0.5^(1/half_life)`, one `dyn_z` column per mean-reverting variable in
+declaration order, drawn even when σ = 0), then `gdp_stock` variables
+compound by the updated growth rate (growth in % per year), then additive and
+multiplicative drifts. θ is the exact one-year discretization of the OU
+process, so a σ = 0 displacement `d` is exactly `d · 0.5^(k/h)` after `k`
+years and "half-life" means what it means in the shock schedule's `decay:`
+rows (§4, item 18). σ is the standard deviation of the one-year innovation,
+not of the stationary distribution (which is `σ / sqrt(θ(2 − θ))`, ≈ 1.41σ at
+h = 2). `VarDynamics` rejects a `mean_revert` `half_life` that is not finite
+and > 0 and any `sigma < 0`, and `DynamicsSpec` rejects duplicate keys (entries
+apply sequentially and a repeated mean-revert key would map to its last
+`dyn_z` column), each with a `ValueError` naming the key. The oil/food →
+inflation transmission of MVP scope §5.1 step 6 is not yet implemented (E7).
 
 **Partial catalogs.** A cascade edge whose target exists in `events/` but is
 not yet migrated is dropped with a recorded warning when `strict_cascades` is
@@ -312,6 +320,26 @@ in the file's changelog row:
     baselines.
 17. **`EU_COHESION_STRESS`** (Sahel cascade table) is in no registry
     section; registry §5 asks for a disposition.
+
+Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
+
+18. **Mean-reversion half-life convention** — *resolved 2026-10-23.* MVP
+    scope §3.1 and §5.1 and State Dynamics §4 gave θ = ln 2/τ, the relation
+    for the continuous OU process `dX = θ(μ − X)dt + σ dW`. Applied as an
+    annual Euler step it shrinks a displacement by (1 − θ) per year, so the
+    realized half-life is ln 0.5 / ln(1 − θ): 0.587 y at h = 1 (41% short),
+    1.629 y at h = 2, 2.638 y at h = 3; and for h < ln 2 θ exceeds 1 and the
+    step overshoots. The guide's E7 gate ("recovers with specified
+    half-life") could not pass as worded. Both engines now use the exact
+    one-year discretization θ = 1 − 0.5^(1/h) (h = 1 → 0.5; h = 2 →
+    0.2928932…; h = 3 → 0.2062995…), which lies in (0, 1) for every h > 0
+    and matches the shock schedule's `0.5^(age/h)`. σ is unchanged in
+    meaning: the one-year innovation sd, which is how D4 must read MVP §3.3's
+    "Default σ (annual)". The change was cheap only now: D4 has not started
+    and no data uses dynamics half-lives. Amended: `sim/reference/engine.py`
+    step 7, `sim/reference/model.py` (docstring and validation, §3
+    "Dynamics"), FIX-A's hand trace, MVP Dynamics Scope §3.1, §3.3, §5.1 and
+    its Document History (1.1), State Dynamics §4.
 
 ## 5. License
 

@@ -13,9 +13,9 @@ World:
         row 0: a.gdp_growth      mag [-4, 1],    immediate, decay half-life 1
         row 1: oil_brent         mag [20, 0],    immediate, permanent
         row 2: a.gdp_per_capita  mag [-0.10, 0], immediate, decay half-life 1, multiplicative (fraction of current value)
-  dynamics: gdp_growth mean-reverts to 2 with half-life 1 (θ = ln 2), σ = 0, for a and b;
+  dynamics: gdp_growth mean-reverts to 2 with half-life 1 (θ = 0.5), σ = 0, for a and b;
             gdp_per_capita *= 1 + gdp_growth/100 (growth-rate-first); life_expectancy += 0.2 (a), 0.1 (b);
-            oil_brent mean-reverts to 75 with half-life 2, σ = 0.
+            oil_brent mean-reverts to 75 with half-life 2 (θ = 1 − 2^(−1/2)), σ = 0.
   initial: a = (50, 2, 80), b = (10, 2, 70), oil = 75.
 
 Scripted draws (R = 1): factor z = 0 every year, so F = 0 and Z = 0.8·ε.
@@ -90,7 +90,8 @@ def draws() -> ScriptedDraws:
 
 def expected() -> dict:
     """Hand trace. Returns per-year end-of-year values and the expected event log."""
-    ln2 = math.log(2.0)
+    th1 = 0.5                      # θ = 1 − 0.5^(1/h) at h = 1 (gdp_growth)
+    th2 = 1.0 - 0.5 ** 0.5         # θ at h = 2 (oil_brent)
     a_pc, a_g, a_le = 50.0, 2.0, 80.0
     b_pc, b_g, b_le = 10.0, 2.0, 70.0
     oil = 75.0
@@ -107,10 +108,10 @@ def expected() -> dict:
             age = t - 1
             a_g += M * 0.5 ** age - M * 0.5 ** (age - 1)
             a_pc *= (1.0 + Mq * 0.5 ** age) / (1.0 + Mq * 0.5 ** (age - 1))
-        # step 7: mean reversion first (θ = ln2 / half-life), then stocks and drifts
-        a_g = a_g + ln2 * (2.0 - a_g)
-        b_g = b_g + ln2 * (2.0 - b_g)
-        oil = oil + (ln2 / 2.0) * (75.0 - oil)
+        # step 7: mean reversion first (θ = 1 − 0.5^(1/h)), then stocks and drifts
+        a_g = a_g + th1 * (2.0 - a_g)
+        b_g = b_g + th1 * (2.0 - b_g)
+        oil = oil + th2 * (75.0 - oil)
         a_pc = a_pc * (1.0 + a_g / 100.0)
         b_pc = b_pc * (1.0 + b_g / 100.0)
         a_le += 0.2
