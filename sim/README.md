@@ -24,8 +24,9 @@ decisions they left open (§3) and what the build has found so far (§4).
 | E3 | `sim/engine/factors.py`: Ω validation, Cholesky, correlated draws, propensity, copula uniforms | R=100k: factor correlation within ±0.02 of Ω; per-event Z variance within ±0.02 of 1 | done |
 | E4 | `sim/engine/firing.py`: per-type `p_base` and gates, per-run Type 2 thresholds, fire mask | R=100k: Type 1 frequency within 3σ for every fixture event; Type 2 monotone in pressure; Type 3 never fires while gated off | done |
 | E5 | `sim/engine/memory.py`: sustained counters, cascade slots, `EventState` updates, resolution/branch code draw | hand-built FIX-B factor path opens the sustained gate in exactly the specified year and resets on interruption; cascade delta present for exactly `years` years after firing; conditional cascade respects its `if`; 257th live cascade raises `LedgerOverflow` | done |
-| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters — grows with each stage | in suite |
-| E6–E10 | impacts, dynamics, year loop, analysis | per guide §3 | not started |
+| E6 | `sim/engine/impacts.py`: active-shock ledger, impact-row selection and magnitudes, shock schedule, epsilon-cull, `until: resolved` flags | single decaying shock matches the closed-form half-life to rtol 1e-9 and its epsilon-cull year restores the no-shock value and frees the slot; `permanent` + `immediate` takes no slot, a ramped `permanent` frees its slot at onset end keeping its level; delayed/gradual onset per the §3 table; `until: resolved` holds `resolves_after` years and re-firing restarts it; multiplicative decay returns to the no-shock path, contribution ≤ −1 raises `ImpactOutOfRange`; `max_active + 1` live shocks raise `LedgerOverflow`, `max_active` do not; oracle diff on FIX-B passes | done |
+| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters, impact magnitudes, `until: resolved` flags, live ledger; dynamics-free mode (both engines `DynamicsSpec([])`, own state from initial conditions, plus FIX-B's scripted draws with `x.stress` 2.0): full state trajectory (rtol 1e-9) and exact event log — grows with each stage | in suite |
+| E7–E10 | dynamics, year loop, analysis | per guide §3 | not started |
 
 Data track (guide §2): D1 and D2 done — all 29 events compile and the
 full-catalog gate (`strict_cascades` on) is green with no dropped edges
@@ -46,7 +47,7 @@ sim/
 ├── reference/    scalar reference engine (ADR-1): model.py (inputs) · engine.py (the year step)
 ├── rng.py        draw schedule contract (guide §4.6), shared by both engines
 ├── data/         state_catalog.yaml (generated from the markdown catalogs) · omega.yaml (Ω, transcribed)
-├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · memory.py (E5) · E6+ pending
+├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · memory.py (E5) · impacts.py (E6) · E7+ pending
 ├── analysis/     E9 (empty)
 └── tests/        fixtures/ (fix_a, fix_b, fix_c, broken/) and one test module per gate
 ```
@@ -138,8 +139,8 @@ number for an event that has never fired. `branch` names usable in
 expressions must be unique across the event's resolutions. Multi-line YAML
 block scalars are parsed as one parenthesized expression.
 
-**Vectorized modules** (E3–E5) consume whole §4.6 blocks and reproduce
-the reference's steps 1–4 for every run of the block: `FactorModel.year`
+**Vectorized modules** (E3–E6) consume whole §4.6 blocks and reproduce
+the reference's steps 1–6 and 8 for every run of the block: `FactorModel.year`
 gives `F = z Lᵀ` and `U = Φ(F Λᵀ + σ_idio ε)`; `FiringModel.thresholds`
 takes the init-time `t2_offset` block; `FiringModel.base` evaluates the §4.3
 callables once over `(R,)` views (namespace from `namespace_from_state`
@@ -154,7 +155,26 @@ event fires, and the cascade slots (`[R, max_active]` arrays `active`,
 `dst_event`, `delta`, `years_remaining`, `src_event`, recycled lowest-free
 first; overflow raises `LedgerOverflow` with the list of overflowing run
 indices); `draw_codes` is the step-5 resolution/branch draw for every run and
-event, which E6 reuses for impact rows.
+event, which E6 reuses for impact rows. E6's `ImpactLedger` owns the shock
+ledger and the per-event `until: resolved` flags (`event_active` bool and
+`active_until` int64, `[R, E]`): `resolve` (step 5) selects the impact rows
+matching each firing's codes, draws `M` from `impact_z` (drawn for every row
+and run, used where selected; `ImpactDraw.for_firing` gives
+`EventFiring.magnitudes`) and sets the flags; `apply` (step 6) ages, applies
+and frees live shocks, then applies and slots this year's, mutating the
+caller's `country`/`global_` in place; `end_of_year` (step 8, after
+`MemoryModel.end_of_year`) clears the flags. Ledger slots are the guide's
+§4.4 `[R, max_active]` arrays (`max_active` from `SimParams`), recycled
+lowest-free-first, plus three fields the reference's schedule needs and the
+§4.4 table omits: `row` (int32, the `impact_table` row: provenance and the
+`ImpactOutOfRange` message), `prev` (float64, the contribution currently in
+state) and `mult` (bool, the row's `multiplicative` tag) — beyond the guide's
+§4.4 slot layout, as the `multiplicative` column is beyond §4.1 (§4, item 5).
+`LedgerOverflow` and `ImpactOutOfRange` carry the list of offending global run
+indices; the latter's row and contribution are those of the lowest offending
+run's first offending shock. Shocks on the same variable are summed (or
+multiplied) in slot order rather than the reference's list order, which
+differs from it only by rounding.
 
 **Draws** (guide §4.6). One `SeedSequence(master_seed)`, one child per block
 of `block_size` runs; within a block, `t2_offset` once, then per year

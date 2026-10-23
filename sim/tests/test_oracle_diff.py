@@ -8,21 +8,34 @@ vectorized modules consume the whole block. Everything the built stages produce 
     E5  every year: p_eff, gate, fire mask, the drawn resolution/branch codes and the cascade bitmask of
         each firing; and the start-of-year memory (sustained counters, live cascades with their source
         bitmask and summed deltas, last resolution/branch/firing year) after every year
+    E6  every year: each firing's impact magnitudes (row, M), the per-event ``until: resolved`` flags and
+        windows, and the live shock ledger (row, age, M, contribution in state), none of which depends on state
 
-E6/E7 (impacts, dynamics) are not built, so for years > 0 the vectorized namespace is fed the reference's
-own recorded start-of-year state (``RunRecord.country[t]``, ``RunRecord.global_[t]``), isolating E3–E5.
-The reference's internal memory at the start of year t is read from a replay truncated to t years (the
-draws are generated year by year, so a shorter horizon consumes the same leading draws).
+**Fed mode** (``test_oracle_diff_factors_and_firing``). E7 (dynamics) is not built, so for years > 0 the
+vectorized namespace is fed the reference's own recorded start-of-year state (``RunRecord.country[t]``,
+``RunRecord.global_[t]``), isolating E3–E6 (the ledger applies its increments to a scratch copy). The
+reference's internal memory at the start of year t is read from a replay truncated to t years (the draws are
+generated year by year, so a shorter horizon consumes the same leading draws).
 
-As E6–E8 land, this test grows to the full state trajectory (rtol 1e-9) and the exact event log.
+**Dynamics-free mode** (``test_oracle_diff_dynamics_free*``): both engines run with ``DynamicsSpec([])``, so
+end-of-year state is exactly post-impact state and the vectorized engine evolves its own state from initial
+conditions (E3–E6 wired in the step order, nothing fed). Diffed every year: the full state trajectory
+(rtol 1e-9), the event log (year, event, resolution, branch, cascade mask exactly; magnitudes row-for-row, M,
+p_base and p_eff at rtol 1e-9), the per-event active flags and windows, and the live ledger. Run on FIX-A and
+FIX-B under ``SeededDraws`` (one and four blocks), and on FIX-B's scripted draws with initial ``x.stress`` 2.0,
+which opens T3's precondition so that T3 fires in t = 3 and its ``until: resolved`` shock is exercised (the
+seeded FIX-B batch never fires T3: with no dynamics ``x.stress`` stays 0).
+
+When E7/E8 land, this grows to the full-dynamics state trajectory.
 """
 import dataclasses
 
 import numpy as np
 import pytest
 
-from sim.engine import EventState, FactorModel, FiringModel, MemoryModel, namespace_from_state
-from sim.reference import ReferenceRun
+from sim.catalog.types import DUR_UNTIL_RESOLVED
+from sim.engine import EventState, FactorModel, FiringModel, ImpactLedger, MemoryModel, namespace_from_state
+from sim.reference import DynamicsSpec, InitialConditions, ReferenceRun
 from sim.rng import DrawShapes, SeededDraws
 from sim.tests.fixtures import fix_a, fix_b
 
@@ -52,6 +65,30 @@ def _assert_memory(mem: MemoryModel, i: int, run: ReferenceRun, where: str) -> N
     np.testing.assert_allclose(delta[i], want_delta, rtol=1e-9, atol=0, err_msg=f"{where} cascade deltas")
 
 
+def _assert_impacts(led: ImpactLedger, i: int, run: ReferenceRun, where: str) -> None:
+    """Ledger row ``i`` equals the reference run's ledger and ``until: resolved`` flags (after its last step 8)."""
+    assert led.event_active[i].tolist() == run.active.tolist(), (where, "active flags")
+    assert led.active_until[i].tolist() == run.active_until.tolist(), (where, "active_until")
+    live = np.flatnonzero(led.active[i])
+    got = sorted((int(led.row[i, s]), int(led.age[i, s]), float(led.magnitude[i, s]), float(led.prev[i, s]))
+                 for s in live)
+    want = sorted((s.row, s.age, s.M, s.prev) for s in run.ledger)
+    assert [g[:2] for g in got] == [w[:2] for w in want], (where, "ledger rows/ages")
+    np.testing.assert_allclose([g[2:] for g in got], [w[2:] for w in want], rtol=1e-9, atol=0,
+                               err_msg=f"{where} ledger M/prev")
+    for s in live:
+        ir = led.cat.impact_table[led.row[i, s]]
+        assert (led.entity_idx[i, s], led.var_idx[i, s], led.owner_event[i, s], led.mult[i, s]) == \
+            (ir["entity_idx"], ir["var_idx"], ir["event"], ir["multiplicative"]), (where, "ledger provenance")
+
+
+def _assert_magnitudes(draw, i: int, ev, where: str) -> None:
+    got = draw.for_firing(i, ev.event)
+    assert [j for j, _ in got] == [j for j, _ in ev.magnitudes], (where, "magnitude rows")
+    np.testing.assert_allclose([m for _, m in got], [m for _, m in ev.magnitudes], rtol=1e-9, atol=0,
+                               err_msg=f"{where} magnitudes")
+
+
 @pytest.mark.parametrize("mod", [fix_a, fix_b], ids=["FIX-A", "FIX-B"])
 @pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
 def test_oracle_diff_factors_and_firing(mod, block_size):
@@ -74,6 +111,7 @@ def test_oracle_diff_factors_and_firing(mod, block_size):
         stream = draws.stream(b)
         thr = fr.thresholds(stream.init["t2_offset"])
         mem = MemoryModel(cat, rb, run_offset=start)
+        led = ImpactLedger(cat, rb, run_offset=start, max_active=params.max_active, epsilon_cull=params.epsilon_cull)
         for t in range(params.years):
             year = params.start_year + t
             yr = stream.year(t)
@@ -98,6 +136,7 @@ def test_oracle_diff_factors_and_firing(mod, block_size):
             # E3–E5 for year t from the reference's recorded start-of-year state
             for r in range(start, stop):
                 _assert_memory(mem, r - start, snap[t][r], f"run {r} start of {year}")
+                _assert_impacts(led, r - start, snap[t][r], f"run {r} start of {year}")
             country = np.stack([refs[r].country[t] for r in range(start, stop)])
             global_ = np.stack([refs[r].global_[t] for r in range(start, stop)])
             ns = namespace_from_state(cat, F, country, global_)
@@ -106,6 +145,8 @@ def test_oracle_diff_factors_and_firing(mod, block_size):
             p_eff = res.p_base + delta
             fired = fr.fire(res.gate, U, p_eff)
             codes, branches = mem.resolve(fired, yr["res_u"], yr["branch_u"], ns, year)
+            draw = led.resolve(fired, codes, branches, yr["impact_z"], year)
+            led.apply(country.copy(), global_.copy(), year)   # ledger contents do not depend on state
             for r in range(start, stop):
                 i, ref = r - start, refs[r]
                 np.testing.assert_allclose(p_eff[i], ref.p_eff[t], rtol=1e-9, atol=0)
@@ -117,12 +158,15 @@ def test_oracle_diff_factors_and_firing(mod, block_size):
                     assert mask[i, ev.event] == ev.cascade_mask, (r, year)
                     np.testing.assert_allclose(res.p_base[i, ev.event], ev.p_base, rtol=1e-9, atol=0)
                     np.testing.assert_allclose(p_eff[i, ev.event], ev.p_eff, rtol=1e-9, atol=0)
+                    _assert_magnitudes(draw, i, ev, f"run {r} {year}")
             mem.end_of_year(res.sustained_now, year)
+            led.end_of_year(year)
             seen["cascade"] += int(mem.active.sum())
             seen["counter"] += sum(int((c > 0).sum()) for c in mem.counters.values())
             seen["fired_after_0"] += int(fired.sum()) if t > 0 else 0
         for r in range(start, stop):
             _assert_memory(mem, r - start, snap[params.years][r], f"run {r} end of run")
+            _assert_impacts(led, r - start, snap[params.years][r], f"run {r} end of run")
     # the diff is only meaningful if something fired in year 0 somewhere in the batch, and, beyond year 0,
     # if firings, live cascades and nonzero sustained counters occurred where the fixture has them
     assert any(e.year == params.start_year for ref in refs for e in ref.events)
@@ -131,3 +175,89 @@ def test_oracle_diff_factors_and_firing(mod, block_size):
         assert seen["cascade"] > 0
     if any(s.sustained for s in cat.type3.values()):
         assert seen["counter"] > 0
+
+
+def _diff_dynamics_free(cat, ic, params, draws) -> dict:
+    """E3–E6 wired in the step order with no dynamics, own state from ``ic``, diffed against the reference."""
+    dyn = DynamicsSpec([])
+    R = draws.R
+    snap = [[ReferenceRun(cat, ic, dyn, params, draws, r) for r in range(R)]]
+    for t in range(1, params.years + 1):
+        runs = [ReferenceRun(cat, ic, dyn, dataclasses.replace(params, years=t), draws, r) for r in range(R)]
+        recs = [run.run() for run in runs]
+        snap.append(runs)
+    refs = recs
+
+    fm, fr = FactorModel.from_catalog(cat), FiringModel(cat)
+    seen = dict(firings=0, shocks=0, live=0, owner_active=0, log=[[] for _ in range(R)])
+    for b in range(draws.n_blocks):
+        start, stop = draws.block_rows(b)
+        rb = stop - start
+        stream = draws.stream(b)
+        thr = fr.thresholds(stream.init["t2_offset"])
+        mem = MemoryModel(cat, rb, run_offset=start)
+        led = ImpactLedger(cat, rb, run_offset=start, max_active=params.max_active, epsilon_cull=params.epsilon_cull)
+        country = np.array(np.broadcast_to(ic.country, (rb,) + ic.country.shape), dtype=np.float64)
+        global_ = np.array(np.broadcast_to(ic.global_, (rb,) + ic.global_.shape), dtype=np.float64)
+        max_live = np.zeros(rb, dtype=np.int64)
+        for t in range(params.years):
+            year = params.start_year + t
+            yr = stream.year(t)
+            F, U = fm.year(yr)                                              # 1-2
+            ns = namespace_from_state(cat, F, country, global_)
+            res = fr.base(ns, year, mem.events, thr, mem.counters)          # 3
+            delta, mask = mem.deltas()
+            p_eff = res.p_base + delta
+            fired = fr.fire(res.gate, U, p_eff)                             # 4
+            codes, branches = mem.resolve(fired, yr["res_u"], yr["branch_u"], ns, year)    # 5
+            draw = led.resolve(fired, codes, branches, yr["impact_z"], year)
+            led.apply(country, global_, year)                               # 6 (7: no dynamics)
+            mem.end_of_year(res.sustained_now, year)                        # 8
+            led.end_of_year(year)
+            max_live = np.maximum(max_live, led.n_live)
+            for r in range(start, stop):
+                i, ref, where = r - start, refs[r], f"run {r} {year}"
+                np.testing.assert_allclose(country[i], ref.country[t + 1], rtol=1e-9, atol=0, err_msg=where)
+                np.testing.assert_allclose(global_[i], ref.global_[t + 1], rtol=1e-9, atol=0, err_msg=where)
+                firings = [ev for ev in ref.events if ev.year == year]
+                got = [(year, int(e), int(codes[i, e]), int(branches[i, e]), int(mask[i, e]))
+                       for e in np.flatnonzero(fired[i])]
+                assert got == [(ev.year, ev.event, ev.resolution, ev.branch, ev.cascade_mask) for ev in firings], where
+                for ev in firings:
+                    _assert_magnitudes(draw, i, ev, where)
+                    np.testing.assert_allclose(res.p_base[i, ev.event], ev.p_base, rtol=1e-9, atol=0, err_msg=where)
+                    np.testing.assert_allclose(p_eff[i, ev.event], ev.p_eff, rtol=1e-9, atol=0, err_msg=where)
+                    seen["shocks"] += len(ev.magnitudes)
+                    seen["log"][r].append((ev.year, ev.event))
+                _assert_memory(mem, i, snap[t + 1][r], where)
+                _assert_impacts(led, i, snap[t + 1][r], where)
+            seen["firings"] += int(fired.sum())
+            seen["live"] += int(led.n_live.sum())
+            seen["owner_active"] += int((led.active & (led.dur_kind == DUR_UNTIL_RESOLVED)).sum())
+        for r in range(start, stop):
+            assert refs[r].max_active_seen == max_live[r - start], f"run {r} max_active_seen"
+    return seen
+
+
+@pytest.mark.parametrize("mod", [fix_a, fix_b], ids=["FIX-A", "FIX-B"])
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_dynamics_free(mod, block_size):
+    cat, ic, params = mod.catalog(), mod.initial_conditions(), mod.params()
+    draws = SeededDraws(SEED, R=R_DIFF, shapes=DrawShapes.for_catalog(cat, 0), block_size=block_size,
+                        years=params.years)
+    seen = _diff_dynamics_free(cat, ic, params, draws)
+    assert seen["firings"] > 0 and seen["shocks"] > 0 and seen["live"] > 0
+
+
+def test_oracle_diff_dynamics_free_scripted_fix_b_until_resolved():
+    cat, base, params = fix_b.catalog(), fix_b.initial_conditions(), fix_b.params()
+    country = base.country.copy()
+    country[cat.index.entity["x"], cat.index.country_var["stress"]] = 2.0
+    ic = InitialConditions(country=country, global_=base.global_.copy())
+    seen = _diff_dynamics_free(cat, ic, params, fix_b.draws())
+    # T1 fires in 2026 ('bad', cascade to T3), T3 in 2028 (its until: resolved shock), T2 in 2030
+    assert seen["log"][0] == [(2026, 0), (2028, 2), (2030, 1)]
+    assert seen["owner_active"] == 2                                       # the T3 shock is live after 2028 and 2029
+    rec = ReferenceRun(cat, ic, DynamicsSpec([]), params, fix_b.draws(), 0).run()
+    conflicts = rec.global_[1:, cat.index.global_var["conflicts"]]
+    assert conflicts.tolist() == [0.0, 0.0, 0.0, 1.0, 1.0, 0.0]            # holds 2028-2029, drops to 0 in 2030
