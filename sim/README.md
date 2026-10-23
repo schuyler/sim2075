@@ -25,7 +25,7 @@ decisions they left open (§3) and what the build has found so far (§4).
 | E4 | `sim/engine/firing.py`: per-type `p_base` and gates, per-run Type 2 thresholds, fire mask | R=100k: Type 1 frequency within 3σ for every fixture event; Type 2 monotone in pressure; Type 3 never fires while gated off | done |
 | E5 | `sim/engine/memory.py`: sustained counters, cascade slots, `EventState` updates, resolution/branch code draw | hand-built FIX-B factor path opens the sustained gate in exactly the specified year and resets on interruption; cascade delta present for exactly `years` years after firing; conditional cascade respects its `if`; 257th live cascade raises `LedgerOverflow` | done |
 | E6 | `sim/engine/impacts.py`: active-shock ledger, impact-row selection and magnitudes, shock schedule, epsilon-cull, `until: resolved` flags | single decaying shock matches the closed-form half-life to rtol 1e-9 and its epsilon-cull year restores the no-shock value and frees the slot; `permanent` + `immediate` takes no slot, a ramped `permanent` frees its slot at onset end keeping its level; delayed/gradual onset per the §3 table; `until: resolved` holds `resolves_after` years and re-firing restarts it; multiplicative decay returns to the no-shock path, contribution ≤ −1 raises `ImpactOutOfRange`; `max_active + 1` live shocks raise `LedgerOverflow`, `max_active` do not; oracle diff on FIX-B passes | done |
-| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters, impact magnitudes, `until: resolved` flags, live ledger; dynamics-free mode (both engines `DynamicsSpec([])`, own state from initial conditions, plus FIX-B's scripted draws with `x.stress` 2.0, and test-built ramped-onset, long-horizon, `until: resolved` re-firing and small-`max_active` variants): full state trajectory (rtol 1e-9), exact event log, `LedgerOverflow` runs and year — grows with each stage | in suite |
+| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters, impact magnitudes, `until: resolved` flags, live ledger; dynamics-free mode (both engines `DynamicsSpec([])`, own state from initial conditions, plus FIX-B's scripted draws with `x.stress` 2.0, and test-built ramped-onset, long-horizon, `until: resolved` re-firing and small-`max_active` variants): full state trajectory (rtol 1e-9), exact event log, `LedgerOverflow` runs and year, `ImpactOutOfRange` runs, year, row and contribution — grows with each stage | in suite |
 | E7–E10 | dynamics, year loop, analysis | per guide §3 | not started |
 
 Data track (guide §2): D1 and D2 done — all 29 events compile and the
@@ -171,8 +171,11 @@ lowest-free-first, plus three fields the reference's schedule needs and the
 state) and `mult` (bool, the row's `multiplicative` tag) — beyond the guide's
 §4.4 slot layout, as the `multiplicative` column is beyond §4.1 (§4, item 5).
 `LedgerOverflow` and `ImpactOutOfRange` carry the list of offending global run
-indices; the latter's row and contribution are those of the lowest offending
-run's first offending shock. Shocks on the same variable are summed (or
+indices (the reference raises with its single run's index; both exception
+types accept either); `ImpactOutOfRange`'s row and contribution are those the
+reference reports for the lowest offending run: its first offending shock in
+the reference's application order, live shocks by firing year, owner event and
+row, then this year's by event and row. Shocks on the same variable are summed (or
 multiplied) in slot order rather than the reference's list order, which
 differs from it only by rounding.
 

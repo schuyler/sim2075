@@ -171,7 +171,9 @@ class ImpactLedger:
         (before any mutation) when a multiplicative contribution reaches ≤ −1, and ``LedgerOverflow`` when a run
         would hold more than ``max_active`` live shocks after this year's frees and pushes; both name the year
         and the offending runs' global indices (a list). ``ImpactOutOfRange`` reports the row and contribution
-        of the lowest offending run's first offending shock (live slots in slot order, then this year's rows).
+        of the lowest offending run's first offending shock in the reference's application order: live shocks
+        oldest firing first, then by owner event and row (its ledger list order, which slot order is not once
+        slots are recycled), then this year's shocks by event and row.
         """
         if self._pending is None:
             raise RuntimeError("ImpactLedger.apply called without this year's resolve")
@@ -210,7 +212,7 @@ class ImpactLedger:
         n_var = it["var_idx"][nj].astype(np.intp)
         n_mult = it["multiplicative"][nj].astype(bool)
 
-        self._check_range(year, lr, self.row[lr, ls], mult, prev, cur, nr, nj, n_mult, n_prev, n_cur)
+        self._check_range(year, lr, age, owner, self.row[lr, ls], mult, prev, cur, nr, nj, n_mult, n_prev, n_cur)
 
         _apply(country, global_, lr, ent, var, mult, prev, cur)
         end = _onset_end(ok, oy)
@@ -257,19 +259,23 @@ class ImpactLedger:
         self.prev[nr, slot] = n_cur
         self.mult[nr, slot] = it["multiplicative"][nj]
 
-    def _check_range(self, year, lr, lrow, mult, prev, cur, nr, nj, n_mult, n_prev, n_cur) -> None:
+    def _check_range(self, year, lr, age, owner, lrow, mult, prev, cur, nr, nj, n_mult, n_prev, n_cur) -> None:
         bad = mult & (cur != prev) & (cur <= -1.0)
         n_bad = n_mult & (n_cur != n_prev) & (n_cur <= -1.0)
         if not (bad.any() or n_bad.any()):
             return
         runs = np.unique(np.concatenate((lr[bad], nr[n_bad])))
         first = runs[0]
+        # the reference's order: (firing year = year − age, owner event, row) is unique per run and is its
+        # ledger list order; this year's shocks follow, by (event, row)
         k = np.flatnonzero(bad & (lr == first))
         if len(k):
-            row, c = int(lrow[k[0]]), float(cur[k[0]])
+            k = k[np.lexsort((lrow[k], owner[k], -age[k].astype(np.int64)))[0]]
+            row, c = int(lrow[k]), float(cur[k])
         else:
             k = np.flatnonzero(n_bad & (nr == first))
-            row, c = int(nj[k[0]]), float(n_cur[k[0]])
+            k = k[np.lexsort((nj[k], self.row_event[nj[k]]))[0]]
+            row, c = int(nj[k]), float(n_cur[k])
         raise ImpactOutOfRange((runs + self.run_offset).tolist(), year, row, c)
 
     # -- step 8 ----------------------------------------------------------------

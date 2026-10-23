@@ -36,6 +36,9 @@ culled, so three test-built variants (fixture files unchanged) extend the dynami
     overflow              ramped FIX-A at ``max_active`` 3 and 5 (values some runs peak at exactly): each block
                           raises ``LedgerOverflow`` in the first year any of its runs overflows, naming exactly the
                           runs the reference fails that year, with its count
+    out of range          ramped FIX-A with its multiplicative row widened (mean −0.5, std 0.4): each block raises
+                          ``ImpactOutOfRange`` in the reference's first failing year, naming exactly the runs the
+                          reference fails that year and the reference's row and contribution for the lowest
 
 When E7/E8 land, this grows to the full-dynamics state trajectory.
 """
@@ -47,7 +50,7 @@ import pytest
 from sim.catalog.types import (DUR_DECAY, DUR_PERMANENT, DUR_UNTIL_RESOLVED, ONSET_DELAYED, ONSET_GRADUAL,
                                ONSET_IMMEDIATE)
 from sim.engine import EventState, FactorModel, FiringModel, ImpactLedger, MemoryModel, namespace_from_state
-from sim.reference import DynamicsSpec, InitialConditions, LedgerOverflow, ReferenceRun
+from sim.reference import DynamicsSpec, ImpactOutOfRange, InitialConditions, LedgerOverflow, ReferenceRun
 from sim.rng import DrawShapes, SeededDraws
 from sim.tests.fixtures import fix_a, fix_b
 
@@ -393,3 +396,46 @@ def test_oracle_diff_dynamics_free_until_resolved_refiring():
     assert any(g < window for g in gaps)                           # re-fire while active
     assert any(g == window for g in gaps)                          # re-fire the year after the window closed
     assert seen["freed"][DUR_UNTIL_RESOLVED] > 0
+
+
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_impact_out_of_range_runs_year_and_row(block_size):
+    mod, years, changes = RAMPED["FIX-A"]
+    cat, ic = _ramped(mod.catalog(), changes), mod.initial_conditions()
+    it = cat.impact_table.copy()
+    it["mean"][2], it["std"][2] = -0.5, 0.4                # a.gdp_per_capita, multiplicative, gradual 2
+    cat = dataclasses.replace(cat, impact_table=it)
+    params = dataclasses.replace(mod.params(), years=years)
+    draws = SeededDraws(SEED, R=R_DIFF, shapes=DrawShapes.for_catalog(cat, 0), block_size=block_size, years=years)
+    ref = {}
+    for r in range(R_DIFF):
+        try:
+            ReferenceRun(cat, ic, DynamicsSpec([]), params, draws, r).run()
+        except ImpactOutOfRange as exc:
+            ref[r] = (exc.year, exc.row, exc.contribution)
+    assert ref and len(ref) < R_DIFF
+    fm, fr = FactorModel.from_catalog(cat), FiringModel(cat)
+    raised = 0
+    for b in range(draws.n_blocks):
+        start, stop = draws.block_rows(b)
+        rb = stop - start
+        stream = draws.stream(b)
+        thr = fr.thresholds(stream.init["t2_offset"])
+        mem = MemoryModel(cat, rb, run_offset=start)
+        led = ImpactLedger(cat, rb, run_offset=start, max_active=params.max_active, epsilon_cull=params.epsilon_cull)
+        country, global_ = _block_state(ic, rb)
+        block_ref = {r: v for r, v in ref.items() if start <= r < stop}
+        first = min((v[0] for v in block_ref.values()), default=None)
+        try:
+            for t in range(years):
+                _step(cat, fm, fr, mem, led, thr, stream.year(t), params.start_year + t, country, global_)
+        except ImpactOutOfRange as exc:
+            raised += 1
+            want = sorted(r for r, v in block_ref.items() if v[0] == first)
+            assert (exc.run_index, exc.year) == (want, first), b
+            _, row, contribution = block_ref[want[0]]
+            assert exc.row == row
+            np.testing.assert_allclose(exc.contribution, contribution, rtol=1e-9, atol=0)
+        else:
+            assert first is None, b
+    assert raised > 0

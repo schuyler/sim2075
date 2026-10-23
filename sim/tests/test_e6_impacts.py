@@ -290,6 +290,30 @@ def test_e6_multiplicative_contribution_at_or_below_minus_one_raises(run_offset)
     _reference(cat, fire, 3, R, z, r=1)                                           # −0.5 is in range
 
 
+@pytest.mark.parametrize("case", ["recycled-slot", "rows-not-grouped-by-event"])
+def test_e6_out_of_range_reports_the_shock_the_reference_reports(case):
+    if case == "recycled-slot":
+        # t0: E0's ramped permanent takes slot 0, E1's delayed shock slot 1; t1: slot 0 freed and reused by E2's
+        # delayed shock; t3: both reach their onset ≤ −1. The reference meets E1's (older) first: row 1, −1.5.
+        rows = [_row(1.0, onset=(ONSET_GRADUAL, 2), dur=(DUR_PERMANENT, math.nan), event=0),
+                _row(-1.5, var=GDP, onset=(ONSET_DELAYED, 3), dur=(DUR_DECAY, 1.0), event=1, mult=True),
+                _row(-2.0, var=GDP, onset=(ONSET_DELAYED, 2), dur=(DUR_DECAY, 1.0), event=2, mult=True)]
+        cat, fire = _catalog(rows, resolves_after=(0, 0, 0)), [(0, 0, 0), (0, 0, 1), (0, 1, 2)]
+        want = (START + 3, 1, -1.5)
+    else:
+        # both fire at t0; the reference pushes by event, so E0's row 1 is met before E1's row 0
+        rows = [_row(-1.2, var=GDP, dur=(DUR_DECAY, 1.0), event=1, mult=True),
+                _row(-3.0, var=GDP, dur=(DUR_DECAY, 1.0), event=0, mult=True)]
+        cat, fire = _catalog(rows, resolves_after=(0, 0)), [(0, 0, 0), (0, 0, 1)]
+        want = (START, 1, -3.0)
+    with pytest.raises(ImpactOutOfRange) as exc:
+        _drive(cat, fire, 5)
+    with pytest.raises(ImpactOutOfRange) as ref:
+        _reference(cat, fire, 5)
+    assert (ref.value.year, ref.value.row, ref.value.contribution) == want
+    assert exc.value.run_index == [0] and (exc.value.year, exc.value.row, exc.value.contribution) == want
+
+
 def test_e6_multiplicative_range_is_checked_when_a_delayed_onset_arrives():
     cat = _catalog([_row(-1.5, var=GDP, onset=(ONSET_DELAYED, 2), dur=(DUR_DECAY, 1.0), mult=True)])
     with pytest.raises(ImpactOutOfRange) as exc:
