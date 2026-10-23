@@ -552,20 +552,60 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     serialization moves to `run.py` (E9), and the State Outputs §8.4
     validation statistics, which are cross-run analyses of what E8 records,
     move to E9/E10. ADR-9 and architecture §3 need no edit.
-22. **Population dynamics are specified for v0.1 but built by no stage** —
-    *open, owner decision (found 2026-10-23).* MVP Dynamics Scope §2.4 says
-    that in v0.1 the 12 population cohorts per country evolve by aging,
-    mortality (from `life_expectancy`), fertility (`tfr`) and migration, per
-    State Dynamics §3, and MVP §8's success criteria check for "no negative
-    populations". But no row of guide §3 (E7 is drift and mean reversion),
-    no task in `tasks.md`, the architecture and this README mention cohort
-    mechanics. The state catalog's `pop_total` and `pop_working_age` are
-    `derived: true`, and nothing computes derived variables. Until this is
-    decided, population is static in both engines, which is what the
-    per-capita derivation of item 20 falls back to. The choice is between
-    a stage for cohort mechanics (with derived-variable computation)
-    before E10, and an MVP scope amendment deferring population dynamics
-    from v0.1.
+22. **Population dynamics are in v0.1: stage E7c, after Task 4.6** —
+    *decided 2026-10-23 by the project owner (option c below).*
+    **The gap.** MVP Dynamics Scope §2.4 says the 12 cohorts per country
+    evolve in v0.1 by aging, mortality (from `life_expectancy`), fertility
+    (`tfr`) and migration, per State Dynamics §3, and MVP §8 checks "no
+    negative populations". But the mechanics are named, never parameterized,
+    and the build plan carried them nowhere. §2.4 called them "not
+    parameterized trend rates", so they stayed out of the Tier 1 tables and
+    the parameter count, and the §5.1 year-loop pseudocode had no demographic
+    step. The guide's E7 ("per §5.1") and D3 ("~196 params") inherited the
+    omission, and every later stage was checked against the guide, never
+    against the purpose. Population is half of the founding thesis
+    (`methodology/00-start-here.md`), and the project began with a question
+    about Chinese demographic shifts. How that was nearly lost, and what now
+    guards against it, is [[methodology/project/purpose-trace]].
+    **A silent defect it causes today.** `Chinese Economic Crisis.md`'s Type 2
+    pressure includes `0.05 * clip((980.0 − chn.pop_working_age) / 180.0, 0,
+    1)`, the term meant to carry China's shrinking workforce.
+    `pop_working_age` is `derived: true`, and nothing computes derived
+    variables. At 0, which is what E8's smoke supplies for every country
+    variable, the term sits at its maximum, 5 of 100 pressure points, from
+    2025 on. With sharpness 10 (item 11) that can decide whether the event
+    fires. Guardrail 4 (no silent anything) is breached and nothing warns.
+    **Options considered.** (a) Compute derived variables (State Dynamics §8
+    gives the formulas; `median_age` is "estimated from cohort
+    distribution"). (b) An exogenous UN WPP population path per entity, with
+    event shocks applied on top: right on trend with no invented mechanics,
+    but `life_expectancy` shocks (260 rows across 8 events, among them the
+    severe pandemic) would never become deaths. (c) Full cohort mechanics:
+    what the spec promises, and the only option through which event shocks
+    to mortality, fertility and migration reach population.
+    **Decision.** (c), with (a) as part of it. Task 4.6 (guide D5)
+    parameterizes the mechanics:
+    - aging across the uneven cohort widths 0–14, 15–34, 35–54, 55–64,
+      65–79 and 80+, which needs a within-cohort age rule;
+    - a mortality schedule from a single `life_expectancy` (a model life
+      table);
+    - the fertility age band, which does not align with the 34 and 54 cohort
+      boundaries;
+    - the migration age/sex split;
+    - `tfr` dynamics;
+    - the 2025 pyramids and `tfr` baselines (UN WPP).
+
+    Stage E7c builds the mechanics in the reference engine first, inside step
+    7, followed by recomputation of every derived variable, which fixes the
+    China defect.
+    **What (c) does not do.** Cohort mechanics make population evolve, but
+    they do not make demography matter to the rest of the model. Today only
+    three demographic names are read by any expression (`chn.pop_working_age`,
+    `rus.emigration_skilled_rate`, `sahel.idp_population`), and no dynamics
+    or transmission rule links workforce or age structure to growth, fiscal
+    or military capacity, or geopolitical event probabilities. That channel
+    is what the founding question needs. It is tracked in the purpose trace,
+    not here.
 
 Found at E8 (2026-10-23):
 

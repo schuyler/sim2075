@@ -16,6 +16,8 @@ tags:
 
 This simulation exists to explore how the world might transform over the next half-century.
 
+**The founding question.** The project began with one question from its owner: *“What will Chinese demographic shifts do to its geopolitical strategy?”* Everything below generalizes it, and the model must stay able to answer it. A scope cut that would leave the model unable to speak to this question, or to any claim of the core intellectual project below, needs the project owner's explicit sign-off and an entry in [[methodology/project/purpose-trace]], which traces each claim to the state variables, dynamics, events and outputs that carry it.
+
 The 21st century will be shaped by the interaction of demographic transition and climate change—two slow-moving forces already locked in and irreversible on human timescales. These forces challenge assumptions that have anchored geopolitical thinking for generations: American hegemony as permanent backdrop, economic growth as default condition, climate as stable context for human activity. The news is full of signals pointing toward futures not yet visible, and a wealth of interacting variables too complex to hold in any single mind.
 
 ### What the Simulation Enables
