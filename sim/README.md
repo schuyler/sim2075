@@ -390,6 +390,89 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     supplies κ_oil, κ_food, the exporter rule and the list of direct
     `inflation_rate` event rows to retire (Task 4.4, which absorbs reopened
     4.5).
+20. **GDP is carried by `gdp_real`; `gdp_per_capita` is derived post-run** —
+    *decided 2026-10-23 (spec-owner review delegated by the project owner).*
+    The finding: 893 impact rows from 24 events shock `gdp_real` (fractions
+    of current value), none shock `gdp_per_capita`, and MVP scope's progress
+    engine compounds only `gdp_per_capita` (520 `gdp_growth` rows from 14
+    events reach it through growth). No rule links the two stocks, so a
+    level shock such as Taiwan's −40% landed on a variable with no dynamics
+    and was invisible to the progress engine. No expression in `events/`
+    reads either variable, so the choice has no firing-side effect.
+    **Decision.** In v0.1 the GDP stock is `gdp_real`: D4 declares it as the
+    `gdp_stock` entry with `growth_key: gdp_growth` for every dynamics
+    entity, so level shocks (step 6) and compounding (step 7) act on one
+    variable, in the order the engines already use. `gdp_per_capita` gets no
+    dynamics entry and no event rows; it is a D3 2025 baseline, and its
+    trajectory is derived in `analysis/` (E9) as `gdp_per_capita(0) ·
+    gdp_real(t) / gdp_real(0)`. MVP §2.1's per-capita trend growth is read
+    as `gdp_growth`'s equilibrium μ, as E7 already reads it. State Outputs
+    §4.1's "GDP" thin trajectories record `gdp_real`.
+    **Why.** (a) The multiplicative machinery is defined on `gdp_real`
+    (event-yaml-schema §Impact Fields "Units"; `test_e2_compiler.py`
+    asserts multiplicative ⇔ `gdp_real`), and State Outputs §3.2 defines
+    `gdp_change` on it: moving 893 rows the other way is maximal churn for
+    nothing. (b) The data track already reads it this way:
+    `us-constitutional-crisis.md`'s migration table converted
+    `usa.gdp_per_capita −10%` to `usa.gdp_real −0.10` because "per-capita
+    and aggregate real GDP coincide absent a population change", which is
+    exact in v0.1: `pop_total` is derived, nothing computes it, and
+    population dynamics are out of MVP scope. So the ratio is the model,
+    not an approximation. (c) It is the only option that puts GDP shocks
+    and growth on one variable, which MVP §8's criteria need; the ratio
+    shock schedule (§3) returns the state to its no-shock path as the
+    contribution decays, so it composes with compounding by design.
+    (d) Guardrail 3: it removes a process (per-capita as state) rather than
+    inventing one. (e) Cost: one D4 dynamics choice plus spec sentences,
+    versus 893 event rows or a new engine coupling rule.
+    **Follow-up.** Spec: MVP Dynamics Scope §2.1 (baseline and trend rows
+    name `gdp_real`; `gdp_per_capita` stays a 2025 baseline), §5.1 step 4
+    and its implementation note (`gdp_real(t) = gdp_real(t−1) · (1 +
+    gdp_growth(t))`), Document History; State Outputs §3.2 noting that
+    `gdp_per_capita_change ≡ gdp_change` in v0.1 (both pending, not yet
+    edited). D3: 2025 baselines for both. D4: `gdp_stock` on `gdp_real`
+    only. E9: the per-capita derivation, used by State Outputs §6
+    assessments that read `gdp_per_capita`. Known limitation: per-capita
+    ignores population change until population dynamics exist (post-v0.1).
+    FIX-A's `gdp_per_capita` stock is fixture-internal and stays. Does not
+    block E8 (fixtures plus a thin-key choice); it bites at D4 and E10.
+21. **`simulate()` takes dynamics and recording config; `years` lives in
+    `SimParams`** — *decided 2026-10-23 (same review; frozen seam, guide
+    §4.5, edit authorized by the owner, to be made at E8).* Guide §4.5's
+    `simulate(catalog, initial_conditions, params, R, seed, years=50)` has no
+    `DynamicsSpec`, which every run needs, and repeats the horizon
+    `SimParams` already carries. E8 implements `simulate(catalog,
+    initial_conditions, dynamics, params, R, seed, recording=RecordingSpec())
+    -> RunOutputs`. `dynamics` is the third positional, mirroring
+    `simulate_reference`. `years=` is dropped, because two sources for the
+    horizon invite silent disagreement (guardrail 4), and `SimParams` stays
+    the single source for `years`, `start_year`, `max_active`,
+    `epsilon_cull` and `block_size`. `RecordingSpec` lives in
+    `sim/reference/model.py` beside the other shared contract types:
+    `scenario_flags` (`ScenarioFlag(name, condition, min_years)`, ADR-9's
+    "config, not code" on ADR-5's counter machinery), `thin_keys` (state
+    keys) and `n_full` (runs with full trajectories, ADR-9's subset). It
+    defaults to empty and 0, so fixtures run without it. The production list
+    is data, loaded by `run.py` at E9: State Outputs §4.1 with GDP =
+    `gdp_real` (item 20). No scenario-flag definitions exist yet: that is an
+    owner/data-track item. `R` and `seed` stay separate arguments; the
+    reference takes `draws, run_indices` because the oracle diff drives it,
+    and that asymmetry is intended. §4.5's `RunOutputs` becomes in-memory
+    arrays:
+    - terminal state;
+    - columnar event log with provenance;
+    - `factors [R, K, T]`;
+    - `scenario_flags bool [R, n_flags]`;
+    - `thin [R, n_thin, T+1]`;
+    - full trajectories for the first `n_full` runs;
+    - `max_active_seen`;
+    - the year axis.
+
+    Two parts of §4.5 move to E9/E10, because neither is a semantics seam
+    and keeping them out keeps E8 oracle-diffable: Parquet/JSON
+    serialization moves to `run.py` (E9), and the State Outputs §8.4
+    validation statistics, which are cross-run analyses of what E8 records,
+    move to E9/E10. ADR-9 and architecture §3 need no edit.
 
 ## 5. License
 
