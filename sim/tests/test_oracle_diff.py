@@ -26,6 +26,17 @@ FIX-B under ``SeededDraws`` (one and four blocks), and on FIX-B's scripted draws
 which opens T3's precondition so that T3 fires in t = 3 and its ``until: resolved`` shock is exercised (the
 seeded FIX-B batch never fires T3: with no dynamics ``x.stress`` stays 0).
 
+The fixtures' impact rows are all immediate-onset and their 5–6 year horizons end before any decaying shock is
+culled, so three test-built variants (fixture files unchanged) extend the dynamics-free diff:
+
+    ramped long horizon   FIX-A (20 years) and FIX-B (32 years) with delayed/gradual onsets, ramped
+                          permanents and every decay reaching its epsilon-cull
+    until: resolved       ramped FIX-B, ``x.stress`` 2.0, T3's sustained condition dropped: T3 re-fires inside,
+                          adjacent to and after its windows under ``SeededDraws``
+    overflow              ramped FIX-A at ``max_active`` 3 and 5 (values some runs peak at exactly): each block
+                          raises ``LedgerOverflow`` in the first year any of its runs overflows, naming exactly the
+                          runs the reference fails that year, with its count
+
 When E7/E8 land, this grows to the full-dynamics state trajectory.
 """
 import dataclasses
@@ -33,14 +44,16 @@ import dataclasses
 import numpy as np
 import pytest
 
-from sim.catalog.types import DUR_UNTIL_RESOLVED
+from sim.catalog.types import (DUR_DECAY, DUR_PERMANENT, DUR_UNTIL_RESOLVED, ONSET_DELAYED, ONSET_GRADUAL,
+                               ONSET_IMMEDIATE)
 from sim.engine import EventState, FactorModel, FiringModel, ImpactLedger, MemoryModel, namespace_from_state
-from sim.reference import DynamicsSpec, InitialConditions, ReferenceRun
+from sim.reference import DynamicsSpec, InitialConditions, LedgerOverflow, ReferenceRun
 from sim.rng import DrawShapes, SeededDraws
 from sim.tests.fixtures import fix_a, fix_b
 
 R_DIFF = 64
 SEED = 7
+DUR_KINDS = (DUR_DECAY, DUR_PERMANENT, DUR_UNTIL_RESOLVED)
 
 
 def _assert_memory(mem: MemoryModel, i: int, run: ReferenceRun, where: str) -> None:
@@ -177,6 +190,36 @@ def test_oracle_diff_factors_and_firing(mod, block_size):
         assert seen["counter"] > 0
 
 
+def _step(cat, fm, fr, mem, led, thr, yr, year, country, global_) -> dict:
+    """One dynamics-free year of E3–E6 in the reference's step order; ``country``/``global_`` mutated in place."""
+    F, U = fm.year(yr)                                              # 1-2
+    ns = namespace_from_state(cat, F, country, global_)
+    res = fr.base(ns, year, mem.events, thr, mem.counters)          # 3
+    delta, mask = mem.deltas()
+    p_eff = res.p_base + delta
+    fired = fr.fire(res.gate, U, p_eff)                             # 4
+    codes, branches = mem.resolve(fired, yr["res_u"], yr["branch_u"], ns, year)    # 5
+    draw = led.resolve(fired, codes, branches, yr["impact_z"], year)
+    led.apply(country, global_, year)                               # 6 (7: no dynamics)
+    mem.end_of_year(res.sustained_now, year)                        # 8
+    led.end_of_year(year)
+    return dict(res=res, mask=mask, p_eff=p_eff, fired=fired, codes=codes, branches=branches, draw=draw)
+
+
+def _block_state(ic, rb):
+    country = np.array(np.broadcast_to(ic.country, (rb,) + ic.country.shape), dtype=np.float64)
+    global_ = np.array(np.broadcast_to(ic.global_, (rb,) + ic.global_.shape), dtype=np.float64)
+    return country, global_
+
+
+def _ramped(cat, changes):
+    """A copy of ``cat`` whose impact rows ``{row: (onset_kind, onset_years, dur_kind, dur_param)}`` are replaced."""
+    it = cat.impact_table.copy()
+    for j, (ok, oy, dk, dp) in changes.items():
+        it["onset_kind"][j], it["onset_years"][j], it["dur_kind"][j], it["dur_param"][j] = ok, oy, dk, dp
+    return dataclasses.replace(cat, impact_table=it)
+
+
 def _diff_dynamics_free(cat, ic, params, draws) -> dict:
     """E3–E6 wired in the step order with no dynamics, own state from ``ic``, diffed against the reference."""
     dyn = DynamicsSpec([])
@@ -189,7 +232,8 @@ def _diff_dynamics_free(cat, ic, params, draws) -> dict:
     refs = recs
 
     fm, fr = FactorModel.from_catalog(cat), FiringModel(cat)
-    seen = dict(firings=0, shocks=0, live=0, owner_active=0, log=[[] for _ in range(R)])
+    seen = dict(firings=0, shocks=0, live=0, owner_active=0, freed={k: 0 for k in DUR_KINDS},
+                log=[[] for _ in range(R)])
     for b in range(draws.n_blocks):
         start, stop = draws.block_rows(b)
         rb = stop - start
@@ -197,23 +241,17 @@ def _diff_dynamics_free(cat, ic, params, draws) -> dict:
         thr = fr.thresholds(stream.init["t2_offset"])
         mem = MemoryModel(cat, rb, run_offset=start)
         led = ImpactLedger(cat, rb, run_offset=start, max_active=params.max_active, epsilon_cull=params.epsilon_cull)
-        country = np.array(np.broadcast_to(ic.country, (rb,) + ic.country.shape), dtype=np.float64)
-        global_ = np.array(np.broadcast_to(ic.global_, (rb,) + ic.global_.shape), dtype=np.float64)
+        country, global_ = _block_state(ic, rb)
         max_live = np.zeros(rb, dtype=np.int64)
         for t in range(params.years):
             year = params.start_year + t
-            yr = stream.year(t)
-            F, U = fm.year(yr)                                              # 1-2
-            ns = namespace_from_state(cat, F, country, global_)
-            res = fr.base(ns, year, mem.events, thr, mem.counters)          # 3
-            delta, mask = mem.deltas()
-            p_eff = res.p_base + delta
-            fired = fr.fire(res.gate, U, p_eff)                             # 4
-            codes, branches = mem.resolve(fired, yr["res_u"], yr["branch_u"], ns, year)    # 5
-            draw = led.resolve(fired, codes, branches, yr["impact_z"], year)
-            led.apply(country, global_, year)                               # 6 (7: no dynamics)
-            mem.end_of_year(res.sustained_now, year)                        # 8
-            led.end_of_year(year)
+            live0, kind0 = led.active.copy(), led.dur_kind.copy()
+            o = _step(cat, fm, fr, mem, led, thr, stream.year(t), year, country, global_)
+            freed = live0 & (~led.active | (led.age == 0))     # freed this year (a reused slot restarts at age 0)
+            for k in DUR_KINDS:
+                seen["freed"][k] += int((freed & (kind0 == k)).sum())
+            res, mask, p_eff, fired = o["res"], o["mask"], o["p_eff"], o["fired"]
+            codes, branches, draw = o["codes"], o["branches"], o["draw"]
             max_live = np.maximum(max_live, led.n_live)
             for r in range(start, stop):
                 i, ref, where = r - start, refs[r], f"run {r} {year}"
@@ -261,3 +299,97 @@ def test_oracle_diff_dynamics_free_scripted_fix_b_until_resolved():
     rec = ReferenceRun(cat, ic, DynamicsSpec([]), params, fix_b.draws(), 0).run()
     conflicts = rec.global_[1:, cat.index.global_var["conflicts"]]
     assert conflicts.tolist() == [0.0, 0.0, 0.0, 1.0, 1.0, 0.0]            # holds 2028-2029, drops to 0 in 2030
+
+
+# Ramped variants, built here (the fixtures stay as committed): FIX-A/FIX-B rows given delayed and gradual
+# onsets, over horizons long enough for every decaying row to reach its epsilon-cull (FIX-A half-life 1: cull
+# 14 years after onset; FIX-B half-life 2: 27 years after), so the diff covers onset ends, culls and frees.
+RAMPED = {
+    "FIX-A": (fix_a, 20, {0: (ONSET_DELAYED, 2, DUR_DECAY, 1.0),               # a.gdp_growth
+                          1: (ONSET_GRADUAL, 3, DUR_PERMANENT, np.nan),        # oil_brent: ramped permanent
+                          2: (ONSET_GRADUAL, 2, DUR_DECAY, 1.0)}),             # a.gdp_per_capita, multiplicative
+    "FIX-B": (fix_b, 32, {0: (ONSET_GRADUAL, 3, DUR_DECAY, 2.0),               # x.gdp, 'bad'
+                          1: (ONSET_DELAYED, 2, DUR_DECAY, 2.0),               # x.gdp, 'good'
+                          2: (ONSET_GRADUAL, 2, DUR_PERMANENT, np.nan)}),      # temp: ramped permanent
+}
+
+
+@pytest.mark.parametrize("name", list(RAMPED))
+def test_oracle_diff_dynamics_free_ramped_long_horizon(name):
+    mod, years, changes = RAMPED[name]
+    cat = _ramped(mod.catalog(), changes)
+    params = dataclasses.replace(mod.params(), years=years)
+    draws = SeededDraws(SEED, R=R_DIFF, shapes=DrawShapes.for_catalog(cat, 0), block_size=R_DIFF, years=years)
+    seen = _diff_dynamics_free(cat, mod.initial_conditions(), params, draws)
+    assert seen["freed"][DUR_DECAY] > 0 and seen["freed"][DUR_PERMANENT] > 0     # culls and onset-end frees diffed
+
+
+@pytest.mark.parametrize("max_active", [3, 5])
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_ledger_overflow_runs_and_year(block_size, max_active):
+    """With a small ``max_active``, the vectorized block raises in the first year any of its runs overflows,
+    naming exactly the runs whose reference replay overflows that year, with the reference's count. At both
+    ``max_active`` values some runs peak at exactly ``max_active`` live shocks, which must not raise."""
+    mod, years, changes = RAMPED["FIX-A"]
+    cat, ic = _ramped(mod.catalog(), changes), mod.initial_conditions()
+    params = dataclasses.replace(mod.params(), years=years, max_active=max_active)
+    draws = SeededDraws(SEED, R=R_DIFF, shapes=DrawShapes.for_catalog(cat, 0), block_size=block_size, years=years)
+    ref = {}
+    for r in range(R_DIFF):
+        try:
+            ReferenceRun(cat, ic, DynamicsSpec([]), params, draws, r).run()
+        except LedgerOverflow as exc:
+            ref[r] = (exc.year, exc.count)
+    assert ref and len(ref) < R_DIFF                       # the bound binds in some runs, not all
+    fm, fr = FactorModel.from_catalog(cat), FiringModel(cat)
+    raised = 0
+    for b in range(draws.n_blocks):
+        start, stop = draws.block_rows(b)
+        rb = stop - start
+        stream = draws.stream(b)
+        thr = fr.thresholds(stream.init["t2_offset"])
+        mem = MemoryModel(cat, rb, run_offset=start)
+        led = ImpactLedger(cat, rb, run_offset=start, max_active=params.max_active, epsilon_cull=params.epsilon_cull)
+        country, global_ = _block_state(ic, rb)
+        block_ref = {r: v for r, v in ref.items() if start <= r < stop}
+        first = min((y for y, _ in block_ref.values()), default=None)
+        try:
+            for t in range(years):
+                _step(cat, fm, fr, mem, led, thr, stream.year(t), params.start_year + t, country, global_)
+        except LedgerOverflow as exc:
+            raised += 1
+            want = sorted(r for r, (y, _) in block_ref.items() if y == first)
+            assert (exc.run_index, exc.year) == (want, first), b
+            assert exc.count == max(block_ref[r][1] for r in want)
+            assert np.flatnonzero(led.overflow_count).tolist() == [r - start for r in want]
+            assert (led.overflow_count[[r - start for r in want]] == [block_ref[r][1] - params.max_active
+                                                                     for r in want]).all()
+        else:
+            assert first is None, b
+    assert raised > 0
+
+
+def test_oracle_diff_dynamics_free_until_resolved_refiring():
+    """Seeded ``until: resolved`` coverage: FIX-B (ramped) with initial ``x.stress`` 2.0 and T3's sustained
+    condition dropped, so T3 fires at its base rate (p .1, plus the T1 cascade) and re-fires inside, adjacent to
+    and after its 2-year windows. Adjacent re-firing (the year after a window closes) is the case where step 6
+    must read the owner flag step 5 has already set."""
+    mod, years, changes = RAMPED["FIX-B"]
+    cat = _ramped(mod.catalog(), changes)
+    T3 = cat.index.event["T3"]
+    cat = dataclasses.replace(cat, type3={T3: dataclasses.replace(cat.type3[T3], sustained=[])})
+    base = mod.initial_conditions()
+    country = base.country.copy()
+    country[cat.index.entity["x"], cat.index.country_var["stress"]] = 2.0
+    ic = InitialConditions(country=country, global_=base.global_.copy())
+    params = dataclasses.replace(mod.params(), years=years)
+    draws = SeededDraws(SEED, R=R_DIFF, shapes=DrawShapes.for_catalog(cat, 0), block_size=R_DIFF, years=years)
+    seen = _diff_dynamics_free(cat, ic, params, draws)
+    gaps = []                                                      # years between successive T3 firings, per run
+    for log in seen["log"]:
+        ys = [y for y, e in log if e == T3]
+        gaps += [b - a for a, b in zip(ys, ys[1:])]
+    window = int(cat.resolves_after[T3])
+    assert any(g < window for g in gaps)                           # re-fire while active
+    assert any(g == window for g in gaps)                          # re-fire the year after the window closed
+    assert seen["freed"][DUR_UNTIL_RESOLVED] > 0
