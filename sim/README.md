@@ -36,7 +36,7 @@ D4 (initial conditions, dynamics defaults) are not started.
 
 ```
 pip install -e ".[test]"
-pytest                               # the stage gates
+python -m pytest                     # the stage gates (`python -m`: a bare `pytest` may be another interpreter's)
 python -m sim.catalog.cli events     # compile report for every migrated event
 ```
 
@@ -199,9 +199,9 @@ block_size` at full width and consuming row `r % block_size`.
 
 **Dynamics** (both engines; step 7): mean-reverting variables update first (`x += θ(μ − x) + σ z`, `θ = 1 −
 0.5^(1/half_life)`, one `dyn_z` column per mean-reverting variable in
-declaration order, drawn even when σ = 0), then `gdp_stock` variables
-compound by the updated growth rate (growth in % per year), then additive and
-multiplicative drifts. θ is the exact one-year discretization of the OU
+declaration order, drawn even when σ = 0); then, in declaration order,
+`gdp_stock` variables compound by their growth rate as updated so far (growth
+in % per year) and additive and multiplicative drifts apply. θ is the exact one-year discretization of the OU
 process, so a σ = 0 displacement `d` is exactly `d · 0.5^(k/h)` after `k`
 years and "half-life" means what it means in the shock schedule's `decay:`
 rows (§4, item 18). σ is the standard deviation of the one-year innovation,

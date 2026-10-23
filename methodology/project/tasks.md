@@ -182,7 +182,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 
 **Progress**: 29/29 complete and compiling under `python -m sim.catalog.cli events`, and the full-catalog compile with `strict_cascades` on passes with no dropped edges — the data track's final gate per [[methodology/project/implementation-guide]] §2 (Oct 12, 2026: D1 remediation of three, then 24 migrated one agent per event with a compile check and a full-git-history prose diff each; Oct 22, 2026: 4.2.19 landed after the loading correction recorded in its file). Every migration's judgment calls are in its file's 2026-10-12 changelog row; the catalog-wide items they surfaced (sharpness convention, unit convention for `unemployment_rate` and the index variables, `nuclear_status` encoding, rows exceeding variable ranges, cross-file `triggered_by` deltas) are listed in `sim/README.md` §4.
 
-**Completed:** Tasks 4.1, 4.2, 4.5 — see [[methodology/project/tasks-completed]]
+**Completed:** Tasks 4.1, 4.2, 4.5 (4.5 reopened 2026-10-23 and folded into 4.4) — see [[methodology/project/tasks-completed]]
 
 ### Validation
 

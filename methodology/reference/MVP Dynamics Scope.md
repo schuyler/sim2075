@@ -16,8 +16,8 @@ tags:
 
 ## Minimum Viable Dynamics for v0.1 Prototype
 
-**Document Version:** 1.0  
-**Date:** December 2025  
+**Document Version:** 1.1  
+**Date:** December 2025 (1.1: October 2026)  
 **Status:** Design specification
 
 **Related documents:**
