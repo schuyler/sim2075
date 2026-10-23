@@ -1,10 +1,16 @@
-"""Run inputs shared (conceptually) by both engines: initial conditions, dynamics, parameters."""
+"""Run inputs shared (conceptually) by both engines: initial conditions, dynamics, parameters, recording."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 import math
 
 import numpy as np
+
+from ..catalog.types import ExprFn
+
+# Event-state names (expression-language §3) a scenario flag may not read: flags describe outcomes, not firing
+# mechanics (README §3 "Recording"); a flag about firings is an event-log query at E9.
+FLAG_EXCLUDED_NAMES = ("resolution", "branch", "years_since")
 
 
 @dataclass
@@ -76,6 +82,75 @@ class SimParams:
     def __post_init__(self):
         if self.years < 1 or self.max_active < 1:
             raise ValueError("years and max_active must be >= 1")
+
+
+@dataclass
+class ScenarioFlag:
+    """ADR-9 scenario flag: ``condition`` held for ``min_years`` consecutive years (README §3 "Recording").
+
+    ``condition`` is an expression compiled by the catalog's expression compiler (``sim.catalog.expr``) with its
+    names validated against the state catalog; it may read factors and state variables only. Both engines
+    evaluate it in step 9 on end-of-year state with that year's factors, keep a per-run consecutive counter
+    (+1 while it holds, reset to 0 when it fails) and set the flag, which then stays set, once the counter
+    reaches ``min_years``. A condition reading ``resolution``, ``branch`` or ``years_since``, one that is not
+    boolean, or ``min_years < 1`` is a ``ValueError`` naming the flag.
+    """
+    name: str
+    condition: ExprFn
+    min_years: int
+
+    def __post_init__(self):
+        if not isinstance(self.name, str) or not self.name:
+            raise ValueError(f"scenario flag {self.name!r}: name must be a non-empty string")
+        if not isinstance(self.condition, ExprFn):
+            raise ValueError(f"scenario flag {self.name!r}: condition must be a compiled ExprFn")
+        if self.condition.result != "boolean":
+            raise ValueError(f"scenario flag {self.name!r}: condition must be boolean, got {self.condition.result!r}")
+        bad = [n for n in self.condition.names if n in FLAG_EXCLUDED_NAMES]
+        if bad:
+            raise ValueError(f"scenario flag {self.name!r}: condition reads event state {bad}; flags may read factors "
+                             f"and state variables only")
+        if int(self.min_years) != self.min_years or self.min_years < 1:
+            raise ValueError(f"scenario flag {self.name!r}: min_years must be an integer >= 1, got {self.min_years!r}")
+        self.min_years = int(self.min_years)
+
+
+@dataclass
+class RecordingSpec:
+    """What a run records beyond terminal state, factors and the event log (ADR-9; README §3 "Recording").
+
+    ``scenario_flags``: evaluated for every run. ``thin_keys``: state keys (``"entity.var"`` / ``"global_var"``)
+    whose annual values are kept for every run. ``n_full``: the runs with the lowest global indices that keep
+    full state trajectories. Defaults to nothing, so fixtures run without it. A duplicate flag name or thin
+    key, or ``n_full < 0``, is a ``ValueError`` naming it. The production lists are data loaded at E9
+    (README §4, items 20–21).
+    """
+    scenario_flags: list[ScenarioFlag] = field(default_factory=list)
+    thin_keys: list[str] = field(default_factory=list)
+    n_full: int = 0
+
+    def __post_init__(self):
+        seen: set[str] = set()
+        for f in self.scenario_flags:
+            if not isinstance(f, ScenarioFlag):
+                raise ValueError(f"recording: scenario_flags entries must be ScenarioFlag, got {type(f).__name__}")
+            if f.name in seen:
+                raise ValueError(f"recording: duplicate scenario flag name {f.name!r}")
+            seen.add(f.name)
+        seen = set()
+        for k in self.thin_keys:
+            if not isinstance(k, str) or not k:
+                raise ValueError(f"recording: thin keys must be non-empty state keys, got {k!r}")
+            if k in seen:
+                raise ValueError(f"recording: duplicate thin key {k!r}")
+            seen.add(k)
+        if int(self.n_full) != self.n_full or self.n_full < 0:
+            raise ValueError(f"recording: n_full must be an integer >= 0, got {self.n_full!r}")
+        self.n_full = int(self.n_full)
+
+    @property
+    def flag_names(self) -> list[str]:
+        return [f.name for f in self.scenario_flags]
 
 
 class LedgerOverflow(RuntimeError):

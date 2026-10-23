@@ -46,6 +46,16 @@ FIX-B under ``SeededDraws`` (one and four blocks); FIX-B also over 20 years, whe
 on two test-built FIX-A variants: distinct σ > 0 on every mean-reverting variable (FIX-A's σ are all 0, so a
 wrong ``dyn_z`` column would otherwise pass), and ``b.gdp_growth`` turned into a phase-2 additive drift declared
 just before and just after the ``b.gdp_per_capita`` stock that compounds by it.
+
+**Through ``simulate()``** (``test_oracle_diff_simulate*``, the E8 gate; the diff itself is
+``test_e8_simulation.diff_simulate``): the engine's own year loop, blocks and recording, run on the same cases
+as the full-dynamics mode (FIX-A and FIX-B at one and four blocks, FIX-B over 20 years, noisy FIX-A, the drift
+on a growth key in both declaration orders) with ``n_full = R``, thin keys and scenario flags, and compared with
+``simulate_reference`` under the same ``(seed, block_size)``: full trajectories, terminal state, factors and
+thin trajectories at rtol 1e-9, flags and ``max_active_seen`` exactly, the event log exactly with magnitudes
+row for row. The ramped overflow and out-of-range variants are run through ``simulate()`` too: it raises for
+the first block any of whose runs fail, in that block's first failing year, naming exactly the runs the
+reference fails that year (``ImpactOutOfRange`` with the reference's row and contribution for the lowest).
 """
 import dataclasses
 
@@ -55,11 +65,12 @@ import pytest
 from sim.catalog.types import (DUR_DECAY, DUR_PERMANENT, DUR_UNTIL_RESOLVED, ONSET_DELAYED, ONSET_GRADUAL,
                                ONSET_IMMEDIATE)
 from sim.engine import (DynamicsModel, EventState, FactorModel, FiringModel, ImpactLedger, MemoryModel,
-                        namespace_from_state)
+                        namespace_from_state, simulate)
 from sim.reference import (DynamicsSpec, ImpactOutOfRange, InitialConditions, LedgerOverflow, ReferenceRun,
                            VarDynamics)
 from sim.rng import DrawShapes, SeededDraws
 from sim.tests.fixtures import fix_a, fix_b
+from sim.tests.test_e8_simulation import diff_simulate, recording_for
 
 R_DIFF = 64
 SEED = 7
@@ -529,3 +540,93 @@ def test_oracle_diff_impact_out_of_range_runs_year_and_row(block_size):
         else:
             assert first is None, b
     assert raised > 0
+
+
+# Through simulate(): the E8 gate on this module's variants (test_e8_simulation.py has the base FIX-A/FIX-B cases
+# and the diff itself).
+
+def _simulate_mode(mod, dyn, block_size, years=None):
+    cat, ic = mod.catalog(), mod.initial_conditions()
+    params = mod.params() if years is None else dataclasses.replace(mod.params(), years=years)
+    out = diff_simulate(cat, ic, dyn, params, block_size, recording_for(mod))
+    assert len(out.events) > 0 and out.max_active_seen.max() > 0
+    assert any(0.0 < out.scenario_flags[:, j].mean() < 1.0 for j in range(out.scenario_flags.shape[1]))
+    return out
+
+
+@pytest.mark.parametrize("mod", [fix_a, fix_b], ids=["FIX-A", "FIX-B"])
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_simulate_full_dynamics(mod, block_size):
+    _simulate_mode(mod, mod.dynamics(), block_size)
+
+
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_simulate_fix_b_long_horizon(block_size):
+    out = _simulate_mode(fix_b, fix_b.dynamics(), block_size, years=20)
+    assert (out.events.event == fix_b.catalog().index.event["T3"]).any()
+
+
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_simulate_noisy_fix_a(block_size):
+    noisy = _simulate_mode(fix_a, _noisy_fix_a_dynamics(), block_size)
+    quiet = _simulate_mode(fix_a, fix_a.dynamics(), block_size)
+    idx = fix_a.catalog().index
+    g = idx.country_var["gdp_growth"]
+    for e in ("a", "b"):
+        assert (noisy.full_country[:, 1:, idx.entity[e], g] != quiet.full_country[:, 1:, idx.entity[e], g]).all()
+    assert (noisy.full_global[:, 1:, idx.global_var["oil_brent"]] != quiet.full_global[:, 1:, idx.global_var["oil_brent"]]).all()
+
+
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_simulate_drift_on_growth_key(block_size):
+    before = _simulate_mode(fix_a, _drifted_growth_fix_a_dynamics(True), block_size)
+    after = _simulate_mode(fix_a, _drifted_growth_fix_a_dynamics(False), block_size)
+    idx = fix_a.catalog().index
+    b, pc = idx.entity["b"], idx.country_var["gdp_per_capita"]
+    assert (before.full_country[:, 1:, b, pc] < after.full_country[:, 1:, b, pc]).all()
+
+
+def _first_failure(cat, ic, params, draws, exc_type):
+    """The reference's failures by run; the block ``simulate`` must raise for, its first failing year and runs."""
+    ref = {}
+    for r in range(R_DIFF):
+        try:
+            ReferenceRun(cat, ic, DynamicsSpec([]), params, draws, r).run()
+        except exc_type as exc:
+            ref[r] = exc
+    assert ref and len(ref) < R_DIFF
+    block = min(draws.block_of(r)[0] for r in ref)
+    in_block = {r: e for r, e in ref.items() if draws.block_of(r)[0] == block}
+    year = min(e.year for e in in_block.values())
+    return ref, year, sorted(r for r, e in in_block.items() if e.year == year)
+
+
+@pytest.mark.parametrize("max_active", [3, 5])
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_simulate_ledger_overflow_runs_and_year(block_size, max_active):
+    mod, years, changes = RAMPED["FIX-A"]
+    cat, ic = _ramped(mod.catalog(), changes), mod.initial_conditions()
+    params = dataclasses.replace(mod.params(), years=years, max_active=max_active, block_size=block_size)
+    draws = SeededDraws(SEED, R=R_DIFF, shapes=DrawShapes.for_catalog(cat, 0), block_size=block_size, years=years)
+    ref, year, want = _first_failure(cat, ic, params, draws, LedgerOverflow)
+    with pytest.raises(LedgerOverflow) as ei:
+        simulate(cat, ic, DynamicsSpec([]), params, R_DIFF, SEED)
+    assert (ei.value.run_index, ei.value.year) == (want, year)
+    assert ei.value.count == max(ref[r].count for r in want)
+
+
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_simulate_impact_out_of_range_runs_year_and_row(block_size):
+    mod, years, changes = RAMPED["FIX-A"]
+    cat, ic = _ramped(mod.catalog(), changes), mod.initial_conditions()
+    it = cat.impact_table.copy()
+    it["mean"][2], it["std"][2] = -0.5, 0.4
+    cat = dataclasses.replace(cat, impact_table=it)
+    params = dataclasses.replace(mod.params(), years=years, block_size=block_size)
+    draws = SeededDraws(SEED, R=R_DIFF, shapes=DrawShapes.for_catalog(cat, 0), block_size=block_size, years=years)
+    ref, year, want = _first_failure(cat, ic, params, draws, ImpactOutOfRange)
+    with pytest.raises(ImpactOutOfRange) as ei:
+        simulate(cat, ic, DynamicsSpec([]), params, R_DIFF, SEED)
+    assert (ei.value.run_index, ei.value.year) == (want, year)
+    assert ei.value.row == ref[want[0]].row
+    np.testing.assert_allclose(ei.value.contribution, ref[want[0]].contribution, rtol=1e-9, atol=0)

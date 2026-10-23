@@ -26,8 +26,9 @@ decisions they left open (§3) and what the build has found so far (§4).
 | E5 | `sim/engine/memory.py`: sustained counters, cascade slots, `EventState` updates, resolution/branch code draw | hand-built FIX-B factor path opens the sustained gate in exactly the specified year and resets on interruption; cascade delta present for exactly `years` years after firing; conditional cascade respects its `if`; 257th live cascade raises `LedgerOverflow` | done |
 | E6 | `sim/engine/impacts.py`: active-shock ledger, impact-row selection and magnitudes, shock schedule, epsilon-cull, `until: resolved` flags | single decaying shock matches the closed-form half-life to rtol 1e-9 and its epsilon-cull year restores the no-shock value and frees the slot; `permanent` + `immediate` takes no slot, a ramped `permanent` frees its slot at onset end keeping its level; delayed/gradual onset per the §3 table; `until: resolved` holds `resolves_after` years and re-firing restarts it; multiplicative decay returns to the no-shock path, contribution ≤ −1 raises `ImpactOutOfRange`; `max_active + 1` live shocks raise `LedgerOverflow`, `max_active` do not; oracle diff on FIX-B passes | done |
 | E7 | `sim/engine/dynamics.py`: step 7 — Tier 2 mean reversion, then `gdp_stock` compounding and Tier 1 drifts (growth-rate-first); oil/food → inflation transmission is E7b, after D4 (§4, item 19) | no-event FIX-A run compounds `gdp_per_capita` at 2%/yr and adds 0.2/0.1 yr of life expectancy per year, matching closed forms to rtol 1e-9; a σ = 0 mean-reverting variable displaced by initial condition or by an E6 shock sits at `μ + d · 0.5^(k/h)` after `k` years for h ∈ {1, 2, 3, 0.5}; stock compounds by post-reversion growth; noise from the entry's own `dyn_z` column; phase-2 declaration order; loud failures on unknown key/kind, `dyn_z` shape, state dtype/shape; every scenario cross-checked against the reference | done |
-| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters, impact magnitudes, `until: resolved` flags, live ledger; dynamics-free mode (both engines `DynamicsSpec([])`, own state from initial conditions, plus FIX-B's scripted draws with `x.stress` 2.0, and test-built ramped-onset, long-horizon, `until: resolved` re-firing and small-`max_active` variants): full state trajectory (rtol 1e-9), exact event log, `LedgerOverflow` runs and year, `ImpactOutOfRange` runs, year, row and contribution; full-dynamics own-state mode (both engines on the fixture's own `DynamicsSpec`, E3–E7 in step order; FIX-A and FIX-B, FIX-B also over 20 years, plus test-built FIX-A variants with distinct σ > 0 on every mean-reverting variable and with an additive drift on a `gdp_stock`'s growth variable declared before and after the stock): the same per-year diff — grows with each stage | in suite |
-| E8–E10 | year loop and recording, analysis, end-to-end validation | per guide §3 | not started |
+| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters, impact magnitudes, `until: resolved` flags, live ledger; dynamics-free mode (both engines `DynamicsSpec([])`, own state from initial conditions, plus FIX-B's scripted draws with `x.stress` 2.0, and test-built ramped-onset, long-horizon, `until: resolved` re-firing and small-`max_active` variants): full state trajectory (rtol 1e-9), exact event log, `LedgerOverflow` runs and year, `ImpactOutOfRange` runs, year, row and contribution; full-dynamics own-state mode (both engines on the fixture's own `DynamicsSpec`, E3–E7 in step order; FIX-A and FIX-B, FIX-B also over 20 years, plus test-built FIX-A variants with distinct σ > 0 on every mean-reverting variable and with an additive drift on a `gdp_stock`'s growth variable declared before and after the stock): the same per-year diff — grows with each stage; through `simulate()` (the E8 gate, `test_e8_simulation.py` and the `test_oracle_diff_simulate*` cases): the engine's own loop, blocks and recording on FIX-A/FIX-B at one and four blocks, FIX-B over 20 years, noisy FIX-A, the drift on a growth key, with `n_full = R`, thin keys and mixed scenario flags — full trajectories, terminal state, factors and thin at rtol 1e-9, flags and `max_active_seen` exactly, the event log exactly with magnitudes row for row; the ramped overflow and out-of-range variants raise through `simulate()` naming the reference's runs, year, row and contribution | in suite |
+| E8 | `sim/engine/state.py` (block state tensor, state-key binding) and `sim/engine/simulation.py`: `simulate(catalog, initial_conditions, dynamics, params, R, seed, recording)` → `RunOutputs`, the year loop wiring E3–E7 in step order over §4.6 blocks, recording per ADR-9 (terminal state, factors `[R, K, T]`, columnar event log with provenance, thin and full trajectories, scenario flags, `max_active_seen`) | oracle diff through `simulate()` (row above); hard failures name the reference's runs and year; step order pinned; flags equal a direct count over recorded trajectories; performance smoke R=10,000 × 50 years < 60 s (opt-in, below) | done; the smoke raises on the data (§4, items 25–26) |
+| E9–E10 | analysis, end-to-end validation | per guide §3 | not started |
 
 Data track (guide §2): D1 and D2 done — all 29 events compile and the
 full-catalog gate (`strict_cascades` on) is green with no dropped edges
@@ -38,7 +39,15 @@ D4 (initial conditions, dynamics defaults) are not started.
 pip install -e ".[test]"
 python -m pytest                     # the stage gates (`python -m`: a bare `pytest` may be another interpreter's)
 python -m sim.catalog.cli events     # compile report for every migrated event
+SIM2075_SMOKE=1 python -m pytest sim/tests/test_e8_simulation.py -k smoke -s   # E8 performance smoke (opt-in; prints time and profile)
 ```
+
+The smoke is skipped unless `SIM2075_SMOKE=1`, so the default run stays
+fast. It compiles every migrated event except those whose compile notes carry
+the multiplicative "mean ≤ −1" warning (derived, not listed by hand; today
+Taiwan), takes each global's `baseline_2025` as its initial condition and
+builds smoke-only dynamics from MVP scope §2.2/§3 inside the test (§4, item
+25). It currently fails on the data, not the loop: see §4, item 26.
 
 ## 2. Layout
 
@@ -48,7 +57,8 @@ sim/
 ├── reference/    scalar reference engine (ADR-1): model.py (inputs) · engine.py (the year step)
 ├── rng.py        draw schedule contract (guide §4.6), shared by both engines
 ├── data/         state_catalog.yaml (generated from the markdown catalogs) · omega.yaml (Ω, transcribed)
-├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · memory.py (E5) · impacts.py (E6) · dynamics.py (E7) · E8+ pending
+├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · memory.py (E5) · impacts.py (E6) · dynamics.py (E7) ·
+│                 state.py (E8, block state tensor) · simulation.py (E8, `simulate` / `RunOutputs`)
 ├── analysis/     E9 (empty)
 └── tests/        fixtures/ (fix_a, fix_b, fix_c, broken/) and one test module per gate
 ```
@@ -69,7 +79,24 @@ decision, not a refactor.
 **Year step.** Transcribes architecture §3 in order: factors → propensity →
 threshold (+ cascade deltas) → fire → resolve → impacts → dynamics → memory →
 record. Expressions and gates read start-of-year state and this year's factor
-draw.
+draw. The vectorized loop (`simulate`, E8) runs it per §4.6 block: one block
+per `params.block_size` runs with `run_offset = start`, Type 2 thresholds once
+per block from `stream.init["t2_offset"]`, state from `StateTensor` (the
+initial conditions broadcast over the block), and per year `FactorModel.year`
+(1–2) → `namespace_from_state` → `FiringModel.base`, `p_eff = p_base +
+MemoryModel.deltas()` (3) → `FiringModel.fire` (4) → `MemoryModel.resolve`,
+then `ImpactLedger.resolve` (5) → `ImpactLedger.apply` (6) →
+`DynamicsModel.step(country, global_, dyn_z)` (7) →
+`MemoryModel.end_of_year(sustained_now, year)`, then
+`ImpactLedger.end_of_year(year)` (8) → record (9). The two step-8 calls touch
+disjoint state; their order is pinned and tested all the same. Outputs are
+assembled by global run index, so results depend on `(seed, block_size)` and
+nothing else; `LedgerOverflow` and `ImpactOutOfRange` propagate with their
+global run indices and are never caught. `SimParams.max_active` bounds the
+shock ledger as it does in the reference; the cascade slots keep pinned
+decision #3's width (`MAX_ACTIVE`, 256), which the reference's cascade list
+does not bound at all — a run would need more than 256 live cascades for the
+engines to differ, which no fixture or catalog approaches.
 
 **Firing.** `fired = gate & (U < p_eff)` with `p_eff = p_base + Σ active
 cascade deltas`. `p_eff` is not clamped: a value ≤ 0 never fires and ≥ 1
@@ -187,7 +214,13 @@ dtype and shape and `dyn_z`'s shape (`[R, len(noisy_keys)]`) loudly. It
 iterates entries in declaration order, one `(R,)` operation per entry, so it
 reproduces the reference's arithmetic element for element; it never regroups
 entries by kind, since phase-2 order matters when a `gdp_stock`'s growth
-variable is itself a drift target.
+variable is itself a drift target. E8's `simulate` owns nothing of the
+semantics: it wires the modules above in the pinned order ("Year step"),
+holds the block's state in a `StateTensor` (`state.py`, with `resolve_key`
+for `"entity.var"` / `"global_var"` keys and `bind_names` for an expression
+namespace over the current state), and records (`"Recording"`). It is the
+year loop that `test_oracle_diff.py`'s `_step`/`_diff_own_state` ran in test
+form, promoted, not re-derived.
 
 **Draws** (guide §4.6). One `SeedSequence(master_seed)`, one child per block
 of `block_size` runs; within a block, `t2_offset` once, then per year
@@ -217,6 +250,46 @@ one declared later. Keys resolve as for expressions (`"global_var"` or
 `"entity.var"`). Nothing is clamped: a stock compounded by growth ≤ −100 goes
 to zero or changes sign. The oil/food → inflation transmission of MVP scope
 §5.1 step 6 is deferred to stage E7b (§4, item 19).
+
+**Recording** (ADR-9; `RecordingSpec` in `sim/reference/model.py`, beside
+`SimParams` and `DynamicsSpec`, §4 item 21). A `ScenarioFlag(name, condition,
+min_years)` is an expression compiled by the catalog's expression compiler
+with `allow_event_state=False`, so its names are validated against the state
+catalog and it may read factors and state variables only: `resolution`,
+`branch` and `years_since` are rejected at compile time and again by
+`ScenarioFlag` itself, because a flag describes an outcome, not firing
+mechanics (a flag about firings is an event-log query at E9). Both engines
+evaluate every flag in step 9 on **end-of-year** state (after step 8) with
+that year's factor draw, keep a per-run consecutive counter (+1 while the
+condition holds, reset to 0 the year it fails, ADR-5's machinery) and set the
+flag, which then stays set, in the first year the counter reaches `min_years`.
+Recorded state is end-of-year state, so a flag's cross-run frequency equals a
+direct count over recorded trajectories (E9's gate). `RecordingSpec` also
+names the `thin_keys` (state keys `"entity.var"` / `"global_var"` kept
+annually for every run) and `n_full` (the runs with the lowest global indices
+that keep full trajectories); it defaults to nothing, so fixtures run without
+it, and rejects a duplicate flag name or thin key, `min_years < 1` or `n_full
+< 0` with a `ValueError` naming the offender. The reference's `RunRecord`
+carries `scenario_flags` (bool `[n_flags]`); its full `country`/`global_`
+trajectories already contain every thin key. No real flag definitions exist
+yet: an owner/data-track item (§4, item 23). `simulate` returns `RunOutputs`,
+in-memory arrays only (§4, item 21): terminal `country [R, N_ent, N_cvar]`
+and `global_ [R, N_gvar]`; `factors float64 [R, K, T]`; `thin float64 [R,
+n_thin, T+1]` and `full_country [n_full, T+1, N_ent, N_cvar]` /
+`full_global [n_full, T+1, N_gvar]` for runs `0 … n_full − 1`, index 0 the
+initial conditions and `t + 1` the end of `years[t]`; `scenario_flags bool
+[R, n_flags]` in `RecordingSpec` order; `max_active_seen int64 [R]` (peak
+live shocks, as the reference counts it); `years int64 [T]`; and an
+`EventLog` of columns `run, year, event, resolution, branch, p_base, p_eff,
+cascade_mask`, one row per firing ordered by `(run, year, event)`, with a
+magnitudes table `(mag_firing, mag_row, mag_M)` in log order and
+`impact_table` row order within a firing — the reference's `EventFiring`
+list, columnar. Flags are evaluated per block on a namespace `bind_names`
+builds afresh from end-of-year state (step 2's namespace holds views that
+have been mutated by then, and only the catalog's names). `n_full > R`,
+`R < 1` and initial conditions off the catalog's axes are `ValueError`s;
+an unknown thin key or flag name is a `KeyError` before any year runs.
+Serialization and the State Outputs §8.4 statistics are E9/E10.
 
 **Partial catalogs.** A cascade edge whose target exists in `events/` but is
 not yet migrated is dropped with a recorded warning when `strict_cascades` is
@@ -493,6 +566,99 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     a stage for cohort mechanics (with derived-variable computation)
     before E10, and an MVP scope amendment deferring population dynamics
     from v0.1.
+
+Found at E8 (2026-10-23):
+
+23. **No scenario-flag definitions exist.** `ScenarioFlag` (§3 "Recording")
+    is the mechanism; nothing in the repository declares a flag. State
+    Outputs §7.2's scenario table is prose, and most of its rows are not
+    expressible as a flag over factors and state variables: "US severe
+    decline" reads a per-capita change against a baseline (a derived
+    quantity, item 20), "Great power war" and "Multi-state collapse" count
+    firings (event-log queries at E9), "Chinese political crisis" and
+    "European fragmentation" read §5 assessments, which are computed post-run
+    and never during simulation (ADR-9). The rows that are expressible
+    ("Dollar displacement": `usd_reserve_share < 40`; "Climate tipping point"
+    partly, via `amoc_strength` / `amazon_forest_cover` thresholds) need a
+    `min_years` each. Owner/data-track item: author the flag list as data
+    (expression + `min_years`), loaded by `run.py` at E9 with the thin-key
+    list; the engine takes whatever it is given.
+24. **`n_full` memory at the real axis sizes.** The state catalog is 52
+    entities × 77 country variables + 42 globals = 4,046 floats per year, so
+    `n_full = 1000` over 50 years is 1000 × 51 × 4,046 × 8 B ≈ 1.65 GB of
+    full trajectories in memory (the 1.42 GB figure in the E8 brief assumed
+    66 country variables). E8 enforces nothing about it; E9's production
+    default must take it into account (ADR-9 prefers widening the thin list
+    over deepening the subset).
+25. **The smoke's inputs** (`test_e8_simulation.py`, opt-in via
+    `SIM2075_SMOKE=1`). The catalog is every migrated event compiled with
+    `strict_cascades=False` minus the events whose compile notes carry the
+    multiplicative "mean ≤ −1" WARNING, derived from the notes and asserted
+    to be exactly `TAIWAN_CONFLICT` (item 9); dropping it drops 8 cascade
+    edges into it (from `CHINESE_ECONOMIC_CRISIS` 1, `CHINESE_POLITICAL_CRISIS`
+    4, `KOREAN_PENINSULA_CRISIS` 1, `US_CONSTITUTIONAL_CRISIS` 2), leaving 28
+    events, 3,818 impact rows and 110 edges. Initial conditions are each
+    global's `baseline_2025` (every global has one) and 0 for every country
+    variable (none has one), so `gdp_real` starts at 0 and the smoke measures
+    cost, not realism. The dynamics are built inside the test and never
+    written under `sim/data/`: for every country, MVP §3 class defaults
+    (`gdp_growth` h 2 σ 2, `inflation_rate` h 2 σ 2 μ 2, `unemployment_rate`
+    h 3 σ 1 μ 5), a `gdp_stock` on `gdp_real` with `growth_key: gdp_growth`
+    (item 20) and `life_expectancy` +0.2/yr; and the six §2.2 global trends,
+    additive or multiplicative as §2.2 states them. §3.2 gives `gdp_growth`
+    no tier value (its equilibrium is the country's Tier 1 trend, D3's), so
+    the smoke uses 2 %/yr; D4 supplies the real one.
+26. **The smoke raises on the data, twice, before the loop's cost can be
+    measured** (E8-D5: a data finding, reported, not patched; nothing was
+    clamped, caught, reseeded or edited).
+    - *`LedgerOverflow` in 2025, the first year, at the pinned width.* Block
+      0 (runs 0–1023, seed 20261023) raises `LedgerOverflow` for runs
+      `[59, 77, 115, 137, 148, 182, 232, 375, 377, 413, 460, 464, 476, 621,
+      728, 742, 751, 760, 804, 837, 869, 874, 949, 954, 962, 1005]`, year
+      2025, 529 live shocks > `max_active = 256`. Cause: wildcard impact rows
+      expand to one row per country (40), so one branch of
+      `GLOBAL_FINANCIAL_CRISIS` pushes 202 slot-taking shocks,
+      `OIL_SUPPLY_SHOCK` 163, `SEVERE_PANDEMIC` 163, `US_CHINA_ECONOMIC_RUPTURE`
+      107; two or three of these in one year exceed 256, and they are
+      Type 1/2 events with non-trivial annual probabilities. Pinned decision
+      #3 said "revisit width after fixture pilots"; this is that pilot. The
+      width is a `SimParams` field (the slot arrays cost ≈ 50 B per slot per
+      run: 1024 slots × 1024 runs ≈ 50 MB per block), so widening is cheap;
+      alternatively the data track can author the wide rows differently. A
+      spec-owner decision.
+    - *`ImpactOutOfRange` in 2026 with the ledger widened to 1024* (a
+      diagnostic run, not the gate): runs `[232, 625]`, year 2026,
+      `impact_table` row 2772 = `RUSSIA_STATE_FAILURE` branch
+      `catastrophic_collapse`, `rus.gdp_real` mean −0.70 std 0.35, gradual
+      onset 2, decay 8: the drawn M = −1.21875 (z ≈ −1.48) reaches the state
+      at age 1 when the ramp completes. That row draws M ≤ −1 whenever
+      z ≤ −0.857, about 20% of its firings; 11 multiplicative rows across
+      `EGYPT_STATE_FAILURE`, `IRAN_REGIME_CHANGE`, `KOREAN_PENINSULA_CRISIS`,
+      `PAKISTAN_STATE_FAILURE`, `RUSSIA_STATE_FAILURE`, `SAHEL_CATASTROPHE` and
+      `TURKEY_POLITICAL_BREAKDOWN` can reach −1 within 3σ. Same shape as item
+      9 (there the mean itself is below −1); data-track item: cap, truncate
+      or re-express the fractional rows' spread.
+    - *Cost, from what did run* (4 CPUs, x86_64, Python 3.13, NumPy 2.5;
+      not the gate's number, which does not exist until the data runs). Even
+      one year does not complete over all ten blocks (block 4, run 4157,
+      2025: row 2899 = `TURKEY_POLITICAL_BREAKDOWN` / `earthquake_cascade`,
+      `tur.gdp_real` mean −0.6 std 0.3, M = −1.22), so the sample is blocks
+      0–3 (R = 4,096, whose draws are the smoke's: a `SeedSequence` child
+      does not depend on the number of blocks) over 2025 at `max_active`
+      1024: 3.09 s, 0.77 s per block-year, of which the §4.6 draws 0.23 s
+      (`impact_z` is `[1024, 3,782]` normals every year), `ImpactLedger.resolve`
+      0.23 s (the `[R, n_rows]` selection and magnitudes), `ImpactLedger.apply`
+      0.15 s (587 firings per block in 2025 push ~60,000 shocks, wildcard
+      rows again), state initialisation 0.12 s per block, everything else
+      under 0.03 s. Projected over 500 block-years that is ≈ 310–390 s, five
+      to six times the 60 s requirement, and a lower bound (the ledger is
+      empty in year 0). Where the time goes is the outcome-independent
+      `[R, n_impact_rows]` draw and selection the §4.6 contract mandates, and
+      a ledger carrying hundreds of live shocks per run. Nothing was
+      optimized at E8; the reading is that the data (wildcard fan-out), not
+      the loop's structure, sets the cost, and the spec owners should see
+      these numbers before any optimization beyond plain NumPy is considered.
+
 
 ## 5. License
 

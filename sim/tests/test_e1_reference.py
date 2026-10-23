@@ -108,3 +108,120 @@ def test_dynamics_duplicate_key_is_rejected():
         DynamicsSpec([VarDynamics("oil_brent", "mean_revert", mu=75.0, half_life=2.0),
                       VarDynamics("a.gdp_growth", "mean_revert", mu=2.0),
                       VarDynamics("oil_brent", "additive", rate=1.0)])
+
+
+# ---- Recording (ADR-9): scenario flags and RecordingSpec, reference first ---------------------------------------
+
+def _flag(name, names, fn, min_years):
+    from sim.reference import ScenarioFlag
+    from sim.tests.fixtures import builders as B
+    return ScenarioFlag(name, B.expr(names, fn, "boolean"), min_years)
+
+
+def _fix_b_flags(years, flags):
+    from sim.reference import RecordingSpec
+    p = SimParams(start_year=2025, years=years)
+    rec = ReferenceRun(fix_b.catalog(), fix_b.initial_conditions(), fix_b.dynamics(), p, fix_b.draws(), 0,
+                       RecordingSpec(scenario_flags=flags)).run()
+    return rec.scenario_flags.tolist()
+
+
+def test_scenario_flag_becomes_true_in_the_hand_computed_year():
+    """FIX-B's end-of-year x.stress is 0.5, 1.0, 1.5, 2.0, 2.5, 3.0 (t = 0..5). ``x.stress > 1.2`` holds from the
+    end of t = 2, so a 2-year flag is set at the end of t = 3 (2028): false after 3 years, true after 4; a 4-year
+    flag at t = 5 (2030). Flags are evaluated on end-of-year state: on start-of-year state (0, 0.5, ..., 2.5) the
+    2-year flag would be set a year later (2029) and ``x.stress > 2.2`` for 2 years would never be set within the
+    horizon, whereas on end-of-year state it is set at t = 5."""
+    stress2 = _flag("stress2", ["x.stress"], lambda ns: ns["x.stress"] > 1.2, 2)
+    stress4 = _flag("stress4", ["x.stress"], lambda ns: ns["x.stress"] > 1.2, 4)
+    late2 = _flag("late2", ["x.stress"], lambda ns: ns["x.stress"] > 2.2, 2)
+    assert _fix_b_flags(3, [stress2, stress4, late2]) == [False, False, False]
+    assert _fix_b_flags(4, [stress2, stress4, late2]) == [True, False, False]
+    assert _fix_b_flags(5, [stress2, stress4, late2]) == [True, False, False]
+    assert _fix_b_flags(6, [stress2, stress4, late2]) == [True, True, True]
+
+
+def test_scenario_flag_reads_factors_and_resets_when_the_condition_fails():
+    """FG is 1.5 in t = 0..3 and 0 in t = 4..5: ``FG > 1.0`` for 4 years is set at t = 3 (2028) and stays set;
+    for 5 years it is never set, because the counter resets to 0 at t = 4. A flag mixing a factor and a state
+    variable (``FG > 1.0 and x.stress > 0.7``) holds in t = 1..3 only: set for 3 years, never for 4."""
+    fg4 = _flag("fg4", ["FG"], lambda ns: ns["FG"] > 1.0, 4)
+    fg5 = _flag("fg5", ["FG"], lambda ns: ns["FG"] > 1.0, 5)
+    mix3 = _flag("mix3", ["FG", "x.stress"], lambda ns: (ns["FG"] > 1.0) & (ns["x.stress"] > 0.7), 3)
+    mix4 = _flag("mix4", ["FG", "x.stress"], lambda ns: (ns["FG"] > 1.0) & (ns["x.stress"] > 0.7), 4)
+    assert _fix_b_flags(3, [fg4, fg5, mix3, mix4]) == [False, False, False, False]
+    assert _fix_b_flags(4, [fg4, fg5, mix3, mix4]) == [True, False, True, False]
+    assert _fix_b_flags(6, [fg4, fg5, mix3, mix4]) == [True, False, True, False]
+
+
+def test_scenario_flag_condition_compiles_through_the_expression_compiler():
+    """A flag condition is compiled like any catalog expression, names validated against the state catalog and
+    event state disallowed (``allow_event_state=False``); the hand trace above then holds for the compiled flag."""
+    from sim.catalog.expr import ExprContext, compile_expression
+    from sim.catalog.types import CatalogError
+    from sim.reference import ScenarioFlag
+    sc = fix_b.catalog().meta["state_catalog"]
+    ctx = ExprContext(sc, "scenario flag 'stress2'", allow_event_state=False)
+    cond = compile_expression("x.stress > 1.2", ctx, "condition", "boolean")
+    assert cond.names == ("x.stress",)
+    assert _fix_b_flags(4, [ScenarioFlag("stress2", cond, 2)]) == [True]
+    assert _fix_b_flags(3, [ScenarioFlag("stress2", cond, 2)]) == [False]
+    with pytest.raises(CatalogError, match="unknown name 'years_since'"):
+        compile_expression("years_since > 3", ctx, "condition", "boolean")
+    with pytest.raises(CatalogError, match="event state names are not available"):
+        compile_expression("resolution == 'bad'", ctx, "condition", "boolean")
+    with pytest.raises(CatalogError, match="unknown name 'nope'"):
+        compile_expression("nope > 1", ctx, "condition", "boolean")
+
+
+def test_existing_callers_need_no_recording():
+    rec = ReferenceRun(fix_b.catalog(), fix_b.initial_conditions(), fix_b.dynamics(), fix_b.params(), fix_b.draws(), 0).run()
+    assert rec.scenario_flags.shape == (0,) and rec.scenario_flags.dtype == bool
+    from sim.reference import RecordingSpec, simulate_reference
+    assert RecordingSpec() == RecordingSpec([], [], 0)
+    recs = simulate_reference(fix_b.catalog(), fix_b.initial_conditions(), fix_b.dynamics(), fix_b.params(),
+                              fix_b.draws(), [0])
+    assert len(recs) == 1 and recs[0].scenario_flags.shape == (0,)
+
+
+def test_scenario_flag_validation_failures():
+    from sim.reference import ScenarioFlag
+    from sim.tests.fixtures import builders as B
+    ok = B.expr(["x.stress"], lambda ns: ns["x.stress"] > 1.2, "boolean")
+    with pytest.raises(ValueError, match="'f'.*min_years"):
+        ScenarioFlag("f", ok, 0)
+    with pytest.raises(ValueError, match="'f'.*min_years"):
+        ScenarioFlag("f", ok, 1.5)
+    for name in ("resolution", "branch", "years_since"):
+        with pytest.raises(ValueError, match=f"'f'.*event state.*{name}"):
+            ScenarioFlag("f", B.expr([name, "x.stress"], lambda ns: ns["x.stress"] > 1.2, "boolean"), 1)
+    with pytest.raises(ValueError, match="'f'.*boolean"):
+        ScenarioFlag("f", B.expr(["x.stress"], lambda ns: ns["x.stress"], "numeric"), 1)
+    with pytest.raises(ValueError, match="name"):
+        ScenarioFlag("", ok, 1)
+
+
+def test_recording_spec_validation_failures():
+    from sim.reference import RecordingSpec
+    a = _flag("a", ["x.stress"], lambda ns: ns["x.stress"] > 1.2, 1)
+    b = _flag("a", ["x.gdp"], lambda ns: ns["x.gdp"] < 95, 1)
+    with pytest.raises(ValueError, match="duplicate scenario flag name 'a'"):
+        RecordingSpec(scenario_flags=[a, b])
+    with pytest.raises(ValueError, match="duplicate thin key 'x.gdp'"):
+        RecordingSpec(thin_keys=["x.gdp", "temp", "x.gdp"])
+    with pytest.raises(ValueError, match="n_full.*-1"):
+        RecordingSpec(n_full=-1)
+    with pytest.raises(ValueError, match="n_full"):
+        RecordingSpec(n_full=2.5)
+    assert RecordingSpec(scenario_flags=[a], thin_keys=["x.gdp", "temp"], n_full=3).flag_names == ["a"]
+
+
+def test_reference_rejects_unknown_flag_names_and_thin_keys():
+    from sim.reference import RecordingSpec
+    bad = _flag("bad", ["x.nope"], lambda ns: ns["x.nope"] > 1, 1)
+    with pytest.raises(KeyError):
+        ReferenceRun(fix_b.catalog(), fix_b.initial_conditions(), fix_b.dynamics(), fix_b.params(), fix_b.draws(), 0,
+                     RecordingSpec(scenario_flags=[bad]))
+    with pytest.raises(KeyError):
+        ReferenceRun(fix_b.catalog(), fix_b.initial_conditions(), fix_b.dynamics(), fix_b.params(), fix_b.draws(), 0,
+                     RecordingSpec(thin_keys=["nope"]))
