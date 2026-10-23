@@ -16,8 +16,8 @@ tags:
 
 ## Minimum Viable Dynamics for v0.1 Prototype
 
-**Document Version:** 1.1  
-**Date:** December 2025 (1.1: October 2026)  
+**Document Version:** 1.2  
+**Date:** December 2025 (1.1, 1.2: October 2026)  
 **Status:** Design specification
 
 **Related documents:**
@@ -68,12 +68,15 @@ For each of 40 countries + 6 Tier 1 aggregates = **46 entities**:
 
 | Variable | Parameters | Units | Primary Source |
 |----------|------------|-------|----------------|
-| `gdp_per_capita` | 2025 baseline | $K (2025 real) | IMF WEO |
-| `gdp_per_capita` | Trend growth rate | %/year | IMF WEO medium-term projections |
+| `gdp_real` | 2025 baseline | $T (2025 real) | IMF WEO |
+| `gdp_growth` | Trend growth rate (the equilibrium μ of `gdp_growth`, §3.2) | %/year | IMF WEO medium-term projections |
+| `gdp_per_capita` | 2025 baseline (no dynamics; see below) | $K (2025 real) | IMF WEO |
 | `life_expectancy` | 2025 baseline | Years | UN Population Division |
 | `life_expectancy` | Trend improvement | Years/year | UN Population Division projections |
 
-**Count: 46 entities × 4 parameters = 184 parameters**
+**Count: 46 entities × 5 parameters = 230 parameters**
+
+**GDP is carried by `gdp_real`.** It is the stock that compounds by `gdp_growth` (§5.1) and the variable every GDP level shock in `events/` targets (as fractions of current value; event-yaml-schema §Impact Fields "Units"). `gdp_per_capita` has no dynamics and takes no impacts in v0.1. Its trajectory is derived after the run by relative change, `gdp_per_capita(2025) · [gdp_real(t) / gdp_real(2025)] · [pop_total(2025) / pop_total(t)]`, which keeps the 2025 per-capita baseline's own definition and reduces to the plain GDP ratio while population is static. Rationale: sim/README.md §4 item 20; whether v0.1 builds the §2.4 population mechanics is open (item 22).
 
 ### 2.2 Global Baseline Trends
 
@@ -94,9 +97,9 @@ For each of 40 countries + 6 Tier 1 aggregates = **46 entities**:
 
 | Category | Entities | Parameters per Entity | Total |
 |----------|----------|----------------------|-------|
-| Country GDP + life expectancy | 46 | 4 | 184 |
+| Country GDP + life expectancy | 46 | 5 | 230 |
 | Global trends | 1 | 12 | 12 |
-| **Tier 1 Total** | — | — | **~196** |
+| **Tier 1 Total** | — | — | **~242** |
 
 ### 2.4 Note on Population Dynamics
 
@@ -258,7 +261,7 @@ For each year t from 2025 to 2075:
     
     4. BASELINE DRIFT (Tier 1)
        For each entity:
-           gdp_per_capita(t) = shocked_state.gdp_pc × (1 + trend_growth_rate)
+           gdp_real(t) = shocked_state.gdp_real × (1 + trend_growth_rate)
            life_expectancy(t) = shocked_state.le + trend_improvement
        For global variables:
            temp(t) = temp(t-1) + trend_rate              # additive
@@ -284,7 +287,7 @@ For each year t from 2025 to 2075:
 
 **Implementation note:** The pseudocode above is simplified for clarity. In actual implementation, `gdp_growth` (mean-reverting flow variable) should be updated first, then GDP stock grows by the actual `gdp_growth` rate rather than the trend directly. That is:
 1. `gdp_growth(t)` mean-reverts toward `trend_growth_rate` (equilibrium)
-2. `gdp_per_capita(t) = gdp_per_capita(t-1) × (1 + gdp_growth(t))`
+2. `gdp_real(t) = gdp_real(t-1) × (1 + gdp_growth(t) / 100)` (`gdp_growth` is in % per year)
 
 This allows GDP growth to deviate from trend (due to shocks) and recover gradually.
 
@@ -404,6 +407,7 @@ The MVP dynamics implementation is successful if:
 |---------|------|---------|
 | 1.0 | December 2025 | Initial specification |
 | 1.1 | 2026-10-23 | θ = 1 − 0.5^(1/τ) (exact annual discretization); σ defined as innovation sd; transmission deferred to E7b (see sim/README.md §4) |
+| 1.2 | 2026-10-23 | GDP stock is `gdp_real` (compounded by `gdp_growth`, target of all GDP level shocks); `gdp_per_capita` is a 2025 baseline derived post-run; Tier 1 count 196 → 242 (sim/README.md §4 item 20) |
 
 ---
 

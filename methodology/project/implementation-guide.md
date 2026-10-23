@@ -131,7 +131,7 @@ data track complete.
 |------|------|------|
 | D1 | Remediate 3 flagged events (Pakistan, severe pandemic, fusion) restoring lost prose per git history — AMOC already remediated | Checker agent confirms: YAML validates; all prose sections from history present |
 | D2 | Migrate remaining 24 events per Task 4.2 process | Same per-event gate; progress table in [[methodology/project/tasks]] updated |
-| D3 | Task 4.3: 2025 baselines + trend rates (~196 params) per [[methodology/reference/mvp-dynamics-scope]] §2, single-sourced (IMF WEO, UN WPP) into `sim/data/initial_conditions.yaml` | All 46 Tier-1 entities (40 countries + 6 Tier 1 aggregates per [[methodology/reference/state-entities]]) covered; every value carries a source tag |
+| D3 | Task 4.3: 2025 baselines + trend rates (~242 params; GDP carried by `gdp_real`) per [[methodology/reference/mvp-dynamics-scope]] §2, single-sourced (IMF WEO, UN WPP) into `sim/data/initial_conditions.yaml` | All 46 Tier-1 entities (40 countries + 6 Tier 1 aggregates per [[methodology/reference/state-entities]]) covered; every value carries a source tag |
 | D4 | Task 4.4: mean-reversion defaults per [[methodology/reference/mvp-dynamics-scope]] §3 into `sim/data/dynamics_defaults.yaml` | All Tier 2 variable classes covered; outlier overrides (Argentina, Turkey) present |
 
 The final gate for the whole track: **the catalog compiler (E2) compiles every
@@ -336,6 +336,7 @@ Standing prohibitions for all agents on this work:
 | 2026-07-12 | Review fixes: variance validation pinned to the declared `variance:` field (protects hybrid-type events at the E2/D-track gates); Phase 0 state-variable additions pinned spec-side (v0.1 axes frozen to MVP scope); broken-input fixture variants assigned to E0; §1 diagram shows E10 |
 | 2026-07-12 | Catalog growth policy adopted: the axes pin scoped to build duration, with sanctioned widening moments (pre-E0 scope revision; post-E10 catalog releases) delegated to [[methodology/reference/catalog-versioning]]; guardrail 7 added (no hardcoded axis sizes) |
 | 2026-10-23 | Spec-owner review (delegated by the project owner) at E7: mean reversion uses the exact one-year discretization θ = 1 − 0.5^(1/half_life), σ the one-year innovation sd (D1; [[methodology/reference/mvp-dynamics-scope]] 1.1, sim/README.md §4 item 18); oil/food→inflation transmission moved out of E7 into stage E7b after D4, Task 4.5 reopened into 4.4 (D2; sim/README.md §4 item 19) |
+| 2026-10-23 | GDP is carried by `gdp_real` (compounded by `gdp_growth`); `gdp_per_capita` is a 2025 baseline derived post-run; D3 count ~196 → ~242 ([[methodology/reference/mvp-dynamics-scope]] 1.2, sim/README.md §4 item 20) |
 
 ---
 

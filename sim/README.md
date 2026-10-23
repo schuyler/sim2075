@@ -405,7 +405,9 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     variable, in the order the engines already use. `gdp_per_capita` gets no
     dynamics entry and no event rows; it is a D3 2025 baseline, and its
     trajectory is derived in `analysis/` (E9) as `gdp_per_capita(0) ·
-    gdp_real(t) / gdp_real(0)`. MVP §2.1's per-capita trend growth is read
+    [gdp_real(t) / gdp_real(0)] · [pop_total(0) / pop_total(t)]`, i.e. by
+    relative change, which keeps D3's own per-capita definition and reduces
+    to the plain GDP ratio while population is static. MVP §2.1's per-capita trend growth is read
     as `gdp_growth`'s equilibrium μ, as E7 already reads it. State Outputs
     §4.1's "GDP" thin trajectories record `gdp_real`.
     **Why.** (a) The multiplicative machinery is defined on `gdp_real`
@@ -415,10 +417,12 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     nothing. (b) The data track already reads it this way:
     `us-constitutional-crisis.md`'s migration table converted
     `usa.gdp_per_capita −10%` to `usa.gdp_real −0.10` because "per-capita
-    and aggregate real GDP coincide absent a population change", which is
-    exact in v0.1: `pop_total` is derived, nothing computes it, and
-    population dynamics are out of MVP scope. So the ratio is the model,
-    not an approximation. (c) It is the only option that puts GDP shocks
+    and aggregate real GDP coincide absent a population change". Per capita
+    is aggregate over population, so carrying the aggregate and deriving the
+    ratio loses nothing. (Correction, same day: the review first said
+    population dynamics are out of MVP scope; MVP §2.4 says cohorts evolve
+    in v0.1, but no engine stage builds that. See item 22. The decision
+    stands on (a), (c)–(e); the derivation above is exact either way.) (c) It is the only option that puts GDP shocks
     and growth on one variable, which MVP §8's criteria need; the ratio
     shock schedule (§3) returns the state to its no-shock path as the
     contribution decays, so it composes with compounding by design.
@@ -428,12 +432,14 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     **Follow-up.** Spec: MVP Dynamics Scope §2.1 (baseline and trend rows
     name `gdp_real`; `gdp_per_capita` stays a 2025 baseline), §5.1 step 4
     and its implementation note (`gdp_real(t) = gdp_real(t−1) · (1 +
-    gdp_growth(t))`), Document History; State Outputs §3.2 noting that
-    `gdp_per_capita_change ≡ gdp_change` in v0.1 (both pending, not yet
-    edited). D3: 2025 baselines for both. D4: `gdp_stock` on `gdp_real`
-    only. E9: the per-capita derivation, used by State Outputs §6
-    assessments that read `gdp_per_capita`. Known limitation: per-capita
-    ignores population change until population dynamics exist (post-v0.1).
+    gdp_growth(t)/100)`), Document History; State Outputs §3.2 defining the
+    derived per-capita series (both made 2026-10-23:
+    MVP scope 1.2, State Outputs 1.1, with the D3 count in the guide and
+    `tasks.md` 4.3 updated from ~196 to ~242). D3: 2025 baselines for
+    both. D4: `gdp_stock` on `gdp_real` only. E9: the per-capita
+    derivation, used by State Outputs §6 assessments that read
+    `gdp_per_capita`. While no stage computes `pop_total` (item 22), E9
+    must treat population as static and say so in its output.
     FIX-A's `gdp_per_capita` stock is fixture-internal and stays. Does not
     block E8 (fixtures plus a thin-key choice); it bites at D4 and E10.
 21. **`simulate()` takes dynamics and recording config; `years` lives in
@@ -473,6 +479,20 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     serialization moves to `run.py` (E9), and the State Outputs §8.4
     validation statistics, which are cross-run analyses of what E8 records,
     move to E9/E10. ADR-9 and architecture §3 need no edit.
+22. **Population dynamics are specified for v0.1 but built by no stage** —
+    *open, owner decision (found 2026-10-23).* MVP Dynamics Scope §2.4 says
+    that in v0.1 the 12 population cohorts per country evolve by aging,
+    mortality (from `life_expectancy`), fertility (`tfr`) and migration, per
+    State Dynamics §3, and MVP §8's success criteria check for "no negative
+    populations". But no row of guide §3 (E7 is drift and mean reversion),
+    no task in `tasks.md`, the architecture and this README mention cohort
+    mechanics. The state catalog's `pop_total` and `pop_working_age` are
+    `derived: true`, and nothing computes derived variables. Until this is
+    decided, population is static in both engines, which is what the
+    per-capita derivation of item 20 falls back to. The choice is between
+    a stage for cohort mechanics (with derived-variable computation)
+    before E10, and an MVP scope amendment deferring population dynamics
+    from v0.1.
 
 ## 5. License
 

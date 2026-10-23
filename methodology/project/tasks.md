@@ -44,7 +44,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 | Task | Description | Dependencies | Status |
 |------|-------------|--------------|--------|
 | **4.2** | **Event specification migration** (29/29 migrated; full-catalog compile gate green, Oct 22, 2026): See detailed instructions below — they stay here because the Phase 0 war events (task 6.1) are migrated by the same process and join the subtask table. | — | ✅ |
-| **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~196 parameters. | — | 🔲 |
+| **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: real GDP and its trend growth, plus a 2025 GDP-per-capita baseline (46 entities; GDP is carried by `gdp_real`, sim/README.md §4 item 20), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~242 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. incl. reopened 4.5: κ_oil, κ_food, exporter rule, half-life choice for inflation pass-through, direct `inflation_rate` event rows to retire (sim/README.md §4) | 4.3 | 🔲 |
 
 **Dependency graph:**
