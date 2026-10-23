@@ -27,7 +27,7 @@ decisions they left open (§3) and what the build has found so far (§4).
 | E6 | `sim/engine/impacts.py`: active-shock ledger, impact-row selection and magnitudes, shock schedule, epsilon-cull, `until: resolved` flags | single decaying shock matches the closed-form half-life to rtol 1e-9 and its epsilon-cull year restores the no-shock value and frees the slot; `permanent` + `immediate` takes no slot, a ramped `permanent` frees its slot at onset end keeping its level; delayed/gradual onset per the §3 table; `until: resolved` holds `resolves_after` years and re-firing restarts it; multiplicative decay returns to the no-shock path, contribution ≤ −1 raises `ImpactOutOfRange`; `max_active + 1` live shocks raise `LedgerOverflow`, `max_active` do not; oracle diff on FIX-B passes | done |
 | E7 | `sim/engine/dynamics.py`: step 7 — Tier 2 mean reversion, then `gdp_stock` compounding and Tier 1 drifts (growth-rate-first); oil/food → inflation transmission is E7b, after D4 (§4, item 19) | no-event FIX-A run compounds `gdp_per_capita` at 2%/yr and adds 0.2/0.1 yr of life expectancy per year, matching closed forms to rtol 1e-9; a σ = 0 mean-reverting variable displaced by initial condition or by an E6 shock sits at `μ + d · 0.5^(k/h)` after `k` years for h ∈ {1, 2, 3, 0.5}; stock compounds by post-reversion growth; noise from the entry's own `dyn_z` column; phase-2 declaration order; loud failures on unknown key/kind, `dyn_z` shape, state dtype/shape; every scenario cross-checked against the reference | done |
 | — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters, impact magnitudes, `until: resolved` flags, live ledger; dynamics-free mode (both engines `DynamicsSpec([])`, own state from initial conditions, plus FIX-B's scripted draws with `x.stress` 2.0, and test-built ramped-onset, long-horizon, `until: resolved` re-firing and small-`max_active` variants): full state trajectory (rtol 1e-9), exact event log, `LedgerOverflow` runs and year, `ImpactOutOfRange` runs, year, row and contribution; full-dynamics own-state mode (both engines on the fixture's own `DynamicsSpec`, E3–E7 in step order; FIX-A and FIX-B, FIX-B also over 20 years, plus test-built FIX-A variants with distinct σ > 0 on every mean-reverting variable and with an additive drift on a `gdp_stock`'s growth variable declared before and after the stock): the same per-year diff — grows with each stage; through `simulate()` (the E8 gate, `test_e8_simulation.py` and the `test_oracle_diff_simulate*` cases): the engine's own loop, blocks and recording on FIX-A/FIX-B at one and four blocks, FIX-B over 20 years, noisy FIX-A, the drift on a growth key, with `n_full = R`, thin keys and mixed scenario flags — full trajectories, terminal state, factors and thin at rtol 1e-9, flags and `max_active_seen` exactly, the event log exactly with magnitudes row for row; the ramped overflow and out-of-range variants raise through `simulate()` naming the reference's runs, year, row and contribution | in suite |
-| E8 | `sim/engine/state.py` (block state tensor, state-key binding) and `sim/engine/simulation.py`: `simulate(catalog, initial_conditions, dynamics, params, R, seed, recording)` → `RunOutputs`, the year loop wiring E3–E7 in step order over §4.6 blocks, recording per ADR-9 (terminal state, factors `[R, K, T]`, columnar event log with provenance, thin and full trajectories, scenario flags, `max_active_seen`) | oracle diff through `simulate()` (row above); hard failures name the reference's runs and year; step order pinned; flags equal a direct count over recorded trajectories; performance smoke R=10,000 × 50 years < 60 s (opt-in, below) | done; the smoke raises on the data (§4, items 24–25) |
+| E8 | `sim/engine/state.py` (block state tensor, state-key binding) and `sim/engine/simulation.py`: `simulate(catalog, initial_conditions, dynamics, params, R, seed, recording)` → `RunOutputs`, the year loop wiring E3–E7 in step order over §4.6 blocks, recording per ADR-9 (terminal state, factors `[R, K, T]`, columnar event log with provenance, thin and full trajectories, scenario flags, `max_active_seen`) | oracle diff through `simulate()` (row above); hard failures name the reference's runs and year; step order pinned; flags equal a direct count over recorded trajectories; performance smoke R=10,000 × 50 years < 60 s (opt-in, below) | done; the smoke raises on the data (§4, items 25–26) |
 | E9–E10 | analysis, end-to-end validation | per guide §3 | not started |
 
 Data track (guide §2): D1 and D2 done — all 29 events compile and the
@@ -47,7 +47,7 @@ fast. It compiles every migrated event except those whose compile notes carry
 the multiplicative "mean ≤ −1" warning (derived, not listed by hand; today
 Taiwan), takes each global's `baseline_2025` as its initial condition and
 builds smoke-only dynamics from MVP scope §2.2/§3 inside the test (§4, item
-24). It currently fails on the data, not the loop: see §4, item 25.
+25). It currently fails on the data, not the loop: see §4, item 26.
 
 ## 2. Layout
 
@@ -272,7 +272,7 @@ it, and rejects a duplicate flag name or thin key, `min_years < 1` or `n_full
 < 0` with a `ValueError` naming the offender. The reference's `RunRecord`
 carries `scenario_flags` (bool `[n_flags]`); its full `country`/`global_`
 trajectories already contain every thin key. No real flag definitions exist
-yet: an owner/data-track item (§4, item 22). `simulate` returns `RunOutputs`,
+yet: an owner/data-track item (§4, item 23). `simulate` returns `RunOutputs`,
 in-memory arrays only (§4, item 21): terminal `country [R, N_ent, N_cvar]`
 and `global_ [R, N_gvar]`; `factors float64 [R, K, T]`; `thin float64 [R,
 n_thin, T+1]` and `full_country [n_full, T+1, N_ent, N_cvar]` /
@@ -478,7 +478,9 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     variable, in the order the engines already use. `gdp_per_capita` gets no
     dynamics entry and no event rows; it is a D3 2025 baseline, and its
     trajectory is derived in `analysis/` (E9) as `gdp_per_capita(0) ·
-    gdp_real(t) / gdp_real(0)`. MVP §2.1's per-capita trend growth is read
+    [gdp_real(t) / gdp_real(0)] · [pop_total(0) / pop_total(t)]`, i.e. by
+    relative change, which keeps D3's own per-capita definition and reduces
+    to the plain GDP ratio while population is static. MVP §2.1's per-capita trend growth is read
     as `gdp_growth`'s equilibrium μ, as E7 already reads it. State Outputs
     §4.1's "GDP" thin trajectories record `gdp_real`.
     **Why.** (a) The multiplicative machinery is defined on `gdp_real`
@@ -488,10 +490,12 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     nothing. (b) The data track already reads it this way:
     `us-constitutional-crisis.md`'s migration table converted
     `usa.gdp_per_capita −10%` to `usa.gdp_real −0.10` because "per-capita
-    and aggregate real GDP coincide absent a population change", which is
-    exact in v0.1: `pop_total` is derived, nothing computes it, and
-    population dynamics are out of MVP scope. So the ratio is the model,
-    not an approximation. (c) It is the only option that puts GDP shocks
+    and aggregate real GDP coincide absent a population change". Per capita
+    is aggregate over population, so carrying the aggregate and deriving the
+    ratio loses nothing. (Correction, same day: the review first said
+    population dynamics are out of MVP scope; MVP §2.4 says cohorts evolve
+    in v0.1, but no engine stage builds that. See item 22. The decision
+    stands on (a), (c)–(e); the derivation above is exact either way.) (c) It is the only option that puts GDP shocks
     and growth on one variable, which MVP §8's criteria need; the ratio
     shock schedule (§3) returns the state to its no-shock path as the
     contribution decays, so it composes with compounding by design.
@@ -501,12 +505,14 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     **Follow-up.** Spec: MVP Dynamics Scope §2.1 (baseline and trend rows
     name `gdp_real`; `gdp_per_capita` stays a 2025 baseline), §5.1 step 4
     and its implementation note (`gdp_real(t) = gdp_real(t−1) · (1 +
-    gdp_growth(t))`), Document History; State Outputs §3.2 noting that
-    `gdp_per_capita_change ≡ gdp_change` in v0.1 (both pending, not yet
-    edited). D3: 2025 baselines for both. D4: `gdp_stock` on `gdp_real`
-    only. E9: the per-capita derivation, used by State Outputs §6
-    assessments that read `gdp_per_capita`. Known limitation: per-capita
-    ignores population change until population dynamics exist (post-v0.1).
+    gdp_growth(t)/100)`), Document History; State Outputs §3.2 defining the
+    derived per-capita series (both made 2026-10-23:
+    MVP scope 1.2, State Outputs 1.1, with the D3 count in the guide and
+    `tasks.md` 4.3 updated from ~196 to ~242). D3: 2025 baselines for
+    both. D4: `gdp_stock` on `gdp_real` only. E9: the per-capita
+    derivation, used by State Outputs §6 assessments that read
+    `gdp_per_capita`. While no stage computes `pop_total` (item 22), E9
+    must treat population as static and say so in its output.
     FIX-A's `gdp_per_capita` stock is fixture-internal and stays. Does not
     block E8 (fixtures plus a thin-key choice); it bites at D4 and E10.
 21. **`simulate()` takes dynamics and recording config; `years` lives in
@@ -546,10 +552,24 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     serialization moves to `run.py` (E9), and the State Outputs §8.4
     validation statistics, which are cross-run analyses of what E8 records,
     move to E9/E10. ADR-9 and architecture §3 need no edit.
+22. **Population dynamics are specified for v0.1 but built by no stage** —
+    *open, owner decision (found 2026-10-23).* MVP Dynamics Scope §2.4 says
+    that in v0.1 the 12 population cohorts per country evolve by aging,
+    mortality (from `life_expectancy`), fertility (`tfr`) and migration, per
+    State Dynamics §3, and MVP §8's success criteria check for "no negative
+    populations". But no row of guide §3 (E7 is drift and mean reversion),
+    no task in `tasks.md`, the architecture and this README mention cohort
+    mechanics. The state catalog's `pop_total` and `pop_working_age` are
+    `derived: true`, and nothing computes derived variables. Until this is
+    decided, population is static in both engines, which is what the
+    per-capita derivation of item 20 falls back to. The choice is between
+    a stage for cohort mechanics (with derived-variable computation)
+    before E10, and an MVP scope amendment deferring population dynamics
+    from v0.1.
 
 Found at E8 (2026-10-23):
 
-22. **No scenario-flag definitions exist.** `ScenarioFlag` (§3 "Recording")
+23. **No scenario-flag definitions exist.** `ScenarioFlag` (§3 "Recording")
     is the mechanism; nothing in the repository declares a flag. State
     Outputs §7.2's scenario table is prose, and most of its rows are not
     expressible as a flag over factors and state variables: "US severe
@@ -563,14 +583,14 @@ Found at E8 (2026-10-23):
     `min_years` each. Owner/data-track item: author the flag list as data
     (expression + `min_years`), loaded by `run.py` at E9 with the thin-key
     list; the engine takes whatever it is given.
-23. **`n_full` memory at the real axis sizes.** The state catalog is 52
+24. **`n_full` memory at the real axis sizes.** The state catalog is 52
     entities × 77 country variables + 42 globals = 4,046 floats per year, so
     `n_full = 1000` over 50 years is 1000 × 51 × 4,046 × 8 B ≈ 1.65 GB of
     full trajectories in memory (the 1.42 GB figure in the E8 brief assumed
     66 country variables). E8 enforces nothing about it; E9's production
     default must take it into account (ADR-9 prefers widening the thin list
     over deepening the subset).
-24. **The smoke's inputs** (`test_e8_simulation.py`, opt-in via
+25. **The smoke's inputs** (`test_e8_simulation.py`, opt-in via
     `SIM2075_SMOKE=1`). The catalog is every migrated event compiled with
     `strict_cascades=False` minus the events whose compile notes carry the
     multiplicative "mean ≤ −1" WARNING, derived from the notes and asserted
@@ -588,7 +608,7 @@ Found at E8 (2026-10-23):
     additive or multiplicative as §2.2 states them. §3.2 gives `gdp_growth`
     no tier value (its equilibrium is the country's Tier 1 trend, D3's), so
     the smoke uses 2 %/yr; D4 supplies the real one.
-25. **The smoke raises on the data, twice, before the loop's cost can be
+26. **The smoke raises on the data, twice, before the loop's cost can be
     measured** (E8-D5: a data finding, reported, not patched; nothing was
     clamped, caught, reseeded or edited).
     - *`LedgerOverflow` in 2025, the first year, at the pinned width.* Block

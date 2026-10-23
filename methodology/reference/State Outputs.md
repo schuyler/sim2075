@@ -16,8 +16,8 @@ tags:
 
 ## What the Simulation Produces
 
-**Document Version:** 1.0  
-**Date:** December 2025  
+**Document Version:** 1.1  
+**Date:** December 2025 (1.1: October 2026)  
 **Status:** Design specification (pre-implementation)
 
 **Related documents:**
@@ -90,6 +90,8 @@ For each country, compute summary measures from the state vector:
 | `conflict_years` | Count of years with `internal_conflict_intensity` ≥ 2 | Count |
 | `regime_changes` | Count of `regime_type` transitions | Count |
 
+In v0.1 `gdp_per_capita` is derived after the run as `gdp_per_capita_2025 · [gdp_real(t) / gdp_real_2025] · [pop_total_2025 / pop_total(t)]` ([[methodology/reference/mvp-dynamics-scope]] §2.1); while population is static, `gdp_per_capita_change ≡ gdp_change`. Assessments that read `gdp_per_capita` (§5.4) use the derived series.
+
 ### 3.3 Regional Rollups
 
 Aggregate statistics for geographic regions (population-weighted where appropriate):
@@ -136,7 +138,7 @@ For selected high-importance variables, store annual values across the full simu
 - `active_major_conflicts`
 
 **Major country trajectories:**
-- GDP for: US, China, India, Germany, Japan, Brazil, Russia
+- GDP (`gdp_real`) for: US, China, India, Germany, Japan, Brazil, Russia
 - Population for: India, China, Nigeria, US, Indonesia
 - `internal_conflict_intensity` for all countries
 
@@ -673,6 +675,15 @@ The simulation produces:
 4. **Distributional summaries:** Percentiles, scenario frequencies, conditional distributions, contribution analysis across runs
 
 The key architectural decision is that **assessments are outputs, not state variables**. The simulation tracks observables; interpretive indices are computed afterward. This eliminates circular reasoning and enables transparent analysis of what drives outcomes.
+
+---
+
+## Document History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | December 2025 | Initial specification |
+| 1.1 | 2026-10-23 | GDP trajectories name `gdp_real`; `gdp_per_capita` derived post-run in v0.1 (sim/README.md §4 item 20) |
 
 ---
 
