@@ -16,8 +16,8 @@ tags:
 
 ## Minimum Viable Dynamics for v0.1 Prototype
 
-**Document Version:** 1.2  
-**Date:** December 2025 (1.1, 1.2: October 2026)  
+**Document Version:** 1.3  
+**Date:** December 2025 (1.1–1.3: October 2026)  
 **Status:** Design specification
 
 **Related documents:**
@@ -112,6 +112,8 @@ Population cohorts (12 per country) evolve via deterministic aging mechanics, no
 These mechanics are specified in [[methodology/reference/state-dynamics]] §3 (Slow Drift Variables). They require initial 2025 population pyramids (from UN data) but not trend parameters—the trends emerge from the mechanics.
 
 **For v0.1:** Use UN 2025 population estimates for initial conditions. Demographic evolution follows from cohort mechanics + life expectancy/fertility trends.
+
+**Scheduled (2026-10-23).** The mechanics above are named but not yet parameterized. Task 4.6 parameterizes them (aging across the uneven cohort widths, mortality from `life_expectancy`, births from `tfr`, the migration split) and supplies the 2025 pyramids and `tfr` baselines. Implementation guide stage E7c builds them, with the derived variables of [[methodology/reference/state-dynamics]] §8. They are in v0.1 because they are the only way event shocks to mortality, fertility and migration reach population, and because demographic transition is half of the project's founding thesis ([[methodology/00-start-here]]). Decision record: sim/README.md §4 item 22.
 
 ---
 
@@ -266,6 +268,8 @@ For each year t from 2025 to 2075:
        For global variables:
            temp(t) = temp(t-1) + trend_rate              # additive
            tech_cost(t) = tech_cost(t-1) × (1 - decline_rate)  # multiplicative
+       Population (§2.4; parameterized by Task 4.6):
+           cohorts age; deaths from life_expectancy; births from tfr; net migration
     
     5. MEAN REVERSION (Tier 2)
        For mean-reverting variables:
@@ -274,6 +278,10 @@ For each year t from 2025 to 2075:
     
     6. TRANSMISSION (Simplified)
        inflation(t) = f(oil_price, food_price, import_dependence)
+    
+    6b. DERIVED VARIABLES
+       Recompute pop_total, pop_working_age, dependency_ratio, … from the
+       cohorts (State Dynamics §8), after all shocks and dynamics
     
     7. RECORD STATE
        Store state(t) for trajectory output
@@ -408,6 +416,7 @@ The MVP dynamics implementation is successful if:
 | 1.0 | December 2025 | Initial specification |
 | 1.1 | 2026-10-23 | θ = 1 − 0.5^(1/τ) (exact annual discretization); σ defined as innovation sd; transmission deferred to E7b (see sim/README.md §4) |
 | 1.2 | 2026-10-23 | GDP stock is `gdp_real` (compounded by `gdp_growth`, target of all GDP level shocks); `gdp_per_capita` is a 2025 baseline derived post-run; Tier 1 count 196 → 242 (sim/README.md §4 item 20) |
+| 1.3 | 2026-10-23 | Population dynamics (§2.4) scheduled for v0.1: parameterized by Task 4.6, built at stage E7c; §5.1 gains the population step and derived-variable recomputation it lacked (sim/README.md §4 item 22) |
 
 ---
 

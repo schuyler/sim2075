@@ -94,11 +94,12 @@ DATA TRACK                          ENGINE TRACK
      (24 + 3 remediations) │        E1 scalar reference impl (the oracle)
 4.3  initial conditions    │        E2 catalog compiler
 4.4  dynamics defaults     │        E3 factor sampling
-                           │        E4 firing (Types 1/2/3)
+4.6  population mechanics  │        E4 firing (Types 1/2/3)
                            │        E5 per-run memory
                            │        E6 impact ledger
                            │        E7 dynamics
                            │        E8 year loop + recording
+                           │        E7c population + derived variables (after 4.6)
                            ▼        E9 analysis
                     ── E10 / 5.11 end-to-end validation ──
 ```
@@ -133,6 +134,7 @@ data track complete.
 | D2 | Migrate remaining 24 events per Task 4.2 process | Same per-event gate; progress table in [[methodology/project/tasks]] updated |
 | D3 | Task 4.3: 2025 baselines + trend rates (~242 params; GDP carried by `gdp_real`) per [[methodology/reference/mvp-dynamics-scope]] §2, single-sourced (IMF WEO, UN WPP) into `sim/data/initial_conditions.yaml` | All 46 Tier-1 entities (40 countries + 6 Tier 1 aggregates per [[methodology/reference/state-entities]]) covered; every value carries a source tag |
 | D4 | Task 4.4: mean-reversion defaults per [[methodology/reference/mvp-dynamics-scope]] §3 into `sim/data/dynamics_defaults.yaml` | All Tier 2 variable classes covered; outlier overrides (Argentina, Turkey) present |
+| D5 | Task 4.6: population mechanics per [[methodology/reference/mvp-dynamics-scope]] §2.4: within-cohort age rule for aging across the uneven cohort widths, mortality schedule from `life_expectancy`, fertility age band and its allocation across cohorts, migration age/sex split, `tfr` dynamics; 2025 cohort pyramids and `tfr` baselines (UN WPP) into `sim/data/initial_conditions.yaml` | Every rule written as a formula with its source; all 46 Tier-1 entities covered; a hand-computable one-entity projection committed as a fixture expectation |
 
 The final gate for the whole track: **the catalog compiler (E2) compiles every
 event in `events/` with zero errors** (29 at time of writing; roadmap Phase 0
@@ -157,6 +159,7 @@ Stages map to tasks 5.1–5.11; each row lists the deliverable and its
 | **E6** | 5.5, 5.6 | `engine/impacts.py`: active-shock ledger (pinned #2, #3); permanent shocks fold into state at firing; epsilon-cull at contribution < 1e-4 of drawn magnitude; `until: resolved` linkage; resolution/branch draws | Single-shock decay curve matches closed-form half-life to rtol 1e-9; `permanent` occupies no slot; overflow raises with run indices; **oracle diff vs E1 on FIX-B passes** (§5.2) |
 | **E7** | 5.7 | `engine/dynamics.py`: Tier 1 drift, Tier 2 mean reversion per [[methodology/reference/mvp-dynamics-scope]] §5.1 (growth-rate-first ordering). The oil/food→inflation transmission of §5.1 step 6 is stage **E7b**, after D4: it needs passthrough coefficients the data track has not produced (Task 4.5 reopened into 4.4) and the retirement of direct `*.inflation_rate` event rows that carry the channel today (State Transmission §8.1). | No-event run from FIX-A initial conditions shows compounding GDP growth and linear LE gains matching hand-computed trajectories to rtol 1e-9; shocked mean-reverting variable recovers with specified half-life |
 | **E8** | 5.2, 5.8 | `engine/state.py` + `engine/simulation.py`: the year loop, wiring E3–E7 in the architecture §3 order; recording per ADR-9 (event log w/ provenance, factor trajectories, scenario flags, thin trajectories) | **Oracle diff vs E1 on FIX-A and FIX-B passes** (§5.2; FIX-C is compiler-only — no run semantics, not oracle-diffed); performance smoke: R=10,000 × 50 years < 60 s |
+| **E7c** | 5.7c | Reference amendment first, then `engine/population.py`: cohort aging, mortality, births and migration per Task 4.6 (D5), applied in step 7 after the Tier 1/2 dynamics; then recomputation of every `derived: true` state variable from its components ([[methodology/reference/state-dynamics]] §8), so that expressions reading them (today `chn.pop_working_age`) see computed values | Population accounting identity `pop(t+1) = pop(t) + births − deaths + net migration` holds per entity to rtol 1e-9; a no-event one-entity run reproduces the D5 hand projection to rtol 1e-9; a `life_expectancy` shock lowers population against the no-shock path; each derived variable equals its State Dynamics §8 formula; oracle diff vs E1 through `simulate()` passes |
 | **E9** | 5.9, 5.10 | `analysis/`: percentiles, scenario frequencies, conditional distributions, contribution analysis; run notebook / `run.py` | Analysis of a fixture batch reproduces hand-computable statistics (e.g. scenario flag frequency equals direct count from event logs) |
 | **E10** | 5.11 | Full-catalog validation runs (requires data track complete) | The five success criteria of [[methodology/reference/mvp-dynamics-scope]] §8, each expressed as an executable check, all pass; validation outputs of [[methodology/reference/state-outputs]] §8.4 produced |
 
@@ -354,6 +357,7 @@ Standing prohibitions for all agents on this work:
 | 2026-10-23 | Spec-owner review (delegated by the project owner) at E7: mean reversion uses the exact one-year discretization θ = 1 − 0.5^(1/half_life), σ the one-year innovation sd (D1; [[methodology/reference/mvp-dynamics-scope]] 1.1, sim/README.md §4 item 18); oil/food→inflation transmission moved out of E7 into stage E7b after D4, Task 4.5 reopened into 4.4 (D2; sim/README.md §4 item 19) |
 | 2026-10-23 | GDP is carried by `gdp_real` (compounded by `gdp_growth`); `gdp_per_capita` is a 2025 baseline derived post-run; D3 count ~196 → ~242 ([[methodology/reference/mvp-dynamics-scope]] 1.2, sim/README.md §4 item 20) |
 | 2026-10-23 | E8-D1: `simulate` takes `DynamicsSpec` and `RecordingSpec`; `years` lives in `SimParams`; serialization and §8.4 validation statistics moved to E9/E10 (sim/README.md §4 item 21) |
+| 2026-10-23 | Population dynamics scheduled for v0.1 (owner decision): data task D5 / Task 4.6 parameterizes the cohort mechanics MVP §2.4 names; stage E7c builds them with derived-variable recomputation. The build plan had carried population nowhere since MVP §5.1's pseudocode omitted it (sim/README.md §4 item 22; [[methodology/project/purpose-trace]]) |
 
 ---
 

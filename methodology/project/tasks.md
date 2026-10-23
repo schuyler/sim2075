@@ -46,12 +46,14 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 | **4.2** | **Event specification migration** (29/29 migrated; full-catalog compile gate green, Oct 22, 2026): See detailed instructions below — they stay here because the Phase 0 war events (task 6.1) are migrated by the same process and join the subtask table. | — | ✅ |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: real GDP and its trend growth, plus a 2025 GDP-per-capita baseline (46 entities; GDP is carried by `gdp_real`, sim/README.md §4 item 20), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~242 parameters. | — | 🔲 |
 | **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. incl. reopened 4.5: κ_oil, κ_food, exporter rule, half-life choice for inflation pass-through, direct `inflation_rate` event rows to retire (sim/README.md §4) | 4.3 | 🔲 |
+| **4.6** | **Population mechanics** (guide D5): parameterize the cohort mechanics [[methodology/reference/mvp-dynamics-scope]] §2.4 names — aging across the uneven cohort widths (0–14, 15–34, 35–54, 55–64, 65–79, 80+), mortality schedule from `life_expectancy` (model life table), fertility age band and allocation from `tfr`, migration age/sex split, `tfr` dynamics — and gather 2025 cohort pyramids and `tfr` baselines (UN WPP). Every rule as a formula with its source. Feeds stage E7c (sim/README.md §4 item 22) | 4.3 | 🔲 |
 
 **Dependency graph:**
 ```
 4.2 Event Catalog (complete)
 4.3 Initial Conditions + Trends (ready to start)
- └── 4.4 Dynamics Defaults
+ ├── 4.4 Dynamics Defaults
+ └── 4.6 Population Mechanics
 ```
 
 #### Task 4.2 Detailed Instructions
@@ -244,6 +246,7 @@ Build simulation prototype. **Execution plan: [[methodology/project/implementati
 | **5.6** | Implement aftermath tracking | ✅ `sim/engine/impacts.py` (`until: resolved` flags, epsilon-cull; guide E6 gate) | 5.4b, 5.5 |
 | **5.7** | Implement baseline dynamics | ✅ `sim/engine/dynamics.py` (guide E7 gate; transmission is E7b, after D4) | 5.2, 4.4 |
 | **5.8** | Implement main simulation loop | ✅ `sim/engine/simulation.py` (guide E8 gate: §5.2 oracle diff through `simulate()`; the performance smoke raises on the data, sim/README.md §4 items 25–26) | 5.3–5.7 |
+| **5.7c** | Implement population dynamics + derived variables (guide E7c) | ⏸️ | 5.8, 4.6 |
 | **5.8b** | Implement scalar reference impl (ADR-1) — built **first** as the verification oracle per [[methodology/project/implementation-guide]] stage E1; vectorized engine stages diff against it as they land | ✅ `sim/reference/` (guide E1 gate passes on FIX-A/FIX-B) | 5.1 |
 | **5.9** | Implement output analysis | ⏸️ | 5.8 |
 | **5.10** | Create prototype run notebook | ⏸️ | 5.8, 5.9 |

@@ -99,6 +99,7 @@ Monte Carlo simulation modeling geopolitical trajectories through 2075. We sampl
 |----------|---------|
 | [[methodology/project/tasks]] | **Actionable development tasks** — start here for next work |
 | [[methodology/project/implementation-guide]] | **v0.1 execution plan** — build order, gates, contracts; written for agent orchestration |
+| [[methodology/project/purpose-trace]] | **Purpose trace** — each founding claim traced to the mechanisms that carry it; re-run when scope is cut and before E10 |
 | [[methodology/project/tasks-completed]] | Completed task archive |
 | [[methodology/project/progress-tracker]] | Event specification status |
 | [[methodology/project/open-questions]] | Methodological issues to explore |
