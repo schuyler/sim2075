@@ -218,14 +218,30 @@ slot pattern with `(dst_event, delta, years_remaining)` fields.
 ### 4.5 Simulation entry point and outputs
 
 ```python
-simulate(catalog, initial_conditions, params, R, seed, years=50) -> RunOutputs
+simulate(catalog, initial_conditions, dynamics, params, R, seed, recording=RecordingSpec()) -> RunOutputs
 ```
 
-`RunOutputs`: terminal state (Parquet), event log with provenance
-(`p_base`, `p_eff`, active-cascade bitmask; JSON/Parquet), factor trajectories
-`float64 [R, K, T]`, scenario flags `bool [R, n_flags]`, thin trajectories for
-the ADR-9 variable list, validation statistics per
-[[methodology/reference/state-outputs]] §8.4.
+`dynamics` is the `DynamicsSpec` every run needs (third positional, mirroring
+`simulate_reference`); `params` is `SimParams`, the single source for
+`years`, `start_year`, `max_active`, `epsilon_cull` and `block_size` — there
+is no `years=` keyword, because two sources for the horizon invite silent
+disagreement (guardrail 4); `recording` is a `RecordingSpec`
+(`scenario_flags`, `thin_keys`, `n_full`, in `sim/reference/model.py` beside
+the other shared contract types), defaulting to nothing so fixtures run
+without it. `R` and `seed` stay separate from the reference's `draws,
+run_indices`, which the oracle diff drives; that asymmetry is intended.
+
+`RunOutputs` holds in-memory arrays only: terminal state; the columnar event
+log with provenance (`run, year, event, resolution, branch, p_base, p_eff,
+cascade_mask`, ordered by `(run, year, event)`, plus a magnitudes table
+`(firing, row, M)` in row order); factor trajectories `float64 [R, K, T]`;
+scenario flags `bool [R, n_flags]`; thin trajectories `float64 [R, n_thin,
+T+1]` (index 0 the initial conditions) for the `thin_keys`, the ADR-9 list
+being data loaded at E9; full trajectories for the first `n_full` runs;
+`max_active_seen [R]`; the year axis. Parquet/JSON serialization is `run.py`
+(E9) and the validation statistics of [[methodology/reference/state-outputs]]
+§8.4 are E9/E10: neither is a semantics seam, and keeping them out keeps E8
+oracle-diffable (sim/README.md §4 item 21).
 
 ### 4.6 RNG discipline (ADR-8)
 
@@ -336,6 +352,7 @@ Standing prohibitions for all agents on this work:
 | 2026-07-12 | Review fixes: variance validation pinned to the declared `variance:` field (protects hybrid-type events at the E2/D-track gates); Phase 0 state-variable additions pinned spec-side (v0.1 axes frozen to MVP scope); broken-input fixture variants assigned to E0; §1 diagram shows E10 |
 | 2026-07-12 | Catalog growth policy adopted: the axes pin scoped to build duration, with sanctioned widening moments (pre-E0 scope revision; post-E10 catalog releases) delegated to [[methodology/reference/catalog-versioning]]; guardrail 7 added (no hardcoded axis sizes) |
 | 2026-10-23 | Spec-owner review (delegated by the project owner) at E7: mean reversion uses the exact one-year discretization θ = 1 − 0.5^(1/half_life), σ the one-year innovation sd (D1; [[methodology/reference/mvp-dynamics-scope]] 1.1, sim/README.md §4 item 18); oil/food→inflation transmission moved out of E7 into stage E7b after D4, Task 4.5 reopened into 4.4 (D2; sim/README.md §4 item 19) |
+| 2026-10-23 | E8-D1: `simulate` takes `DynamicsSpec` and `RecordingSpec`; `years` lives in `SimParams`; serialization and §8.4 validation statistics moved to E9/E10 (sim/README.md §4 item 21) |
 
 ---
 

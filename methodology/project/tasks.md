@@ -29,7 +29,7 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 Key insight driving Section 4: **progress is continuous, catastrophe is discontinuous**. Without baseline dynamics capturing gradual improvement (GDP growth, life expectancy gains, technology cost declines), the simulation produces only decline. The "progress engine" is essential, not optional.
 
-Tasks 4.1 (MVP dynamics scope) and 4.2 (event migration — all 29 events compile and the full-catalog gate is green as of Oct 22, 2026) are complete — see [[methodology/project/tasks-completed]]. The data track's next step is 4.3 (initial conditions); on the engine track E7 (task 5.7, dynamics) has landed and E8 (tasks 5.2, 5.8, the year loop) is next; E7b (oil/food → inflation transmission) follows D4.
+Tasks 4.1 (MVP dynamics scope) and 4.2 (event migration — all 29 events compile and the full-catalog gate is green as of Oct 22, 2026) are complete — see [[methodology/project/tasks-completed]]. The data track's next step is 4.3 (initial conditions); on the engine track E8 (tasks 5.2, 5.8, the year loop and recording) has landed and E9 (tasks 5.9, 5.10, analysis) is next; E7b (oil/food → inflation transmission) follows D4.
 ## Upcoming Priorities
 
 ### Pre-Implementation Preparation (Section 4)
@@ -236,14 +236,14 @@ Build simulation prototype. **Execution plan: [[methodology/project/implementati
 |------|-------------|--------|--------------|
 | **5.0** | Ratify architecture ADRs; resolve open decisions in [[methodology/reference/simulator-architecture]] §5 | ✅ | Decisions pinned in [[methodology/project/implementation-guide]] §0 |
 | **5.1** | Set up prototype directory structure + fixtures (guide stage E0) | ✅ `sim/` + `sim/tests/fixtures/` (Oct 2026) | 5.0 ✅ |
-| **5.2** | Implement state vector management | ⏸️ | 5.1, 4.3 |
+| **5.2** | Implement state vector management | ✅ `sim/engine/state.py` (guide E8: block state tensor, state-key binding) | 5.1, 4.3 |
 | **5.3** | Implement factor sampling with correlations | ✅ `sim/engine/factors.py` (guide E3 gate passes at R=100k) | 5.1 |
 | **5.4** | Implement event firing logic (incl. catalog compiler + expression compiler) | ✅ compiler half (`sim/catalog/`, guide E2) and engine half (`sim/engine/firing.py`, guide E4 gate at R=100k; §5.2 oracle diff in suite) | 5.3, 4.2 |
 | **5.4b** | Implement per-run memory: sustained counters + cascade delta buffers (ADR-5) | ✅ `sim/engine/memory.py` (guide E5 gate; §5.2 oracle diff extended to every year) | 5.4 |
 | **5.5** | Implement impact transmission (active-shock ledger, ADR-6) | ✅ `sim/engine/impacts.py` (guide E6 gate; §5.2 oracle diff extended to a dynamics-free full-state mode) | 5.2, 5.4 |
 | **5.6** | Implement aftermath tracking | ✅ `sim/engine/impacts.py` (`until: resolved` flags, epsilon-cull; guide E6 gate) | 5.4b, 5.5 |
 | **5.7** | Implement baseline dynamics | ✅ `sim/engine/dynamics.py` (guide E7 gate; transmission is E7b, after D4) | 5.2, 4.4 |
-| **5.8** | Implement main simulation loop | ⏸️ | 5.3–5.7 |
+| **5.8** | Implement main simulation loop | ✅ `sim/engine/simulation.py` (guide E8 gate: §5.2 oracle diff through `simulate()`; the performance smoke raises on the data, sim/README.md §4 items 24–25) | 5.3–5.7 |
 | **5.8b** | Implement scalar reference impl (ADR-1) — built **first** as the verification oracle per [[methodology/project/implementation-guide]] stage E1; vectorized engine stages diff against it as they land | ✅ `sim/reference/` (guide E1 gate passes on FIX-A/FIX-B) | 5.1 |
 | **5.9** | Implement output analysis | ⏸️ | 5.8 |
 | **5.10** | Create prototype run notebook | ⏸️ | 5.8, 5.9 |
@@ -284,4 +284,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: October 23, 2026 — Task 4.2 complete (29/29, full-catalog gate green); engine stages E0–E7 landed (5.1, 5.8b, 5.3, 5.4, 5.4b, 5.5, 5.6, 5.7); Task 4.5 reopened into 4.4; build findings cross-referenced from sim/README.md*
+*Last updated: October 23, 2026 — Task 4.2 complete (29/29, full-catalog gate green); engine stages E0–E8 landed (5.1, 5.8b, 5.3, 5.4, 5.4b, 5.5, 5.6, 5.7, 5.2, 5.8); Task 4.5 reopened into 4.4; build findings cross-referenced from sim/README.md*
