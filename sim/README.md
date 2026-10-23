@@ -218,6 +218,29 @@ one declared later. Keys resolve as for expressions (`"global_var"` or
 to zero or changes sign. The oil/food → inflation transmission of MVP scope
 §5.1 step 6 is deferred to stage E7b (§4, item 19).
 
+**Recording** (ADR-9; `RecordingSpec` in `sim/reference/model.py`, beside
+`SimParams` and `DynamicsSpec`, §4 item 21). A `ScenarioFlag(name, condition,
+min_years)` is an expression compiled by the catalog's expression compiler
+with `allow_event_state=False`, so its names are validated against the state
+catalog and it may read factors and state variables only: `resolution`,
+`branch` and `years_since` are rejected at compile time and again by
+`ScenarioFlag` itself, because a flag describes an outcome, not firing
+mechanics (a flag about firings is an event-log query at E9). Both engines
+evaluate every flag in step 9 on **end-of-year** state (after step 8) with
+that year's factor draw, keep a per-run consecutive counter (+1 while the
+condition holds, reset to 0 the year it fails, ADR-5's machinery) and set the
+flag, which then stays set, in the first year the counter reaches `min_years`.
+Recorded state is end-of-year state, so a flag's cross-run frequency equals a
+direct count over recorded trajectories (E9's gate). `RecordingSpec` also
+names the `thin_keys` (state keys `"entity.var"` / `"global_var"` kept
+annually for every run) and `n_full` (the runs with the lowest global indices
+that keep full trajectories); it defaults to nothing, so fixtures run without
+it, and rejects a duplicate flag name or thin key, `min_years < 1` or `n_full
+< 0` with a `ValueError` naming the offender. The reference's `RunRecord`
+carries `scenario_flags` (bool `[n_flags]`); its full `country`/`global_`
+trajectories already contain every thin key. No real flag definitions exist
+yet: an owner/data-track item (§4, item 21).
+
 **Partial catalogs.** A cascade edge whose target exists in `events/` but is
 not yet migrated is dropped with a recorded warning when `strict_cascades` is
 off (fixture and per-event compiles) and is an error when it is on (the

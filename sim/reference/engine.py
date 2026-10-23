@@ -17,7 +17,7 @@ from scipy.special import ndtr
 from ..catalog.types import (CompiledCatalog, DUR_DECAY, DUR_PERMANENT, DUR_UNTIL_RESOLVED,
                              ENTITY_GLOBAL, ONSET_DELAYED, ONSET_GRADUAL, ONSET_IMMEDIATE)
 from ..rng import DrawShapes
-from .model import DynamicsSpec, ImpactOutOfRange, InitialConditions, LedgerOverflow, SimParams
+from .model import DynamicsSpec, ImpactOutOfRange, InitialConditions, LedgerOverflow, RecordingSpec, SimParams
 
 NEVER_FIRED = -(10 ** 6)   # last_fire_year sentinel; years_since is then huge (> any horizon)
 
@@ -70,6 +70,7 @@ class RunRecord:
     gate: np.ndarray           # [T, E] bool
     events: list[EventFiring] = field(default_factory=list)
     max_active_seen: int = 0
+    scenario_flags: np.ndarray = field(default_factory=lambda: np.zeros(0, dtype=bool))   # bool [n_flags], RecordingSpec order
 
 
 def _onset_end(kind: int, n: int) -> int:
@@ -104,9 +105,10 @@ def shock_contribution(s: _Shock, owner_active: bool) -> float:
 
 class ReferenceRun:
     def __init__(self, catalog: CompiledCatalog, ic: InitialConditions, dynamics: DynamicsSpec,
-                 params: SimParams, draws, run_index: int):
+                 params: SimParams, draws, run_index: int, recording: RecordingSpec | None = None):
         self.cat = catalog
         self.params = params
+        self.recording = RecordingSpec() if recording is None else recording
         self.run_index = run_index
         self.block, self.row = draws.block_of(run_index)
         self.stream = draws.stream(self.block)
@@ -155,6 +157,14 @@ class ReferenceRun:
         self._expr_loc = {n: self._resolve(n) for n in self.expr_names
                           if n not in ("resolution", "branch", "years_since") and n not in idx.factor}
 
+        # recording (ADR-9): scenario-flag names resolved against the catalog; per-run consecutive counters
+        self.flags = self.recording.scenario_flags
+        self._flag_loc = {n: self._resolve(n) for f in self.flags for n in f.condition.names if n not in idx.factor}
+        self.flag_counters = [0] * len(self.flags)
+        self.flag_set = np.zeros(len(self.flags), dtype=bool)
+        for k in self.recording.thin_keys:
+            self._resolve(k)                     # thin keys are the vectorized engine's; validated here too
+
     # -- helpers ------------------------------------------------------------
     def _resolve(self, key: str):
         idx = self.cat.index
@@ -179,6 +189,15 @@ class ReferenceRun:
         for f, k in self.cat.index.factor.items():
             ns[f] = np.array([F[k]])
         for n, loc in self._expr_loc.items():
+            ns[n] = np.array([self._get(loc)])
+        return ns
+
+    def _flag_namespace(self, F: np.ndarray) -> dict:
+        """Scenario-flag namespace: this year's factors and the *end-of-year* state (built afresh in step 9)."""
+        ns = {"_shape": (1,)}
+        for f, k in self.cat.index.factor.items():
+            ns[f] = np.array([F[k]])
+        for n, loc in self._flag_loc.items():
             ns[n] = np.array([self._get(loc)])
         return ns
 
@@ -333,8 +352,16 @@ class ReferenceRun:
                 if year >= self.active_until[e]:
                     self.active[e] = False
 
-            # 9. RECORD
+            # 9. RECORD: end-of-year state; scenario flags on that state with this year's factors (ADR-9)
             rec.country[t + 1], rec.global_[t + 1] = self.c, self.g
+            if self.flags:
+                fns = self._flag_namespace(F)
+                for j, flag in enumerate(self.flags):
+                    held = bool(flag.condition(fns)[0])
+                    self.flag_counters[j] = self.flag_counters[j] + 1 if held else 0
+                    if self.flag_counters[j] >= flag.min_years:
+                        self.flag_set[j] = True          # stays true once reached
+        rec.scenario_flags = self.flag_set.copy()
         return rec
 
     def _apply(self, s: _Shock, prev: float, cur: float, year: int) -> None:
@@ -363,5 +390,5 @@ class ReferenceRun:
 
 
 def simulate_reference(catalog: CompiledCatalog, ic: InitialConditions, dynamics: DynamicsSpec,
-                       params: SimParams, draws, run_indices) -> list[RunRecord]:
-    return [ReferenceRun(catalog, ic, dynamics, params, draws, int(r)).run() for r in run_indices]
+                       params: SimParams, draws, run_indices, recording: RecordingSpec | None = None) -> list[RunRecord]:
+    return [ReferenceRun(catalog, ic, dynamics, params, draws, int(r), recording).run() for r in run_indices]
