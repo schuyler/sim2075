@@ -11,8 +11,7 @@ vectorized modules consume the whole block. Everything the built stages produce 
     E6  every year: each firing's impact magnitudes (row, M), the per-event ``until: resolved`` flags and
         windows, and the live shock ledger (row, age, M, contribution in state), none of which depends on state
 
-**Fed mode** (``test_oracle_diff_factors_and_firing``). E7 (dynamics) is not built, so for years > 0 the
-vectorized namespace is fed the reference's own recorded start-of-year state (``RunRecord.country[t]``,
+**Fed mode** (``test_oracle_diff_factors_and_firing``). For years > 0 the vectorized namespace is fed the reference's own recorded start-of-year state (``RunRecord.country[t]``,
 ``RunRecord.global_[t]``), isolating E3–E6 (the ledger applies its increments to a scratch copy). The
 reference's internal memory at the start of year t is read from a replay truncated to t years (the draws are
 generated year by year, so a shorter horizon consumes the same leading draws).
@@ -40,7 +39,13 @@ culled, so three test-built variants (fixture files unchanged) extend the dynami
                           ``ImpactOutOfRange`` in the reference's first failing year, naming exactly the runs the
                           reference fails that year and the reference's row and contribution for the lowest
 
-When E7/E8 land, this grows to the full-dynamics state trajectory.
+**Full-dynamics own-state mode** (``test_oracle_diff_full_dynamics*``, ahead of E8): both engines run with the
+fixture's own ``DynamicsSpec`` and the vectorized engine evolves its own state through E3–E7 in step order
+(``_step`` with a ``DynamicsModel``), diffed every year exactly as the dynamics-free mode is. Run on FIX-A and
+FIX-B under ``SeededDraws`` (one and four blocks); FIX-B also over 20 years, where T3 fires under dynamics; and
+on two test-built FIX-A variants: distinct σ > 0 on every mean-reverting variable (FIX-A's σ are all 0, so a
+wrong ``dyn_z`` column would otherwise pass), and ``b.gdp_growth`` turned into a phase-2 additive drift declared
+just before and just after the ``b.gdp_per_capita`` stock that compounds by it.
 """
 import dataclasses
 
@@ -49,8 +54,10 @@ import pytest
 
 from sim.catalog.types import (DUR_DECAY, DUR_PERMANENT, DUR_UNTIL_RESOLVED, ONSET_DELAYED, ONSET_GRADUAL,
                                ONSET_IMMEDIATE)
-from sim.engine import EventState, FactorModel, FiringModel, ImpactLedger, MemoryModel, namespace_from_state
-from sim.reference import DynamicsSpec, ImpactOutOfRange, InitialConditions, LedgerOverflow, ReferenceRun
+from sim.engine import (DynamicsModel, EventState, FactorModel, FiringModel, ImpactLedger, MemoryModel,
+                        namespace_from_state)
+from sim.reference import (DynamicsSpec, ImpactOutOfRange, InitialConditions, LedgerOverflow, ReferenceRun,
+                           VarDynamics)
 from sim.rng import DrawShapes, SeededDraws
 from sim.tests.fixtures import fix_a, fix_b
 
@@ -193,8 +200,9 @@ def test_oracle_diff_factors_and_firing(mod, block_size):
         assert seen["counter"] > 0
 
 
-def _step(cat, fm, fr, mem, led, thr, yr, year, country, global_) -> dict:
-    """One dynamics-free year of E3–E6 in the reference's step order; ``country``/``global_`` mutated in place."""
+def _step(cat, fm, fr, mem, led, thr, yr, year, country, global_, dm=None) -> dict:
+    """One year of E3–E7 in the reference's step order; ``country``/``global_`` mutated in place. With ``dm``
+    None, step 7 is skipped (dynamics-free); otherwise ``dm`` applies step 7 with this year's ``dyn_z``."""
     F, U = fm.year(yr)                                              # 1-2
     ns = namespace_from_state(cat, F, country, global_)
     res = fr.base(ns, year, mem.events, thr, mem.counters)          # 3
@@ -203,7 +211,9 @@ def _step(cat, fm, fr, mem, led, thr, yr, year, country, global_) -> dict:
     fired = fr.fire(res.gate, U, p_eff)                             # 4
     codes, branches = mem.resolve(fired, yr["res_u"], yr["branch_u"], ns, year)    # 5
     draw = led.resolve(fired, codes, branches, yr["impact_z"], year)
-    led.apply(country, global_, year)                               # 6 (7: no dynamics)
+    led.apply(country, global_, year)                               # 6
+    if dm is not None:
+        dm.step(country, global_, yr["dyn_z"])                      # 7
     mem.end_of_year(res.sustained_now, year)                        # 8
     led.end_of_year(year)
     return dict(res=res, mask=mask, p_eff=p_eff, fired=fired, codes=codes, branches=branches, draw=draw)
@@ -225,7 +235,12 @@ def _ramped(cat, changes):
 
 def _diff_dynamics_free(cat, ic, params, draws) -> dict:
     """E3–E6 wired in the step order with no dynamics, own state from ``ic``, diffed against the reference."""
-    dyn = DynamicsSpec([])
+    return _diff_own_state(cat, ic, params, draws, DynamicsSpec([]))
+
+
+def _diff_own_state(cat, ic, params, draws, dyn) -> dict:
+    """E3–E6 (and E7 when ``dyn`` has entries) wired in the step order, own state from ``ic``, both engines on
+    ``dyn``, diffed against the reference every year."""
     R = draws.R
     snap = [[ReferenceRun(cat, ic, dyn, params, draws, r) for r in range(R)]]
     for t in range(1, params.years + 1):
@@ -235,8 +250,10 @@ def _diff_dynamics_free(cat, ic, params, draws) -> dict:
     refs = recs
 
     fm, fr = FactorModel.from_catalog(cat), FiringModel(cat)
+    dm = DynamicsModel(cat, dyn) if dyn.vars else None
     seen = dict(firings=0, shocks=0, live=0, owner_active=0, freed={k: 0 for k in DUR_KINDS},
-                log=[[] for _ in range(R)])
+                log=[[] for _ in range(R)], country=np.zeros((R, params.years) + ic.country.shape),
+                global_=np.zeros((R, params.years) + ic.global_.shape))
     for b in range(draws.n_blocks):
         start, stop = draws.block_rows(b)
         rb = stop - start
@@ -249,7 +266,8 @@ def _diff_dynamics_free(cat, ic, params, draws) -> dict:
         for t in range(params.years):
             year = params.start_year + t
             live0, kind0 = led.active.copy(), led.dur_kind.copy()
-            o = _step(cat, fm, fr, mem, led, thr, stream.year(t), year, country, global_)
+            o = _step(cat, fm, fr, mem, led, thr, stream.year(t), year, country, global_, dm)
+            seen["country"][start:stop, t], seen["global_"][start:stop, t] = country, global_
             freed = live0 & (~led.active | (led.age == 0))     # freed this year (a reused slot restarts at age 0)
             for k in DUR_KINDS:
                 seen["freed"][k] += int((freed & (kind0 == k)).sum())
@@ -302,6 +320,78 @@ def test_oracle_diff_dynamics_free_scripted_fix_b_until_resolved():
     rec = ReferenceRun(cat, ic, DynamicsSpec([]), params, fix_b.draws(), 0).run()
     conflicts = rec.global_[1:, cat.index.global_var["conflicts"]]
     assert conflicts.tolist() == [0.0, 0.0, 0.0, 1.0, 1.0, 0.0]            # holds 2028-2029, drops to 0 in 2030
+
+
+# Full-dynamics own-state mode (ahead of E8): both engines run with the fixture's own DynamicsSpec and the
+# vectorized engine evolves its own state through E3–E7 in step order. FIX-A's mean-reverting variables all
+# have σ = 0, so a variant gives each a distinct σ > 0 (a wrong dyn_z column would otherwise pass), and a
+# second puts a phase-2 additive drift on a gdp_stock's growth variable, declared before and after the stock.
+FIX_A_SIGMA = {"a.gdp_growth": 0.7, "b.gdp_growth": 1.9, "oil_brent": 11.0}
+
+
+def _noisy_fix_a_dynamics() -> DynamicsSpec:
+    return DynamicsSpec([dataclasses.replace(v, sigma=FIX_A_SIGMA[v.key]) if v.kind == "mean_revert" else v
+                         for v in fix_a.dynamics().vars])
+
+
+def _drifted_growth_fix_a_dynamics(drift_first: bool) -> DynamicsSpec:
+    """Noisy FIX-A with b.gdp_growth an additive drift (−0.25/yr) instead of mean-reverting (keys are unique),
+    declared just before or just after the b.gdp_per_capita stock that compounds by it."""
+    drift = VarDynamics("b.gdp_growth", "additive", rate=-0.25)
+    vs = [v for v in _noisy_fix_a_dynamics().vars if v.key != "b.gdp_growth"]
+    k = next(i for i, v in enumerate(vs) if v.key == "b.gdp_per_capita")
+    vs.insert(k if drift_first else k + 1, drift)
+    return DynamicsSpec(vs)
+
+
+def _diff_full(mod, dyn, block_size, years=None) -> dict:
+    cat, ic = mod.catalog(), mod.initial_conditions()
+    params = mod.params() if years is None else dataclasses.replace(mod.params(), years=years)
+    draws = SeededDraws(SEED, R=R_DIFF, shapes=DrawShapes.for_catalog(cat, len(dyn.noisy_keys)),
+                        block_size=block_size, years=params.years)
+    seen = _diff_own_state(cat, ic, params, draws, dyn)
+    assert seen["firings"] > 0 and seen["shocks"] > 0 and seen["live"] > 0
+    return seen
+
+
+@pytest.mark.parametrize("mod", [fix_a, fix_b], ids=["FIX-A", "FIX-B"])
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_full_dynamics(mod, block_size):
+    _diff_full(mod, mod.dynamics(), block_size)
+
+
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_full_dynamics_fix_b_long_horizon(block_size):
+    """FIX-B over 20 years: with x.stress drifting +0.5/yr T3's precondition opens from 2027, and its sustained
+    condition (FG > 1 two years running) is met often enough that T3 fires and its until: resolved shock is
+    diffed under dynamics (over FIX-B's own 6 years the one-block batch never fires T3)."""
+    seen = _diff_full(fix_b, fix_b.dynamics(), block_size, years=20)
+    T3 = fix_b.catalog().index.event["T3"]
+    assert any(e == T3 for log in seen["log"] for _, e in log) and seen["owner_active"] > 0
+
+
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_full_dynamics_noisy_fix_a(block_size):
+    dyn = _noisy_fix_a_dynamics()
+    assert [v.sigma for v in dyn.vars if v.kind == "mean_revert"] == [0.7, 1.9, 11.0]
+    seen = _diff_full(fix_a, dyn, block_size)
+    quiet = _diff_full(fix_a, fix_a.dynamics(), block_size)
+    idx = fix_a.catalog().index
+    # the noise reached every mean-reverting variable (and so differs from the σ = 0 run)
+    for e in ("a", "b"):
+        g = idx.country_var["gdp_growth"]
+        assert (seen["country"][:, :, idx.entity[e], g] != quiet["country"][:, :, idx.entity[e], g]).all()
+    assert (seen["global_"][..., idx.global_var["oil_brent"]] != quiet["global_"][..., idx.global_var["oil_brent"]]).all()
+
+
+@pytest.mark.parametrize("block_size", [64, 16], ids=["one-block", "four-blocks"])
+def test_oracle_diff_full_dynamics_drift_on_growth_key(block_size):
+    before = _diff_full(fix_a, _drifted_growth_fix_a_dynamics(True), block_size)
+    after = _diff_full(fix_a, _drifted_growth_fix_a_dynamics(False), block_size)
+    idx = fix_a.catalog().index
+    b, pc = idx.entity["b"], idx.country_var["gdp_per_capita"]
+    # declared before the stock, the drift lowers this year's compounding rate: b's stock is lower every year
+    assert (before["country"][:, :, b, pc] < after["country"][:, :, b, pc]).all()
 
 
 # Ramped variants, built here (the fixtures stay as committed): FIX-A/FIX-B rows given delayed and gradual

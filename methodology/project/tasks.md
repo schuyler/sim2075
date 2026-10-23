@@ -29,7 +29,7 @@ Actionable development tasks for Sim2075. Completed tasks archived in [[methodol
 
 Key insight driving Section 4: **progress is continuous, catastrophe is discontinuous**. Without baseline dynamics capturing gradual improvement (GDP growth, life expectancy gains, technology cost declines), the simulation produces only decline. The "progress engine" is essential, not optional.
 
-Tasks 4.1 (MVP dynamics scope) and 4.2 (event migration — all 29 events compile and the full-catalog gate is green as of Oct 22, 2026) are complete — see [[methodology/project/tasks-completed]]. The data track's next step is 4.3 (initial conditions); on the engine track E6 (tasks 5.5, 5.6) has landed and E7 (task 5.7, dynamics) is next.
+Tasks 4.1 (MVP dynamics scope) and 4.2 (event migration — all 29 events compile and the full-catalog gate is green as of Oct 22, 2026) are complete — see [[methodology/project/tasks-completed]]. The data track's next step is 4.3 (initial conditions); on the engine track E7 (task 5.7, dynamics) has landed and E8 (tasks 5.2, 5.8, the year loop) is next; E7b (oil/food → inflation transmission) follows D4.
 ## Upcoming Priorities
 
 ### Pre-Implementation Preparation (Section 4)
@@ -45,7 +45,7 @@ Data-track tasks feeding the engine ([[strategy/roadmap]] Phase 1). Revised Dec 
 |------|-------------|--------------|--------|
 | **4.2** | **Event specification migration** (29/29 migrated; full-catalog compile gate green, Oct 22, 2026): See detailed instructions below — they stay here because the Phase 0 war events (task 6.1) are migrated by the same process and join the subtask table. | — | ✅ |
 | **4.3** | **Initial conditions + baseline trends**: The "progress engine." Gather 2025 baselines and trend rates for: GDP per capita (46 entities), life expectancy (46 entities), technology costs (global), climate trajectories (global). Single-source from IMF WEO, UN Population. ~196 parameters. | — | 🔲 |
-| **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. | 4.3 | 🔲 |
+| **4.4** | **Dynamics defaults**: Specify default parameters for mean-reverting variables. Equilibria from 4.3 baselines. Default half-lives (~2 years economic, ~1 year financial). Placeholder volatilities. Document simplifications explicitly. incl. reopened 4.5: κ_oil, κ_food, exporter rule, half-life choice for inflation pass-through, direct `inflation_rate` event rows to retire (sim/README.md §4) | 4.3 | 🔲 |
 
 **Dependency graph:**
 ```
@@ -242,7 +242,7 @@ Build simulation prototype. **Execution plan: [[methodology/project/implementati
 | **5.4b** | Implement per-run memory: sustained counters + cascade delta buffers (ADR-5) | ✅ `sim/engine/memory.py` (guide E5 gate; §5.2 oracle diff extended to every year) | 5.4 |
 | **5.5** | Implement impact transmission (active-shock ledger, ADR-6) | ✅ `sim/engine/impacts.py` (guide E6 gate; §5.2 oracle diff extended to a dynamics-free full-state mode) | 5.2, 5.4 |
 | **5.6** | Implement aftermath tracking | ✅ `sim/engine/impacts.py` (`until: resolved` flags, epsilon-cull; guide E6 gate) | 5.4b, 5.5 |
-| **5.7** | Implement baseline dynamics | ⏸️ | 5.2, 4.4 |
+| **5.7** | Implement baseline dynamics | ✅ `sim/engine/dynamics.py` (guide E7 gate; transmission is E7b, after D4) | 5.2, 4.4 |
 | **5.8** | Implement main simulation loop | ⏸️ | 5.3–5.7 |
 | **5.8b** | Implement scalar reference impl (ADR-1) — built **first** as the verification oracle per [[methodology/project/implementation-guide]] stage E1; vectorized engine stages diff against it as they land | ✅ `sim/reference/` (guide E1 gate passes on FIX-A/FIX-B) | 5.1 |
 | **5.9** | Implement output analysis | ⏸️ | 5.8 |
@@ -284,4 +284,4 @@ Tasks prioritized after sensitivity analysis reveals what matters:
 
 ---
 
-*Last updated: October 23, 2026 — Task 4.2 complete (29/29, full-catalog gate green); engine stages E0–E6 landed (5.1, 5.8b, 5.3, 5.4, 5.4b, 5.5, 5.6); build findings cross-referenced from sim/README.md*
+*Last updated: October 23, 2026 — Task 4.2 complete (29/29, full-catalog gate green); engine stages E0–E7 landed (5.1, 5.8b, 5.3, 5.4, 5.4b, 5.5, 5.6, 5.7); Task 4.5 reopened into 4.4; build findings cross-referenced from sim/README.md*

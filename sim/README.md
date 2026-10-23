@@ -25,8 +25,9 @@ decisions they left open (§3) and what the build has found so far (§4).
 | E4 | `sim/engine/firing.py`: per-type `p_base` and gates, per-run Type 2 thresholds, fire mask | R=100k: Type 1 frequency within 3σ for every fixture event; Type 2 monotone in pressure; Type 3 never fires while gated off | done |
 | E5 | `sim/engine/memory.py`: sustained counters, cascade slots, `EventState` updates, resolution/branch code draw | hand-built FIX-B factor path opens the sustained gate in exactly the specified year and resets on interruption; cascade delta present for exactly `years` years after firing; conditional cascade respects its `if`; 257th live cascade raises `LedgerOverflow` | done |
 | E6 | `sim/engine/impacts.py`: active-shock ledger, impact-row selection and magnitudes, shock schedule, epsilon-cull, `until: resolved` flags | single decaying shock matches the closed-form half-life to rtol 1e-9 and its epsilon-cull year restores the no-shock value and frees the slot; `permanent` + `immediate` takes no slot, a ramped `permanent` frees its slot at onset end keeping its level; delayed/gradual onset per the §3 table; `until: resolved` holds `resolves_after` years and re-firing restarts it; multiplicative decay returns to the no-shock path, contribution ≤ −1 raises `ImpactOutOfRange`; `max_active + 1` live shocks raise `LedgerOverflow`, `max_active` do not; oracle diff on FIX-B passes | done |
-| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters, impact magnitudes, `until: resolved` flags, live ledger; dynamics-free mode (both engines `DynamicsSpec([])`, own state from initial conditions, plus FIX-B's scripted draws with `x.stress` 2.0, and test-built ramped-onset, long-horizon, `until: resolved` re-firing and small-`max_active` variants): full state trajectory (rtol 1e-9), exact event log, `LedgerOverflow` runs and year, `ImpactOutOfRange` runs, year, row and contribution — grows with each stage | in suite |
-| E7–E10 | dynamics, year loop, analysis | per guide §3 | not started |
+| E7 | `sim/engine/dynamics.py`: step 7 — Tier 2 mean reversion, then `gdp_stock` compounding and Tier 1 drifts (growth-rate-first); oil/food → inflation transmission is E7b, after D4 (§4, item 19) | no-event FIX-A run compounds `gdp_per_capita` at 2%/yr and adds 0.2/0.1 yr of life expectancy per year, matching closed forms to rtol 1e-9; a σ = 0 mean-reverting variable displaced by initial condition or by an E6 shock sits at `μ + d · 0.5^(k/h)` after `k` years for h ∈ {1, 2, 3, 0.5}; stock compounds by post-reversion growth; noise from the entry's own `dyn_z` column; phase-2 declaration order; loud failures on unknown key/kind, `dyn_z` shape, state dtype/shape; every scenario cross-checked against the reference | done |
+| — | §5.2 oracle diff, `sim/tests/test_oracle_diff.py`: FIX-A/FIX-B at R=64 under `SeededDraws` | F and U every year; every year from the reference's recorded state: `p_eff`, gate, fire mask, resolution/branch codes, cascade bitmask, sustained counters, impact magnitudes, `until: resolved` flags, live ledger; dynamics-free mode (both engines `DynamicsSpec([])`, own state from initial conditions, plus FIX-B's scripted draws with `x.stress` 2.0, and test-built ramped-onset, long-horizon, `until: resolved` re-firing and small-`max_active` variants): full state trajectory (rtol 1e-9), exact event log, `LedgerOverflow` runs and year, `ImpactOutOfRange` runs, year, row and contribution; full-dynamics own-state mode (both engines on the fixture's own `DynamicsSpec`, E3–E7 in step order; FIX-A and FIX-B, FIX-B also over 20 years, plus test-built FIX-A variants with distinct σ > 0 on every mean-reverting variable and with an additive drift on a `gdp_stock`'s growth variable declared before and after the stock): the same per-year diff — grows with each stage | in suite |
+| E8–E10 | year loop and recording, analysis, end-to-end validation | per guide §3 | not started |
 
 Data track (guide §2): D1 and D2 done — all 29 events compile and the
 full-catalog gate (`strict_cascades` on) is green with no dropped edges
@@ -47,7 +48,7 @@ sim/
 ├── reference/    scalar reference engine (ADR-1): model.py (inputs) · engine.py (the year step)
 ├── rng.py        draw schedule contract (guide §4.6), shared by both engines
 ├── data/         state_catalog.yaml (generated from the markdown catalogs) · omega.yaml (Ω, transcribed)
-├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · memory.py (E5) · impacts.py (E6) · E7+ pending
+├── engine/       vectorized runtime: factors.py (E3) · firing.py (E4) · memory.py (E5) · impacts.py (E6) · dynamics.py (E7) · E8+ pending
 ├── analysis/     E9 (empty)
 └── tests/        fixtures/ (fix_a, fix_b, fix_c, broken/) and one test module per gate
 ```
@@ -139,8 +140,8 @@ number for an event that has never fired. `branch` names usable in
 expressions must be unique across the event's resolutions. Multi-line YAML
 block scalars are parsed as one parenthesized expression.
 
-**Vectorized modules** (E3–E6) consume whole §4.6 blocks and reproduce
-the reference's steps 1–6 and 8 for every run of the block: `FactorModel.year`
+**Vectorized modules** (E3–E7) consume whole §4.6 blocks and reproduce
+the reference's steps 1–8 for every run of the block: `FactorModel.year`
 gives `F = z Lᵀ` and `U = Φ(F Λᵀ + σ_idio ε)`; `FiringModel.thresholds`
 takes the init-time `t2_offset` block; `FiringModel.base` evaluates the §4.3
 callables once over `(R,)` views (namespace from `namespace_from_state`
@@ -177,7 +178,16 @@ reference reports for the lowest offending run: its first offending shock in
 the reference's application order, live shocks by firing year, owner event and
 row, then this year's by event and row. Shocks on the same variable are summed (or
 multiplied) in slot order rather than the reference's list order, which
-differs from it only by rounding.
+differs from it only by rounding. E7's `DynamicsModel` owns step 7: it
+resolves every `DynamicsSpec` key once at construction (an unknown key is a
+`KeyError`, an unknown kind a `ValueError`) and `step(country, global_,
+dyn_z)` applies the two phases to the caller's state in place, after
+`ImpactLedger.apply` and before `MemoryModel.end_of_year`, checking the state's
+dtype and shape and `dyn_z`'s shape (`[R, len(noisy_keys)]`) loudly. It
+iterates entries in declaration order, one `(R,)` operation per entry, so it
+reproduces the reference's arithmetic element for element; it never regroups
+entries by kind, since phase-2 order matters when a `gdp_stock`'s growth
+variable is itself a drift target.
 
 **Draws** (guide §4.6). One `SeedSequence(master_seed)`, one child per block
 of `block_size` runs; within a block, `t2_offset` once, then per year
@@ -187,8 +197,7 @@ uniforms are drawn for every event (every event has at least the implicit
 else. The reference engine replays run *r* by generating block `r //
 block_size` at full width and consuming row `r % block_size`.
 
-**Dynamics** (reference engine, pending E7 for the vectorized engine):
-mean-reverting variables update first (`x += θ(μ − x) + σ z`, `θ = 1 −
+**Dynamics** (both engines; step 7): mean-reverting variables update first (`x += θ(μ − x) + σ z`, `θ = 1 −
 0.5^(1/half_life)`, one `dyn_z` column per mean-reverting variable in
 declaration order, drawn even when σ = 0), then `gdp_stock` variables
 compound by the updated growth rate (growth in % per year), then additive and
@@ -200,8 +209,14 @@ not of the stationary distribution (which is `σ / sqrt(θ(2 − θ))`, ≈ 1.41
 h = 2). `VarDynamics` rejects a `mean_revert` `half_life` that is not finite
 and > 0 and any `sigma < 0`, and `DynamicsSpec` rejects duplicate keys (entries
 apply sequentially and a repeated mean-revert key would map to its last
-`dyn_z` column), each with a `ValueError` naming the key. The oil/food →
-inflation transmission of MVP scope §5.1 step 6 is not yet implemented (E7).
+`dyn_z` column), each with a `ValueError` naming the key. Phase 1 (every
+mean-reverting entry) completes before phase 2, which applies `gdp_stock`,
+`additive` and `multiplicative` entries in declaration order, so a stock
+reads its growth variable after a drift on it declared earlier and before
+one declared later. Keys resolve as for expressions (`"global_var"` or
+`"entity.var"`). Nothing is clamped: a stock compounded by growth ≤ −100 goes
+to zero or changes sign. The oil/food → inflation transmission of MVP scope
+§5.1 step 6 is deferred to stage E7b (§4, item 19).
 
 **Partial catalogs.** A cascade edge whose target exists in `events/` but is
 not yet migrated is dropped with a recorded warning when `strict_cascades` is
@@ -340,6 +355,41 @@ Found at E7 (spec-owner review delegated by the project owner, 2026-10-23):
     step 7, `sim/reference/model.py` (docstring and validation, §3
     "Dynamics"), FIX-A's hand trace, MVP Dynamics Scope §3.1, §3.3, §5.1 and
     its Document History (1.1), State Dynamics §4.
+19. **Oil/food → inflation transmission** — *deferred to E7b, 2026-10-23.*
+    MVP scope §5.1 step 6 (`inflation = f(oil, food, import_dependence)`) is
+    not built at E7, for four reasons. (1) *The formula does not exist.*
+    State Transmission §3.1 gives only `Δinflation = passthrough × Δsource`
+    with passthrough left unspecified; §7.1 says the coefficients need
+    empirical estimation and §8.2 recommends lagged values without pinning
+    them. Task 4.5 was closed because those documents described the channel,
+    but they do not parameterize it, and engine-side coefficients would be
+    invented numbers that become de facto defaults (guardrail 3). (2) *It
+    would double count today.* `events/energy/Oil Supply Shock.md` shocks
+    both `oil_brent` and `*.inflation_rate` in the same branches, and its
+    migration table says that once the passthrough exists "these rows and
+    the passthrough overlap and one must give way"; other events also shock
+    `inflation_rate` directly. State Transmission §8.1 forbids shocking both
+    a source and its dependent, and fixing that means editing `events/`,
+    which the engine track may not do. (3) *Exporters are unspecified.*
+    Import dependence is "% of consumption", negative for net exporters
+    (State Variables – Country §3), so a linear rule would give exporters
+    deflation from an oil spike, which §3.1's exporter table does not say.
+    (4) *Nothing gates on it.* Neither the E7 gate nor the five success
+    criteria of MVP §8 need it, and MVP §5.3 already says v0.1 cannot
+    validate transmission realism.
+    **Seam:** architecture §3 puts transmission last in step 7, so E7b is a
+    phase 3 appended to step 7, added to the reference first and then
+    transcribed.
+    **Proposal handed to D4 (a proposal, not a pin; not implemented):**
+    `inflation_rate_i += κ_oil · max(dep_energy_i, 0)/100 · (oil_{t−1} −
+    oil_{t−2}) / 75 + κ_food · max(dep_food_i, 0)/100 · (wheat_{t−1} −
+    wheat_{t−2}) / 6`, using fully lagged recorded state and giving
+    exporters zero; the increment then decays through `inflation_rate`'s own
+    reversion. calibration-anchors gives that pass-through a half-life of ~1
+    year while MVP §3.1 gives `inflation_rate` 2 years; D4 picks one. D4 also
+    supplies κ_oil, κ_food, the exporter rule and the list of direct
+    `inflation_rate` event rows to retire (Task 4.4, which absorbs reopened
+    4.5).
 
 ## 5. License
 
